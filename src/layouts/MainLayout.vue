@@ -1,16 +1,40 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar>
-        <q-toolbar-title> Quasar App </q-toolbar-title>
+  <q-layout view="lHh lpr fff">
+    <q-header
+      elevated
+      class="bg-grey-10"
+    >
+      <q-toolbar style="height: 64px">
+        <q-toolbar-title>DeepNotes</q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <q-btn
+          label="Home"
+          flat
+          to="/"
+        />
+        <q-btn
+          label="Login"
+          flat
+          to="/login"
+        />
+        <q-btn
+          label="Sign up"
+          flat
+          to="/register"
+        />
       </q-toolbar>
     </q-header>
 
     <q-page-container>
       <router-view />
     </q-page-container>
+
+    <q-footer
+      class="bg-grey-10"
+      style="padding: 20px"
+    >
+      Blablabla
+    </q-footer>
   </q-layout>
 </template>
 

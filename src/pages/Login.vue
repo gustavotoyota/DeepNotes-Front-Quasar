@@ -45,16 +45,53 @@
   setup
   lang="ts"
 >
-import { reactive } from 'vue';
+import { AxiosInstance } from 'axios';
+import { useQuasar } from 'quasar';
+import { getCurrentInstance, reactive } from 'vue';
 
 import Gap from '../components/misc/Gap.vue';
+
+const api = getCurrentInstance()!.appContext.config.globalProperties
+  .$api as AxiosInstance;
+
+const $q = useQuasar();
 
 const data = reactive({
   email: '',
   password: '',
 });
 
-function onSubmit() {
-  //
+async function onSubmit() {
+  // Master key
+
+  const masterKey = await argon2.hash({
+    pass: data.password,
+    salt: data.email,
+    type: argon2.ArgonType.Argon2id,
+  });
+
+  // Password hash
+
+  const passwordHash = await argon2.hash({
+    pass: masterKey.hash,
+    salt: data.password,
+    type: argon2.ArgonType.Argon2id,
+  });
+
+  try {
+    const response = await api.post('/auth/register', {
+      email: data.email,
+      passwordHash: passwordHash.encoded,
+    });
+
+    $q.cookies.set('access-token', response.data.accessToken);
+    $q.cookies.set('refresh-token', response.data.refreshToken);
+  } catch {
+    $q.notify({
+      color: 'negative',
+      message: 'An error has occurred',
+    });
+    return;
+  }
 }
 </script>

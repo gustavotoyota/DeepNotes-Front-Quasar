@@ -1,0 +1,21 @@
+export const apiBaseURL = process.env.DEV
+  ? 'http://localhost:21733'
+  : 'https://app-server.deepnotes.app/';
+
+export const authEndpoints = {
+  login: '/auth/login',
+  refresh: '/auth/refresh',
+};
+
+export const redirectBaseURL = process.env.DEV
+  ? 'http://localhost:60379'
+  : 'https://deepnotes.app';
+
+export const authRedirects = {
+  home: `${redirectBaseURL}/`,
+  login: `${redirectBaseURL}/login`,
+  logout: `${redirectBaseURL}/`,
+};
+
+export const ACCESS_TOKEN_COOKIE = 'access-token';
+export const REFRESH_TOKEN_COOKIE = 'refresh-token';

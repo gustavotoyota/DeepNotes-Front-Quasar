@@ -62,14 +62,26 @@
   </q-page>
 </template>
 
+<script lang="ts">
+export default {
+  preFetch({ store, redirect }: PreFetchOptions<any>) {
+    if (useAuth(store).loggedIn) {
+      redirect('/');
+    }
+  },
+};
+</script>
+
 <script
   setup
   lang="ts"
 >
+import { PreFetchOptions } from '@quasar/app-vite';
 import { AxiosInstance } from 'axios';
 import sodium from 'libsodium-wrappers';
 import { useQuasar } from 'quasar';
-import { encrypt } from 'src/codes/crypto';
+import { computeKeys } from 'src/codes/crypto';
+import { useAuth } from 'src/stores/auth';
 import { getCurrentInstance, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -100,34 +112,7 @@ async function onSubmit() {
     return;
   }
 
-  // Master key
-
-  const masterKey = await argon2.hash({
-    pass: data.password,
-    salt: data.email,
-    type: argon2.ArgonType.Argon2id,
-    hashLen: 32,
-  });
-
-  // Password hash
-
-  const passwordHash = await argon2.hash({
-    pass: masterKey.hash,
-    salt: data.password,
-    type: argon2.ArgonType.Argon2id,
-  });
-
-  // Key pair
-
-  const sodiumKeyPair = sodium.crypto_box_keypair();
-
-  const encryptedPrivateKey = encrypt(sodiumKeyPair.privateKey, masterKey.hash);
-
-  // Group symmetric key
-
-  const symmetricKey = sodium.crypto_aead_xchacha20poly1305_ietf_keygen();
-
-  const encryptedSymmetricKey = encrypt(symmetricKey, masterKey.hash);
+  const keys = await computeKeys(data.email, data.password);
 
   try {
     await api.post('/auth/register', {
@@ -135,12 +120,12 @@ async function onSubmit() {
 
       displayName: data.displayName,
 
-      passwordHash: passwordHash.encoded,
+      passwordHash: keys.passwordHash,
 
-      publicKey: sodium.to_base64(sodiumKeyPair.publicKey),
-      encryptedPrivateKey: encryptedPrivateKey,
+      publicKey: sodium.to_base64(keys.publicKey),
+      encryptedPrivateKey: keys.encryptedPrivateKey,
 
-      encryptedSymmetricKey: encryptedSymmetricKey,
+      encryptedSymmetricKey: keys.encryptedSymmetricKey,
     });
 
     $q.notify({
@@ -152,7 +137,7 @@ async function onSubmit() {
   } catch (err: any) {
     $q.notify({
       color: 'negative',
-      message: err.response?.data.error ?? 'An error has occurred',
+      message: err.response?.data.message ?? 'An error has occurred',
     });
     return;
   }

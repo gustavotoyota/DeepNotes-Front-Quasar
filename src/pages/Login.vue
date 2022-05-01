@@ -41,13 +41,27 @@
   </q-page>
 </template>
 
+<script lang="ts">
+export default {
+  preFetch({ store, redirect }: PreFetchOptions<any>) {
+    if (useAuth(store).loggedIn) {
+      redirect('/');
+    }
+  },
+};
+</script>
+
 <script
   setup
   lang="ts"
 >
+import { PreFetchOptions } from '@quasar/app-vite';
 import { AxiosInstance } from 'axios';
 import { useQuasar } from 'quasar';
+import { computeKeys } from 'src/codes/crypto';
+import { useAuth } from 'src/stores/auth';
 import { getCurrentInstance, reactive } from 'vue';
+import { useRouter } from 'vue-router';
 
 import Gap from '../components/misc/Gap.vue';
 
@@ -56,40 +70,41 @@ const api = getCurrentInstance()!.appContext.config.globalProperties
 
 const $q = useQuasar();
 
+const auth = useAuth();
+
+const router = useRouter();
+
 const data = reactive({
   email: '',
   password: '',
 });
 
 async function onSubmit() {
-  // Master key
-
-  const masterKey = await argon2.hash({
-    pass: data.password,
-    salt: data.email,
-    type: argon2.ArgonType.Argon2id,
-  });
-
-  // Password hash
-
-  const passwordHash = await argon2.hash({
-    pass: masterKey.hash,
-    salt: data.password,
-    type: argon2.ArgonType.Argon2id,
-  });
+  const keys = await computeKeys(data.email, data.password);
 
   try {
-    const response = await api.post('/auth/register', {
+    const response = await api.post('/auth/login', {
       email: data.email,
-      passwordHash: passwordHash.encoded,
+      passwordHash: keys.passwordHash,
     });
 
     $q.cookies.set('access-token', response.data.accessToken);
     $q.cookies.set('refresh-token', response.data.refreshToken);
-  } catch {
+
+    $q.notify({
+      color: 'positive',
+      message: 'Login successful',
+    });
+
+    localStorage.setItem('masterKey', keys.masterKey.encoded);
+
+    auth.loggedIn = true;
+
+    router.push('/');
+  } catch (err: any) {
     $q.notify({
       color: 'negative',
-      message: 'An error has occurred',
+      message: err.response?.data.message ?? 'An error has occurred',
     });
     return;
   }

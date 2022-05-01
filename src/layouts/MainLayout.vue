@@ -12,16 +12,32 @@
           flat
           to="/"
         />
-        <q-btn
-          label="Login"
-          flat
-          to="/login"
-        />
-        <q-btn
-          label="Sign up"
-          flat
-          to="/register"
-        />
+
+        <template v-if="!auth.loggedIn">
+          <q-btn
+            label="Login"
+            flat
+            to="/login"
+          />
+          <q-btn
+            label="Sign up"
+            flat
+            to="/register"
+          />
+        </template>
+
+        <template v-else>
+          <q-btn
+            label="Pages"
+            flat
+            to="/"
+          />
+          <q-btn
+            label="Logout"
+            flat
+            @click="auth.logout()"
+          />
+        </template>
       </q-toolbar>
     </q-header>
 
@@ -38,10 +54,11 @@
   </q-layout>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script
+  setup
+  lang="ts"
+>
+import { useAuth } from 'src/stores/auth';
 
-export default defineComponent({
-  name: 'MainLayout',
-});
+const auth = useAuth();
 </script>

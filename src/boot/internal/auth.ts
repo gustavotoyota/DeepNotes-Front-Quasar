@@ -27,19 +27,23 @@ async function refreshTokens(
 }
 
 export default boot(async ({ app, store, ssrContext }) => {
-  const auth = useAuth(store);
+  if (process.env.CLIENT) {
+    return;
+  }
 
   const cookies = process.env.SERVER ? Cookies.parseSSR(ssrContext) : Cookies;
 
-  const api: AxiosInstance = app.config.globalProperties.$api;
-
-  if (!cookies.has(ACCESS_TOKEN_COOKIE) || !process.env.SERVER) {
+  if (!cookies.has(ACCESS_TOKEN_COOKIE)) {
     return;
   }
+
+  const api: AxiosInstance = app.config.globalProperties.$api;
 
   if (!(await refreshTokens(cookies, api))) {
     return;
   }
+
+  const auth = useAuth(store);
 
   auth.loggedIn = true;
 });

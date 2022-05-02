@@ -1,6 +1,10 @@
 import sodium from 'libsodium-wrappers';
 
-export let privateKey: PrivateKey;
+export let privateKey: PrivateKey | null = null;
+
+export function clearPrivateKey(): void {
+  privateKey = null;
+}
 
 export function storePrivateKey(value: PrivateKey | Uint8Array) {
   if (value instanceof PrivateKey) {

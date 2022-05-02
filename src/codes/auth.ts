@@ -20,5 +20,5 @@ export const authRedirects = {
   logout: `${redirectBaseURL}/`,
 };
 
-export const ACCESS_TOKEN_COOKIE = 'access-token';
-export const REFRESH_TOKEN_COOKIE = 'refresh-token';
+export const ACCESS_TOKEN = 'access-token';
+export const REFRESH_TOKEN = 'refresh-token';

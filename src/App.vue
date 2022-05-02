@@ -2,10 +2,23 @@
   <router-view />
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script
+  setup
+  lang="ts"
+>
+import { AxiosInstance } from 'axios';
+import { getCurrentInstance, onMounted } from 'vue';
 
-export default defineComponent({
-  name: 'App'
+import { tryRefreshTokens } from './stores/auth';
+
+const api = getCurrentInstance()!.appContext.config.globalProperties
+  .$api as AxiosInstance;
+
+onMounted(async () => {
+  await tryRefreshTokens(api);
+
+  setInterval(() => {
+    tryRefreshTokens(api);
+  }, 10000);
 });
 </script>

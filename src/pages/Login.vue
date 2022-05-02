@@ -59,7 +59,7 @@ import { PreFetchOptions } from '@quasar/app-vite';
 import { AxiosInstance } from 'axios';
 import { from_base64 } from 'libsodium-wrappers';
 import { useQuasar } from 'quasar';
-import { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE } from 'src/codes/auth';
+import { ACCESS_TOKEN, REFRESH_TOKEN } from 'src/codes/auth';
 import {
   computeDerivedKeys,
   decryptXChachaPoly1305,
@@ -103,35 +103,40 @@ async function onSubmit() {
       passwordHash: derivedKeys.passwordHash,
     });
 
-    // Set token cookies
+    // Set API authorization header
 
-    $q.cookies.set(ACCESS_TOKEN_COOKIE, response.data.accessToken);
-    $q.cookies.set(REFRESH_TOKEN_COOKIE, response.data.refreshToken);
+    api.defaults.headers.common.Authorization = `Bearer ${response.data.accessToken}`;
 
     // Compute keys
 
-    const encryptedMasterKey = encryptXChachaPoly1305(
+    const reencryptedMasterKey = encryptXChachaPoly1305(
       derivedKeys.masterKeyResult.hash,
       from_base64(response.data.sessionKey)
     );
-
     const privateKey = decryptXChachaPoly1305(
       response.data.encryptedPrivateKey,
       derivedKeys.masterKeyResult.hash
     );
-
     const reencryptedPrivateKey = encryptXChachaPoly1305(
       privateKey,
       from_base64(response.data.sessionKey)
     );
 
-    // Store keys
+    // Store tokens and cookies
+
+    $q.cookies.set(ACCESS_TOKEN, response.data.accessToken, {
+      sameSite: 'Strict',
+      secure: true,
+    });
+    localStorage.setItem(REFRESH_TOKEN, response.data.refreshToken);
+
+    localStorage.setItem('encrypted-master-key', reencryptedMasterKey);
+    localStorage.setItem('encrypted-private-key', reencryptedPrivateKey);
+
+    // Store keys on memory
 
     storeMasterKey(derivedKeys.masterKey);
     storePrivateKey(privateKey);
-
-    localStorage.setItem('encrypted-master-key', encryptedMasterKey);
-    localStorage.setItem('encrypted-private-key', reencryptedPrivateKey);
 
     auth.loggedIn = true;
 

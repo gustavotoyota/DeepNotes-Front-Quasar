@@ -1,6 +1,10 @@
 import { decryptXChachaPoly1305, encryptXChachaPoly1305 } from './crypto';
 
-export let masterKey: MasterKey;
+export let masterKey: MasterKey | null = null;
+
+export function clearMasterKey(): void {
+  masterKey = null;
+}
 
 export function storeMasterKey(value: MasterKey | Uint8Array) {
   if (value instanceof MasterKey) {
@@ -20,7 +24,7 @@ export class MasterKey {
   encrypt(plaintext: Uint8Array): string {
     return encryptXChachaPoly1305(plaintext, this.#masterKey);
   }
-  decrypt(noncedCyphertext: string): Uint8Array {
-    return decryptXChachaPoly1305(noncedCyphertext, this.#masterKey);
+  decrypt(nonceAndCyphertext: string): Uint8Array {
+    return decryptXChachaPoly1305(nonceAndCyphertext, this.#masterKey);
   }
 }

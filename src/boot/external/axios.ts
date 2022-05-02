@@ -3,7 +3,7 @@ import 'vue';
 import axios, { AxiosInstance } from 'axios';
 import { Cookies } from 'quasar';
 import { boot } from 'quasar/wrappers';
-import { ACCESS_TOKEN_COOKIE, apiBaseURL } from 'src/codes/auth';
+import { ACCESS_TOKEN, apiBaseURL } from 'src/codes/auth';
 
 declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
@@ -28,8 +28,9 @@ export default boot(({ app, store, ssrContext }) => {
   const api = axios.create({ baseURL: apiBaseURL });
 
   const cookies = process.env.SERVER ? Cookies.parseSSR(ssrContext) : Cookies;
+
   api.defaults.headers.common.Authorization = `Bearer ${cookies.get(
-    ACCESS_TOKEN_COOKIE
+    ACCESS_TOKEN
   )}`;
 
   app.config.globalProperties.$api = api;

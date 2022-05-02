@@ -1,4 +1,5 @@
 import { AxiosInstance } from 'axios';
+import jwtDecode from 'jwt-decode';
 import { Cookies } from 'quasar';
 import { boot } from 'quasar/wrappers';
 import {
@@ -8,42 +9,80 @@ import {
 } from 'src/codes/auth';
 import { useAuth } from 'src/stores/auth';
 
-async function refreshTokens(
-  cookies: Cookies,
-  api: AxiosInstance
-): Promise<boolean> {
-  const response = await api.post(authEndpoints.refresh, {
-    refreshToken: cookies.get(REFRESH_TOKEN_COOKIE),
-  });
-
-  if (response.status !== 200) {
+function isTokenValid(cookie: string): boolean {
+  if (cookie == null) {
     return false;
   }
 
-  cookies.set(ACCESS_TOKEN_COOKIE, response.data.accessToken);
-  cookies.set(REFRESH_TOKEN_COOKIE, response.data.refreshToken);
+  const decodedToken = jwtDecode<{ exp: number }>(cookie);
 
-  return true;
+  return new Date().getTime() < decodedToken.exp * 1000;
+}
+function areTokensValid(cookies: Cookies): boolean {
+  return (
+    isTokenValid(cookies.get(ACCESS_TOKEN_COOKIE)) &&
+    isTokenValid(cookies.get(REFRESH_TOKEN_COOKIE))
+  );
 }
 
-export default boot(async ({ app, store, ssrContext }) => {
-  if (process.env.CLIENT) {
-    return;
+function isTokenExpiring(cookie: string): boolean {
+  if (cookie == null) {
+    return false;
   }
 
+  const decodedToken = jwtDecode<{ exp: number; iat: number }>(cookie);
+
+  const timeToLive = decodedToken.exp * 1000 - decodedToken.iat * 1000;
+  const timeDifference = decodedToken.exp * 1000 - new Date().getTime();
+  const timeExpired = timeToLive - timeDifference;
+
+  return timeExpired / timeToLive >= 0.75;
+}
+function areTokensExpiring(cookies: Cookies): boolean {
+  return (
+    isTokenExpiring(cookies.get(ACCESS_TOKEN_COOKIE)) ||
+    isTokenExpiring(cookies.get(REFRESH_TOKEN_COOKIE))
+  );
+}
+
+async function tryRefreshTokens(
+  cookies: Cookies,
+  api: AxiosInstance
+): Promise<boolean> {
+  const auth = useAuth();
+
+  if (!areTokensValid(cookies)) {
+    return (auth.loggedIn = false);
+  }
+
+  if (!areTokensExpiring(cookies)) {
+    return (auth.loggedIn = true);
+  }
+
+  try {
+    const response = await api.post(authEndpoints.refresh, {
+      refreshToken: cookies.get(REFRESH_TOKEN_COOKIE),
+    });
+
+    cookies.set(ACCESS_TOKEN_COOKIE, response.data.accessToken);
+    cookies.set(REFRESH_TOKEN_COOKIE, response.data.refreshToken);
+
+    return (auth.loggedIn = true);
+  } catch {
+    return (auth.loggedIn = false);
+  }
+}
+
+export default boot(async ({ app, ssrContext }) => {
   const cookies = process.env.SERVER ? Cookies.parseSSR(ssrContext) : Cookies;
-
-  if (!cookies.has(ACCESS_TOKEN_COOKIE)) {
-    return;
-  }
 
   const api: AxiosInstance = app.config.globalProperties.$api;
 
-  if (!(await refreshTokens(cookies, api))) {
-    return;
+  await tryRefreshTokens(cookies, api);
+
+  if (process.env.CLIENT) {
+    setInterval(() => {
+      tryRefreshTokens(cookies, api);
+    }, 10000);
   }
-
-  const auth = useAuth(store);
-
-  auth.loggedIn = true;
 });

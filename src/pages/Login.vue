@@ -58,7 +58,8 @@ export default {
 import { PreFetchOptions } from '@quasar/app-vite';
 import { AxiosInstance } from 'axios';
 import { useQuasar } from 'quasar';
-import { computeKeys } from 'src/codes/crypto';
+import { computeKeys } from 'src/codes/crypto/crypto';
+import { getIndexedDB } from 'src/codes/indexed-db';
 import { useAuth } from 'src/stores/auth';
 import { getCurrentInstance, reactive } from 'vue';
 import { useRouter } from 'vue-router';
@@ -96,7 +97,10 @@ async function onSubmit() {
       message: 'Login successful',
     });
 
-    localStorage.setItem('masterKey', keys.masterKey.encoded);
+    const indexedDB = await getIndexedDB();
+
+    indexedDB.put('crypto', keys.masterKey, 'masterKey');
+    indexedDB.put('crypto', keys.privateKey, 'privateKey');
 
     auth.loggedIn = true;
 

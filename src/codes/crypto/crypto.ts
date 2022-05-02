@@ -1,14 +1,17 @@
-import sodium, { to_base64 } from 'libsodium-wrappers';
+import sodium from 'libsodium-wrappers';
+
+import { MasterKey } from './master-key';
+import { PrivateKey } from './private-key';
 
 export function encryptXChachaPoly1305(
-  data: Uint8Array,
+  plaintext: Uint8Array,
   key: Uint8Array,
   additionalData: string | null = null
 ): string {
   const nonce = sodium.randombytes_buf(24);
 
   const cyphertext = sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(
-    data,
+    plaintext,
     additionalData,
     null,
     nonce,
@@ -19,11 +22,11 @@ export function encryptXChachaPoly1305(
 }
 
 export function decryptXChachaPoly1305(
-  data: string,
+  noncedCyphertext: string,
   key: Uint8Array,
   additionalData: string | null = null
 ): Uint8Array {
-  const [nonce, cyphertext] = data.split('.');
+  const [nonce, cyphertext] = noncedCyphertext.split('.');
 
   return sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
     null,
@@ -37,19 +40,21 @@ export function decryptXChachaPoly1305(
 export async function computeKeys(email: string, password: string) {
   // Master key
 
-  const masterKey = await argon2.hash({
+  const masterKeyResult = await argon2.hash({
     pass: password,
     salt: email,
     type: argon2.ArgonType.Argon2id,
     hashLen: 32,
   });
 
+  const masterKey = new MasterKey(masterKeyResult.hash);
+
   // Password hash
 
-  const passwordHash = to_base64(
+  const passwordHash = sodium.to_base64(
     (
       await argon2.hash({
-        pass: masterKey.hash,
+        pass: masterKeyResult.hash,
         salt: password,
         type: argon2.ArgonType.Argon2id,
       })
@@ -58,28 +63,25 @@ export async function computeKeys(email: string, password: string) {
 
   // Key pair
 
-  const sodiumKeyPair = sodium.crypto_box_keypair();
+  const keyPair = sodium.crypto_box_keypair();
 
-  const encryptedPrivateKey = encryptXChachaPoly1305(
-    sodiumKeyPair.privateKey,
-    masterKey.hash
-  );
+  const privateKey = new PrivateKey(keyPair.privateKey);
+
+  const encryptedPrivateKey = masterKey.encrypt(keyPair.privateKey);
 
   // Group symmetric key
 
   const symmetricKey = sodium.crypto_aead_xchacha20poly1305_ietf_keygen();
 
-  const encryptedSymmetricKey = encryptXChachaPoly1305(
-    symmetricKey,
-    masterKey.hash
-  );
+  const encryptedSymmetricKey = masterKey.encrypt(symmetricKey);
 
   return {
-    masterKey: masterKey,
+    masterKey,
 
-    passwordHash: passwordHash,
+    passwordHash,
 
-    publicKey: sodiumKeyPair.publicKey,
+    publicKey: keyPair.publicKey,
+    privateKey,
     encryptedPrivateKey,
 
     encryptedSymmetricKey,

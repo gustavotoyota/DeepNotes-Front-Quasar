@@ -80,7 +80,7 @@ import { PreFetchOptions } from '@quasar/app-vite';
 import { AxiosInstance } from 'axios';
 import sodium from 'libsodium-wrappers';
 import { useQuasar } from 'quasar';
-import { computeKeys } from 'src/codes/crypto';
+import { computeKeys } from 'src/codes/crypto/crypto';
 import { useAuth } from 'src/stores/auth';
 import { getCurrentInstance, reactive } from 'vue';
 import { useRouter } from 'vue-router';

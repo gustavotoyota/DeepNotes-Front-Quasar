@@ -1,24 +1,29 @@
 import sodium from 'libsodium-wrappers';
 
-export let privateKey: PrivateKey | null = null;
-
-export function clearPrivateKey(): void {
-  privateKey = null;
-}
-
-export function storePrivateKey(value: PrivateKey | Uint8Array) {
-  if (value instanceof PrivateKey) {
-    privateKey = value;
-  } else {
-    privateKey = new PrivateKey(value);
-  }
-}
-
 export class PrivateKey {
-  #privateKey: Uint8Array;
+  #privateKey: Uint8Array | null;
 
-  constructor(value: Uint8Array) {
-    this.#privateKey = value;
+  constructor(value: PrivateKey | Uint8Array | null = null) {
+    if (value instanceof PrivateKey) {
+      this.#privateKey = value.#privateKey;
+    } else {
+      this.#privateKey = value;
+    }
+  }
+
+  set(value: PrivateKey | Uint8Array | null) {
+    if (value instanceof PrivateKey) {
+      this.#privateKey = value.#privateKey;
+    } else {
+      this.#privateKey = value;
+    }
+  }
+  clear() {
+    this.set(null);
+  }
+
+  exists(): boolean {
+    return this.#privateKey != null;
   }
 
   decrypt(nonceAndCyphertext: string, publicKey: Uint8Array): Uint8Array {
@@ -28,7 +33,9 @@ export class PrivateKey {
       sodium.from_base64(cyphertext),
       sodium.from_base64(nonce),
       publicKey,
-      this.#privateKey
+      this.#privateKey!
     );
   }
 }
+
+export const privateKey = new PrivateKey();

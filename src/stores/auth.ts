@@ -8,16 +8,8 @@ import {
   decryptXChachaPoly1305,
   encryptXChachaPoly1305,
 } from 'src/codes/crypto/crypto';
-import {
-  clearMasterKey,
-  masterKey,
-  storeMasterKey,
-} from 'src/codes/crypto/master-key';
-import {
-  clearPrivateKey,
-  privateKey,
-  storePrivateKey,
-} from 'src/codes/crypto/private-key';
+import { masterKey } from 'src/codes/crypto/master-key';
+import { privateKey } from 'src/codes/crypto/private-key';
 
 export function isTokenValid(token: string | null): boolean {
   if (token == null) {
@@ -52,13 +44,16 @@ export function areTokensExpiring(): boolean {
 export async function tryRefreshTokens(api: AxiosInstance): Promise<void> {
   const auth = useAuth();
 
+  if (!auth.loggedIn) {
+    return;
+  }
+
   if (!isTokenValid(localStorage.getItem(REFRESH_TOKEN))) {
     auth.logout();
     return;
   }
 
-  if (!areTokensExpiring() && privateKey != null && masterKey != null) {
-    auth.loggedIn = true;
+  if (!areTokensExpiring() && privateKey.exists() && masterKey.exists()) {
     return;
   }
 
@@ -120,10 +115,8 @@ export async function tryRefreshTokens(api: AxiosInstance): Promise<void> {
 
     // Store keys on memory
 
-    storeMasterKey(masterKey);
-    storePrivateKey(privateKey);
-
-    auth.loggedIn = true;
+    masterKey.set(masterKey);
+    privateKey.set(privateKey);
   } catch (err) {
     console.log(err);
     auth.logout();
@@ -148,8 +141,8 @@ export const useAuth = defineStore('auth', {
 
       // Clear keys from memory
 
-      clearMasterKey();
-      clearPrivateKey();
+      masterKey.clear();
+      privateKey.clear();
 
       // Delete API authorization header
 

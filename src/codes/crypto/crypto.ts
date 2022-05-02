@@ -21,11 +21,11 @@ export function encryptXChachaPoly1305(
 }
 
 export function decryptXChachaPoly1305(
-  nonceAndCyphertext: string,
+  noncedCyphertext: string,
   key: Uint8Array,
   additionalData: string | null = null
 ): Uint8Array {
-  const [nonce, cyphertext] = nonceAndCyphertext.split('.');
+  const [nonce, cyphertext] = noncedCyphertext.split('.');
 
   return sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
     null,

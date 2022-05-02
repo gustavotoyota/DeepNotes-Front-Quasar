@@ -65,8 +65,7 @@ import {
   decryptXChachaPoly1305,
   encryptXChachaPoly1305,
 } from 'src/codes/crypto/crypto';
-import { storeMasterKey } from 'src/codes/crypto/master-key';
-import { storePrivateKey } from 'src/codes/crypto/private-key';
+import { masterKey } from 'src/codes/crypto/master-key';
 import { useAuth } from 'src/stores/auth';
 import { getCurrentInstance, reactive } from 'vue';
 import { useRouter } from 'vue-router';
@@ -135,8 +134,8 @@ async function onSubmit() {
 
     // Store keys on memory
 
-    storeMasterKey(derivedKeys.masterKey);
-    storePrivateKey(privateKey);
+    masterKey.set(derivedKeys.masterKey);
+    privateKey.set(privateKey);
 
     auth.loggedIn = true;
 

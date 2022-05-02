@@ -12,6 +12,9 @@ export const useAuth = defineStore('auth', {
       Cookies.remove(ACCESS_TOKEN_COOKIE);
       Cookies.remove(REFRESH_TOKEN_COOKIE);
 
+      localStorage.removeItem('encrypted-master-key');
+      localStorage.removeItem('encrypted-private-key');
+
       this.loggedIn = false;
     },
   },

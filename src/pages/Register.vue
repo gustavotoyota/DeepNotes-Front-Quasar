@@ -80,7 +80,7 @@ import { PreFetchOptions } from '@quasar/app-vite';
 import { AxiosInstance } from 'axios';
 import sodium from 'libsodium-wrappers';
 import { useQuasar } from 'quasar';
-import { computeKeys } from 'src/codes/crypto/crypto';
+import { computeDerivedKeys, computeRandomKeys } from 'src/codes/crypto/crypto';
 import { useAuth } from 'src/stores/auth';
 import { getCurrentInstance, reactive } from 'vue';
 import { useRouter } from 'vue-router';
@@ -112,7 +112,8 @@ async function onSubmit() {
     return;
   }
 
-  const keys = await computeKeys(data.email, data.password);
+  const derivedKeys = await computeDerivedKeys(data.email, data.password);
+  const randomKeys = await computeRandomKeys(derivedKeys.masterKey);
 
   try {
     await api.post('/auth/register', {
@@ -120,12 +121,12 @@ async function onSubmit() {
 
       displayName: data.displayName,
 
-      passwordHash: keys.passwordHash,
+      passwordHash: derivedKeys.passwordHash,
 
-      publicKey: sodium.to_base64(keys.publicKey),
-      encryptedPrivateKey: keys.encryptedPrivateKey,
+      publicKey: sodium.to_base64(randomKeys.publicKey),
+      encryptedPrivateKey: randomKeys.encryptedPrivateKey,
 
-      encryptedSymmetricKey: keys.encryptedSymmetricKey,
+      encryptedSymmetricKey: randomKeys.encryptedSymmetricKey,
     });
 
     $q.notify({

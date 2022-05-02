@@ -1,7 +1,6 @@
 import sodium from 'libsodium-wrappers';
 
 import { MasterKey } from './master-key';
-import { PrivateKey } from './private-key';
 
 export function encryptXChachaPoly1305(
   plaintext: Uint8Array,
@@ -37,7 +36,7 @@ export function decryptXChachaPoly1305(
   );
 }
 
-export async function computeKeys(email: string, password: string) {
+export async function computeDerivedKeys(email: string, password: string) {
   // Master key
 
   const masterKeyResult = await argon2.hash({
@@ -61,11 +60,18 @@ export async function computeKeys(email: string, password: string) {
     ).hash
   );
 
+  return {
+    masterKeyResult,
+    masterKey,
+
+    passwordHash,
+  };
+}
+
+export async function computeRandomKeys(masterKey: MasterKey) {
   // Key pair
 
   const keyPair = sodium.crypto_box_keypair();
-
-  const privateKey = new PrivateKey(keyPair.privateKey);
 
   const encryptedPrivateKey = masterKey.encrypt(keyPair.privateKey);
 
@@ -76,12 +82,7 @@ export async function computeKeys(email: string, password: string) {
   const encryptedSymmetricKey = masterKey.encrypt(symmetricKey);
 
   return {
-    masterKey,
-
-    passwordHash,
-
     publicKey: keyPair.publicKey,
-    privateKey,
     encryptedPrivateKey,
 
     encryptedSymmetricKey,

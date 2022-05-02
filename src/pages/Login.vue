@@ -57,9 +57,16 @@ export default {
 >
 import { PreFetchOptions } from '@quasar/app-vite';
 import { AxiosInstance } from 'axios';
+import { from_base64 } from 'libsodium-wrappers';
 import { useQuasar } from 'quasar';
-import { computeKeys } from 'src/codes/crypto/crypto';
-import { getIndexedDB } from 'src/codes/indexed-db';
+import { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE } from 'src/codes/auth';
+import {
+  computeDerivedKeys,
+  decryptXChachaPoly1305,
+  encryptXChachaPoly1305,
+} from 'src/codes/crypto/crypto';
+import { storeMasterKey } from 'src/codes/crypto/master-key';
+import { storePrivateKey } from 'src/codes/crypto/private-key';
 import { useAuth } from 'src/stores/auth';
 import { getCurrentInstance, reactive } from 'vue';
 import { useRouter } from 'vue-router';
@@ -81,28 +88,57 @@ const data = reactive({
 });
 
 async function onSubmit() {
-  const keys = await computeKeys(data.email, data.password);
+  const derivedKeys = await computeDerivedKeys(data.email, data.password);
 
   try {
-    const response = await api.post('/auth/login', {
+    const response = await api.post<{
+      accessToken: string;
+      refreshToken: string;
+
+      encryptedPrivateKey: string;
+
+      sessionKey: string;
+    }>('/auth/login', {
       email: data.email,
-      passwordHash: keys.passwordHash,
+      passwordHash: derivedKeys.passwordHash,
     });
 
-    $q.cookies.set('access-token', response.data.accessToken);
-    $q.cookies.set('refresh-token', response.data.refreshToken);
+    // Set token cookies
+
+    $q.cookies.set(ACCESS_TOKEN_COOKIE, response.data.accessToken);
+    $q.cookies.set(REFRESH_TOKEN_COOKIE, response.data.refreshToken);
+
+    // Compute keys
+
+    const encryptedMasterKey = encryptXChachaPoly1305(
+      derivedKeys.masterKeyResult.hash,
+      from_base64(response.data.sessionKey)
+    );
+
+    const privateKey = decryptXChachaPoly1305(
+      response.data.encryptedPrivateKey,
+      derivedKeys.masterKeyResult.hash
+    );
+
+    const reencryptedPrivateKey = encryptXChachaPoly1305(
+      privateKey,
+      from_base64(response.data.sessionKey)
+    );
+
+    // Store keys
+
+    storeMasterKey(derivedKeys.masterKey);
+    storePrivateKey(privateKey);
+
+    localStorage.setItem('encrypted-master-key', encryptedMasterKey);
+    localStorage.setItem('encrypted-private-key', reencryptedPrivateKey);
+
+    auth.loggedIn = true;
 
     $q.notify({
       color: 'positive',
       message: 'Login successful',
     });
-
-    const indexedDB = await getIndexedDB();
-
-    indexedDB.put('crypto', keys.masterKey, 'masterKey');
-    indexedDB.put('crypto', keys.privateKey, 'privateKey');
-
-    auth.loggedIn = true;
 
     router.push('/');
   } catch (err: any) {

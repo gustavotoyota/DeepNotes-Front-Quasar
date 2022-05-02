@@ -1,5 +1,6 @@
 import { AxiosInstance } from 'axios';
 import jwtDecode from 'jwt-decode';
+import { from_base64 } from 'libsodium-wrappers';
 import { Cookies } from 'quasar';
 import { boot } from 'quasar/wrappers';
 import {
@@ -7,6 +8,12 @@ import {
   authEndpoints,
   REFRESH_TOKEN_COOKIE,
 } from 'src/codes/auth';
+import {
+  decryptXChachaPoly1305,
+  encryptXChachaPoly1305,
+} from 'src/codes/crypto/crypto';
+import { storeMasterKey } from 'src/codes/crypto/master-key';
+import { storePrivateKey } from 'src/codes/crypto/private-key';
 import { useAuth } from 'src/stores/auth';
 
 function isTokenValid(cookie: string): boolean {
@@ -59,13 +66,60 @@ async function tryRefreshTokens(
     return (auth.loggedIn = true);
   }
 
+  const encryptedMasterKey = localStorage.getItem('encrypted-master-key');
+  const encryptedPrivateKey = localStorage.getItem('encrypted-private-key');
+
+  if (!encryptedMasterKey || !encryptedPrivateKey) {
+    return (auth.loggedIn = false);
+  }
+
   try {
-    const response = await api.post(authEndpoints.refresh, {
+    const response = await api.post<{
+      accessToken: string;
+      refreshToken: string;
+
+      oldSessionKey: string;
+      newSessionKey: string;
+    }>(authEndpoints.refresh, {
       refreshToken: cookies.get(REFRESH_TOKEN_COOKIE),
     });
 
+    // Set token cookies
+
     cookies.set(ACCESS_TOKEN_COOKIE, response.data.accessToken);
     cookies.set(REFRESH_TOKEN_COOKIE, response.data.refreshToken);
+
+    // Decrypt keys
+
+    const masterKey = decryptXChachaPoly1305(
+      encryptedMasterKey,
+      from_base64(response.data.oldSessionKey)
+    );
+    const privateKey = decryptXChachaPoly1305(
+      encryptedPrivateKey,
+      from_base64(response.data.newSessionKey)
+    );
+
+    // Store keys on memory
+
+    storeMasterKey(masterKey);
+    storePrivateKey(privateKey);
+
+    // Reencrypt keys
+
+    const reencryptedMasterKey = encryptXChachaPoly1305(
+      masterKey,
+      from_base64(response.data.newSessionKey)
+    );
+    const reencryptedPrivateKey = encryptXChachaPoly1305(
+      privateKey,
+      from_base64(response.data.newSessionKey)
+    );
+
+    // Store keys on local storage
+
+    localStorage.setItem('encrypted-master-key', reencryptedMasterKey);
+    localStorage.setItem('encrypted-private-key', reencryptedPrivateKey);
 
     return (auth.loggedIn = true);
   } catch {

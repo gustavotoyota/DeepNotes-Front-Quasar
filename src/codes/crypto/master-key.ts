@@ -1,5 +1,15 @@
 import { decryptXChachaPoly1305, encryptXChachaPoly1305 } from './crypto';
 
+export let masterKey: MasterKey;
+
+export function storeMasterKey(value: MasterKey | Uint8Array) {
+  if (value instanceof MasterKey) {
+    masterKey = value;
+  } else {
+    masterKey = new MasterKey(value);
+  }
+}
+
 export class MasterKey {
   #masterKey: Uint8Array;
 

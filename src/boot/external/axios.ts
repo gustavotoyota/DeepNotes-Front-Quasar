@@ -3,6 +3,7 @@ import 'vue';
 import axios, { AxiosInstance } from 'axios';
 import { boot } from 'quasar/wrappers';
 import { apiBaseURL } from 'src/codes/auth';
+import { getCurrentInstance } from 'vue';
 
 declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
@@ -30,3 +31,8 @@ export default boot(({ app, store }) => {
 
   store.use(() => ({ $api: api }));
 });
+
+export function useAPI() {
+  return getCurrentInstance()!.appContext.config.globalProperties
+    .$api as AxiosInstance;
+}

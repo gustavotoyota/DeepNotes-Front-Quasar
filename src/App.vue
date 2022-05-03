@@ -1,24 +1,30 @@
 <template>
-  <router-view />
+  <router-view v-if="mounted" />
+
+  <LoadingOverlay v-else />
 </template>
 
 <script
   setup
   lang="ts"
 >
-import { AxiosInstance } from 'axios';
-import { getCurrentInstance, onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 
+import { useAPI } from './boot/external/axios';
 import { tryRefreshTokens } from './codes/auth';
+import LoadingOverlay from './components/misc/LoadingOverlay.vue';
 
-const api = getCurrentInstance()!.appContext.config.globalProperties
-  .$api as AxiosInstance;
+const mounted = ref(false);
+
+const api = useAPI();
 
 onMounted(async () => {
-  (async function tokenRefreshLoop() {
+  await (async function tokenRefreshLoop() {
     await tryRefreshTokens(api);
 
     setTimeout(tokenRefreshLoop, 10000);
   })();
+
+  mounted.value = true;
 });
 </script>

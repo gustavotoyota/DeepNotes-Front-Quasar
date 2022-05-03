@@ -19,7 +19,22 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/account',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/Account.vue') }],
+    children: [
+      {
+        path: '',
+        component: () => import('pages/Account.vue'),
+        children: [
+          {
+            path: 'general',
+            component: () => import('pages/Account/General.vue'),
+          },
+          {
+            path: 'security',
+            component: () => import('pages/Account/Security.vue'),
+          },
+        ],
+      },
+    ],
   },
 
   // Always leave this as last one,

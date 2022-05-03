@@ -30,7 +30,7 @@
           <q-btn
             label="Account"
             flat
-            to="/account"
+            to="/account/general"
           />
           <q-btn
             label="Pages"

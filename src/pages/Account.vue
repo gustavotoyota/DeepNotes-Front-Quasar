@@ -14,15 +14,18 @@
         <q-item
           style="height: 60px"
           clickable
+          to="/account/general"
         >
           <q-item-section avatar>
             <q-icon name="mdi-cog" />
           </q-item-section>
           <q-item-section> General </q-item-section>
         </q-item>
+
         <q-item
           style="height: 60px"
           clickable
+          to="/account/security"
         >
           <q-item-section avatar>
             <q-icon name="mdi-shield" />
@@ -32,6 +35,12 @@
       </q-list>
     </q-drawer>
 
-    <q-page> Hello </q-page>
+    <q-page>
+      <router-view v-slot="{ Component }">
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
+      </router-view>
+    </q-page>
   </q-page-container>
 </template>

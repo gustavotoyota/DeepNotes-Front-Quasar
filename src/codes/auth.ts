@@ -33,43 +33,38 @@ export const authRedirects = {
   logout: `${redirectBaseURL}/`,
 };
 
-export const ACCESS_TOKEN = 'access-token';
-export const REFRESH_TOKEN = 'refresh-token';
+export function isTokenValid(tokenName: string): boolean {
+  const exp = parseInt(localStorage.getItem(`${tokenName}-exp`) ?? '');
 
-export function isTokenValid(token: string | null): boolean {
-  if (token == null) {
+  if (isNaN(exp)) {
     return false;
   }
 
-  const decodedToken = jwtDecode<{ exp: number }>(token);
-
-  return new Date().getTime() < decodedToken.exp * 1000;
+  return new Date().getTime() < exp;
 }
 
-export function isTokenExpiring(token: string | null): boolean {
-  if (token == null) {
-    return false;
+export function isTokenExpiring(tokenName: string): boolean {
+  const exp = parseInt(localStorage.getItem(`${tokenName}-exp`) ?? '');
+  const iat = parseInt(localStorage.getItem(`${tokenName}-iat`) ?? '');
+
+  if (isNaN(exp) || isNaN(iat)) {
+    return true;
   }
 
-  const decodedToken = jwtDecode<{ exp: number; iat: number }>(token);
-
-  const timeToLive = decodedToken.exp * 1000 - decodedToken.iat * 1000;
-  const timeDifference = decodedToken.exp * 1000 - new Date().getTime();
+  const timeToLive = exp - iat;
+  const timeDifference = exp - new Date().getTime();
   const timeExpired = timeToLive - timeDifference;
 
   return timeExpired / timeToLive >= 0.75;
 }
 export function areTokensExpiring(): boolean {
-  return (
-    isTokenExpiring(Cookies.get(ACCESS_TOKEN)) ||
-    isTokenExpiring(localStorage.getItem(REFRESH_TOKEN))
-  );
+  return isTokenExpiring('access-token') || isTokenExpiring('refresh-token');
 }
 
 export async function tryRefreshTokens(api: AxiosInstance): Promise<void> {
   const auth = useAuth();
 
-  if (!isTokenValid(localStorage.getItem(REFRESH_TOKEN))) {
+  if (!isTokenValid('refresh-token')) {
     auth.logout();
     return;
   }
@@ -95,7 +90,7 @@ export async function tryRefreshTokens(api: AxiosInstance): Promise<void> {
       oldSessionKey: string;
       newSessionKey: string;
     }>(authEndpoints.refresh, {
-      refreshToken: localStorage.getItem(REFRESH_TOKEN),
+      refreshToken: localStorage.getItem('refresh-token'),
     });
 
     // Set API authorization header
@@ -126,14 +121,12 @@ export async function tryRefreshTokens(api: AxiosInstance): Promise<void> {
 
     // Store tokens and keys
 
-    Cookies.set(ACCESS_TOKEN, response.data.accessToken, {
-      sameSite: 'Strict',
-      secure: true,
-    });
-    localStorage.setItem(REFRESH_TOKEN, response.data.refreshToken);
-
-    localStorage.setItem('encrypted-master-key', reencryptedMasterKey);
-    localStorage.setItem('encrypted-private-key', reencryptedPrivateKey);
+    storeAuthValues(
+      response.data.accessToken,
+      response.data.refreshToken,
+      reencryptedMasterKey,
+      reencryptedPrivateKey
+    );
 
     // Store keys on memory
 
@@ -145,4 +138,44 @@ export async function tryRefreshTokens(api: AxiosInstance): Promise<void> {
     console.log(err);
     auth.logout();
   }
+}
+
+function storeTokenValues(tokenName: string, token: string) {
+  const decodedToken = jwtDecode<{ exp: number; iat: number }>(token);
+
+  localStorage.setItem(`${tokenName}-iat`, `${decodedToken.iat * 1000}`);
+  localStorage.setItem(`${tokenName}-exp`, `${decodedToken.exp * 1000}`);
+}
+
+export function storeAuthValues(
+  accessToken: string,
+  refreshToken: string,
+  encryptedMasterKey: string,
+  encryptedPrivateKey: string
+): void {
+  Cookies.set('access-token', accessToken, {
+    sameSite: 'Strict',
+    secure: true,
+    httpOnly: true,
+  });
+  storeTokenValues('access-token', accessToken);
+
+  localStorage.setItem('refresh-token', refreshToken);
+  storeTokenValues('refresh-token', refreshToken);
+
+  localStorage.setItem('encrypted-master-key', encryptedMasterKey);
+  localStorage.setItem('encrypted-private-key', encryptedPrivateKey);
+}
+
+export function deleteAuthValues() {
+  Cookies.remove('access-token');
+  localStorage.removeItem('access-token-iat');
+  localStorage.removeItem('access-token-exp');
+
+  localStorage.removeItem('refresh-token');
+  localStorage.removeItem('refresh-token-iat');
+  localStorage.removeItem('refresh-token-exp');
+
+  localStorage.removeItem('encrypted-master-key');
+  localStorage.removeItem('encrypted-private-key');
 }

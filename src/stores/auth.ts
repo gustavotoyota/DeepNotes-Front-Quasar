@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
-import { Cookies } from 'quasar';
-import { ACCESS_TOKEN, REFRESH_TOKEN } from 'src/codes/auth';
+import { deleteAuthValues } from 'src/codes/auth';
 import { masterKey } from 'src/codes/crypto/master-key';
 import { privateKey } from 'src/codes/crypto/private-key';
 
@@ -11,13 +10,9 @@ export const useAuth = defineStore('auth', {
 
   actions: {
     logout() {
-      // Remove tokens and keys
+      // Delete auth values
 
-      Cookies.remove(ACCESS_TOKEN);
-      localStorage.removeItem(REFRESH_TOKEN);
-
-      localStorage.removeItem('encrypted-master-key');
-      localStorage.removeItem('encrypted-private-key');
+      deleteAuthValues();
 
       // Clear keys from memory
 

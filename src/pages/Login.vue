@@ -59,7 +59,7 @@ import { PreFetchOptions } from '@quasar/app-vite';
 import { AxiosInstance } from 'axios';
 import { from_base64 } from 'libsodium-wrappers';
 import { useQuasar } from 'quasar';
-import { ACCESS_TOKEN, REFRESH_TOKEN } from 'src/codes/auth';
+import { storeAuthValues } from 'src/codes/auth';
 import {
   computeDerivedKeys,
   decryptXChachaPoly1305,
@@ -124,14 +124,12 @@ async function onSubmit() {
 
     // Store tokens and cookies
 
-    $q.cookies.set(ACCESS_TOKEN, response.data.accessToken, {
-      sameSite: 'Strict',
-      secure: true,
-    });
-    localStorage.setItem(REFRESH_TOKEN, response.data.refreshToken);
-
-    localStorage.setItem('encrypted-master-key', reencryptedMasterKey);
-    localStorage.setItem('encrypted-private-key', reencryptedPrivateKey);
+    storeAuthValues(
+      response.data.accessToken,
+      response.data.refreshToken,
+      reencryptedMasterKey,
+      reencryptedPrivateKey
+    );
 
     // Store keys on memory
 

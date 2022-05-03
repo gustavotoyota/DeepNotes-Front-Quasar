@@ -1,5 +1,3 @@
-import './indexed-db';
-
 import { AxiosInstance } from 'axios';
 import jwtDecode from 'jwt-decode';
 import { from_base64 } from 'libsodium-wrappers';

@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh lpr fff">
+  <q-layout view="hHh lpr fff">
     <q-header
       elevated
       class="bg-grey-10"
@@ -28,6 +28,11 @@
 
         <template v-else>
           <q-btn
+            label="Account"
+            flat
+            to="/account"
+          />
+          <q-btn
             label="Pages"
             flat
             to="/"
@@ -41,9 +46,7 @@
       </q-toolbar>
     </q-header>
 
-    <q-page-container>
-      <router-view />
-    </q-page-container>
+    <router-view />
 
     <q-footer
       class="bg-grey-10"

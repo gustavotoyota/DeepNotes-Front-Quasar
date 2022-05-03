@@ -66,6 +66,7 @@ import {
   encryptXChachaPoly1305,
 } from 'src/codes/crypto/crypto';
 import { masterKey } from 'src/codes/crypto/master-key';
+import { privateKey } from 'src/codes/crypto/private-key';
 import { useAuth } from 'src/stores/auth';
 import { getCurrentInstance, reactive } from 'vue';
 import { useRouter } from 'vue-router';
@@ -112,12 +113,12 @@ async function onSubmit() {
       derivedKeys.masterKeyResult.hash,
       from_base64(response.data.sessionKey)
     );
-    const privateKey = decryptXChachaPoly1305(
+    const decryptedPrivateKey = decryptXChachaPoly1305(
       response.data.encryptedPrivateKey,
       derivedKeys.masterKeyResult.hash
     );
     const reencryptedPrivateKey = encryptXChachaPoly1305(
-      privateKey,
+      decryptedPrivateKey,
       from_base64(response.data.sessionKey)
     );
 
@@ -135,7 +136,7 @@ async function onSubmit() {
     // Store keys on memory
 
     masterKey.set(derivedKeys.masterKey);
-    privateKey.set(privateKey);
+    privateKey.set(decryptedPrivateKey);
 
     auth.loggedIn = true;
 

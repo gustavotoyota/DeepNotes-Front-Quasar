@@ -4,10 +4,7 @@ import { from_base64 } from 'libsodium-wrappers';
 import { Cookies } from 'quasar';
 import { useAuth } from 'src/stores/auth';
 
-import {
-  decryptXChachaPoly1305,
-  encryptXChachaPoly1305,
-} from './crypto/crypto';
+import { decryptXChachaPoly1305, reencryptSecretKeys } from './crypto/crypto';
 import { masterKey } from './crypto/master-key';
 import { privateKey } from './crypto/private-key';
 
@@ -95,6 +92,10 @@ export async function tryRefreshTokens(api: AxiosInstance): Promise<void> {
 
     api.defaults.headers.common.Authorization = `Bearer ${response.data.accessToken}`;
 
+    // Store tokens
+
+    storeAuthValues(response.data.accessToken, response.data.refreshToken);
+
     // Decrypt keys
 
     const decryptedMasterKey = decryptXChachaPoly1305(
@@ -108,23 +109,17 @@ export async function tryRefreshTokens(api: AxiosInstance): Promise<void> {
 
     // Reencrypt keys
 
-    const reencryptedMasterKey = encryptXChachaPoly1305(
-      decryptedMasterKey,
-      from_base64(response.data.newSessionKey)
-    );
-    const reencryptedPrivateKey = encryptXChachaPoly1305(
-      decryptedPrivateKey,
-      from_base64(response.data.newSessionKey)
-    );
+    const { sessionEncryptedMasterKey, sessionEncryptedPrivateKey } =
+      reencryptSecretKeys(
+        decryptedMasterKey,
+        decryptedPrivateKey,
+        from_base64(response.data.newSessionKey)
+      );
 
-    // Store tokens and keys
+    // Store encrypted keys
 
-    storeAuthValues(
-      response.data.accessToken,
-      response.data.refreshToken,
-      reencryptedMasterKey,
-      reencryptedPrivateKey
-    );
+    localStorage.setItem('encrypted-master-key', sessionEncryptedMasterKey);
+    localStorage.setItem('encrypted-private-key', sessionEncryptedPrivateKey);
 
     // Store keys on memory
 
@@ -147,9 +142,7 @@ function storeTokenValues(tokenName: string, token: string) {
 
 export function storeAuthValues(
   accessToken: string,
-  refreshToken: string,
-  encryptedMasterKey: string,
-  encryptedPrivateKey: string
+  refreshToken: string
 ): void {
   Cookies.set('access-token', accessToken, {
     sameSite: 'Strict',
@@ -160,9 +153,6 @@ export function storeAuthValues(
 
   localStorage.setItem('refresh-token', refreshToken);
   storeTokenValues('refresh-token', refreshToken);
-
-  localStorage.setItem('encrypted-master-key', encryptedMasterKey);
-  localStorage.setItem('encrypted-private-key', encryptedPrivateKey);
 }
 
 export function deleteAuthValues() {

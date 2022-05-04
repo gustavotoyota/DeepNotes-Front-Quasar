@@ -1,36 +1,27 @@
 import { decryptXChachaPoly1305, encryptXChachaPoly1305 } from './crypto';
-export class MasterKey {
-  #masterKey: Uint8Array | null;
 
-  constructor(value: MasterKey | Uint8Array | null = null) {
-    if (value instanceof MasterKey) {
-      this.#masterKey = value.#masterKey;
-    } else {
-      this.#masterKey = value;
+export function createMasterKey(value: Uint8Array | null = null) {
+  let _value = value;
+
+  return new (class MasterKey {
+    set(value: Uint8Array | null) {
+      _value = value;
     }
-  }
-
-  set(value: MasterKey | Uint8Array | null) {
-    if (value instanceof MasterKey) {
-      this.#masterKey = value.#masterKey;
-    } else {
-      this.#masterKey = value;
+    clear() {
+      this.set(null);
     }
-  }
-  clear() {
-    this.set(null);
-  }
 
-  exists(): boolean {
-    return this.#masterKey != null;
-  }
+    exists(): boolean {
+      return _value != null;
+    }
 
-  encrypt(plaintext: Uint8Array): string {
-    return encryptXChachaPoly1305(plaintext, this.#masterKey!);
-  }
-  decrypt(nonceAndCyphertext: string): Uint8Array {
-    return decryptXChachaPoly1305(nonceAndCyphertext, this.#masterKey!);
-  }
+    encrypt(plaintext: Uint8Array): string {
+      return encryptXChachaPoly1305(plaintext, _value!);
+    }
+    decrypt(nonceAndCyphertext: string): Uint8Array {
+      return decryptXChachaPoly1305(nonceAndCyphertext, _value!);
+    }
+  })();
 }
 
-export const masterKey = new MasterKey();
+export const masterKey = createMasterKey();

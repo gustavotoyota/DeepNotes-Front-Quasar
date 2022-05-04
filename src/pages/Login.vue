@@ -65,7 +65,7 @@ import { storeAuthValues } from 'src/codes/auth';
 import {
   computeDerivedKeys,
   decryptXChachaPoly1305,
-  encryptXChachaPoly1305,
+  reencryptSecretKeys,
 } from 'src/codes/crypto/crypto';
 import { masterKey } from 'src/codes/crypto/master-key';
 import { privateKey } from 'src/codes/crypto/private-key';
@@ -109,33 +109,38 @@ async function onSubmit() {
 
     api.defaults.headers.common.Authorization = `Bearer ${response.data.accessToken}`;
 
-    // Compute keys
+    // Decrypt private key
 
-    const reencryptedMasterKey = encryptXChachaPoly1305(
-      derivedKeys.masterKeyResult.hash,
-      from_base64(response.data.sessionKey)
-    );
     const decryptedPrivateKey = decryptXChachaPoly1305(
       response.data.encryptedPrivateKey,
-      derivedKeys.masterKeyResult.hash
-    );
-    const reencryptedPrivateKey = encryptXChachaPoly1305(
-      decryptedPrivateKey,
-      from_base64(response.data.sessionKey)
+      derivedKeys.masterKeyHash
     );
 
-    // Store tokens and cookies
+    // Encrypt keys with session key
 
-    storeAuthValues(
-      response.data.accessToken,
-      response.data.refreshToken,
-      reencryptedMasterKey,
-      reencryptedPrivateKey
-    );
+    const { sessionEncryptedMasterKey, sessionEncryptedPrivateKey } =
+      reencryptSecretKeys(
+        derivedKeys.masterKeyHash,
+        decryptedPrivateKey,
+        from_base64(response.data.sessionKey)
+      );
+
+    // Store tokens
+
+    storeAuthValues(response.data.accessToken, response.data.refreshToken);
+
+    // Store encrypted keys
+
+    localStorage.setItem('encrypted-master-key', sessionEncryptedMasterKey);
+    localStorage.setItem('encrypted-private-key', sessionEncryptedPrivateKey);
+
+    // Store e-mail
+
+    localStorage.setItem('email', data.email);
 
     // Store keys on memory
 
-    masterKey.set(derivedKeys.masterKey);
+    masterKey.set(derivedKeys.masterKeyHash);
     privateKey.set(decryptedPrivateKey);
 
     auth.loggedIn = true;

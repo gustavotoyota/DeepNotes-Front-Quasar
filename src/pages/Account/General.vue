@@ -1,9 +1,5 @@
 <template>
-  <div
-    v-if="mounted"
-    style="position: absolute; inset: 0; padding: 48px"
-    class="bg-grey-10"
-  >
+  <template v-if="mounted">
     <q-input
       label="Display name"
       v-model="data.displayName"
@@ -19,7 +15,7 @@
       style="width: 300px; height: 40px"
       @click="save()"
     />
-  </div>
+  </template>
 
   <LoadingOverlay v-else />
 </template>

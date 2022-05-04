@@ -1,6 +1,6 @@
 import sodium from 'libsodium-wrappers';
 
-import { MasterKey } from './master-key';
+import { createMasterKey } from './master-key';
 
 export function encryptXChachaPoly1305(
   plaintext: Uint8Array,
@@ -39,21 +39,23 @@ export function decryptXChachaPoly1305(
 export async function computeDerivedKeys(email: string, password: string) {
   // Master key
 
-  const masterKeyResult = await argon2.hash({
-    pass: password,
-    salt: email,
-    type: argon2.ArgonType.Argon2id,
-    hashLen: 32,
-  });
+  const masterKeyHash = (
+    await argon2.hash({
+      pass: password,
+      salt: email,
+      type: argon2.ArgonType.Argon2id,
+      hashLen: 32,
+    })
+  ).hash;
 
-  const masterKey = new MasterKey(masterKeyResult.hash);
+  const masterKey = createMasterKey(masterKeyHash);
 
   // Password hash
 
   const passwordHash = sodium.to_base64(
     (
       await argon2.hash({
-        pass: masterKeyResult.hash,
+        pass: masterKeyHash,
         salt: password,
         type: argon2.ArgonType.Argon2id,
       })
@@ -61,14 +63,16 @@ export async function computeDerivedKeys(email: string, password: string) {
   );
 
   return {
-    masterKeyResult,
+    masterKeyHash,
     masterKey,
 
     passwordHash,
   };
 }
 
-export async function computeRandomKeys(masterKey: MasterKey) {
+export async function generateRandomKeys(
+  masterKey: ReturnType<typeof createMasterKey>
+) {
   // Key pair
 
   const keyPair = sodium.crypto_box_keypair();
@@ -86,5 +90,22 @@ export async function computeRandomKeys(masterKey: MasterKey) {
     encryptedPrivateKey,
 
     encryptedSymmetricKey,
+  };
+}
+
+export function reencryptSecretKeys(
+  decryptedMasterKey: Uint8Array,
+  decryptedPrivateKey: Uint8Array,
+  sessionKey: Uint8Array
+) {
+  return {
+    sessionEncryptedMasterKey: encryptXChachaPoly1305(
+      decryptedMasterKey,
+      sessionKey
+    ),
+    sessionEncryptedPrivateKey: encryptXChachaPoly1305(
+      decryptedPrivateKey,
+      sessionKey
+    ),
   };
 }

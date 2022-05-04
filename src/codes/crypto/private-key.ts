@@ -1,41 +1,31 @@
 import sodium from 'libsodium-wrappers';
 
-export class PrivateKey {
-  #privateKey: Uint8Array | null;
+export function createPrivateKey(value: Uint8Array | null = null) {
+  let _value = value;
 
-  constructor(value: PrivateKey | Uint8Array | null = null) {
-    if (value instanceof PrivateKey) {
-      this.#privateKey = value.#privateKey;
-    } else {
-      this.#privateKey = value;
+  return new (class PrivateKey {
+    set(value: Uint8Array | null) {
+      _value = value;
     }
-  }
-
-  set(value: PrivateKey | Uint8Array | null) {
-    if (value instanceof PrivateKey) {
-      this.#privateKey = value.#privateKey;
-    } else {
-      this.#privateKey = value;
+    clear() {
+      this.set(null);
     }
-  }
-  clear() {
-    this.set(null);
-  }
 
-  exists(): boolean {
-    return this.#privateKey != null;
-  }
+    exists(): boolean {
+      return _value != null;
+    }
 
-  decrypt(nonceAndCyphertext: string, publicKey: Uint8Array): Uint8Array {
-    const [nonce, cyphertext] = nonceAndCyphertext.split('.');
+    decrypt(nonceAndCyphertext: string, publicKey: Uint8Array): Uint8Array {
+      const [nonce, cyphertext] = nonceAndCyphertext.split('.');
 
-    return sodium.crypto_box_open_easy(
-      sodium.from_base64(cyphertext),
-      sodium.from_base64(nonce),
-      publicKey,
-      this.#privateKey!
-    );
-  }
+      return sodium.crypto_box_open_easy(
+        sodium.from_base64(cyphertext),
+        sodium.from_base64(nonce),
+        publicKey,
+        _value!
+      );
+    }
+  })();
 }
 
-export const privateKey = new PrivateKey();
+export const privateKey = createPrivateKey();

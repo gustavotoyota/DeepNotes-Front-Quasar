@@ -4,7 +4,11 @@ import { from_base64 } from 'libsodium-wrappers';
 import { Cookies } from 'quasar';
 import { useAuth } from 'src/stores/auth';
 
-import { decryptXChachaPoly1305, reencryptSecretKeys } from './crypto/crypto';
+import {
+  decryptXChachaPoly1305,
+  reencryptSecretKeys,
+  storeCryptoValues,
+} from './crypto/crypto';
 import { masterKey } from './crypto/master-key';
 import { privateKey } from './crypto/private-key';
 
@@ -60,7 +64,7 @@ export async function tryRefreshTokens(api: AxiosInstance): Promise<void> {
   const auth = useAuth();
 
   if (!isTokenValid('refresh-token')) {
-    auth.logout();
+    logout(api);
     return;
   }
 
@@ -73,7 +77,7 @@ export async function tryRefreshTokens(api: AxiosInstance): Promise<void> {
   const encryptedPrivateKey = localStorage.getItem('encrypted-private-key');
 
   if (!encryptedMasterKey || !encryptedPrivateKey) {
-    auth.logout();
+    logout(api);
     return;
   }
 
@@ -118,8 +122,7 @@ export async function tryRefreshTokens(api: AxiosInstance): Promise<void> {
 
     // Store encrypted keys
 
-    localStorage.setItem('encrypted-master-key', sessionEncryptedMasterKey);
-    localStorage.setItem('encrypted-private-key', sessionEncryptedPrivateKey);
+    storeCryptoValues(sessionEncryptedMasterKey, sessionEncryptedPrivateKey);
 
     // Store keys on memory
 
@@ -129,7 +132,7 @@ export async function tryRefreshTokens(api: AxiosInstance): Promise<void> {
     auth.loggedIn = true;
   } catch (err) {
     console.log(err);
-    auth.logout();
+    logout(api);
   }
 }
 
@@ -163,7 +166,25 @@ export function deleteAuthValues() {
   localStorage.removeItem('refresh-token');
   localStorage.removeItem('refresh-token-iat');
   localStorage.removeItem('refresh-token-exp');
+}
 
-  localStorage.removeItem('encrypted-master-key');
-  localStorage.removeItem('encrypted-private-key');
+export function logout(api: AxiosInstance) {
+  // Delete auth values
+
+  deleteAuthValues();
+
+  // Remove e-mail from local storage
+
+  localStorage.removeItem('email');
+
+  // Clear keys from memory
+
+  masterKey.clear();
+  privateKey.clear();
+
+  // Delete API authorization header
+
+  delete api.defaults.headers.common.Authorization;
+
+  useAuth().loggedIn = false;
 }

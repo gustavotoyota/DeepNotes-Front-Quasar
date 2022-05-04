@@ -109,3 +109,16 @@ export function reencryptSecretKeys(
     ),
   };
 }
+
+export function storeCryptoValues(
+  encryptedMasterKey: string,
+  encryptedPrivateKey: string
+) {
+  localStorage.setItem('encrypted-master-key', encryptedMasterKey);
+  localStorage.setItem('encrypted-private-key', encryptedPrivateKey);
+}
+
+export function deleteCryptoValues() {
+  localStorage.removeItem('encrypted-master-key');
+  localStorage.removeItem('encrypted-private-key');
+}

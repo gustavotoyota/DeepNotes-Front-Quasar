@@ -66,6 +66,7 @@ import {
   computeDerivedKeys,
   decryptXChachaPoly1305,
   reencryptSecretKeys,
+  storeCryptoValues,
 } from 'src/codes/crypto/crypto';
 import { masterKey } from 'src/codes/crypto/master-key';
 import { privateKey } from 'src/codes/crypto/private-key';
@@ -109,6 +110,10 @@ async function onSubmit() {
 
     api.defaults.headers.common.Authorization = `Bearer ${response.data.accessToken}`;
 
+    // Store tokens
+
+    storeAuthValues(response.data.accessToken, response.data.refreshToken);
+
     // Decrypt private key
 
     const decryptedPrivateKey = decryptXChachaPoly1305(
@@ -125,14 +130,9 @@ async function onSubmit() {
         from_base64(response.data.sessionKey)
       );
 
-    // Store tokens
-
-    storeAuthValues(response.data.accessToken, response.data.refreshToken);
-
     // Store encrypted keys
 
-    localStorage.setItem('encrypted-master-key', sessionEncryptedMasterKey);
-    localStorage.setItem('encrypted-private-key', sessionEncryptedPrivateKey);
+    storeCryptoValues(sessionEncryptedMasterKey, sessionEncryptedPrivateKey);
 
     // Store e-mail
 

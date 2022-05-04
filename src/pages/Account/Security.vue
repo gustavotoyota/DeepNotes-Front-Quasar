@@ -83,8 +83,7 @@
       class="bg-grey-9"
     >
       <div>{{ device.ipAddress }}</div>
-      <div>{{ device.browser }}</div>
-      <div>{{ device.os }}</div>
+      <div>{{ device.browser }} on {{ device.os }}</div>
     </div>
   </template>
 

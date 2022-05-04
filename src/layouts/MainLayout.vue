@@ -40,7 +40,8 @@
           <q-btn
             label="Logout"
             flat
-            @click="logout()"
+            to="/"
+            @click="logout($api)"
           />
         </template>
       </q-toolbar>
@@ -61,15 +62,8 @@
   setup
   lang="ts"
 >
+import { logout } from 'src/codes/auth';
 import { useAuth } from 'src/stores/auth';
-import { useRouter } from 'vue-router';
 
 const auth = useAuth();
-const router = useRouter();
-
-function logout() {
-  auth.logout();
-
-  router.push('/');
-}
 </script>

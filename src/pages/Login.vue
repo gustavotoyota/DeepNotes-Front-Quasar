@@ -61,15 +61,15 @@ import { PreFetchOptions } from '@quasar/app-vite';
 import { AxiosInstance } from 'axios';
 import { from_base64 } from 'libsodium-wrappers';
 import { useQuasar } from 'quasar';
-import { storeAuthValues } from 'src/codes/auth';
+import { storeAuthValues } from 'src/code/auth';
 import {
   computeDerivedKeys,
   decryptXChachaPoly1305,
   reencryptSecretKeys,
   storeCryptoValues,
-} from 'src/codes/crypto/crypto';
-import { masterKey } from 'src/codes/crypto/master-key';
-import { privateKey } from 'src/codes/crypto/private-key';
+} from 'src/code/crypto/crypto';
+import { masterKey } from 'src/code/crypto/master-key';
+import { privateKey } from 'src/code/crypto/private-key';
 import { useAuth } from 'src/stores/auth';
 import { getCurrentInstance, reactive } from 'vue';
 import { useRouter } from 'vue-router';

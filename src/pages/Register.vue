@@ -82,10 +82,7 @@ import { PreFetchOptions } from '@quasar/app-vite';
 import { AxiosInstance } from 'axios';
 import sodium from 'libsodium-wrappers';
 import { useQuasar } from 'quasar';
-import {
-  computeDerivedKeys,
-  generateRandomKeys,
-} from 'src/codes/crypto/crypto';
+import { computeDerivedKeys, generateRandomKeys } from 'src/code/crypto/crypto';
 import { useAuth } from 'src/stores/auth';
 import { getCurrentInstance, reactive } from 'vue';
 import { useRouter } from 'vue-router';

@@ -62,7 +62,7 @@
   setup
   lang="ts"
 >
-import { logout } from 'src/codes/auth';
+import { logout } from 'src/code/auth';
 import { useAuth } from 'src/stores/auth';
 
 const auth = useAuth();

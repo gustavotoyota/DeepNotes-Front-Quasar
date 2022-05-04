@@ -11,7 +11,7 @@
 import { onMounted, ref } from 'vue';
 
 import { useAPI } from './boot/external/axios';
-import { tryRefreshTokens } from './codes/auth';
+import { tryRefreshTokens } from './code/auth';
 import LoadingOverlay from './components/misc/LoadingOverlay.vue';
 
 const api = useAPI();

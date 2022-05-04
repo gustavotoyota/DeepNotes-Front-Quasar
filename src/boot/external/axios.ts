@@ -2,7 +2,7 @@ import 'vue';
 
 import axios, { AxiosInstance } from 'axios';
 import { boot } from 'quasar/wrappers';
-import { apiBaseURL } from 'src/codes/auth';
+import { apiBaseURL } from 'src/code/auth';
 import { getCurrentInstance } from 'vue';
 
 declare module '@vue/runtime-core' {

@@ -101,9 +101,9 @@ import {
   computeDerivedKeys,
   decryptXChachaPoly1305,
   reencryptSecretKeys,
-} from 'src/codes/crypto/crypto';
-import { masterKey } from 'src/codes/crypto/master-key';
-import { privateKey } from 'src/codes/crypto/private-key';
+} from 'src/code/crypto/crypto';
+import { masterKey } from 'src/code/crypto/master-key';
+import { privateKey } from 'src/code/crypto/private-key';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { onMounted, reactive, ref } from 'vue';

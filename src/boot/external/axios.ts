@@ -1,4 +1,5 @@
-import 'vue';
+import '@vue/runtime-core';
+import 'pinia';
 
 import axios, { AxiosInstance } from 'axios';
 import { boot } from 'quasar/wrappers';

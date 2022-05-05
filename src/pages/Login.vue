@@ -43,24 +43,13 @@
   </q-page-container>
 </template>
 
-<script lang="ts">
-export default {
-  preFetch({ store, redirect }: PreFetchOptions<any>) {
-    if (useAuth(store).loggedIn) {
-      redirect('/');
-    }
-  },
-};
-</script>
-
 <script
   setup
   lang="ts"
 >
-import { PreFetchOptions } from '@quasar/app-vite';
 import { AxiosInstance } from 'axios';
 import { useQuasar } from 'quasar';
-import { storeAuthValues } from 'src/code/auth';
+import { authRedirects, storeAuthValues } from 'src/code/auth';
 import { computeDerivedKeys, processCryptoKeys } from 'src/code/crypto/crypto';
 import { useAuth } from 'src/stores/auth';
 import { getCurrentInstance, reactive } from 'vue';
@@ -126,7 +115,7 @@ async function login() {
       message: 'Login successful',
     });
 
-    router.push('/');
+    location.replace(authRedirects.login);
   } catch (err: any) {
     $q.notify({
       color: 'negative',

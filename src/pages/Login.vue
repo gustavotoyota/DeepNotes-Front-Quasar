@@ -36,7 +36,7 @@
           label="Login"
           type="submit"
           color="primary"
-          @click.prevent="onSubmit()"
+          @click.prevent="login()"
         />
       </q-form>
     </q-page>
@@ -59,17 +59,9 @@ export default {
 >
 import { PreFetchOptions } from '@quasar/app-vite';
 import { AxiosInstance } from 'axios';
-import { from_base64 } from 'libsodium-wrappers';
 import { useQuasar } from 'quasar';
 import { storeAuthValues } from 'src/code/auth';
-import {
-  computeDerivedKeys,
-  decryptXChachaPoly1305,
-  reencryptSecretKeys,
-  storeCryptoValues,
-} from 'src/code/crypto/crypto';
-import { masterKey } from 'src/code/crypto/master-key';
-import { privateKey } from 'src/code/crypto/private-key';
+import { computeDerivedKeys, processCryptoKeys } from 'src/code/crypto/crypto';
 import { useAuth } from 'src/stores/auth';
 import { getCurrentInstance, reactive } from 'vue';
 import { useRouter } from 'vue-router';
@@ -90,7 +82,7 @@ const data = reactive({
   password: '',
 });
 
-async function onSubmit() {
+async function login() {
   const derivedKeys = await computeDerivedKeys(data.email, data.password);
 
   try {
@@ -114,34 +106,18 @@ async function onSubmit() {
 
     storeAuthValues(response.data.accessToken, response.data.refreshToken);
 
-    // Decrypt private key
+    // Process crypto keys
 
-    const decryptedPrivateKey = decryptXChachaPoly1305(
+    processCryptoKeys(
       response.data.encryptedPrivateKey,
-      derivedKeys.masterKeyHash
+      derivedKeys.masterKeyHash,
+      derivedKeys.masterKeyHash,
+      response.data.sessionKey
     );
-
-    // Encrypt keys with session key
-
-    const { sessionEncryptedMasterKey, sessionEncryptedPrivateKey } =
-      reencryptSecretKeys(
-        derivedKeys.masterKeyHash,
-        decryptedPrivateKey,
-        from_base64(response.data.sessionKey)
-      );
-
-    // Store encrypted keys
-
-    storeCryptoValues(sessionEncryptedMasterKey, sessionEncryptedPrivateKey);
 
     // Store e-mail
 
     localStorage.setItem('email', data.email);
-
-    // Store keys on memory
-
-    masterKey.set(derivedKeys.masterKeyHash);
-    privateKey.set(decryptedPrivateKey);
 
     auth.loggedIn = true;
 

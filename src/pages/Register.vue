@@ -57,7 +57,7 @@
           label="Create account"
           type="submit"
           color="primary"
-          @click.prevent="onSubmit()"
+          @click.prevent="register()"
         />
       </q-form>
     </q-page>
@@ -103,7 +103,7 @@ const data = reactive({
   repeatPassword: '',
 });
 
-async function onSubmit() {
+async function register() {
   // Password validation
 
   if (data.password !== data.repeatPassword) {

@@ -1,4 +1,4 @@
-import { decryptXChachaPoly1305, encryptXChachaPoly1305 } from './crypto';
+import { decryptSymmetric, encryptSymmetric } from './crypto';
 
 export function createMasterKey(value: Uint8Array | null = null) {
   let _value = value;
@@ -16,10 +16,10 @@ export function createMasterKey(value: Uint8Array | null = null) {
     }
 
     encrypt(plaintext: Uint8Array): string {
-      return encryptXChachaPoly1305(plaintext, _value!);
+      return encryptSymmetric(plaintext, _value!);
     }
     decrypt(nonceAndCyphertext: string): Uint8Array {
-      return decryptXChachaPoly1305(nonceAndCyphertext, _value!);
+      return decryptSymmetric(nonceAndCyphertext, _value!);
     }
   })();
 }

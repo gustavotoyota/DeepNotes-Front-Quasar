@@ -5,7 +5,7 @@ import { Cookies } from 'quasar';
 import { useAuth } from 'src/stores/auth';
 
 import {
-  decryptXChachaPoly1305,
+  decryptSymmetric,
   reencryptSecretKeys,
   storeCryptoValues,
 } from './crypto/crypto';
@@ -102,11 +102,11 @@ export async function tryRefreshTokens(api: AxiosInstance): Promise<void> {
 
     // Decrypt keys
 
-    const decryptedMasterKey = decryptXChachaPoly1305(
+    const decryptedMasterKey = decryptSymmetric(
       encryptedMasterKey,
       from_base64(response.data.oldSessionKey)
     );
-    const decryptedPrivateKey = decryptXChachaPoly1305(
+    const decryptedPrivateKey = decryptSymmetric(
       encryptedPrivateKey,
       from_base64(response.data.oldSessionKey)
     );

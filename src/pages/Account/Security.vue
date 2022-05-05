@@ -8,45 +8,48 @@
 
     <Gap style="height: 24px" />
 
-    <q-input
-      label="Old password"
-      type="password"
-      v-model="data.oldPassword"
-      style="width: 300px"
-      filled
-      dense
-    />
+    <q-form ref="passwordChangeForm">
+      <q-input
+        label="Old password"
+        type="password"
+        v-model="data.oldPassword"
+        style="width: 300px"
+        filled
+        dense
+      />
 
-    <Gap style="height: 24px" />
+      <Gap style="height: 20px" />
 
-    <q-input
-      label="New password"
-      type="password"
-      v-model="data.newPassword"
-      style="width: 300px"
-      filled
-      dense
-    />
+      <q-input
+        label="New password"
+        type="password"
+        v-model="data.newPassword"
+        style="width: 300px"
+        filled
+        dense
+      />
 
-    <Gap style="height: 24px" />
+      <Gap style="height: 20px" />
 
-    <q-input
-      label="Confirm new password"
-      type="password"
-      v-model="data.confirmNewPassword"
-      style="width: 300px"
-      filled
-      dense
-    />
+      <q-input
+        label="Confirm new password"
+        type="password"
+        v-model="data.confirmNewPassword"
+        style="width: 300px"
+        filled
+        dense
+      />
 
-    <Gap style="height: 24px" />
+      <Gap style="height: 20px" />
 
-    <q-btn
-      label="Change password"
-      color="primary"
-      style="width: 300px"
-      @click="changePassword()"
-    />
+      <q-btn
+        label="Change password"
+        type="submit"
+        color="primary"
+        style="width: 300px"
+        @click.prevent="changePassword()"
+      />
+    </q-form>
 
     <Gap style="height: 48px" />
 
@@ -76,15 +79,28 @@
 
     <Gap style="height: 24px" />
 
-    <div
-      v-for="device in data.devices"
+    <template
+      v-for="(device, index) in data.devices"
       :key="device.id"
-      style="border: 1px solid #606060; padding: 16px; border-radius: 6px"
-      class="bg-grey-9"
     >
-      <div>{{ device.ipAddress }}</div>
-      <div>{{ device.browser }} on {{ device.os }}</div>
-    </div>
+      <Gap
+        v-if="index > 0"
+        style="height: 18px"
+      />
+
+      <div
+        style="
+          border: 1px solid #606060;
+          max-width: 450px;
+          padding: 14px;
+          border-radius: 6px;
+        "
+        class="bg-grey-9"
+      >
+        <div>{{ device.ipAddress }}</div>
+        <div>{{ device.browser }} on {{ device.os }}</div>
+      </div>
+    </template>
   </template>
 
   <LoadingOverlay v-else />
@@ -94,24 +110,20 @@
   setup
   lang="ts"
 >
-import { from_base64 } from 'libsodium-wrappers';
-import { useQuasar } from 'quasar';
+import { QForm, useQuasar } from 'quasar';
 import { useAPI } from 'src/boot/external/axios';
-import {
-  computeDerivedKeys,
-  decryptXChachaPoly1305,
-  reencryptSecretKeys,
-} from 'src/code/crypto/crypto';
+import { computeDerivedKeys, processCryptoKeys } from 'src/code/crypto/crypto';
 import { masterKey } from 'src/code/crypto/master-key';
-import { privateKey } from 'src/code/crypto/private-key';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, Ref, ref } from 'vue';
 
 const $q = useQuasar();
 const api = useAPI();
 
 const mounted = ref(false);
+
+const passwordChangeForm = ref() as Ref<QForm>;
 
 interface IDevice {
   id: string;
@@ -170,35 +182,20 @@ async function changePassword() {
       newPasswordHash: newDerivedKeys.passwordHash,
     });
 
-    // Decrypt private key
+    // Process crypto keys
 
-    const decryptedPrivateKey = decryptXChachaPoly1305(
+    const { decryptedPrivateKey } = processCryptoKeys(
       response.data.encryptedPrivateKey,
-      oldDerivedKeys.masterKeyHash
+      oldDerivedKeys.masterKeyHash,
+      newDerivedKeys.masterKeyHash,
+      response.data.sessionKey
     );
 
-    // Encrypt keys with session key
-
-    const { sessionEncryptedMasterKey, sessionEncryptedPrivateKey } =
-      reencryptSecretKeys(
-        newDerivedKeys.masterKeyHash,
-        decryptedPrivateKey,
-        from_base64(response.data.sessionKey)
-      );
-
-    // Store encrypted keys
-
-    localStorage.setItem('encrypted-master-key', sessionEncryptedMasterKey);
-    localStorage.setItem('encrypted-private-key', sessionEncryptedPrivateKey);
-
-    // Store keys on memory
-
-    masterKey.set(newDerivedKeys.masterKeyHash);
-    privateKey.set(decryptedPrivateKey);
-
-    // Request password change with reencrypted private key
+    // Reencrypt private key
 
     const reencryptedPrivateKey = masterKey.encrypt(decryptedPrivateKey);
+
+    // Request password change
 
     await api.post('/api/users/account/security/change-password', {
       oldPasswordHash: oldDerivedKeys.passwordHash,
@@ -208,8 +205,10 @@ async function changePassword() {
 
     $q.notify({
       color: 'positive',
-      message: 'Password changed',
+      message: 'Password changed successfully',
     });
+
+    passwordChangeForm.value.reset();
   } catch (err: any) {
     $q.notify({
       color: 'negative',

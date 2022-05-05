@@ -20,6 +20,7 @@ export const authEndpoints = {
   login: '/auth/login',
   verify: '/auth/verify',
   refresh: '/auth/refresh',
+  logout: '/auth/logout',
 };
 
 export const redirectBaseURL = process.env.DEV
@@ -168,7 +169,15 @@ export function deleteAuthValues() {
   localStorage.removeItem('refresh-token-exp');
 }
 
-export function logout(api: AxiosInstance) {
+export async function logout(api: AxiosInstance) {
+  const auth = useAuth();
+
+  if (!auth.loggedIn) {
+    return;
+  }
+
+  auth.loggedIn = false;
+
   // Delete auth values
 
   deleteAuthValues();
@@ -186,5 +195,7 @@ export function logout(api: AxiosInstance) {
 
   delete api.defaults.headers.common.Authorization;
 
-  useAuth().loggedIn = false;
+  // Notify server of logout
+
+  await api.post(authEndpoints.logout);
 }

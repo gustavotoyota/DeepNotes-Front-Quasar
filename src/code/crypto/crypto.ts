@@ -1,3 +1,5 @@
+import './argon2';
+
 import sodium, { from_base64 } from 'libsodium-wrappers';
 
 import { createMasterKey, masterKey } from './master-key';

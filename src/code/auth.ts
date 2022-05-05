@@ -169,7 +169,7 @@ export function deleteAuthValues() {
   localStorage.removeItem('refresh-token-exp');
 }
 
-export async function logout(api: AxiosInstance) {
+export function logout(api: AxiosInstance) {
   const auth = useAuth();
 
   if (!auth.loggedIn) {
@@ -177,6 +177,14 @@ export async function logout(api: AxiosInstance) {
   }
 
   auth.loggedIn = false;
+
+  // Notify server of logout
+
+  try {
+    api.post(authEndpoints.logout);
+  } catch (err) {
+    console.log(err);
+  }
 
   // Delete auth values
 
@@ -194,8 +202,4 @@ export async function logout(api: AxiosInstance) {
   // Delete API authorization header
 
   delete api.defaults.headers.common.Authorization;
-
-  // Notify server of logout
-
-  await api.post(authEndpoints.logout);
 }

@@ -71,7 +71,7 @@
 
     <Gap style="height: 48px" />
 
-    <h5 style="margin-block-start: 0; margin-block-end: 0">Devices</h5>
+    <h5 style="margin-block-start: 0; margin-block-end: 0">Sessions</h5>
 
     <Gap style="height: 8px" />
 
@@ -94,11 +94,26 @@
           max-width: 450px;
           padding: 14px;
           border-radius: 6px;
+
+          display: flex;
         "
         class="bg-grey-9"
       >
-        <div>{{ device.ipAddress }}</div>
-        <div>{{ device.browser }} on {{ device.os }}</div>
+        <div>
+          <div>
+            {{ device.ipAddress }}
+            <span v-if="device.current">(Current)</span>
+          </div>
+          <div>{{ device.browser }} on {{ device.os }}</div>
+        </div>
+
+        <q-space />
+
+        <q-btn
+          v-if="!device.current"
+          label="Revoke"
+          color="negative"
+        />
       </div>
     </template>
   </template>
@@ -133,6 +148,8 @@ interface IDevice {
   ipAddress: string;
   browser: string;
   os: string;
+
+  current: boolean;
 }
 
 const data = reactive({

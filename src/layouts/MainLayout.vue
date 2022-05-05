@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh lpr fff">
+  <q-layout view="hHh Lpr fff">
     <q-header
       elevated
       class="bg-grey-10"
@@ -48,13 +48,6 @@
     </q-header>
 
     <router-view />
-
-    <q-footer
-      class="bg-grey-10"
-      style="padding: 20px"
-    >
-      Blablabla
-    </q-footer>
   </q-layout>
 </template>
 

@@ -79,22 +79,19 @@ export default {
   lang="ts"
 >
 import { PreFetchOptions } from '@quasar/app-vite';
-import { AxiosInstance } from 'axios';
 import sodium from 'libsodium-wrappers';
 import { useQuasar } from 'quasar';
+import { useAPI } from 'src/boot/external/axios';
 import { computeDerivedKeys, generateRandomKeys } from 'src/code/crypto/crypto';
 import { useAuth } from 'src/stores/auth';
-import { getCurrentInstance, reactive } from 'vue';
+import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
 
 import Gap from '../components/misc/Gap.vue';
 
 const $q = useQuasar();
-
 const router = useRouter();
-
-const api = getCurrentInstance()!.appContext.config.globalProperties
-  .$api as AxiosInstance;
+const api = useAPI();
 
 const data = reactive({
   email: '',

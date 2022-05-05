@@ -47,24 +47,18 @@
   setup
   lang="ts"
 >
-import { AxiosInstance } from 'axios';
 import { useQuasar } from 'quasar';
+import { useAPI } from 'src/boot/external/axios';
 import { authRedirects, storeAuthValues } from 'src/code/auth';
 import { computeDerivedKeys, processCryptoKeys } from 'src/code/crypto/crypto';
 import { useAuth } from 'src/stores/auth';
-import { getCurrentInstance, reactive } from 'vue';
-import { useRouter } from 'vue-router';
+import { reactive } from 'vue';
 
 import Gap from '../components/misc/Gap.vue';
 
-const api = getCurrentInstance()!.appContext.config.globalProperties
-  .$api as AxiosInstance;
-
+const api = useAPI();
 const $q = useQuasar();
-
 const auth = useAuth();
-
-const router = useRouter();
 
 const data = reactive({
   email: '',

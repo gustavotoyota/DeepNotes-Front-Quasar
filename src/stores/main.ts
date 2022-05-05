@@ -6,15 +6,23 @@ export const useMainStore = defineStore('main', () => {
     mounted: false,
   });
 
+  let resolvePromise: (value: unknown) => void;
+
   watch(
     () => state.mounted,
     () => {
-      console.log(state.mounted);
+      if (state.mounted) {
+        resolvePromise(state.mounted);
+      }
     },
     { immediate: true }
   );
 
   return {
     ...toRefs(state),
+
+    ready: new Promise((resolve) => {
+      resolvePromise = resolve;
+    }),
   };
 });

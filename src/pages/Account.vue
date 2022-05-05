@@ -40,11 +40,7 @@
         style="position: absolute; inset: 0; padding: 48px; overflow-y: auto"
         class="bg-grey-10"
       >
-        <router-view v-slot="{ Component }">
-          <keep-alive>
-            <component :is="Component" />
-          </keep-alive>
-        </router-view>
+        <router-view />
       </div>
     </q-page>
   </q-page-container>

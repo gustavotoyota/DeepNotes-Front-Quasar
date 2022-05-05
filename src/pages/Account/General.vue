@@ -28,8 +28,10 @@ import { useQuasar } from 'quasar';
 import { useAPI } from 'src/boot/external/axios';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
+import { useMainStore } from 'src/stores/main';
 import { onMounted, reactive, ref } from 'vue';
 
+const mainStore = useMainStore();
 const $q = useQuasar();
 const api = useAPI();
 
@@ -40,6 +42,8 @@ const data = reactive({
 const mounted = ref(false);
 
 onMounted(async () => {
+  await mainStore.ready;
+
   const response = await api.post('/api/users/account/general/load');
 
   data.displayName = response.data.displayName;

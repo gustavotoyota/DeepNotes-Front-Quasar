@@ -1,22 +1,22 @@
 <template>
-  <router-view v-if="mounted" />
+  <router-view />
 
-  <LoadingOverlay v-else />
+  <LoadingOverlay v-if="!mainStore.mounted" />
 </template>
 
 <script
   setup
   lang="ts"
 >
-import { onMounted, ref } from 'vue';
+import { onMounted } from 'vue';
 
 import { useAPI } from './boot/external/axios';
 import { tryRefreshTokens } from './code/auth';
 import LoadingOverlay from './components/misc/LoadingOverlay.vue';
+import { useMainStore } from './stores/main';
 
+const mainStore = useMainStore();
 const api = useAPI();
-
-const mounted = ref(false);
 
 onMounted(async () => {
   await (async function tokenRefreshLoop() {
@@ -25,6 +25,6 @@ onMounted(async () => {
     setTimeout(tokenRefreshLoop, 10000);
   })();
 
-  mounted.value = true;
+  mainStore.mounted = true;
 });
 </script>

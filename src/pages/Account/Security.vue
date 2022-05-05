@@ -116,8 +116,10 @@ import { computeDerivedKeys, processCryptoKeys } from 'src/code/crypto/crypto';
 import { masterKey } from 'src/code/crypto/master-key';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
+import { useMainStore } from 'src/stores/main';
 import { onMounted, reactive, Ref, ref } from 'vue';
 
+const mainStore = useMainStore();
 const $q = useQuasar();
 const api = useAPI();
 
@@ -142,6 +144,8 @@ const data = reactive({
 });
 
 onMounted(async () => {
+  await mainStore.ready;
+
   const response = await api.post<{
     devices: IDevice[];
   }>('/api/users/account/security/load');

@@ -17,6 +17,8 @@
   bottom: 0;
 
   background-color: #181818;
+
+  z-index: 2147483647;
 }
 
 .q-circular-progress {

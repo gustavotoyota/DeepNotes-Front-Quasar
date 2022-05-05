@@ -130,7 +130,7 @@ async function login() {
   } catch (err: any) {
     $q.notify({
       color: 'negative',
-      message: err.response?.data.message ?? 'An error has occurred',
+      message: err.response?.data.error ?? 'An error has occurred',
     });
     return;
   }

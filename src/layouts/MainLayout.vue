@@ -35,13 +35,13 @@
           <q-btn
             label="Pages"
             flat
-            :href="pagesBaseURL"
+            :href="pagesURL"
           />
           <q-btn
             label="Logout"
             flat
             @click="logout($api)"
-            :to="authRedirects.logout"
+            to="/"
           />
         </template>
       </q-toolbar>
@@ -55,7 +55,7 @@
   setup
   lang="ts"
 >
-import { authRedirects, logout, pagesBaseURL } from 'src/code/auth';
+import { logout, pagesURL } from 'src/code/auth';
 import { useAuth } from 'src/stores/auth';
 
 const auth = useAuth();

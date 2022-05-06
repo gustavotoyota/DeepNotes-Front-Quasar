@@ -18,18 +18,13 @@ export const authEndpoints = {
   logout: '/auth/logout',
 };
 
-export const redirectBaseURL = process.env.DEV
+export const homeURL = process.env.DEV
   ? 'http://localhost:60379'
   : 'https://deepnotes.app';
 
-export const pagesBaseURL = process.env.DEV
+export const pagesURL = process.env.DEV
   ? 'http://localhost:24579'
   : 'https://pages.deepnotes.app';
-
-export const authRedirects = {
-  login: `${pagesBaseURL}`,
-  logout: `${redirectBaseURL}`,
-};
 
 export function isTokenValid(tokenName: string): boolean {
   const exp = parseInt(localStorage.getItem(`${tokenName}-exp`) ?? '');

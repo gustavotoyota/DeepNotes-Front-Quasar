@@ -49,7 +49,7 @@
 >
 import { useQuasar } from 'quasar';
 import { useAPI } from 'src/boot/external/axios';
-import { authRedirects, storeAuthValues } from 'src/code/auth';
+import { storeAuthValues } from 'src/code/auth';
 import { computeDerivedKeys, processCryptoKeys } from 'src/code/crypto/crypto';
 import { useAuth } from 'src/stores/auth';
 import { reactive } from 'vue';
@@ -109,7 +109,7 @@ async function login() {
       message: 'Login successful',
     });
 
-    location.replace(authRedirects.login);
+    location.replace('/');
   } catch (err: any) {
     $q.notify({
       color: 'negative',

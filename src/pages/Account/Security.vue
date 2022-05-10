@@ -125,10 +125,14 @@
   setup
   lang="ts"
 >
+import { from_base64 } from 'libsodium-wrappers';
 import { QForm, useQuasar } from 'quasar';
 import { useAPI } from 'src/boot/external/axios';
-import { computeDerivedKeys, processCryptoKeys } from 'src/code/crypto/crypto';
-import { masterKey } from 'src/code/crypto/master-key';
+import {
+  computeDerivedKeys,
+  encryptSymmetric,
+  processSessionPrivateKey,
+} from 'src/code/crypto/crypto';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { useMainStore } from 'src/stores/main';
@@ -203,18 +207,20 @@ async function changePassword() {
       newPasswordHash: newDerivedKeys.passwordHash,
     });
 
-    // Process crypto keys
+    // Process session private key
 
-    const { decryptedPrivateKey } = processCryptoKeys(
-      response.data.encryptedPrivateKey,
-      oldDerivedKeys.masterKeyHash,
-      newDerivedKeys.masterKeyHash,
-      response.data.sessionKey
+    const decryptedPrivateKey = processSessionPrivateKey(
+      from_base64(response.data.encryptedPrivateKey),
+      oldDerivedKeys.masterKey,
+      from_base64(response.data.sessionKey)
     );
 
-    // Reencrypt private key
+    // Reencrypt private key with master key
 
-    const reencryptedPrivateKey = masterKey.encrypt(decryptedPrivateKey);
+    const reencryptedPrivateKey = encryptSymmetric(
+      decryptedPrivateKey,
+      newDerivedKeys.masterKey
+    );
 
     // Request password change
 

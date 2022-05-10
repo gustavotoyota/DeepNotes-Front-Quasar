@@ -47,10 +47,14 @@
   setup
   lang="ts"
 >
+import { from_base64 } from 'libsodium-wrappers';
 import { useQuasar } from 'quasar';
 import { useAPI } from 'src/boot/external/axios';
 import { storeAuthValues } from 'src/code/auth';
-import { computeDerivedKeys, processCryptoKeys } from 'src/code/crypto/crypto';
+import {
+  computeDerivedKeys,
+  processSessionPrivateKey,
+} from 'src/code/crypto/crypto';
 import { useAuth } from 'src/stores/auth';
 import { reactive } from 'vue';
 
@@ -89,13 +93,12 @@ async function login() {
 
     storeAuthValues(response.data.accessToken, response.data.refreshToken);
 
-    // Process crypto keys
+    // Process session private key
 
-    processCryptoKeys(
-      response.data.encryptedPrivateKey,
-      derivedKeys.masterKeyHash,
-      derivedKeys.masterKeyHash,
-      response.data.sessionKey
+    processSessionPrivateKey(
+      from_base64(response.data.encryptedPrivateKey),
+      derivedKeys.masterKey,
+      from_base64(response.data.sessionKey)
     );
 
     // Store e-mail

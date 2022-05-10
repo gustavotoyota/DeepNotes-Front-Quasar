@@ -79,7 +79,7 @@ export default {
   lang="ts"
 >
 import { PreFetchOptions } from '@quasar/app-vite';
-import sodium from 'libsodium-wrappers';
+import { to_base64 } from 'libsodium-wrappers';
 import { useQuasar } from 'quasar';
 import { useAPI } from 'src/boot/external/axios';
 import { computeDerivedKeys, generateRandomKeys } from 'src/code/crypto/crypto';
@@ -122,10 +122,10 @@ async function register() {
 
       passwordHash: derivedKeys.passwordHash,
 
-      publicKey: sodium.to_base64(randomKeys.publicKey),
-      encryptedPrivateKey: randomKeys.encryptedPrivateKey,
+      publicKey: to_base64(randomKeys.publicKey),
+      encryptedPrivateKey: to_base64(randomKeys.encryptedPrivateKey),
 
-      encryptedSymmetricKey: randomKeys.encryptedSymmetricKey,
+      encryptedSymmetricKey: to_base64(randomKeys.encryptedSymmetricKey),
     });
 
     $q.notify({

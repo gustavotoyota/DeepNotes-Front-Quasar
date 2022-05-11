@@ -26,7 +26,10 @@ declare module 'pinia' {
 // for each client)
 
 export default boot(({ app, store }) => {
-  const api = axios.create({ baseURL: apiBaseURL });
+  const api = axios.create({
+    withCredentials: true,
+    baseURL: apiBaseURL,
+  });
 
   app.config.globalProperties.$api = api;
 

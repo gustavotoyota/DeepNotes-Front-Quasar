@@ -50,7 +50,7 @@
 import { from_base64 } from 'libsodium-wrappers';
 import { useQuasar } from 'quasar';
 import { useAPI } from 'src/boot/external/axios';
-import { storeAuthValues } from 'src/code/auth';
+import { storeTokens } from 'src/code/auth';
 import {
   computeDerivedKeys,
   processSessionPrivateKey,
@@ -85,13 +85,9 @@ async function login() {
       passwordHash: derivedKeys.passwordHash,
     });
 
-    // Set API authorization header
-
-    api.defaults.headers.common.Authorization = `Bearer ${response.data.accessToken}`;
-
     // Store tokens
 
-    storeAuthValues(response.data.accessToken, response.data.refreshToken);
+    storeTokens(response.data.accessToken, response.data.refreshToken);
 
     // Process session private key
 

@@ -28,7 +28,14 @@ module.exports = configure(function (/* ctx */) {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
-    boot: ['external/i18n', 'external/axios'],
+    boot: [
+      { path: 'external/i18n' },
+      { path: 'external/axios' },
+      { path: 'external/syncedstore' },
+      { path: 'external/highlight', server: false },
+      { path: 'external/quill', server: false },
+      { path: 'internal/pages' },
+    ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
     css: ['app.scss'],

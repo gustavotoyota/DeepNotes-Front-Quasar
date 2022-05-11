@@ -22,8 +22,8 @@ export const homeURL = process.env.DEV
   : 'https://deepnotes.app';
 
 export const pagesURL = process.env.DEV
-  ? 'http://192.168.1.2:24579'
-  : 'https://pages.deepnotes.app';
+  ? 'http://192.168.1.2:60379/pages'
+  : 'https://deepnotes.app/pages';
 
 export function isTokenValid(tokenName: string): boolean {
   const exp = parseInt(localStorage.getItem(`${tokenName}-exp`) ?? '');
@@ -128,7 +128,7 @@ export function deleteToken(tokenName: string) {
   localStorage.removeItem(`${tokenName}-exp`);
 }
 
-export function logout(api: AxiosInstance) {
+export async function logout(api: AxiosInstance) {
   const auth = useAuth();
 
   if (!Cookies.get('refresh-token')) {
@@ -139,7 +139,7 @@ export function logout(api: AxiosInstance) {
 
   if (auth.loggedIn) {
     try {
-      api.post(authEndpoints.logout);
+      await api.post(authEndpoints.logout);
     } catch (err) {
       console.error(err);
     }

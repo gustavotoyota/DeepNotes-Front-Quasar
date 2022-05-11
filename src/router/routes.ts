@@ -3,38 +3,47 @@ import { RouteRecordRaw } from 'vue-router';
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('src/pages/Index.vue') }],
+    component: () => import('src/layouts/HomeLayout.vue'),
+    children: [
+      { path: '', component: () => import('src/pages/home/Index.vue') },
+    ],
   },
   {
     path: '/login',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/Login.vue') }],
+    component: () => import('src/layouts/HomeLayout.vue'),
+    children: [{ path: '', component: () => import('pages/home/Login.vue') }],
   },
   {
     path: '/register',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/Register.vue') }],
+    component: () => import('src/layouts/HomeLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/home/Register.vue') },
+    ],
   },
   {
     path: '/account',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('src/layouts/HomeLayout.vue'),
     children: [
       {
         path: '',
-        component: () => import('pages/Account.vue'),
+        component: () => import('pages/home/Account.vue'),
         children: [
           {
             path: 'general',
-            component: () => import('pages/Account/General.vue'),
+            component: () => import('pages/home/Account/General.vue'),
           },
           {
             path: 'security',
-            component: () => import('pages/Account/Security.vue'),
+            component: () => import('pages/home/Account/Security.vue'),
           },
         ],
       },
     ],
+  },
+  {
+    path: '/pages',
+    component: () => import('src/layouts/PagesLayout.vue'),
+    children: [{ path: '', component: () => import('pages/pages/Index.vue') }],
   },
 
   // Always leave this as last one,

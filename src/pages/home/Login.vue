@@ -50,19 +50,20 @@
 import { from_base64 } from 'libsodium-wrappers';
 import { Cookies, useQuasar } from 'quasar';
 import { useAPI } from 'src/boot/external/axios';
-import { pagesURL, storeTokens } from 'src/code/auth';
+import { storeTokens } from 'src/code/auth';
 import {
   computeDerivedKeys,
   processSessionPrivateKey,
 } from 'src/code/crypto/crypto';
+import Gap from 'src/components/misc/Gap.vue';
 import { useAuth } from 'src/stores/auth';
 import { reactive } from 'vue';
-
-import Gap from '../components/misc/Gap.vue';
+import { useRouter } from 'vue-router';
 
 const api = useAPI();
 const $q = useQuasar();
 const auth = useAuth();
+const router = useRouter();
 
 const data = reactive({
   email: '',
@@ -108,7 +109,7 @@ async function login() {
       message: 'Login successful',
     });
 
-    location.replace(pagesURL);
+    router.replace('/pages');
   } catch (err: any) {
     $q.notify({
       color: 'negative',

@@ -135,10 +135,10 @@ import {
 } from 'src/code/crypto/crypto';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
-import { useMainStore } from 'src/stores/main';
+import { useHome } from 'src/stores/home/home';
 import { onMounted, reactive, Ref, ref } from 'vue';
 
-const mainStore = useMainStore();
+const home = useHome();
 const $q = useQuasar();
 const api = useAPI();
 
@@ -165,7 +165,7 @@ const data = reactive({
 });
 
 onMounted(async () => {
-  await mainStore.ready;
+  await home.ready;
 
   const response = await api.post<{
     devices: IDevice[];

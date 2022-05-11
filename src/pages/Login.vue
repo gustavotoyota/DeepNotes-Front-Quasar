@@ -48,7 +48,7 @@
   lang="ts"
 >
 import { from_base64 } from 'libsodium-wrappers';
-import { useQuasar } from 'quasar';
+import { Cookies, useQuasar } from 'quasar';
 import { useAPI } from 'src/boot/external/axios';
 import { pagesURL, storeTokens } from 'src/code/auth';
 import {
@@ -99,7 +99,7 @@ async function login() {
 
     // Store e-mail
 
-    localStorage.setItem('email', data.email);
+    Cookies.set('email', data.email);
 
     auth.loggedIn = true;
 

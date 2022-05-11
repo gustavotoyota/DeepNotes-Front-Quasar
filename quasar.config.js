@@ -34,7 +34,7 @@ module.exports = configure(function (/* ctx */) {
       { path: 'external/syncedstore' },
       { path: 'external/highlight', server: false },
       { path: 'external/quill', server: false },
-      { path: 'internal/pages' },
+      { path: 'internal/global-vue-props' },
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css

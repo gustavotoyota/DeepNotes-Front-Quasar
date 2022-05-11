@@ -151,9 +151,7 @@ export function processSessionPrivateKey(
   // Store encrypted private key on local storage
 
   Cookies.set('encrypted-private-key', to_base64(newEncryptedPrivateKey), {
-    sameSite: process.env.PROD ? 'Strict' : 'Lax',
-    secure: process.env.PROD,
-    httpOnly: process.env.PROD,
+    path: '/',
   });
 
   // Store private key on memory

@@ -22,24 +22,20 @@
   setup
   lang="ts"
 >
-import { useAPI } from 'src/boot/external/axios';
-import { tryRefreshTokens } from 'src/code/auth';
 import { PageNote } from 'src/code/pages/app/page/notes/note';
+import { factory } from 'src/code/pages/static/composition-root';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import LeftSidebar from 'src/components/pages/LeftSidebar.vue';
 import MainToolbar from 'src/components/pages/MainToolbar.vue';
 import RightSidebar from 'src/components/pages/RightSidebar/RightSidebar.vue';
-import { useAuth } from 'src/stores/auth';
 import { usePages } from 'src/stores/pages/pages';
-import { onBeforeUnmount, onMounted, toRef } from 'vue';
-import { useRouter } from 'vue-router';
+import { onBeforeUnmount, onMounted, provide, toRef } from 'vue';
 
 const pages = usePages();
-const api = useAPI();
-const auth = useAuth();
-const router = useRouter();
 
 const page = toRef(pages, 'page');
+
+provide('app', factory.makeApp());
 
 // Release pointer down for touchscreen
 
@@ -173,17 +169,6 @@ onBeforeUnmount(() => {
 // Mark app as mounted
 
 onMounted(async () => {
-  await (async function tokenRefreshLoop() {
-    await tryRefreshTokens(api);
-
-    setTimeout(tokenRefreshLoop, 10000);
-  })();
-
-  if (!auth.loggedIn) {
-    router.push('/');
-    return;
-  }
-
   pages.mounted = true;
 });
 </script>

@@ -107,9 +107,7 @@ export function storeTokens(accessToken: string, refreshToken: string): void {
 }
 function storeToken(tokenName: string, token: string) {
   Cookies.set(tokenName, token, {
-    sameSite: process.env.PROD ? 'Strict' : 'Lax',
-    secure: process.env.PROD,
-    httpOnly: process.env.PROD,
+    path: '/',
   });
 
   const decodedToken = jwtDecode<{ exp: number; iat: number }>(token);

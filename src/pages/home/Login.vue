@@ -100,7 +100,9 @@ async function login() {
 
     // Store e-mail
 
-    Cookies.set('email', data.email);
+    Cookies.set('email', data.email, {
+      path: '/',
+    });
 
     auth.loggedIn = true;
 
@@ -109,7 +111,7 @@ async function login() {
       message: 'Login successful',
     });
 
-    router.replace('/pages');
+    router.push('/');
   } catch (err: any) {
     $q.notify({
       color: 'negative',

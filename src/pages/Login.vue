@@ -50,7 +50,7 @@
 import { from_base64 } from 'libsodium-wrappers';
 import { useQuasar } from 'quasar';
 import { useAPI } from 'src/boot/external/axios';
-import { storeTokens } from 'src/code/auth';
+import { pagesURL, storeTokens } from 'src/code/auth';
 import {
   computeDerivedKeys,
   processSessionPrivateKey,
@@ -108,7 +108,7 @@ async function login() {
       message: 'Login successful',
     });
 
-    location.replace('/');
+    location.replace(pagesURL);
   } catch (err: any) {
     $q.notify({
       color: 'negative',

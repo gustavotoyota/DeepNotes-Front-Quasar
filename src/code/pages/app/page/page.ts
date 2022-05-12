@@ -168,7 +168,7 @@ export class AppPage extends PageRegion {
       pageName: string;
       camera: any;
       encryptedSymmetricKey: string;
-      publicKey: string;
+      distributorsPublicKey: string;
     }>('/api/pages/data', {
       pageId: this.id,
       parentPageId: null,
@@ -182,7 +182,7 @@ export class AppPage extends PageRegion {
 
     const decryptedSymmetricKey = privateKey.decrypt(
       from_base64(response.data.encryptedSymmetricKey),
-      from_base64(response.data.publicKey)
+      from_base64(response.data.distributorsPublicKey)
     );
 
     const symmetricKey = createSymmetricKey(decryptedSymmetricKey);

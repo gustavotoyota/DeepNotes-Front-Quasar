@@ -210,10 +210,10 @@
     estree-walker "^2.0.1"
     picomatch "^2.2.2"
 
-"@syncedstore/core@^0.3.9":
-  version "0.3.9"
-  resolved "https://registry.yarnpkg.com/@syncedstore/core/-/core-0.3.9.tgz#7afa9821885f0f3abb2987b3d98e8f536e7e3661"
-  integrity sha512-mqlihErZISehtHbF7QFh5gDboJt8DSUZccWHq3wXruOEerqgW8IsgqlTAPIpa2jXUb2r0WLST1sYvJww+6FCzA==
+"@syncedstore/core@0.3.7":
+  version "0.3.7"
+  resolved "https://registry.yarnpkg.com/@syncedstore/core/-/core-0.3.7.tgz#c29187b9722e246b3dc1114865375aef618067f4"
+  integrity sha512-uxer5y/2RpMVzPbTvRik6EsjPNRd+LhrX3paSTzNFvuc4SedT+GnJ3VMGDPLXkdhVA65F+E+2IkNrAEb+WAo3Q==
   dependencies:
     "@reactivedata/reactive" "0.1.16"
     "@syncedstore/yjs-reactive-bindings" "^0.3.7"
@@ -2251,7 +2251,7 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
-lib0@^0.2.42, lib0@^0.2.49:
+lib0@^0.2.31, lib0@^0.2.42, lib0@^0.2.49:
   version "0.2.51"
   resolved "https://registry.yarnpkg.com/lib0/-/lib0-0.2.51.tgz#23b1271a26f39120a4d0f86b9dfb44577f5ce98c"
   integrity sha512-05Erb3465CxJa38LQlMz4EbetNvRna1S3BzqEjC0/pmp5cQuQSfNNmeS0722Wev1dRlMUp2Cql0gQ55krSXf2Q==
@@ -3483,20 +3483,20 @@ wrappy@1:
   resolved "https://registry.yarnpkg.com/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
   integrity sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8=
 
-y-protocols@^1.0.5:
+y-protocols@^1.0.0, y-protocols@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/y-protocols/-/y-protocols-1.0.5.tgz#91d574250060b29fcac8f8eb5e276fbad594245e"
   integrity sha512-Wil92b7cGk712lRHDqS4T90IczF6RkcvCwAD0A2OPg+adKmOe+nOiT/N2hvpQIWS3zfjmtL4CPaH5sIW1Hkm/A==
   dependencies:
     lib0 "^0.2.42"
 
-y-quill@^0.1.5:
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/y-quill/-/y-quill-0.1.5.tgz#533a302af96e809597727daf52c3a240e4e55144"
-  integrity sha512-bNFkc69yZxe6xrkhiPoHx2RvwR5KdKxpO9UYZVsn9NCv6eXHIYQVTrkSu6rtZ9gNw8ZEBnCVJAl4jpj0+L+IcA==
+y-quill@0.1.4:
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/y-quill/-/y-quill-0.1.4.tgz#cd3443345df381b277cd44b5df7cfcf9d63d63d0"
+  integrity sha512-z4wCVgF5SUDkr+I8NRtcjU0AE4Ne0JCHzs9LpWrFdx+fvTk0Jtia/weEJjLlJHPZ0Ub7HMe5Bvia7UONsb4ZaQ==
   dependencies:
-    lib0 "^0.2.42"
-    y-protocols "^1.0.5"
+    lib0 "^0.2.31"
+    y-protocols "^1.0.0"
 
 y18n@^5.0.5:
   version "5.0.8"

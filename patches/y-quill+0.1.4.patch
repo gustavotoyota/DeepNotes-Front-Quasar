@@ -1,8 +1,8 @@
 diff --git a/node_modules/y-quill/src/y-quill.js b/node_modules/y-quill/src/y-quill.js
-index 93641e7..4a1c506 100644
+index e668115..684f889 100644
 --- a/node_modules/y-quill/src/y-quill.js
 +++ b/node_modules/y-quill/src/y-quill.js
-@@ -124,11 +124,7 @@ export class QuillBinding {
+@@ -122,11 +122,7 @@ export class QuillBinding {
        if (awareness && quillCursors) {
          const sel = quill.getSelection()
          const aw = /** @type {any} */ (awareness.getLocalState())

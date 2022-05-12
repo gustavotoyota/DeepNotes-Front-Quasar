@@ -110,6 +110,8 @@ function storeToken(tokenName: string, token: string) {
   Cookies.set(tokenName, token, {
     path: '/',
     expires: addDays(new Date(), 7),
+    secure: process.env.PROD,
+    sameSite: 'Strict',
   });
 
   const decodedToken = jwtDecode<{ exp: number; iat: number }>(token);

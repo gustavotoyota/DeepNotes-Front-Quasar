@@ -33,7 +33,7 @@ onMounted(async () => {
 
   pageCache.addPage(page.value);
 
-  await page.value.collab.preSync();
+  await page.value.preSync();
 
   page.value.postSync();
 });

@@ -1,9 +1,13 @@
+import { from_base64 } from 'libsodium-wrappers';
+import { privateKey } from 'src/code/crypto/private-key';
+import { createSymmetricKey } from 'src/code/crypto/symmetric-key';
 import { refProp } from 'src/code/pages/static/vue';
 import { computed, ComputedRef, UnwrapRef } from 'vue';
 import { encodeStateAsUpdateV2 } from 'yjs';
 import { z } from 'zod';
 
 import { Factory } from '../../static/composition-root';
+import { WebsocketProvider } from '../../static/y-websocket';
 import { DeepNotesApp } from '../app';
 import { PageArrows } from './arrows/arrows';
 import { PageCamera } from './camera/camera';
@@ -153,6 +157,55 @@ export class AppPage extends PageRegion {
     this.resizing = factory.makeResizing(this);
 
     this.arrows = factory.makeArrows(this);
+  }
+
+  async preSync() {
+    const roomName = `page-${this.id}-3`;
+
+    // Load page data
+
+    const response = await $api.post<{
+      pageName: string;
+      camera: any;
+      encryptedSymmetricKey: string;
+      publicKey: string;
+    }>('/api/pages/data', {
+      pageId: this.id,
+      parentPageId: null,
+    });
+
+    // Set initial page name
+
+    this.react.name = response.data.pageName;
+
+    // Decrypt symmetric key
+
+    const decryptedSymmetricKey = privateKey.decrypt(
+      from_base64(response.data.encryptedSymmetricKey),
+      from_base64(response.data.publicKey)
+    );
+
+    const symmetricKey = createSymmetricKey(decryptedSymmetricKey);
+
+    // Setup websocket provider
+
+    this.collab.websocketProvider = new WebsocketProvider(
+      process.env.DEV
+        ? 'ws://192.168.1.2:1234'
+        : 'wss://collab-server.deepnotes.app/',
+      roomName,
+      this.collab.doc,
+      symmetricKey
+    );
+
+    await new Promise((resolve) =>
+      this.collab.websocketProvider.on('sync', () => {
+        // Update page name after sync
+        this.react.name = this.react.collab.name;
+
+        resolve(true);
+      })
+    );
   }
 
   postSync() {

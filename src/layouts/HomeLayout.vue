@@ -35,7 +35,7 @@
           <q-btn
             label="Pages"
             flat
-            :href="pagesURL"
+            to="/pages"
           />
           <q-btn
             label="Logout"
@@ -55,7 +55,7 @@
   setup
   lang="ts"
 >
-import { logout, pagesURL } from 'src/code/auth';
+import { logout } from 'src/code/auth';
 import { useAuth } from 'src/stores/auth';
 
 const auth = useAuth();

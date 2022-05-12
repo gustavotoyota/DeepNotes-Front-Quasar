@@ -165,11 +165,7 @@
           icon="mdi-home"
           size="28px"
           round
-          :href="
-            process.env.DEV
-              ? 'http://192.168.1.2:60379/'
-              : 'https://deepnotes.app/'
-          "
+          to="/"
         />
 
         <Gap style="width: 2px" />

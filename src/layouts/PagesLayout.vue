@@ -1,5 +1,6 @@
 <template>
   <q-layout
+    class="pages-layout"
     view="lHr lpR fFf"
     v-show="pages.mounted"
   >
@@ -173,59 +174,54 @@ onMounted(async () => {
 });
 </script>
 
-<style>
-* {
+<style scoped>
+.pages-layout :deep(*) {
   touch-action: pan-x pan-y;
 }
-*:not(input) {
+.pages-layout :deep(*:not(input)) {
   user-select: none;
 }
 
-html,
-body {
-  overflow: hidden;
-}
-
-.q-tooltip {
+.pages-layout :deep(.q-tooltip) {
   font-size: 12px;
 }
 
-.q-drawer {
+.pages-layout :deep(.q-drawer) {
   transition: width 0.2s ease;
   overflow-x: hidden;
 }
-.q-drawer__content {
+.pages-layout :deep(.q-drawer__content) {
   overflow-x: hidden;
 }
-.q-drawer:not(.q-drawer--mini) .q-drawer__content {
+.pages-layout :deep(.q-drawer:not(.q-drawer--mini) .q-drawer__content) {
   width: 299px !important;
 }
-.q-drawer.q-drawer--mini .q-item {
+.pages-layout :deep(.q-drawer.q-drawer--mini .q-item) {
   justify-content: normal !important;
   padding-left: 16px !important;
 }
-.q-drawer .q-item {
+.pages-layout :deep(.q-drawer .q-item) {
   justify-content: normal !important;
   padding-left: 16px !important;
 }
 
-.q-page-container {
+.pages-layout :deep(.q-page-container) {
   transition: padding-left 0.2s ease, padding-right 0.2s ease;
 }
 
 /* Scrollbars */
 
-::-webkit-scrollbar {
+.pages-layout :deep(::-webkit-scrollbar) {
   width: 15px;
 }
-::-webkit-scrollbar-track {
+.pages-layout :deep(::-webkit-scrollbar-track) {
   background: #202020;
 }
-::-webkit-scrollbar-thumb {
+.pages-layout :deep(::-webkit-scrollbar-thumb) {
   background: #303030;
   border: solid 1px #404040;
 }
-::-webkit-scrollbar-thumb:hover {
+.pages-layout :deep(::-webkit-scrollbar-thumb:hover) {
   background: #404040;
 }
 </style>

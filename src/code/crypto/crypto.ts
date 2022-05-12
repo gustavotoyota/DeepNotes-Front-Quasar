@@ -1,7 +1,6 @@
 import './argon2';
 
 import sodium, { to_base64 } from 'libsodium-wrappers';
-import { Cookies } from 'quasar';
 
 import { concatUint8Array } from '../utils';
 import { privateKey } from './private-key';
@@ -150,9 +149,10 @@ export function processSessionPrivateKey(
 
   // Store encrypted private key on local storage
 
-  Cookies.set('encrypted-private-key', to_base64(newEncryptedPrivateKey), {
-    path: '/',
-  });
+  localStorage.setItem(
+    'encrypted-private-key',
+    to_base64(newEncryptedPrivateKey)
+  );
 
   // Store private key on memory
 

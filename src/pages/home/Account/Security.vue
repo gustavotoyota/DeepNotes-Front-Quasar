@@ -126,7 +126,7 @@
   lang="ts"
 >
 import { from_base64 } from 'libsodium-wrappers';
-import { Cookies, QForm, useQuasar } from 'quasar';
+import { QForm, useQuasar } from 'quasar';
 import { useAPI } from 'src/boot/external/axios';
 import {
   computeDerivedKeys,
@@ -186,7 +186,7 @@ async function changePassword() {
   }
 
   try {
-    const email = Cookies.get('email')!;
+    const email = localStorage.getItem('email')!;
 
     // Compute derived keys
 

@@ -66,12 +66,12 @@ export async function tryRefreshTokens(api: AxiosInstance): Promise<void> {
   }
 
   try {
-    if (!Cookies.get('encrypted-private-key')) {
+    if (!localStorage.getItem('encrypted-private-key')) {
       return;
     }
 
     const encryptedPrivateKey = from_base64(
-      Cookies.get('encrypted-private-key')
+      localStorage.getItem('encrypted-private-key')!
     );
 
     const response = await api.post<{
@@ -151,10 +151,10 @@ export async function logout(api: AxiosInstance) {
 
   // Clear e-mail
 
-  Cookies.remove('email');
+  localStorage.removeItem('email');
 
   // Clear private key
 
-  Cookies.remove('encrypted-private-key');
+  localStorage.removeItem('encrypted-private-key');
   privateKey.clear();
 }

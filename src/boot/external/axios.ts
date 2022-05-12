@@ -18,6 +18,11 @@ declare module 'pinia' {
   }
 }
 
+declare global {
+  // eslint-disable-next-line no-var
+  var $api: AxiosInstance;
+}
+
 // Be careful when using SSR for cross-request state pollution
 // due to creating a Singleton instance here;
 // If any client changes this (global) instance, it might be a
@@ -34,6 +39,10 @@ export default boot(({ app, store }) => {
   app.config.globalProperties.$api = api;
 
   store.use(() => ({ $api: api }));
+
+  if (process.env.CLIENT) {
+    globalThis.$api = api;
+  }
 });
 
 export function useAPI() {

@@ -17,17 +17,19 @@ import { factory } from 'src/code/pages/static/composition-root';
 import ContentDisplay from 'src/components/pages/ContentDisplay/ContentDisplay.vue';
 import { usePageCache } from 'src/stores/pages/page-cache';
 import { inject, onMounted, provide, shallowRef } from 'vue';
+import { useRoute } from 'vue-router';
 
 const app = inject<DeepNotesApp>('app')!;
 
 const pageCache = usePageCache();
+const route = useRoute();
 
 const page = shallowRef<AppPage>();
 
 provide('page', page);
 
 onMounted(async () => {
-  page.value = factory.makePage(app, '52bd9bc3-c28c-4185-82f7-6c5be30c9ce3a');
+  page.value = factory.makePage(app, route.params.page_id as string);
 
   pageCache.addPage(page.value);
 

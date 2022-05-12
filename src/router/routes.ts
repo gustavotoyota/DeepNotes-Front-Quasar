@@ -43,7 +43,10 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/pages',
     component: () => import('src/layouts/PagesLayout.vue'),
-    children: [{ path: '', component: () => import('pages/pages/Index.vue') }],
+    children: [
+      { path: '', component: () => import('pages/pages/Pages.vue') },
+      { path: ':page_id', component: () => import('src/pages/pages/Page.vue') },
+    ],
   },
 
   // Always leave this as last one,

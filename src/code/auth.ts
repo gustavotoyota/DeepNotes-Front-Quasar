@@ -6,6 +6,7 @@ import { useAuth } from 'src/stores/auth';
 
 import { processSessionPrivateKey } from './crypto/crypto';
 import { privateKey } from './crypto/private-key';
+import { addDays } from './utils';
 
 export const apiBaseURL = process.env.DEV
   ? 'http://192.168.1.2:21733'
@@ -108,6 +109,7 @@ export function storeTokens(accessToken: string, refreshToken: string): void {
 function storeToken(tokenName: string, token: string) {
   Cookies.set(tokenName, token, {
     path: '/',
+    expires: addDays(new Date(), 7),
   });
 
   const decodedToken = jwtDecode<{ exp: number; iat: number }>(token);
@@ -129,7 +131,7 @@ export function deleteToken(tokenName: string) {
 export async function logout(api: AxiosInstance) {
   const auth = useAuth();
 
-  if (!Cookies.get('refresh-token')) {
+  if (!localStorage.getItem('encrypted-private-key')) {
     return;
   }
 

@@ -210,6 +210,13 @@ function deleteSelection() {
 async function save() {
   $pages.templates.react.list = templates.value;
   $pages.templates.react.defaultId = defaultTemplateId.value;
+
+  await $api.post('/api/templates/update-settings', {
+    templates: templates.value,
+    defaultTemplateId: defaultTemplateId.value,
+  });
+
+  console.log('Template settings save request sent');
 }
 
 defineExpose({

@@ -49,13 +49,10 @@
       }"
     >
       <MiniSidebarPage
-        name="Main pagesdf sdh fkjhsdkf hshdkjfh kjsdhf ksjdh fkjsjkd fjks hdkfh"
-        :active="true"
+        v-for="pageRef in $pages.react.pathPages"
+        :key="pageRef.id"
+        :name="pageRef.name"
       />
-
-      <MiniSidebarPage name="Another page" />
-
-      <MiniSidebarPage name="Another page" />
     </q-list>
   </q-drawer>
 </template>
@@ -69,4 +66,5 @@ import { useUI } from 'src/stores/pages/ui';
 import MiniSidebarPage from './misc/MiniSidebarPage.vue';
 
 const ui = useUI();
+const $pages = globalThis.$pages;
 </script>

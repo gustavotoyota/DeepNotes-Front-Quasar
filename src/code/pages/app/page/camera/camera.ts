@@ -75,7 +75,7 @@ export class PageCamera {
       this.react.lockPos = cameraData.lockPos;
       this.react.lockZoom = cameraData.lockZoom;
     } else {
-      this.fitToScreen();
+      setTimeout(() => this.fitToScreen(), 0);
     }
 
     this.watchUpdates();

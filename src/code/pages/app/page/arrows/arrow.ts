@@ -17,7 +17,7 @@ export const IArrowCollab = z.object({
 export type IArrowCollab = z.output<typeof IArrowCollab>;
 
 export class PageArrow extends PageElem {
-  collab: IArrowCollab;
+  readonly collab: IArrowCollab;
 
   constructor(
     page: AppPage,

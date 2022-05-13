@@ -9,7 +9,7 @@ import { AppPage } from '../page';
 import { PageElem } from './elem';
 
 export class PageClipboard {
-  page: AppPage;
+  readonly page: AppPage;
 
   constructor(page: AppPage) {
     this.page = page;

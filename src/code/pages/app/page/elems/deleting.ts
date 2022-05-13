@@ -2,7 +2,7 @@ import { PageNote } from '../notes/note';
 import { AppPage } from '../page';
 
 export class PageDeleting {
-  page: AppPage;
+  readonly page: AppPage;
 
   constructor(page: AppPage) {
     this.page = page;

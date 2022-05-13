@@ -12,7 +12,7 @@ export interface IEditingReact {
 }
 
 export class PageEditing {
-  page: AppPage;
+  readonly page: AppPage;
 
   react: UnwrapRef<IEditingReact>;
 

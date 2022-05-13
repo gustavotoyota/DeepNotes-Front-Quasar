@@ -6,7 +6,7 @@ import { AppPage } from '../page';
 import { IRegionCollab } from './region';
 
 export class PageRegions {
-  page: AppPage;
+  readonly page: AppPage;
 
   constructor(page: AppPage) {
     this.page = page;

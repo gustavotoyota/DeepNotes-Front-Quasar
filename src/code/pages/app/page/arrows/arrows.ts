@@ -19,8 +19,8 @@ export interface IArrowsReact {
 }
 
 export class PageArrows {
-  factory: Factory;
-  page: AppPage;
+  readonly factory: Factory;
+  readonly page: AppPage;
 
   react: UnwrapRef<IArrowsReact>;
 

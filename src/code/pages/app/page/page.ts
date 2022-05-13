@@ -69,7 +69,7 @@ export class AppPage extends PageRegion {
 
   readonly id: string;
 
-  declare react: UnwrapRef<IAppPageReact>;
+  react: UnwrapRef<IAppPageReact>;
 
   readonly collab: PageCollab;
 

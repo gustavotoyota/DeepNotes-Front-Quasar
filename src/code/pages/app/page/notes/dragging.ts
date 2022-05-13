@@ -19,7 +19,7 @@ export interface IDraggingReact {
 export class PageDragging {
   static readonly MIN_DISTANCE = 5;
 
-  page: AppPage;
+  readonly page: AppPage;
 
   react: UnwrapRef<IDraggingReact>;
 

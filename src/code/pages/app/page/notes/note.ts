@@ -157,7 +157,7 @@ export interface INoteReact extends IRegionReact {
 }
 
 export class PageNote extends PageRegion {
-  collab: z.output<typeof INoteCollab>;
+  readonly collab: z.output<typeof INoteCollab>;
 
   declare react: UnwrapRef<INoteReact>;
 

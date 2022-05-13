@@ -4,7 +4,7 @@ import { PageElem } from '../elems/elem';
 import { AppPage } from '../page';
 
 export class PageCloning {
-  page: AppPage;
+  readonly page: AppPage;
 
   constructor(page: AppPage) {
     this.page = page;

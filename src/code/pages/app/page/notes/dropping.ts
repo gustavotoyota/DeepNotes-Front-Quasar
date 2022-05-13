@@ -4,7 +4,7 @@ import { AppPage } from '../page';
 import { PageNote } from './note';
 
 export class PageDropping {
-  page: AppPage;
+  readonly page: AppPage;
 
   constructor(page: AppPage) {
     this.page = page;

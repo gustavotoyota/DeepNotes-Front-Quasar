@@ -23,9 +23,8 @@ export interface IResizingReact {
 }
 
 export class PageResizing {
-  factory: Factory;
-
-  page: AppPage;
+  readonly factory: Factory;
+  readonly page: AppPage;
 
   react: UnwrapRef<IResizingReact>;
 

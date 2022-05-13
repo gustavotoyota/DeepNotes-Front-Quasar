@@ -17,8 +17,8 @@ export interface IElemReact {
 export class PageElem {
   readonly page: AppPage;
 
-  id: string;
-  type: ElemType;
+  readonly id: string;
+  readonly type: ElemType;
   parentId: string | null;
 
   react: UnwrapRef<IElemReact>;

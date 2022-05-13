@@ -22,8 +22,8 @@ export interface INotesReact {
 }
 
 export class PageNotes {
-  factory: Factory;
-  page: AppPage;
+  readonly factory: Factory;
+  readonly page: AppPage;
 
   react: UnwrapRef<INotesReact>;
 

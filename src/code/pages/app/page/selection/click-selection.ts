@@ -3,7 +3,7 @@ import { PageNote } from '../notes/note';
 import { AppPage } from '../page';
 
 export class PageClickSelection {
-  page: AppPage;
+  readonly page: AppPage;
 
   constructor(page: AppPage) {
     this.page = page;

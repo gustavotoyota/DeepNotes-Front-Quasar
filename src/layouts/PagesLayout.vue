@@ -31,9 +31,11 @@ import RightSidebar from 'src/components/pages/RightSidebar/RightSidebar.vue';
 import { useApp } from 'src/stores/app';
 import { usePages } from 'src/stores/pages/pages';
 import { onBeforeUnmount, onMounted, provide, toRef } from 'vue';
+import { useRoute } from 'vue-router';
 
 const app = useApp();
 const pages = usePages();
+const route = useRoute();
 
 const page = toRef(pages, 'page');
 
@@ -174,7 +176,7 @@ onBeforeUnmount(() => {
 onMounted(async () => {
   await app.ready;
 
-  await pagesApp.loadData('52bd9bc3-c28c-4185-82f7-6c5be30c9ce3');
+  await pagesApp.loadData(route.params.page_id as string);
 
   pages.mounted = true;
 });

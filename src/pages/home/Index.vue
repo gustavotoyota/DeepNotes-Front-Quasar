@@ -1,6 +1,6 @@
 <template>
   <q-page-container>
-    <q-page> </q-page>
+    <q-page> Index </q-page>
   </q-page-container>
 
   <q-footer

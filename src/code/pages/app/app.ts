@@ -30,7 +30,7 @@ export class PagesApp {
     };
   }
 
-  async loadData(pageId: string) {
+  async loadData(initialPageId: string) {
     const response = await $api.post<{
       pathPages: IPageReference[];
       recentPages: IPageReference[];
@@ -38,7 +38,7 @@ export class PagesApp {
       templates: ITemplate[];
       defaultTemplateId: string;
     }>('/api/users/pages-data', {
-      pageId,
+      initialPageId,
     });
 
     this.templates.react.list = response.data.templates;

@@ -33,8 +33,8 @@ onMounted(async () => {
 
   pageCache.addPage(page.value);
 
-  await page.value.preSync();
+  const pageData = await page.value.preSync();
 
-  page.value.postSync();
+  page.value.postSync(pageData);
 });
 </script>

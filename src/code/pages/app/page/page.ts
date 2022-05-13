@@ -10,7 +10,7 @@ import { Factory } from '../../static/composition-root';
 import { WebsocketProvider } from '../../static/y-websocket';
 import { DeepNotesApp } from '../app';
 import { PageArrows } from './arrows/arrows';
-import { PageCamera } from './camera/camera';
+import { ICameraData, PageCamera } from './camera/camera';
 import { PagePanning } from './camera/panning';
 import { PageZooming } from './camera/zooming';
 import { PageCollab } from './collab';
@@ -55,6 +55,13 @@ export interface IAppPageReact extends IRegionReact {
   collab: ComputedRef<IPageCollab>;
 
   size: number;
+}
+
+export interface IPageData {
+  pageName: string;
+  camera: ICameraData;
+  encryptedSymmetricKey: string;
+  distributorsPublicKey: string;
 }
 
 export class AppPage extends PageRegion {
@@ -164,12 +171,7 @@ export class AppPage extends PageRegion {
 
     // Load page data
 
-    const response = await $api.post<{
-      pageName: string;
-      camera: any;
-      encryptedSymmetricKey: string;
-      distributorsPublicKey: string;
-    }>('/api/pages/data', {
+    const response = await $api.post<IPageData>('/api/pages/data', {
       pageId: this.id,
       parentPageId: null,
     });
@@ -206,14 +208,18 @@ export class AppPage extends PageRegion {
         resolve(true);
       })
     );
+
+    return response.data;
   }
 
-  postSync() {
+  postSync(pageData: IPageData) {
     if (this.collab.store.page.name == null) {
       this.collab.reset();
     }
 
     this.elems.setup();
+
+    this.camera.setup(pageData.camera);
 
     this.react.size = encodeStateAsUpdateV2(this.collab.doc).byteLength;
 

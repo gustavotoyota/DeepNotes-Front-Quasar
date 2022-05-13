@@ -1,6 +1,13 @@
+import { debounce } from 'lodash';
 import { Vec2 } from 'src/code/pages/static/vec2';
 import { refProp } from 'src/code/pages/static/vue';
-import { computed, UnwrapRef, watchEffect, WritableComputedRef } from 'vue';
+import {
+  computed,
+  UnwrapRef,
+  watch,
+  watchEffect,
+  WritableComputedRef,
+} from 'vue';
 import { z } from 'zod';
 
 import { AppPage } from '../page';
@@ -11,6 +18,14 @@ export interface ICameraReact {
 
   _zoom: number;
   zoom: WritableComputedRef<number>;
+
+  lockPos: boolean;
+  lockZoom: boolean;
+}
+
+export interface ICameraData {
+  pos: { x: number; y: number };
+  zoom: number;
 
   lockPos: boolean;
   lockZoom: boolean;
@@ -50,6 +65,35 @@ export class PageCamera {
 
       __DEEP_NOTES__.pages[this.page.id].zoom = this.react.zoom;
     });
+  }
+
+  setup(cameraData: ICameraData) {
+    if (cameraData != null) {
+      this.react.pos = new Vec2(cameraData.pos);
+      this.react._zoom = cameraData.zoom;
+
+      this.react.lockPos = cameraData.lockPos;
+      this.react.lockZoom = cameraData.lockZoom;
+    } else {
+      this.fitToScreen();
+    }
+
+    this.watchUpdates();
+  }
+  watchUpdates() {
+    watch(
+      () => this.react,
+      debounce(() => {
+        $api.post('/api/pages/update-camera', {
+          pageId: this.page.id,
+
+          camera: this.react,
+        });
+
+        console.log('Camera update sent');
+      }, 2000),
+      { deep: true }
+    );
   }
 
   resetZoom() {

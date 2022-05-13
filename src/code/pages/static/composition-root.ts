@@ -28,12 +28,14 @@ import { PagePos } from '../app/page/space/pos';
 import { PageRects } from '../app/page/space/rects';
 import { PageSizes } from '../app/page/space/sizes';
 import { AppSerialization } from '../app/serialization';
+import { AppTemplates } from '../app/templates';
 import { Container } from './simple-di';
 
 export const container = new Container({
   app: (factory: any) => () => new PagesApp(factory),
 
   serialization: () => (app: PagesApp) => new AppSerialization(app),
+  templates: () => (app: PagesApp) => new AppTemplates(app),
 
   page: (factory: any) => (app: PagesApp, id: string) =>
     new AppPage(factory, app, id),

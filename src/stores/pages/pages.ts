@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { AppPage, IPageReference } from 'src/code/pages/app/page/page';
-import { computed, reactive, toRefs } from 'vue';
+import { computed, reactive, toRefs, watch } from 'vue';
 
 import { usePageCache } from './page-cache';
 
@@ -32,12 +32,29 @@ export const usePages = defineStore('pages', () => {
     //
   }
 
+  // Others
+
+  const ready = new Promise((resolve) => {
+    const unwatch = watch(
+      () => state.mounted,
+      () => {
+        if (state.mounted) {
+          unwatch();
+          resolve(state.mounted);
+        }
+      },
+      { immediate: true }
+    );
+  });
+
   return {
     ...toRefs(state),
 
     page,
 
     fetchData,
+
+    ready,
   };
 });
 

@@ -2,7 +2,6 @@ import { getYjsValue, SyncedArray, SyncedMap } from '@syncedstore/core';
 import { Factory } from 'src/code/pages/static/composition-root';
 import { Vec2 } from 'src/code/pages/static/vec2';
 import { refProp } from 'src/code/pages/static/vue';
-import { ITemplate } from 'src/stores/pages/templates';
 import {
   computed,
   ComputedRef,
@@ -12,6 +11,7 @@ import {
 } from 'vue';
 import { z } from 'zod';
 
+import { ITemplate } from '../../templates';
 import { AppPage } from '../page';
 import { INoteCollab, PageNote } from './note';
 

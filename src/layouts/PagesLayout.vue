@@ -28,14 +28,17 @@ import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import LeftSidebar from 'src/components/pages/LeftSidebar.vue';
 import MainToolbar from 'src/components/pages/MainToolbar.vue';
 import RightSidebar from 'src/components/pages/RightSidebar/RightSidebar.vue';
+import { useApp } from 'src/stores/app';
 import { usePages } from 'src/stores/pages/pages';
 import { onBeforeUnmount, onMounted, provide, toRef } from 'vue';
 
+const app = useApp();
 const pages = usePages();
 
 const page = toRef(pages, 'page');
 
-provide('pagesApp', factory.makeApp());
+const pagesApp = factory.makeApp();
+provide('pagesApp', pagesApp);
 
 // Release pointer down for touchscreen
 
@@ -169,6 +172,10 @@ onBeforeUnmount(() => {
 // Mark app as mounted
 
 onMounted(async () => {
+  await app.ready;
+
+  await pagesApp.loadData('52bd9bc3-c28c-4185-82f7-6c5be30c9ce3');
+
   pages.mounted = true;
 });
 </script>

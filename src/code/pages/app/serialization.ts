@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { Op } from '../static/quill';
 import { createSyncedText } from '../static/synced-store';
 import { IVec2 } from '../static/vec2';
-import { DeepNotesApp } from './app';
+import { PagesApp } from './app';
 import { IArrowCollab } from './page/arrows/arrow';
 import { INoteCollab } from './page/notes/note';
 import { IRegionCollab } from './page/regions/region';
@@ -94,9 +94,9 @@ export const ISerialRegion = z.lazy(() =>
 ) as z.ZodType<ISerialRegionOutput, z.ZodTypeDef, ISerialRegionInput>;
 
 export class AppSerialization {
-  readonly app: DeepNotesApp;
+  readonly app: PagesApp;
 
-  constructor(app: DeepNotesApp) {
+  constructor(app: PagesApp) {
     this.app = app;
   }
 

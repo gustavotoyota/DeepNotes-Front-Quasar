@@ -28,10 +28,10 @@ import { useQuasar } from 'quasar';
 import { useAPI } from 'src/boot/external/axios';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
-import { useHome } from 'src/stores/home/home';
+import { useApp } from 'src/stores/app';
 import { onMounted, reactive, ref } from 'vue';
 
-const home = useHome();
+const app = useApp();
 const $q = useQuasar();
 const api = useAPI();
 
@@ -42,7 +42,7 @@ const data = reactive({
 const mounted = ref(false);
 
 onMounted(async () => {
-  await home.ready;
+  await app.ready;
 
   const response = await api.post('/api/users/account/general/load');
 

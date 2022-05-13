@@ -2,7 +2,6 @@
   <q-layout
     class="pages-layout"
     view="lHr lpR fFf"
-    v-show="pages.mounted"
   >
     <template v-if="pages.page != null">
       <MainToolbar />
@@ -16,7 +15,7 @@
     </q-page-container>
   </q-layout>
 
-  <loading-overlay v-if="pages.mounted !== true" />
+  <loading-overlay v-if="!pages.mounted" />
 </template>
 
 <script
@@ -36,7 +35,7 @@ const pages = usePages();
 
 const page = toRef(pages, 'page');
 
-provide('app', factory.makeApp());
+provide('pagesApp', factory.makeApp());
 
 // Release pointer down for touchscreen
 

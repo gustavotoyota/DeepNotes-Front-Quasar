@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { DeepNotesApp } from '../app/app';
+import { PagesApp } from '../app/app';
 import { IArrowCollab, PageArrow } from '../app/page/arrows/arrow';
 import { PageArrows } from '../app/page/arrows/arrows';
 import { PageCamera } from '../app/page/camera/camera';
@@ -31,11 +31,11 @@ import { AppSerialization } from '../app/serialization';
 import { Container } from './simple-di';
 
 export const container = new Container({
-  app: (factory: any) => () => new DeepNotesApp(factory),
+  app: (factory: any) => () => new PagesApp(factory),
 
-  serialization: () => (app: DeepNotesApp) => new AppSerialization(app),
+  serialization: () => (app: PagesApp) => new AppSerialization(app),
 
-  page: (factory: any) => (app: DeepNotesApp, id: string) =>
+  page: (factory: any) => (app: PagesApp, id: string) =>
     new AppPage(factory, app, id),
 
   collab: () => (page: AppPage) => new PageCollab(page),

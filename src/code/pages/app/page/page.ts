@@ -8,7 +8,7 @@ import { z } from 'zod';
 
 import { Factory } from '../../static/composition-root';
 import { WebsocketProvider } from '../../static/y-websocket';
-import { DeepNotesApp } from '../app';
+import { PagesApp } from '../app';
 import { PageArrows } from './arrows/arrows';
 import { ICameraData, PageCamera } from './camera/camera';
 import { PagePanning } from './camera/panning';
@@ -65,7 +65,7 @@ export interface IPageData {
 }
 
 export class AppPage extends PageRegion {
-  readonly app: DeepNotesApp;
+  readonly app: PagesApp;
 
   readonly id: string;
 
@@ -102,7 +102,7 @@ export class AppPage extends PageRegion {
 
   readonly arrows: PageArrows;
 
-  constructor(factory: Factory, app: DeepNotesApp, id: string) {
+  constructor(factory: Factory, app: PagesApp, id: string) {
     super(null as any, id, ElemType.PAGE, null);
 
     this.app = app;

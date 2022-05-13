@@ -15,7 +15,7 @@ declare global {
   };
 }
 
-export class DeepNotesApp {
+export class PagesApp {
   readonly serialization: AppSerialization;
 
   constructor(factory: Factory) {

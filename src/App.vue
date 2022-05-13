@@ -1,7 +1,7 @@
 <template>
   <router-view />
 
-  <LoadingOverlay v-if="!home.mounted" />
+  <LoadingOverlay v-if="!app.mounted" />
 </template>
 
 <script
@@ -13,9 +13,9 @@ import { onMounted } from 'vue';
 import { useAPI } from './boot/external/axios';
 import { tryRefreshTokens } from './code/auth';
 import LoadingOverlay from './components/misc/LoadingOverlay.vue';
-import { useHome } from './stores/home/home';
+import { useApp } from './stores/app';
 
-const home = useHome();
+const app = useApp();
 const api = useAPI();
 
 onMounted(async () => {
@@ -25,6 +25,6 @@ onMounted(async () => {
     setTimeout(tokenRefreshLoop, 10000);
   })();
 
-  home.mounted = true;
+  app.mounted = true;
 });
 </script>

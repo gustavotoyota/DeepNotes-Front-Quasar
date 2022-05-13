@@ -123,8 +123,13 @@ async function register() {
 
       publicKey: to_base64(randomKeys.publicKey),
       encryptedPrivateKey: to_base64(randomKeys.encryptedPrivateKey),
+      encryptedUserSymmetricKey: to_base64(
+        randomKeys.encryptedUserSymmetricKey
+      ),
 
-      encryptedSymmetricKey: to_base64(randomKeys.encryptedSymmetricKey),
+      encryptedGroupSymmetricKey: to_base64(
+        randomKeys.encryptedGroupSymmetricKey
+      ),
     });
 
     $q.notify({

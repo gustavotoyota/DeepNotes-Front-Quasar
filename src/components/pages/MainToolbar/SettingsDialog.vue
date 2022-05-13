@@ -88,14 +88,11 @@
   lang="ts"
 >
 import { cloneDeep } from 'lodash';
-import { PagesApp } from 'src/code/pages/app/app';
-import { inject, nextTick, onMounted, ref, watch } from 'vue';
+import { nextTick, onMounted, ref, watch } from 'vue';
 
 import ToolbarBtn from '../misc/ToolbarBtn.vue';
 import SettingsGeneralTab from './SettingsGeneralTab.vue';
 import SettingsTemplatesTab from './SettingsTemplatesTab.vue';
-
-const pagesApp = inject<PagesApp>('pagesApp')!;
 
 const visible = ref(false);
 
@@ -116,8 +113,8 @@ onMounted(() => {
 
       tab.value = 'general';
 
-      templatesTab.value.templates = cloneDeep(pagesApp.templates.react.list);
-      templatesTab.value.defaultTemplateId = pagesApp.templates.react.defaultId;
+      templatesTab.value.templates = cloneDeep($pages.templates.react.list);
+      templatesTab.value.defaultTemplateId = $pages.templates.react.defaultId;
 
       templatesTab.value.selectedTemplates.clear();
     },

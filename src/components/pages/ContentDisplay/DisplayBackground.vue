@@ -10,11 +10,9 @@
   setup
   lang="ts"
 >
-import { PagesApp } from 'src/code/pages/app/app';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { inject } from 'vue';
 
-const pagesApp = inject<PagesApp>('pagesApp')!;
 const page = inject<AppPage>('page')!;
 
 function onPointerDown(event: PointerEvent) {
@@ -30,7 +28,7 @@ function onPointerDown(event: PointerEvent) {
 function onDoubleClick(event: MouseEvent) {
   const clientPos = page.pos.eventToClient(event);
 
-  page.notes.createFromTemplate(pagesApp.templates.react.default, clientPos);
+  page.notes.createFromTemplate($pages.templates.react.default, clientPos);
 }
 </script>
 

@@ -123,13 +123,10 @@
 >
 import { remove } from 'lodash';
 import { Notify } from 'quasar';
-import { PagesApp } from 'src/code/pages/app/app';
 import { ITemplate } from 'src/code/pages/app/templates';
 import Gap from 'src/components/misc/Gap.vue';
-import { computed, inject, reactive, ref } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import draggable from 'vuedraggable';
-
-const pagesApp = inject<PagesApp>('pagesApp')!;
 
 const templates = ref([] as ITemplate[]);
 const defaultTemplateId = ref('');
@@ -211,8 +208,8 @@ function deleteSelection() {
 }
 
 async function save() {
-  pagesApp.templates.react.list = templates.value;
-  pagesApp.templates.react.defaultId = defaultTemplateId.value;
+  $pages.templates.react.list = templates.value;
+  $pages.templates.react.defaultId = defaultTemplateId.value;
 }
 
 defineExpose({

@@ -11,16 +11,13 @@
   setup
   lang="ts"
 >
-import { PagesApp } from 'src/code/pages/app/app';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { factory } from 'src/code/pages/static/composition-root';
 import ContentDisplay from 'src/components/pages/ContentDisplay/ContentDisplay.vue';
 import { usePageCache } from 'src/stores/pages/page-cache';
 import { usePages } from 'src/stores/pages/pages';
-import { inject, onMounted, provide, shallowRef } from 'vue';
+import { onMounted, provide, shallowRef } from 'vue';
 import { useRoute } from 'vue-router';
-
-const pagesApp = inject<PagesApp>('pagesApp')!;
 
 const pages = usePages();
 const pageCache = usePageCache();
@@ -33,12 +30,10 @@ provide('page', page);
 onMounted(async () => {
   await pages.ready;
 
-  page.value = factory.makePage(pagesApp, route.params.page_id as string);
-
+  page.value = factory.makePage($pages, route.params.page_id as string);
   pageCache.addPage(page.value);
 
   const pageData = await page.value.preSync();
-
   page.value.postSync(pageData);
 });
 </script>

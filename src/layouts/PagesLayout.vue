@@ -30,7 +30,7 @@ import MainToolbar from 'src/components/pages/MainToolbar.vue';
 import RightSidebar from 'src/components/pages/RightSidebar/RightSidebar.vue';
 import { useApp } from 'src/stores/app';
 import { usePages } from 'src/stores/pages/pages';
-import { onBeforeUnmount, onMounted, provide, toRef } from 'vue';
+import { onBeforeUnmount, onMounted, toRef } from 'vue';
 import { useRoute } from 'vue-router';
 
 const app = useApp();
@@ -39,8 +39,17 @@ const route = useRoute();
 
 const page = toRef(pages, 'page');
 
-const pagesApp = factory.makeApp();
-provide('pagesApp', pagesApp);
+// Initialize pages app
+
+onMounted(async () => {
+  globalThis.$pages = factory.makeApp();
+
+  await app.ready;
+
+  await $pages.loadData(route.params.page_id as string);
+
+  pages.mounted = true;
+});
 
 // Release pointer down for touchscreen
 
@@ -169,16 +178,6 @@ function onPaste(event: ClipboardEvent) {
 
 onBeforeUnmount(() => {
   document.removeEventListener('paste', onPaste);
-});
-
-// Mark app as mounted
-
-onMounted(async () => {
-  await app.ready;
-
-  await pagesApp.loadData(route.params.page_id as string);
-
-  pages.mounted = true;
 });
 </script>
 

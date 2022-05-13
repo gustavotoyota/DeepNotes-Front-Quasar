@@ -110,12 +110,21 @@ export async function generateRandomKeys(masterKey: Uint8Array) {
 
   const encryptedPrivateKey = encryptSymmetric(keyPair.privateKey, masterKey);
 
+  // User symmetric key
+
+  const userSymmetricKey = sodium.randombytes_buf(32);
+
+  const encryptedUserSymmetricKey = encryptSymmetric(
+    userSymmetricKey,
+    masterKey
+  );
+
   // Group symmetric key
 
-  const symmetricKey = sodium.randombytes_buf(32);
+  const groupSymmetricKey = sodium.randombytes_buf(32);
 
-  const encryptedSymmetricKey = encryptAssymetric(
-    symmetricKey,
+  const encryptedGroupSymmetricKey = encryptAssymetric(
+    groupSymmetricKey,
     keyPair.publicKey,
     keyPair.privateKey
   );
@@ -123,8 +132,8 @@ export async function generateRandomKeys(masterKey: Uint8Array) {
   return {
     publicKey: keyPair.publicKey,
     encryptedPrivateKey,
-
-    encryptedSymmetricKey,
+    encryptedUserSymmetricKey,
+    encryptedGroupSymmetricKey,
   };
 }
 

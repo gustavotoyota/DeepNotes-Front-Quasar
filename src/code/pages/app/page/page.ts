@@ -61,7 +61,7 @@ export interface IPageData {
   pageName: string;
   camera: ICameraData;
   encryptedSymmetricKey: string;
-  distributorsPublicKey: string;
+  lastDistributorsPublicKey: string;
 }
 
 export class AppPage extends PageRegion {
@@ -184,7 +184,7 @@ export class AppPage extends PageRegion {
 
     const decryptedSymmetricKey = privateKey.decrypt(
       from_base64(response.data.encryptedSymmetricKey),
-      from_base64(response.data.distributorsPublicKey)
+      from_base64(response.data.lastDistributorsPublicKey)
     );
 
     const symmetricKey = createSymmetricKey(decryptedSymmetricKey);

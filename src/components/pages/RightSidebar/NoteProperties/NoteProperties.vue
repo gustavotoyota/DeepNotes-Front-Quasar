@@ -419,8 +419,6 @@ const ui = useUI();
 
 const page = inject<Ref<AppPage>>('page')!;
 
-const $pages = globalThis.$pages;
-
 const note = toRef(page.value.activeElem.react, 'elem') as Ref<PageNote>;
 
 function changeProp(value: any, func: (note: PageNote, value: any) => void) {

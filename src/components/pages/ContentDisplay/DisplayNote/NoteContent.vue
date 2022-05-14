@@ -7,6 +7,7 @@
       'background-color': backgroundColor,
     }"
     @pointerdown.left.stop="onPointerDown"
+    @click="onClick"
   >
     <slot />
   </div>
@@ -20,6 +21,9 @@ import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { isMouseOverScrollbar } from 'src/code/pages/static/dom';
 import { computed, inject } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const page = inject<AppPage>('page')!;
 const note = inject<PageNote>('note')!;
@@ -39,6 +43,16 @@ function onPointerDown(event: PointerEvent) {
     return;
   }
 
+  if (
+    note.collab.link != null &&
+    !event.ctrlKey &&
+    !event.altKey &&
+    !event.shiftKey &&
+    !note.react.selected
+  ) {
+    return;
+  }
+
   if (note.react.editing) {
     return;
   }
@@ -50,6 +64,19 @@ function onPointerDown(event: PointerEvent) {
   if (note.react.selected) {
     page.dragging.start(event);
   }
+}
+
+function onClick(event: MouseEvent) {
+  if (
+    note.collab.link == null ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    note.react.selected
+  ) {
+    return;
+  }
+
+  page.app.navigateTo(note.collab.link, router);
 }
 </script>
 

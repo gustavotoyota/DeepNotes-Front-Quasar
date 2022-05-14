@@ -20,7 +20,6 @@ import { useRoute } from 'vue-router';
 const route = useRoute();
 
 const page = shallowRef<AppPage>();
-
 provide('page', page);
 
 onMounted(async () => {

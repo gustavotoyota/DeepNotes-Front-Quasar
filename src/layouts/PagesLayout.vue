@@ -29,14 +29,15 @@ import LeftSidebar from 'src/components/pages/LeftSidebar.vue';
 import MainToolbar from 'src/components/pages/MainToolbar.vue';
 import RightSidebar from 'src/components/pages/RightSidebar/RightSidebar.vue';
 import { useApp } from 'src/stores/app';
-import { onBeforeUnmount, onMounted, toRef } from 'vue';
+import { getCurrentInstance, onBeforeUnmount, onMounted, toRef } from 'vue';
 import { useRoute } from 'vue-router';
 
 const app = useApp();
 const route = useRoute();
 
-globalThis.$pages = factory.makeApp();
-const $pages = globalThis.$pages;
+const $pages = factory.makeApp();
+globalThis.$pages = $pages;
+getCurrentInstance()!.appContext.config.globalProperties.$pages = $pages;
 const page = toRef($pages.react, 'page');
 
 // Initialize pages app

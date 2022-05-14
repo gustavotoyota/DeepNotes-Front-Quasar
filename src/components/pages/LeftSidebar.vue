@@ -52,6 +52,8 @@
         v-for="pageRef in $pages.react.pathPages"
         :key="pageRef.id"
         :name="pageRef.name"
+        :active="pageRef.id === $pages.react.pageId"
+        @click="$pages.navigateTo(pageRef.id, $router)"
       />
     </q-list>
   </q-drawer>
@@ -66,5 +68,4 @@ import { useUI } from 'src/stores/pages/ui';
 import MiniSidebarPage from './misc/MiniSidebarPage.vue';
 
 const ui = useUI();
-const $pages = globalThis.$pages;
 </script>

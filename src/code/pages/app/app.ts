@@ -1,6 +1,7 @@
 import 'src/code/pages/static/types';
 
 import { computed, ComputedRef, UnwrapRef, watch } from 'vue';
+import { Router } from 'vue-router';
 
 import { Factory } from '../static/composition-root';
 import { refProp } from '../static/vue';
@@ -24,6 +25,12 @@ declare global {
   var $pages: PagesApp;
 }
 
+declare module '@vue/runtime-core' {
+  interface ComponentCustomProperties {
+    $pages: PagesApp;
+  }
+}
+
 export interface IAppReact {
   mounted: boolean;
 
@@ -32,6 +39,8 @@ export interface IAppReact {
 
   pageId: string | null;
   page: ComputedRef<AppPage>;
+
+  parentPageId: string | null;
 }
 
 export class PagesApp {
@@ -60,6 +69,8 @@ export class PagesApp {
           return page.id === this.react.pageId;
         }) as AppPage;
       }),
+
+      parentPageId: null,
     });
 
     globalThis.__DEEP_NOTES__ = {
@@ -96,5 +107,13 @@ export class PagesApp {
 
     this.templates.react.list = response.data.templates;
     this.templates.react.defaultId = response.data.defaultTemplateId;
+  }
+
+  navigateTo(url: string, router: Router, fromParent?: boolean) {
+    this.react.parentPageId = fromParent ? this.react.pageId : null;
+
+    this.react.pageId = url;
+
+    router.push(`/pages/${url}`);
   }
 }

@@ -2,8 +2,7 @@
   <div
     class="note-content"
     :style="{
-      cursor:
-        note.collab.link == null || note.react.selected ? undefined : 'pointer',
+      cursor: !note.collab.link || note.react.selected ? undefined : 'pointer',
       'background-color': backgroundColor,
     }"
     @pointerdown.left.stop="onPointerDown"
@@ -44,7 +43,7 @@ function onPointerDown(event: PointerEvent) {
   }
 
   if (
-    note.collab.link != null &&
+    note.collab.link &&
     !event.ctrlKey &&
     !event.altKey &&
     !event.shiftKey &&
@@ -68,7 +67,7 @@ function onPointerDown(event: PointerEvent) {
 
 function onClick(event: MouseEvent) {
   if (
-    note.collab.link == null ||
+    !note.collab.link ||
     event.ctrlKey ||
     event.shiftKey ||
     note.react.selected

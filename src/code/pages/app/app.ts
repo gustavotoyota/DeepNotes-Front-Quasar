@@ -67,7 +67,7 @@ export class PagesApp {
       page: computed(() => {
         return this.pageCache.react.cache.find((page) => {
           return page.id === this.react.pageId;
-        }) as AppPage;
+        })!;
       }),
 
       parentPageId: null,
@@ -109,11 +109,19 @@ export class PagesApp {
     this.templates.react.defaultId = response.data.defaultTemplateId;
   }
 
-  navigateTo(url: string, router: Router, fromParent?: boolean) {
+  async navigateTo(url: string, router: Router, fromParent?: boolean) {
+    console.log('navigateTo', url);
+
     this.react.parentPageId = fromParent ? this.react.pageId : null;
 
-    this.react.pageId = url;
-
     router.push(`/pages/${url}`);
+
+    await this.initializePage(url);
+  }
+
+  async initializePage(pageId: string) {
+    const page = await $pages.pageCache.getPage(pageId);
+
+    $pages.react.pageId = page.id;
   }
 }

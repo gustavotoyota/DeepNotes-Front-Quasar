@@ -7,6 +7,7 @@ import {
   watch,
 } from 'vue';
 
+import { factory } from '../static/composition-root';
 import { refProp } from '../static/vue';
 import { PagesApp } from './app';
 import { AppPage } from './page/page';
@@ -26,7 +27,7 @@ export class AppPageCache {
     this.app = app;
 
     this.react = refProp<IPageCacheReact>(this, 'react', {
-      cache: [],
+      cache: shallowReactive([]),
 
       totalSize: computed(() => {
         return this.react.cache.reduce((acc, item) => {
@@ -48,15 +49,20 @@ export class AppPageCache {
     );
   }
 
-  addPage(page: AppPage) {
-    if (this.react.cache.find((item) => item.id === page.id)) {
-      return;
+  async getPage(pageId: string) {
+    let page = this.react.cache.find((item) => item.id === pageId);
+
+    if (page != null) {
+      return page;
     }
 
-    if ($pages.react.pageId == null) {
-      $pages.react.pageId = page.id;
-    }
+    page = factory.makePage(this.app, pageId);
 
-    this.react.cache.push(shallowReactive(page));
+    const pageData = await page.preSync();
+    page.postSync(pageData);
+
+    this.react.cache.push(page);
+
+    return page;
   }
 }

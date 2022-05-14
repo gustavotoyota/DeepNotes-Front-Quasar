@@ -12,6 +12,17 @@
 
     <q-page-container>
       <router-view />
+
+      <q-page>
+        <ContentDisplay
+          v-for="page in $pages.pageCache.react.cache"
+          :key="page.id"
+          :page="page"
+          :style="{
+            visibility: page.id === $pages.react.pageId ? undefined : 'hidden',
+          }"
+        />
+      </q-page>
     </q-page-container>
   </q-layout>
 
@@ -25,6 +36,7 @@
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { factory } from 'src/code/pages/static/composition-root';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
+import ContentDisplay from 'src/components/pages/ContentDisplay/ContentDisplay.vue';
 import LeftSidebar from 'src/components/pages/LeftSidebar.vue';
 import MainToolbar from 'src/components/pages/MainToolbar.vue';
 import RightSidebar from 'src/components/pages/RightSidebar/RightSidebar.vue';
@@ -38,6 +50,7 @@ const route = useRoute();
 const $pages = factory.makeApp();
 globalThis.$pages = $pages;
 getCurrentInstance()!.appContext.config.globalProperties.$pages = $pages;
+
 const page = toRef($pages.react, 'page');
 
 // Initialize pages app
@@ -46,6 +59,8 @@ onMounted(async () => {
   await app.ready;
 
   await $pages.loadData(route.params.page_id as string);
+
+  await $pages.initializePage(route.params.page_id as string);
 
   $pages.react.mounted = true;
 });

@@ -4,7 +4,6 @@
     :active="active"
     active-class="bg-grey-9 text-grey-1"
     v-ripple
-    @click="$emit('click', $event)"
   >
     <q-item-section avatar>
       <q-icon name="mdi-note" />

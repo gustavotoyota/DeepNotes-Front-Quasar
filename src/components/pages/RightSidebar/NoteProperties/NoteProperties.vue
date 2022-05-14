@@ -96,6 +96,10 @@
         hide-selected
         fill-input
       />
+
+      <Gap style="height: 16px" />
+
+      <NewPageDialog />
     </div>
 
     <q-separator />
@@ -407,8 +411,9 @@ import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
 import { inject, Ref, toRef } from 'vue';
 
-import Checkbox from '../misc/Checkbox.vue';
-import MiniSidebarBtn from '../misc/MiniSidebarBtn.vue';
+import Checkbox from '../../misc/Checkbox.vue';
+import MiniSidebarBtn from '../../misc/MiniSidebarBtn.vue';
+import NewPageDialog from './NewPageDialog.vue';
 
 const ui = useUI();
 

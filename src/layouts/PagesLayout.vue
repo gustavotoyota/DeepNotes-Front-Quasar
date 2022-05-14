@@ -3,7 +3,7 @@
     class="pages-layout"
     view="lHr lpR fFf"
   >
-    <template v-if="pages.page != null">
+    <template v-if="$pages.react.page != null">
       <MainToolbar />
 
       <LeftSidebar />
@@ -15,7 +15,7 @@
     </q-page-container>
   </q-layout>
 
-  <loading-overlay v-if="!pages.mounted" />
+  <loading-overlay v-if="!$pages.react.mounted" />
 </template>
 
 <script
@@ -29,26 +29,24 @@ import LeftSidebar from 'src/components/pages/LeftSidebar.vue';
 import MainToolbar from 'src/components/pages/MainToolbar.vue';
 import RightSidebar from 'src/components/pages/RightSidebar/RightSidebar.vue';
 import { useApp } from 'src/stores/app';
-import { usePages } from 'src/stores/pages/pages';
 import { onBeforeUnmount, onMounted, toRef } from 'vue';
 import { useRoute } from 'vue-router';
 
 const app = useApp();
-const pages = usePages();
 const route = useRoute();
 
-const page = toRef(pages, 'page');
+globalThis.$pages = factory.makeApp();
+const $pages = globalThis.$pages;
+const page = toRef($pages.react, 'page');
 
 // Initialize pages app
 
 onMounted(async () => {
-  globalThis.$pages = factory.makeApp();
-
   await app.ready;
 
   await $pages.loadData(route.params.page_id as string);
 
-  pages.mounted = true;
+  $pages.react.mounted = true;
 });
 
 // Release pointer down for touchscreen

@@ -41,19 +41,16 @@
   lang="ts"
 >
 import { ElemType } from 'src/code/pages/app/page/elems/elem';
-import { usePages } from 'src/stores/pages/pages';
 import { useUI } from 'src/stores/pages/ui';
 import { provide, toRef } from 'vue';
 
 import ArrowProperties from './ArrowProperties.vue';
-import NoteProperties from './NoteProperties.vue';
+import NoteProperties from './NoteProperties/NoteProperties.vue';
 import PageProperties from './PageProperties.vue';
 
 const ui = useUI();
 
-const pages = usePages();
-
-const page = toRef(pages, 'page');
+const page = toRef($pages.react, 'page');
 
 provide('page', page);
 </script>

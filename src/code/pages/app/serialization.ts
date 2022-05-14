@@ -1,5 +1,4 @@
 import { cloneDeep, pull } from 'lodash';
-import { usePages } from 'src/stores/pages/pages';
 import { v4 } from 'uuid';
 import { z } from 'zod';
 
@@ -106,7 +105,7 @@ export class AppSerialization {
       arrows: [],
     };
 
-    const page = usePages().page;
+    const page = $pages.react.page;
 
     // Serialize notes
 
@@ -171,7 +170,7 @@ export class AppSerialization {
   private _deserializeAux(
     serialRegion: ISerialRegionOutput
   ): z.output<typeof IRegionCollab> {
-    const page = usePages().page;
+    const page = $pages.react.page;
 
     const noteMap = new Map<number, string>();
 
@@ -269,9 +268,7 @@ export class AppSerialization {
 
     const parsedSerialRegion = ISerialRegion.parse(serialRegion);
 
-    const pages = usePages();
-
-    pages.page.collab.doc.transact(() => {
+    $pages.react.page.collab.doc.transact(() => {
       result = this._deserializeAux(parsedSerialRegion);
 
       destIndex = destIndex ?? destRegion.noteIds.length;

@@ -1,10 +1,11 @@
 import 'src/code/pages/static/types';
 
-import { UnwrapRef } from 'vue';
+import { computed, ComputedRef, UnwrapRef, watch } from 'vue';
 
 import { Factory } from '../static/composition-root';
 import { refProp } from '../static/vue';
-import { IPageReference } from './page/page';
+import { AppPage, IPageReference } from './page/page';
+import { AppPageCache } from './page-cache';
 import { AppSerialization } from './serialization';
 import { AppTemplates, ITemplate } from './templates';
 
@@ -24,28 +25,59 @@ declare global {
 }
 
 export interface IAppReact {
+  mounted: boolean;
+
   pathPages: IPageReference[];
   recentPages: IPageReference[];
+
+  pageId: string | null;
+  page: ComputedRef<AppPage>;
 }
 
 export class PagesApp {
   readonly serialization: AppSerialization;
   readonly templates: AppTemplates;
+  readonly pageCache: AppPageCache;
 
   react: UnwrapRef<IAppReact>;
+
+  ready: Promise<boolean>;
 
   constructor(factory: Factory) {
     this.serialization = factory.makeSerialization(this);
     this.templates = factory.makeTemplates(this);
+    this.pageCache = factory.makePageCache(this);
 
     this.react = refProp<IAppReact>(this, 'react', {
+      mounted: false,
+
       pathPages: [],
       recentPages: [],
+
+      pageId: null,
+      page: computed(() => {
+        return this.pageCache.react.cache.find((page) => {
+          return page.id === this.react.pageId;
+        }) as AppPage;
+      }),
     });
 
     globalThis.__DEEP_NOTES__ = {
       pages: {},
     };
+
+    this.ready = new Promise((resolve) => {
+      const unwatch = watch(
+        () => this.react.mounted,
+        () => {
+          if (this.react.mounted) {
+            unwatch();
+            resolve(this.react.mounted);
+          }
+        },
+        { immediate: true }
+      );
+    });
   }
 
   async loadData(initialPageId: string) {

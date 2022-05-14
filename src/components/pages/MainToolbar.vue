@@ -211,7 +211,6 @@
 >
 import { NoteTextSection } from 'src/code/pages/app/page/notes/note';
 import Gap from 'src/components/misc/Gap.vue';
-import { usePages } from 'src/stores/pages/pages';
 import { useUI } from 'src/stores/pages/ui';
 import { toRef } from 'vue';
 
@@ -220,9 +219,7 @@ import ToolbarBtn from './misc/ToolbarBtn.vue';
 
 const ui = useUI();
 
-const pages = usePages();
-
-const page = toRef(pages, 'page');
+const page = toRef($pages.react, 'page');
 
 function format(funcName: 'formatLine' | 'removeFormat', ...args: any[]) {
   page.value.collab.doc.transact(() => {

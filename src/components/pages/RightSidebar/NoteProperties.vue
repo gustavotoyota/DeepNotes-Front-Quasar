@@ -82,20 +82,19 @@
     <!-- Link -->
 
     <div style="padding: 20px; display: flex; flex-direction: column">
-      <q-input
-        label="Link"
-        :model-value="note.collab.link ?? 'None'"
-        dense
+      <q-select
+        label="Link URL"
+        :options="$pages.react.recentPages"
+        emit-value
+        option-value="id"
+        option-label="name"
+        v-model="note.collab.link"
+        @input-value="note.collab.link = $event"
+        use-input
         filled
-        readonly
-      />
-
-      <Gap style="height: 16px" />
-
-      <q-btn
-        label="Modify"
-        color="primary"
         dense
+        hide-selected
+        fill-input
       />
     </div>
 
@@ -414,6 +413,8 @@ import MiniSidebarBtn from '../misc/MiniSidebarBtn.vue';
 const ui = useUI();
 
 const page = inject<Ref<AppPage>>('page')!;
+
+const $pages = globalThis.$pages;
 
 const note = toRef(page.value.activeElem.react, 'elem') as Ref<PageNote>;
 

@@ -27,13 +27,11 @@
 
     <div style="flex: 1; overflow-y: auto; background-color: rgb(33, 33, 33)">
       <template v-if="page.activeElem.react.elem != null">
-        <note-properties v-if="page.activeElem.react.type === ElemType.NOTE" />
-        <arrow-properties
-          v-if="page.activeElem.react.type === ElemType.ARROW"
-        />
+        <NoteProperties v-if="page.activeElem.react.type === ElemType.NOTE" />
+        <ArrowProperties v-if="page.activeElem.react.type === ElemType.ARROW" />
       </template>
 
-      <page-properties v-else />
+      <PageProperties v-else />
     </div>
   </q-drawer>
 </template>

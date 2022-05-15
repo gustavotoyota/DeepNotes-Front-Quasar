@@ -112,6 +112,7 @@ function storeToken(tokenName: string, token: string) {
     expires: addDays(new Date(), 7),
     secure: process.env.PROD,
     sameSite: 'Strict',
+    domain: process.env.PROD ? 'deepnotes.app' : '192.168.1.2',
   });
 
   const decodedToken = jwtDecode<{ exp: number; iat: number }>(token);

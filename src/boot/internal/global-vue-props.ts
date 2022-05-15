@@ -1,3 +1,4 @@
+import process from 'process';
 import { boot } from 'quasar/wrappers';
 
 declare module '@vue/runtime-core' {

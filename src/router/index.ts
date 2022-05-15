@@ -34,5 +34,19 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
 
+  Router.beforeEach(async (to, from, next) => {
+    if (
+      process.env.SERVER ||
+      !to.fullPath.startsWith('/pages/') ||
+      globalThis.$pages == null
+    ) {
+      return next();
+    }
+
+    await $pages.setupPage(to.params.page_id as string);
+
+    next();
+  });
+
   return Router;
 });

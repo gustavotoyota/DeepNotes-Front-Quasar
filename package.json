@@ -16,7 +16,7 @@
   "dependencies": {
     "@quasar/extras": "1.13.6",
     "@syncedstore/core": "0.3.7",
-    "argon2-browser": "1.18.1",
+    "argon2-browser": "1.18.0",
     "axios": "0.21.4",
     "highlight.js": "11.5.1",
     "jwt-decode": "3.1.2",

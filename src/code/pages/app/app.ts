@@ -1,9 +1,10 @@
 import 'src/code/pages/static/types';
 
-import { computed, ComputedRef, UnwrapRef, watch } from 'vue';
+import { computed, ComputedRef, ShallowRef, shallowRef, UnwrapRef } from 'vue';
 import { Router } from 'vue-router';
 
-import { Factory } from '../static/composition-root';
+import { Factory, factory } from '../static/composition-root';
+import { isUuid4 } from '../static/utils';
 import { refProp } from '../static/vue';
 import { AppPage, IPageReference } from './page/page';
 import { AppPageCache } from './page-cache';
@@ -37,8 +38,8 @@ export interface IAppReact {
   pathPages: IPageReference[];
   recentPages: IPageReference[];
 
-  pageId: string | null;
-  page: ComputedRef<AppPage>;
+  page: ShallowRef<AppPage>;
+  pageId: ComputedRef<string | null>;
 
   parentPageId: string | null;
 }
@@ -49,8 +50,6 @@ export class PagesApp {
   readonly pageCache: AppPageCache;
 
   react: UnwrapRef<IAppReact>;
-
-  ready: Promise<boolean>;
 
   constructor(factory: Factory) {
     this.serialization = factory.makeSerialization(this);
@@ -63,11 +62,9 @@ export class PagesApp {
       pathPages: [],
       recentPages: [],
 
-      pageId: null,
-      page: computed(() => {
-        return this.pageCache.react.cache.find((page) => {
-          return page.id === this.react.pageId;
-        })!;
+      page: shallowRef(null) as any,
+      pageId: computed(() => {
+        return this.react.page?.id ?? null;
       }),
 
       parentPageId: null,
@@ -76,19 +73,25 @@ export class PagesApp {
     globalThis.__DEEP_NOTES__ = {
       pages: {},
     };
+  }
 
-    this.ready = new Promise((resolve) => {
-      const unwatch = watch(
-        () => this.react.mounted,
-        () => {
-          if (this.react.mounted) {
-            unwatch();
-            resolve(this.react.mounted);
-          }
-        },
-        { immediate: true }
-      );
-    });
+  async navigateTo(dest: string, router: Router, fromParent?: boolean) {
+    console.log('navigateTo', dest);
+
+    if (
+      dest.startsWith('http://192.168.1.2:60379/pages/') ||
+      dest.startsWith('https://deepnotes.app/pages/')
+    ) {
+      dest = dest.split('/').at(-1)!;
+    }
+
+    if (isUuid4(dest)) {
+      this.react.parentPageId = fromParent ? this.react.pageId : null;
+
+      router.push(`/pages/${dest}`);
+    } else {
+      location.assign(dest);
+    }
   }
 
   async loadData(initialPageId: string) {
@@ -109,19 +112,46 @@ export class PagesApp {
     this.templates.react.defaultId = response.data.defaultTemplateId;
   }
 
-  async navigateTo(url: string, router: Router, fromParent?: boolean) {
-    console.log('navigateTo', url);
+  async updatePathPages(pageId: string) {
+    const newPageRef = this.react.pathPages.find((page) => page.id === pageId);
 
-    this.react.parentPageId = fromParent ? this.react.pageId : null;
+    if (newPageRef != null) {
+      return;
+    }
 
-    router.push(`/pages/${url}`);
+    const currentPageIndex = this.react.pathPages.findIndex(
+      (page) => page.id === this.react.pageId
+    );
 
-    await this.initializePage(url);
+    if (currentPageIndex >= 0) {
+      this.react.pathPages.splice(currentPageIndex + 1);
+
+      this.react.pathPages.push({
+        id: pageId,
+        name: '',
+      });
+    } else {
+      await this.loadData(pageId);
+    }
   }
 
-  async initializePage(pageId: string) {
-    const page = await $pages.pageCache.getPage(pageId);
+  async setupPage(pageId: string) {
+    console.log('Initialize page');
 
-    $pages.react.pageId = page.id;
+    await this.updatePathPages(pageId);
+
+    if (this.pageCache.has(pageId)) {
+      $pages.react.page = this.pageCache.get(pageId)!;
+      return;
+    }
+
+    const page = factory.makePage(this, pageId);
+
+    this.pageCache.add(page);
+
+    $pages.react.page = page;
+
+    const pageData = await page.preSync();
+    page.postSync(pageData);
   }
 }

@@ -169,14 +169,16 @@ export class AppPage extends PageRegion {
   async preSync() {
     const roomName = `page-${this.id}-3`;
 
-    // Load page data
+    // Request page data
 
     const response = await $api.post<IPageData>('/api/pages/data', {
       pageId: this.id,
-      parentPageId: null,
+      parentPageId: this.app.react.parentPageId,
     });
 
-    // Set initial page name
+    this.app.react.parentPageId = null;
+
+    // Load page name
 
     this.react.name = response.data.pageName;
 

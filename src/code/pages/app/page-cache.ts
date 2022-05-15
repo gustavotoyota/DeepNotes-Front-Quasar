@@ -7,7 +7,6 @@ import {
   watch,
 } from 'vue';
 
-import { factory } from '../static/composition-root';
 import { refProp } from '../static/vue';
 import { PagesApp } from './app';
 import { AppPage } from './page/page';
@@ -49,20 +48,14 @@ export class AppPageCache {
     );
   }
 
-  async getPage(pageId: string) {
-    let page = this.react.cache.find((item) => item.id === pageId);
+  get(pageId: string): AppPage | null {
+    return this.react.cache.find((page) => page.id === pageId) ?? null;
+  }
+  has(pageId: string): boolean {
+    return this.get(pageId) != null;
+  }
 
-    if (page != null) {
-      return page;
-    }
-
-    page = factory.makePage(this.app, pageId);
-
-    const pageData = await page.preSync();
-    page.postSync(pageData);
-
+  add(page: AppPage): void {
     this.react.cache.push(page);
-
-    return page;
   }
 }

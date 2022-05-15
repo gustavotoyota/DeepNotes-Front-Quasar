@@ -3,7 +3,7 @@
     class="pages-layout"
     view="lHr lpR fFf"
   >
-    <template v-if="$pages.react.page != null">
+    <template v-if="mounted">
       <MainToolbar />
 
       <LeftSidebar />
@@ -11,22 +11,20 @@
     </template>
 
     <q-page-container>
-      <router-view />
-
       <q-page>
         <ContentDisplay
           v-for="page in $pages.pageCache.react.cache"
           :key="page.id"
           :page="page"
           :style="{
-            visibility: page.id === $pages.react.pageId ? undefined : 'hidden',
+            visibility: page === $pages.react.page ? undefined : 'hidden',
           }"
         />
       </q-page>
     </q-page-container>
   </q-layout>
 
-  <loading-overlay v-if="!$pages.react.mounted" />
+  <loading-overlay v-if="!mounted" />
 </template>
 
 <script
@@ -41,7 +39,13 @@ import LeftSidebar from 'src/components/pages/LeftSidebar.vue';
 import MainToolbar from 'src/components/pages/MainToolbar.vue';
 import RightSidebar from 'src/components/pages/RightSidebar/RightSidebar.vue';
 import { useApp } from 'src/stores/app';
-import { getCurrentInstance, onBeforeUnmount, onMounted, toRef } from 'vue';
+import {
+  getCurrentInstance,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  toRef,
+} from 'vue';
 import { useRoute } from 'vue-router';
 
 const app = useApp();
@@ -53,16 +57,16 @@ getCurrentInstance()!.appContext.config.globalProperties.$pages = $pages;
 
 const page = toRef($pages.react, 'page');
 
+const mounted = ref(false);
+
 // Initialize pages app
 
 onMounted(async () => {
   await app.ready;
 
-  await $pages.loadData(route.params.page_id as string);
+  await $pages.setupPage(route.params.page_id as string);
 
-  await $pages.initializePage(route.params.page_id as string);
-
-  $pages.react.mounted = true;
+  mounted.value = true;
 });
 
 // Release pointer down for touchscreen

@@ -27,7 +27,7 @@
     <div style="padding: 20px">
       <q-input
         label="Page name"
-        v-model="page.react.name"
+        v-model="page.react.collab.name"
         dense
         filled
       />

@@ -178,10 +178,6 @@ export class AppPage extends PageRegion {
 
     this.app.react.parentPageId = null;
 
-    // Load page name
-
-    this.react.name = response.data.pageName;
-
     // Decrypt symmetric key
 
     const decryptedSymmetricKey = privateKey.decrypt(
@@ -204,9 +200,6 @@ export class AppPage extends PageRegion {
 
     await new Promise((resolve) =>
       this.collab.websocketProvider.on('sync', () => {
-        // Update page name after sync
-        this.react.name = this.react.collab.name;
-
         resolve(true);
       })
     );
@@ -216,7 +209,7 @@ export class AppPage extends PageRegion {
 
   postSync(pageData: IPageData) {
     if (this.collab.store.page.name == null) {
-      this.collab.reset();
+      this.collab.reset(pageData.pageName);
     }
 
     this.elems.setup();

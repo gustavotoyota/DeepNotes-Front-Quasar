@@ -38,7 +38,7 @@ export const INoteCollabTextSection = INoteCollabSection.extend({
 export type INoteCollabTextSection = z.output<typeof INoteCollabTextSection>;
 
 export const INoteCollab = IRegionCollab.extend({
-  link: z.string().uuid().or(z.string().url()).nullable().default(null),
+  link: z.string().nullable().default(null),
 
   anchor: IVec2.default({ x: 0.5, y: 0.5 }),
   pos: IVec2.default({ x: 0, y: 0 }),

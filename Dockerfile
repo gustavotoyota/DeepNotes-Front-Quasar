@@ -14,4 +14,4 @@ WORKDIR ../app
 RUN mv ../build/dist/ssr/* ./
 RUN rm -rf ./build
 RUN yarn install
-CMD [ "yarn", "start" ]
+CMD pm2 start index.js -i max && pm2 logs

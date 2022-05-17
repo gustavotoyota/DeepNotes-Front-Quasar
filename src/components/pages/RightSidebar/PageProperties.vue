@@ -47,7 +47,7 @@
       <Gap style="width: 16px" />
 
       <q-checkbox
-        label="Body"
+        label="Lock zoom"
         v-model="page.camera.react.lockZoom"
         style="flex: 1; margin-left: -10px; margin-top: -10px"
       />

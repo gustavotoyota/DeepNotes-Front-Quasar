@@ -9,7 +9,7 @@
       :style="{
         height: note.react.numEnabledSections === 1 ? '36.45px' : '100%',
       }"
-      @click.left.stop="negateProp(note.collab.collapsing, 'collapsed')"
+      @click.left.stop="negateProp(note.react.collapsing, 'collapsed')"
       @pointerdown.left.stop
       @dblclick.left.stop
     >

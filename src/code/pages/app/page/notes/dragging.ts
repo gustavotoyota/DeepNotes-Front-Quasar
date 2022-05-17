@@ -38,10 +38,11 @@ export class PageDragging {
     // Prevent dragging unmovable notes
 
     if (
-      this.page.activeElem.react.elem instanceof PageNote &&
+      !(this.page.activeElem.react.elem instanceof PageNote) ||
       !this.page.activeElem.react.elem.collab.movable
-    )
+    ) {
       return;
+    }
 
     this.react = {
       active: false,
@@ -71,7 +72,12 @@ export class PageDragging {
       // Update dragging states
 
       for (const selectedNote of this.page.selection.react.notes) {
-        selectedNote.react.dragging = true;
+        selectedNote.react.dragging = selectedNote.collab.movable;
+
+        if (!selectedNote.react.dragging) {
+          this.page.selection.remove(selectedNote);
+          continue;
+        }
       }
 
       if (this.page.activeRegion.react.id != null) {
@@ -89,7 +95,9 @@ export class PageDragging {
 
     this.page.collab.doc.transact(() => {
       for (const note of this.page.selection.react.notes) {
-        if (!note.collab.movable) continue;
+        if (!note.react.dragging) {
+          continue;
+        }
 
         note.collab.pos.x += delta.x;
         note.collab.pos.y += delta.y;
@@ -106,6 +114,10 @@ export class PageDragging {
 
     this.page.collab.doc.transact(() => {
       for (const selectedNote of this.page.selection.react.notes) {
+        if (!selectedNote.react.dragging) {
+          continue;
+        }
+
         const worldRect = selectedNote.getWorldRect('note-frame');
 
         selectedNote.collab.pos.x =
@@ -125,6 +137,10 @@ export class PageDragging {
 
     this.page.collab.doc.transact(() => {
       for (const selectedNote of selectedNotes) {
+        if (!selectedNote.react.dragging) {
+          continue;
+        }
+
         selectedNote.removeFromRegion();
 
         this.page.react.collab.noteIds.push(selectedNote.id);

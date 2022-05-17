@@ -1,24 +1,18 @@
 <template>
   <q-list v-if="ui.rightSidebarMini">
-    <q-item
-      clickable
+    <MiniSidebarBtn
+      tooltip="Lock position"
+      icon="mdi-axis-arrow-lock"
       :active="page.camera.react.lockPos"
       @click="negateProp(page.camera.react, 'lockPos')"
-    >
-      <q-item-section avatar>
-        <q-icon name="mdi-axis-arrow-lock" />
-      </q-item-section>
-    </q-item>
+    />
 
-    <q-item
-      clickable
+    <MiniSidebarBtn
+      tooltip="Lock zoom"
+      icon="mdi-arrow-vertical-lock"
       :active="page.camera.react.lockZoom"
       @click="negateProp(page.camera.react, 'lockZoom')"
-    >
-      <q-item-section avatar>
-        <q-icon name="mdi-arrow-vertical-lock" />
-      </q-item-section>
-    </q-item>
+    />
   </q-list>
 
   <div v-else>
@@ -64,6 +58,8 @@ import { negateProp } from 'src/code/pages/static/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
 import { inject, Ref } from 'vue';
+
+import MiniSidebarBtn from '../misc/MiniSidebarBtn.vue';
 
 const ui = useUI();
 

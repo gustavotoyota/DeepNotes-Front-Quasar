@@ -11,16 +11,7 @@
       style="display: flex; min-height: 36.45px"
       :style="{ height: note.react[section].height }"
     >
-      <div
-        style="flex: 1"
-        :style="{ width: note.react.width.target }"
-        @dblclick.left="page.editing.start(note, section)"
-      >
-        <NoteEditor
-          :section="section"
-          :wrap="note.collab[section].wrap"
-        />
-      </div>
+      <slot></slot>
 
       <NoteCollapseBtn :section="section" />
     </div>
@@ -31,17 +22,14 @@
   setup
   lang="ts"
 >
-import { NoteTextSection, PageNote } from 'src/code/pages/app/page/notes/note';
-import { AppPage } from 'src/code/pages/app/page/page';
+import { NoteSection, PageNote } from 'src/code/pages/app/page/notes/note';
 import { inject } from 'vue';
 
-import NoteCollapseBtn from './NoteCollapseBtn.vue';
-import NoteEditor from './NoteEditor.vue';
+import NoteCollapseBtn from '../NoteCollapseBtn.vue';
 
 defineProps<{
-  section: NoteTextSection;
+  section: NoteSection;
 }>();
 
-const page = inject<AppPage>('page')!;
 const note = inject<PageNote>('note')!;
 </script>

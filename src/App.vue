@@ -28,3 +28,12 @@ onMounted(async () => {
   app.mounted = true;
 });
 </script>
+
+<style>
+.q-notifications__list {
+  z-index: 2147483647;
+}
+.q-notification {
+  z-index: 2147483647;
+}
+</style>

@@ -7,38 +7,41 @@
 
   <q-dialog v-model="visible">
     <q-card style="width: 300px">
-      <q-card-section style="padding: 12px">
-        <div class="text-h6">New page</div>
-      </q-card-section>
+      <q-form>
+        <q-card-section style="padding: 12px">
+          <div class="text-h6">New page</div>
+        </q-card-section>
 
-      <q-separator />
+        <q-separator />
 
-      <q-card-section>
-        <q-input
-          label="Page name"
-          ref="pageNameElem"
-          v-model="pageName"
-          filled
-        />
-      </q-card-section>
+        <q-card-section>
+          <q-input
+            label="Page name"
+            ref="pageNameElem"
+            v-model="pageName"
+            filled
+          />
+        </q-card-section>
 
-      <q-separator />
+        <q-separator />
 
-      <q-card-actions align="right">
-        <q-btn
-          flat
-          label="Cancel"
-          color="primary"
-          v-close-popup
-        />
-        <q-btn
-          flat
-          label="Ok"
-          color="primary"
-          v-close-popup
-          @click="createPage()"
-        />
-      </q-card-actions>
+        <q-card-actions align="right">
+          <q-btn
+            flat
+            label="Cancel"
+            color="primary"
+            v-close-popup
+          />
+          <q-btn
+            type="submit"
+            flat
+            label="Ok"
+            color="primary"
+            v-close-popup
+            @click.prevent="createPage()"
+          />
+        </q-card-actions>
+      </q-form>
     </q-card>
   </q-dialog>
 </template>

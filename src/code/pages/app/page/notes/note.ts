@@ -179,15 +179,11 @@ export class PageNote extends PageRegion {
           this.react.collapsing.collapsed &&
           this.collab[section].height.collapsed === 'auto'
         ) {
-          return this.collab[section].height.expanded;
-        }
-
-        if (
-          this.react.collapsing.collapsed &&
-          this.react.numEnabledSections === 1 &&
-          this.collab[section].height.collapsed === 'min'
-        ) {
-          return '0px';
+          if (this.react.numEnabledSections === 1) {
+            return '0px';
+          } else {
+            return this.collab[section].height.expanded;
+          }
         }
 
         return this.collab[section].height[this.react.sizeProp];

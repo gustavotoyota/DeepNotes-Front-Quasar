@@ -13,7 +13,7 @@
     <q-page-container>
       <q-page>
         <ContentDisplay
-          v-for="page in $pages.pageCache.react.cache"
+          v-for="page in globalThis.$pages?.pageCache.react.cache"
           :key="page.id"
           :page="page"
           :style="{
@@ -32,6 +32,7 @@
   lang="ts"
 >
 import { PageNote } from 'src/code/pages/app/page/notes/note';
+import { AppPage } from 'src/code/pages/app/page/page';
 import { factory } from 'src/code/pages/static/composition-root';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import ContentDisplay from 'src/components/pages/ContentDisplay/ContentDisplay.vue';
@@ -43,6 +44,7 @@ import {
   getCurrentInstance,
   onBeforeUnmount,
   onMounted,
+  Ref,
   ref,
   toRef,
 } from 'vue';
@@ -51,13 +53,16 @@ import { useRoute } from 'vue-router';
 const app = useApp();
 const route = useRoute();
 
-const $pages = factory.makeApp();
-globalThis.$pages = $pages;
-getCurrentInstance()!.appContext.config.globalProperties.$pages = $pages;
-
-const page = toRef($pages.react, 'page');
-
 const mounted = ref(false);
+
+let page: Ref<AppPage>;
+
+if (process.env.CLIENT) {
+  globalThis.$pages = factory.makeApp();
+  getCurrentInstance()!.appContext.config.globalProperties.$pages = $pages;
+
+  page = toRef($pages.react, 'page');
+}
 
 // Initialize pages app
 

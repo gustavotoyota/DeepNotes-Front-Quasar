@@ -8,6 +8,7 @@ import { isUuid4 } from '../static/utils';
 import { refProp } from '../static/vue';
 import { AppPage, IPageReference } from './page/page';
 import { AppPageCache } from './page-cache';
+import { RealtimeClient } from './realtime-client';
 import { AppSerialization } from './serialization';
 import { AppTemplates, ITemplate } from './templates';
 
@@ -48,6 +49,7 @@ export class PagesApp {
   readonly serialization: AppSerialization;
   readonly templates: AppTemplates;
   readonly pageCache: AppPageCache;
+  readonly realtime: RealtimeClient;
 
   react: UnwrapRef<IAppReact>;
 
@@ -55,6 +57,7 @@ export class PagesApp {
     this.serialization = factory.makeSerialization(this);
     this.templates = factory.makeTemplates(this);
     this.pageCache = factory.makePageCache(this);
+    this.realtime = factory.makeRealtimeClient();
 
     this.react = refProp<IAppReact>(this, 'react', {
       mounted: false,
@@ -151,7 +154,6 @@ export class PagesApp {
 
     $pages.react.page = page;
 
-    const pageData = await page.preSync();
-    page.postSync(pageData);
+    await page.setup();
   }
 }

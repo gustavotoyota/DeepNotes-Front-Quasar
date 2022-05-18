@@ -220,4 +220,10 @@ export class AppPage extends PageRegion {
 
     this.react.loaded = true;
   }
+
+  async setup() {
+    const pageData = await this.preSync();
+
+    this.postSync(pageData);
+  }
 }

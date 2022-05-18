@@ -28,6 +28,7 @@ import { PagePos } from '../app/page/space/pos';
 import { PageRects } from '../app/page/space/rects';
 import { PageSizes } from '../app/page/space/sizes';
 import { AppPageCache } from '../app/page-cache';
+import { RealtimeClient } from '../app/realtime-client';
 import { AppSerialization } from '../app/serialization';
 import { AppTemplates } from '../app/templates';
 import { Container } from './simple-di';
@@ -38,6 +39,7 @@ export const container = new Container({
   serialization: () => (app: PagesApp) => new AppSerialization(app),
   templates: () => (app: PagesApp) => new AppTemplates(app),
   pageCache: () => (app: PagesApp) => new AppPageCache(app),
+  realtimeClient: () => () => new RealtimeClient(),
 
   page: (factory: any) => (app: PagesApp, id: string) =>
     new AppPage(factory, app, id),

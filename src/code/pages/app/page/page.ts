@@ -7,7 +7,6 @@ import { encodeStateAsUpdateV2 } from 'yjs';
 import { z } from 'zod';
 
 import { Factory } from '../../static/composition-root';
-import { WebsocketProvider } from '../../static/y-websocket';
 import { PagesApp } from '../app';
 import { PageArrows } from './arrows/arrows';
 import { ICameraData, PageCamera } from './camera/camera';
@@ -34,6 +33,7 @@ import { PageSelection } from './selection/selection';
 import { PagePos } from './space/pos';
 import { PageRects } from './space/rects';
 import { PageSizes } from './space/sizes';
+import { WebsocketProvider } from './y-websocket';
 
 export interface IPageReference {
   id: string;
@@ -167,7 +167,9 @@ export class AppPage extends PageRegion {
   }
 
   async preSync() {
-    const roomName = `page-${this.id}-3`;
+    // Subscribe to realtime page name
+
+    this.app.realtime.subscribe([`pageName.${this.id}`]);
 
     // Request page data
 
@@ -187,7 +189,9 @@ export class AppPage extends PageRegion {
 
     const symmetricKey = createSymmetricKey(decryptedSymmetricKey);
 
-    // Setup websocket provider
+    // Setup websocket
+
+    const roomName = `page.${this.id}`;
 
     this.collab.websocketProvider = new WebsocketProvider(
       process.env.DEV
@@ -198,11 +202,11 @@ export class AppPage extends PageRegion {
       symmetricKey
     );
 
-    await new Promise((resolve) =>
-      this.collab.websocketProvider.on('sync', () => {
-        resolve(true);
-      })
-    );
+    await Promise.all([
+      this.app.realtime.ready,
+
+      this.collab.websocketProvider.ready,
+    ]);
 
     return response.data;
   }
@@ -225,5 +229,9 @@ export class AppPage extends PageRegion {
     const pageData = await this.preSync();
 
     this.postSync(pageData);
+  }
+
+  destroy() {
+    this.app.realtime.unsubscribe([this.id]);
   }
 }

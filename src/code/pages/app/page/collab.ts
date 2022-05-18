@@ -1,5 +1,5 @@
 import syncedStore, { getYjsValue, Y } from '@syncedstore/core';
-import { WebsocketProvider } from 'src/code/pages/static/y-websocket';
+import { WebsocketProvider } from 'src/code/pages/app/page/y-websocket';
 import { reactive } from 'vue';
 import { z } from 'zod';
 

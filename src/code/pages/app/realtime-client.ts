@@ -2,6 +2,8 @@ import * as decoding from 'lib0/decoding';
 import * as encoding from 'lib0/encoding';
 import { reactive } from 'vue';
 
+import { Resolvable } from '../static/utils';
+
 export const MSGTOSV_SUBSCRIBE = 0;
 export const MSGTOSV_UNSUBSCRIBE = 1;
 export const MSGTOSV_PUBLISH = 2;
@@ -9,9 +11,11 @@ export const MSGTOSV_PUBLISH = 2;
 export const MSGTOCL_NOTIFY = 0;
 
 export class RealtimeClient {
-  socket!: WebSocket;
+  private _socket!: WebSocket;
 
   values: Record<string, string>;
+
+  readonly ready = new Resolvable();
 
   constructor() {
     this.values = reactive({});
@@ -20,21 +24,21 @@ export class RealtimeClient {
   }
 
   connect() {
-    this.socket = new WebSocket(
-      process.env.CLIENT
+    this._socket = new WebSocket(
+      process.env.DEV
         ? 'ws://192.168.1.2:31074/'
         : 'wss://realtime-server.deepnotes.app/'
     );
 
-    this.socket.binaryType = 'arraybuffer';
+    this._socket.binaryType = 'arraybuffer';
 
-    this.socket.onopen = () => {
+    this._socket.onopen = () => {
       console.log('Connected to server');
     };
-    this.socket.onmessage = (event) => {
+    this._socket.onmessage = (event) => {
       this._handleMessage(new Uint8Array(event.data as any));
     };
-    this.socket.onclose = () => {
+    this._socket.onclose = () => {
       console.log('Disconnected from server');
     };
   }
@@ -50,7 +54,7 @@ export class RealtimeClient {
       encoding.writeVarString(encoder, channel);
     }
 
-    this.socket.send(encoding.toUint8Array(encoder));
+    this._socket.send(encoding.toUint8Array(encoder));
   }
   unsubscribe(channels: string[]) {
     const encoder = new encoding.Encoder();
@@ -61,9 +65,11 @@ export class RealtimeClient {
 
     for (const channel of channels) {
       encoding.writeVarString(encoder, channel);
+
+      delete this.values[channel];
     }
 
-    this.socket.send(encoding.toUint8Array(encoder));
+    this._socket.send(encoding.toUint8Array(encoder));
   }
 
   publish(values: Record<string, string>) {
@@ -80,7 +86,7 @@ export class RealtimeClient {
       encoding.writeVarString(encoder, value);
     }
 
-    this.socket.send(encoding.toUint8Array(encoder));
+    this._socket.send(encoding.toUint8Array(encoder));
   }
 
   private _handleMessage(message: Uint8Array) {
@@ -104,5 +110,7 @@ export class RealtimeClient {
 
       this.values[channel] = value;
     }
+
+    this.ready.resolve();
   }
 }

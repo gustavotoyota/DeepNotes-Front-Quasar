@@ -8,6 +8,8 @@ import { SymmetricKey } from 'src/code/crypto/symmetric-key';
 import * as awarenessProtocol from 'y-protocols/awareness';
 import * as Y from 'yjs';
 
+import { Resolvable } from '../../static/utils';
+
 export const MESSAGE_SYNC = 0;
 export const MESSAGE_AWARENESS = 1;
 
@@ -41,7 +43,7 @@ export class WebsocketProvider extends Observable<string> {
   wsconnecting: boolean; // True if this instance is currently connecting to the server.
   wsUnsuccessfulReconnects: number;
 
-  private _synced: boolean; // True if this instance is currently connected and synced with the server.
+  readonly ready = new Resolvable();
 
   ws: WebSocket;
   wsLastMessageReceived: number;
@@ -88,8 +90,6 @@ export class WebsocketProvider extends Observable<string> {
     this.wsconnected = false;
     this.wsconnecting = false;
     this.wsUnsuccessfulReconnects = 0;
-
-    this._synced = false;
 
     this.ws = null as any;
     this.wsLastMessageReceived = 0;
@@ -147,7 +147,6 @@ export class WebsocketProvider extends Observable<string> {
     this.ws = websocket;
     this.wsconnecting = true;
     this.wsconnected = false;
-    this.synced = false;
 
     websocket.onmessage = (event) => {
       this.wsLastMessageReceived = time.getUnixTime();
@@ -167,7 +166,6 @@ export class WebsocketProvider extends Observable<string> {
 
       if (this.wsconnected) {
         this.wsconnected = false;
-        this.synced = false;
 
         // Update awareness (all users except local left)
 
@@ -235,20 +233,6 @@ export class WebsocketProvider extends Observable<string> {
       },
     ]);
   };
-
-  get synced(): boolean {
-    return this._synced;
-  }
-  set synced(state: boolean) {
-    if (this._synced === state) {
-      return;
-    }
-
-    this._synced = state;
-
-    this.emit('synced', [state]);
-    this.emit('sync', [state]);
-  }
 
   handleDocumentUpdate = (update: Uint8Array, origin: any) => {
     if (origin != null) {
@@ -330,9 +314,9 @@ export class WebsocketProvider extends Observable<string> {
       this.handleSyncSingleUpdateMessage(decoder);
     }
 
-    this.synced = true;
-
     this.sendSyncAllUpdatesMergedMessage(updateEndIndex);
+
+    this.ready.resolve();
   }
 
   sendSyncAllUpdatesMergedMessage(updateEndIndex: number) {

@@ -21,9 +21,9 @@
     <div style="padding: 20px">
       <q-input
         label="Page name"
-        v-model="page.react.collab.name"
         dense
         filled
+        v-model="page.react.collab.name"
         @update:model-value="$pages.realtime.publish({ [`pageName.${page.id}`]:$event as string })"
       />
     </div>

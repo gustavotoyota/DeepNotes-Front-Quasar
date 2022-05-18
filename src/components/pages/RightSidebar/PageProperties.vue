@@ -24,6 +24,7 @@
         v-model="page.react.collab.name"
         dense
         filled
+        @update:model-value="$pages.realtime.publish({ [`pageName.${page.id}`]:$event as string })"
       />
     </div>
 

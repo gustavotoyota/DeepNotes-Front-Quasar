@@ -108,6 +108,10 @@ export class PagesApp {
       initialPageId,
     });
 
+    this.realtime.subscribe(
+      response.data.pathPages.map((page) => `pageName.${page.id}`)
+    );
+
     this.react.pathPages = response.data.pathPages;
     this.react.recentPages = response.data.recentPages;
 

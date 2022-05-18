@@ -51,7 +51,7 @@
       <MiniSidebarPage
         v-for="pageRef in $pages.react.pathPages"
         :key="pageRef.id"
-        :name="pageRef.name"
+        :name="$pages.realtime.values[`pageName.${pageRef.id}`]"
         :active="pageRef.id === $pages.react.pageId"
         @click="$pages.navigateTo(pageRef.id, $router)"
       />

@@ -32,7 +32,7 @@ export class RealtimeClient {
       console.log('Connected to server');
     };
     this.socket.onmessage = (event) => {
-      this.handleMessage(new Uint8Array(event.data as any));
+      this._handleMessage(new Uint8Array(event.data as any));
     };
     this.socket.onclose = () => {
       console.log('Disconnected from server');
@@ -65,6 +65,7 @@ export class RealtimeClient {
 
     this.socket.send(encoding.toUint8Array(encoder));
   }
+
   publish(values: Record<string, string>) {
     const encoder = new encoding.Encoder();
 
@@ -82,26 +83,26 @@ export class RealtimeClient {
     this.socket.send(encoding.toUint8Array(encoder));
   }
 
-  handleMessage(message: Uint8Array) {
+  private _handleMessage(message: Uint8Array) {
     const decoder = new decoding.Decoder(message);
     const messageType = decoding.readVarUint(decoder);
 
     switch (messageType) {
       case MSGTOCL_NOTIFY:
-        this.handleNotify(decoder);
+        this._handleNotify(decoder);
         break;
       default:
         throw new Error(`Unknown message type ${messageType}`);
     }
   }
-  handleNotify(decoder: decoding.Decoder) {
+  private _handleNotify(decoder: decoding.Decoder) {
     const numChannels = decoding.readVarUint(decoder);
 
     for (let i = 0; i < numChannels; i++) {
       const channel = decoding.readVarString(decoder);
-      const pageName = decoding.readVarString(decoder);
+      const value = decoding.readVarString(decoder);
 
-      this.values[channel] = pageName;
+      this.values[channel] = value;
     }
   }
 }

@@ -17,24 +17,3 @@ declare module 'quasar/dist/types/feature-flag' {
     ssr: true; // The object key is the feature flag name
   }
 }
-
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace NodeJS {
-    interface ProcessEnv {
-      DEV: boolean;
-      PROD: boolean;
-      DEBUGGING: boolean;
-      CLIENT: boolean;
-      SERVER: boolean;
-      MODE:
-        | 'spa'
-        | 'ssr'
-        | 'pwa'
-        | 'bex'
-        | 'cordova'
-        | 'capacitor'
-        | 'electron';
-    }
-  }
-}

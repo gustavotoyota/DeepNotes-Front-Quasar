@@ -1,5 +1,3 @@
-import 'src/code/pages/static/types';
-
 import { computed, ComputedRef, ShallowRef, shallowRef, UnwrapRef } from 'vue';
 import { Router } from 'vue-router';
 

@@ -110,7 +110,7 @@ function storeToken(tokenName: string, token: string) {
   Cookies.set(tokenName, token, {
     path: '/',
     expires: addDays(new Date(), 7),
-    secure: process.env.PROD,
+    secure: !!process.env.PROD,
     sameSite: 'Strict',
     domain: process.env.PROD ? 'deepnotes.app' : '192.168.1.2',
   });

@@ -35,7 +35,7 @@ import { useUI } from 'src/stores/pages/ui';
 
 defineProps<{
   active?: boolean;
-  name: string;
+  name?: string;
 }>();
 
 const ui = useUI();

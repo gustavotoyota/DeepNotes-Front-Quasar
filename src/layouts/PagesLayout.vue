@@ -31,6 +31,7 @@
   setup
   lang="ts"
 >
+import { useMeta } from 'quasar';
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { factory } from 'src/code/pages/static/composition-root';
@@ -65,6 +66,12 @@ if (process.env.CLIENT) {
 
   page = toRef($pages.react, 'page');
 }
+
+useMeta(() => ({
+  title: page?.value?.react.collab.name
+    ? `DeepNotes - ${page?.value?.react.collab.name}`
+    : 'DeepNotes',
+}));
 
 // Initialize pages app
 

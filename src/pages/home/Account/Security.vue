@@ -126,7 +126,7 @@
   lang="ts"
 >
 import { from_base64 } from 'libsodium-wrappers';
-import { QForm, useQuasar } from 'quasar';
+import { QForm, useMeta, useQuasar } from 'quasar';
 import { useAPI } from 'src/boot/external/axios';
 import {
   computeDerivedKeys,
@@ -141,6 +141,10 @@ import { onMounted, reactive, Ref, ref } from 'vue';
 const app = useApp();
 const $q = useQuasar();
 const api = useAPI();
+
+useMeta(() => ({
+  title: 'DeepNotes - Account - Security',
+}));
 
 const mounted = ref(false);
 

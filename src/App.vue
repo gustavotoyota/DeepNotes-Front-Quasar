@@ -8,6 +8,7 @@
   setup
   lang="ts"
 >
+import { useMeta } from 'quasar';
 import { onMounted } from 'vue';
 
 import { useAPI } from './boot/external/axios';
@@ -17,6 +18,10 @@ import { useApp } from './stores/app';
 
 const app = useApp();
 const api = useAPI();
+
+useMeta(() => ({
+  title: 'DeepNotes',
+}));
 
 onMounted(async () => {
   await (async function tokenRefreshLoop() {

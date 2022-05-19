@@ -397,6 +397,78 @@
 
       <div style="flex: 1"></div>
     </div>
+
+    <q-separator />
+
+    <div style="padding: 20px; display: flex; flex-direction: column">
+      <div style="display: flex">
+        <q-select
+          label="Width"
+          :options="[{ label: 'Auto', value: 'auto' }]"
+          emit-value
+          v-model="note.collab.width[note.react.sizeProp]"
+          @input-value="note.collab.width[note.react.sizeProp] = $event"
+          use-input
+          filled
+          dense
+          hide-selected
+          fill-input
+          style="flex: 1; min-width: 0"
+        />
+
+        <Gap style="width: 16px" />
+
+        <q-select
+          label="Head height"
+          :options="[{ label: 'Auto', value: 'auto' }]"
+          emit-value
+          v-model="note.collab.head.height[note.react.sizeProp]"
+          @input-value="note.collab.head.height[note.react.sizeProp] = $event"
+          use-input
+          filled
+          dense
+          hide-selected
+          fill-input
+          style="flex: 1; min-width: 0"
+        />
+      </div>
+
+      <Gap style="height: 16px" />
+
+      <div style="display: flex">
+        <q-select
+          label="Body height"
+          :options="[{ label: 'Auto', value: 'auto' }]"
+          emit-value
+          v-model="note.collab.body.height[note.react.sizeProp]"
+          @input-value="note.collab.body.height[note.react.sizeProp] = $event"
+          use-input
+          filled
+          dense
+          hide-selected
+          fill-input
+          style="flex: 1; min-width: 0"
+        />
+
+        <Gap style="width: 16px" />
+
+        <q-select
+          label="Container height"
+          :options="[{ label: 'Auto', value: 'auto' }]"
+          emit-value
+          v-model="note.collab.container.height[note.react.sizeProp]"
+          @input-value="
+            note.collab.container.height[note.react.sizeProp] = $event
+          "
+          use-input
+          filled
+          dense
+          hide-selected
+          fill-input
+          style="flex: 1; min-width: 0"
+        />
+      </div>
+    </div>
   </div>
 </template>
 

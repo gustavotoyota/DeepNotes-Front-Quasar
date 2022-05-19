@@ -34,6 +34,7 @@
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { factory } from 'src/code/pages/static/composition-root';
+import { isUuid4 } from 'src/code/pages/static/utils';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import ContentDisplay from 'src/components/pages/ContentDisplay/ContentDisplay.vue';
 import LeftSidebar from 'src/components/pages/LeftSidebar.vue';
@@ -48,10 +49,11 @@ import {
   ref,
   toRef,
 } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const app = useApp();
 const route = useRoute();
+const router = useRouter();
 
 const mounted = ref(false);
 
@@ -167,8 +169,9 @@ function onKeyPress(event: KeyboardEvent) {
     (event.target as HTMLElement).nodeName === 'INPUT' ||
     (event.target as HTMLElement).nodeName === 'TEXTAREA' ||
     (event.target as HTMLElement).isContentEditable
-  )
+  ) {
     return;
+  }
 
   if (page.value.activeElem.react.elem instanceof PageNote) {
     page.value.editing.start(page.value.activeElem.react.elem);
@@ -191,8 +194,9 @@ function onPaste(event: ClipboardEvent) {
     (event.target as HTMLElement).nodeName === 'INPUT' ||
     (event.target as HTMLElement).nodeName === 'TEXTAREA' ||
     (event.target as HTMLElement).isContentEditable
-  )
+  ) {
     return;
+  }
 
   const text = (event.clipboardData || window.clipboardData).getData('text');
 
@@ -201,6 +205,46 @@ function onPaste(event: ClipboardEvent) {
 
 onBeforeUnmount(() => {
   document.removeEventListener('paste', onPaste);
+});
+
+// Intercept internal page navigation
+
+onMounted(() => {
+  document.addEventListener('click', onClick);
+});
+
+function onClick(event: MouseEvent) {
+  const target = event.target as Element;
+
+  const anchor = target.closest('a');
+
+  if (anchor == null) {
+    return;
+  }
+
+  const href = anchor.getAttribute('href') ?? '';
+
+  if (
+    !isUuid4(href) &&
+    !(process.env.PROD && href.startsWith('https://deepnotes.app/')) &&
+    !(process.env.DEV && href.startsWith('http://192.168.1.2:60379/'))
+  ) {
+    return;
+  }
+
+  event.preventDefault();
+
+  if (event.altKey) {
+    return;
+  }
+
+  const pageId = href.split('/').at(-1) ?? '';
+
+  router.push(`/pages/${pageId}`);
+}
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', onClick);
 });
 </script>
 

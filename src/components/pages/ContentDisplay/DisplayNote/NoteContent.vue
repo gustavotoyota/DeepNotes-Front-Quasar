@@ -1,15 +1,21 @@
 <template>
-  <div
-    class="note-content"
+  <a
+    :href="note.react.selected ? undefined : note.collab.link ?? undefined"
+    :target="note.collab.link ? '_blank' : undefined"
     :style="{
-      cursor: !note.collab.link || note.react.selected ? undefined : 'pointer',
-      'background-color': backgroundColor,
+      cursor: note.react.cursor,
     }"
-    @pointerdown.left.stop="onPointerDown"
-    @click="onClick"
   >
-    <slot />
-  </div>
+    <div
+      class="note-content"
+      :style="{
+        'background-color': backgroundColor,
+      }"
+      @pointerdown.left.stop="onPointerDown"
+    >
+      <slot />
+    </div>
+  </a>
 </template>
 
 <script
@@ -20,9 +26,6 @@ import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { isMouseOverScrollbar } from 'src/code/pages/static/dom';
 import { computed, inject } from 'vue';
-import { useRouter } from 'vue-router';
-
-const router = useRouter();
 
 const page = inject<AppPage>('page')!;
 const note = inject<PageNote>('note')!;
@@ -44,7 +47,6 @@ function onPointerDown(event: PointerEvent) {
 
   if (
     note.collab.link &&
-    !event.ctrlKey &&
     !event.altKey &&
     !event.shiftKey &&
     !note.react.selected
@@ -63,19 +65,6 @@ function onPointerDown(event: PointerEvent) {
   if (note.react.selected) {
     page.dragging.start(event);
   }
-}
-
-function onClick(event: MouseEvent) {
-  if (
-    !note.collab.link ||
-    event.ctrlKey ||
-    event.shiftKey ||
-    note.react.selected
-  ) {
-    return;
-  }
-
-  page.app.navigateTo(note.collab.link, router);
 }
 </script>
 

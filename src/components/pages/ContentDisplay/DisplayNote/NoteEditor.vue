@@ -251,12 +251,6 @@ $note-padding: 9px;
 
 /* Anchor links */
 
-.note-editor :deep(a) {
-  text-decoration: none !important;
-
-  color: #64b5f6;
-}
-
 .note-editor :deep(a::before) {
   display: none;
 }

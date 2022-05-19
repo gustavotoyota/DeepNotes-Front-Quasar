@@ -154,6 +154,8 @@ export interface INoteReact extends IRegionReact {
   worldRect: ComputedRef<Rect>;
 
   clientRect: ComputedRef<Rect>;
+
+  cursor: ComputedRef<string | undefined>;
 }
 
 export class PageNote extends PageRegion {
@@ -390,6 +392,22 @@ export class PageNote extends PageRegion {
 
       notes: computed(() => page.notes.fromIds(this.react.noteIds)),
       arrows: computed(() => page.arrows.fromIds(this.react.arrowIds)),
+
+      cursor: computed(() => {
+        if (this.react.editing) {
+          return 'auto';
+        }
+
+        if (this.react.selected) {
+          return 'default';
+        }
+
+        if (this.collab.link) {
+          return 'pointer';
+        }
+
+        return undefined;
+      }),
     };
 
     Object.assign(this.react, react);

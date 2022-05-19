@@ -16,31 +16,7 @@
         style="margin-left: -9px"
       />
 
-      <q-toolbar-title style="margin-left: 6px"> Path </q-toolbar-title>
-
-      <div style="margin-right: -5px">
-        <q-btn
-          flat
-          round
-          size="12px"
-        >
-          <q-icon
-            name="mdi-arrow-up"
-            size="24px"
-          />
-        </q-btn>
-
-        <q-btn
-          flat
-          round
-          size="12px"
-        >
-          <q-icon
-            name="mdi-arrow-down"
-            size="24px"
-          />
-        </q-btn>
-      </div>
+      <q-toolbar-title style="margin-left: 6px">Path</q-toolbar-title>
     </q-toolbar>
 
     <q-list

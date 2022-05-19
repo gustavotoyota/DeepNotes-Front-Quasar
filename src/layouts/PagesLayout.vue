@@ -96,10 +96,9 @@ onMounted(() => {
 });
 
 function onKeyDown(event: KeyboardEvent) {
-  if (
-    (event.target as HTMLElement).isContentEditable &&
-    event.code === 'Escape'
-  ) {
+  const target = event.target as HTMLElement;
+
+  if (target.isContentEditable && event.code === 'Escape') {
     page.value.editing.stop();
   }
 
@@ -108,9 +107,9 @@ function onKeyDown(event: KeyboardEvent) {
   }
 
   if (
-    (event.target as HTMLElement).nodeName === 'INPUT' ||
-    (event.target as HTMLElement).nodeName === 'TEXTAREA' ||
-    (event.target as HTMLElement).isContentEditable
+    target.nodeName === 'INPUT' ||
+    target.nodeName === 'TEXTAREA' ||
+    target.isContentEditable
   ) {
     return;
   }
@@ -165,10 +164,12 @@ function onKeyDown(event: KeyboardEvent) {
   }
 }
 function onKeyPress(event: KeyboardEvent) {
+  const target = event.target as HTMLElement;
+
   if (
-    (event.target as HTMLElement).nodeName === 'INPUT' ||
-    (event.target as HTMLElement).nodeName === 'TEXTAREA' ||
-    (event.target as HTMLElement).isContentEditable
+    target.nodeName === 'INPUT' ||
+    target.nodeName === 'TEXTAREA' ||
+    target.isContentEditable
   ) {
     return;
   }
@@ -190,10 +191,12 @@ onMounted(() => {
 });
 
 function onPaste(event: ClipboardEvent) {
+  const target = event.target as HTMLElement;
+
   if (
-    (event.target as HTMLElement).nodeName === 'INPUT' ||
-    (event.target as HTMLElement).nodeName === 'TEXTAREA' ||
-    (event.target as HTMLElement).isContentEditable
+    target.nodeName === 'INPUT' ||
+    target.nodeName === 'TEXTAREA' ||
+    target.isContentEditable
   ) {
     return;
   }
@@ -214,9 +217,9 @@ onMounted(() => {
 });
 
 function onClick(event: MouseEvent) {
-  const target = event.target as Element;
+  const target = event.target as HTMLElement;
 
-  const anchor = target.closest('a');
+  const anchor = target.closest('a[href]');
 
   if (anchor == null) {
     return;
@@ -229,12 +232,12 @@ function onClick(event: MouseEvent) {
     !(process.env.PROD && href.startsWith('https://deepnotes.app/')) &&
     !(process.env.DEV && href.startsWith('http://192.168.1.2:60379/'))
   ) {
-    return;
+    return; // Return if it's an external link
   }
 
-  event.preventDefault();
+  event.preventDefault(); // Prevent true page navigation
 
-  if (event.altKey) {
+  if (event.altKey || target.isContentEditable) {
     return;
   }
 

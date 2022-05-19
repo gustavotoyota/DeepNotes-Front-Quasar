@@ -41,16 +41,18 @@ const backgroundColor = computed(() => {
 });
 
 function onPointerDown(event: PointerEvent) {
-  if (isMouseOverScrollbar(event)) {
-    return;
-  }
+  const target = event.target as Element;
 
   if (
-    note.collab.link &&
+    (note.collab.link || target.closest('a[href]')) &&
     !event.altKey &&
     !event.shiftKey &&
     !note.react.selected
   ) {
+    return;
+  }
+
+  if (isMouseOverScrollbar(event)) {
     return;
   }
 

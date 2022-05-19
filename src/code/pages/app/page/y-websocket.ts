@@ -50,6 +50,8 @@ export class WebsocketProvider extends Observable<string> {
 
   shouldConnect: boolean; // If false, the client will not try to reconnect.
 
+  size = 0;
+
   private readonly _checkInterval: NodeJS.Timer;
 
   readonly symmetricKey: SymmetricKey;
@@ -335,6 +337,8 @@ export class WebsocketProvider extends Observable<string> {
     encoding.writeVarUint8Array(encoder, encryptedUpdate);
 
     this.ws.send(encoding.toUint8Array(encoder));
+
+    this.size = decryptedUpdate.length;
   }
 
   sendSyncSingleUpdateMessage(update: Uint8Array) {

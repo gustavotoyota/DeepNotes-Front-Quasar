@@ -3,7 +3,6 @@ import { privateKey } from 'src/code/crypto/private-key';
 import { createSymmetricKey } from 'src/code/crypto/symmetric-key';
 import { refProp } from 'src/code/pages/static/vue';
 import { computed, ComputedRef, UnwrapRef } from 'vue';
-import { encodeStateAsUpdateV2 } from 'yjs';
 import { z } from 'zod';
 
 import { Factory } from '../../static/composition-root';
@@ -220,7 +219,7 @@ export class AppPage extends PageRegion {
 
     this.camera.setup(pageData.camera);
 
-    this.react.size = encodeStateAsUpdateV2(this.collab.doc).byteLength;
+    this.react.size = this.collab.websocketProvider.size;
 
     this.react.loaded = true;
   }

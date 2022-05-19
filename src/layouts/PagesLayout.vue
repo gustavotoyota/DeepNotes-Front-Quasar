@@ -73,7 +73,7 @@ useMeta(() => ({
     : 'DeepNotes',
 }));
 
-// Initialize pages app
+// Pages application
 
 onMounted(async () => {
   await app.ready;
@@ -81,6 +81,11 @@ onMounted(async () => {
   await $pages.setupPage(route.params.page_id as string);
 
   mounted.value = true;
+});
+
+onBeforeUnmount(() => {
+  globalThis.$pages = null as any;
+  getCurrentInstance()!.appContext.config.globalProperties.$pages = null as any;
 });
 
 // Release pointer down for touchscreen

@@ -1,6 +1,6 @@
 <template>
   <a
-    :href="note.react.selected ? undefined : note.collab.link ?? undefined"
+    :href="note.react.selected ? undefined : note.collab.link || undefined"
     :target="note.collab.link ? '_blank' : undefined"
     :style="{
       cursor: note.react.cursor,

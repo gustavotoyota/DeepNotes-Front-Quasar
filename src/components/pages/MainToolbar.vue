@@ -79,13 +79,13 @@
           <ToolbarBtn
             tooltip="Select all"
             icon="mdi-select-all"
-            size="24px"
+            icon-size="24px"
             @click="page.selection.selectAll()"
           />
           <ToolbarBtn
             tooltip="Delete"
             icon="mdi-delete-outline"
-            size="24px"
+            icon-size="24px"
             :disabled="!page.activeElem.react.exists"
             @click="page.deleting.perform()"
           />
@@ -98,28 +98,28 @@
           <ToolbarBtn
             tooltip="Align left"
             icon="mdi-format-align-left"
-            size="21px"
+            icon-size="21px"
             :disabled="!page.activeElem.react.exists"
             @click="format('formatLine', 'align', '')"
           />
           <ToolbarBtn
             tooltip="Align center"
             icon="mdi-format-align-center"
-            size="21px"
+            icon-size="21px"
             :disabled="!page.activeElem.react.exists"
             @click="format('formatLine', 'align', 'center')"
           />
           <ToolbarBtn
             tooltip="Align right"
             icon="mdi-format-align-right"
-            size="21px"
+            icon-size="21px"
             :disabled="!page.activeElem.react.exists"
             @click="format('formatLine', 'align', 'right')"
           />
           <ToolbarBtn
             tooltip="Justify"
             icon="mdi-format-align-justify"
-            size="21px"
+            icon-size="21px"
             :disabled="!page.activeElem.react.exists"
             @click="format('formatLine', 'align', 'justify')"
           />
@@ -132,14 +132,14 @@
           <ToolbarBtn
             tooltip="Header 1"
             icon="mdi-format-header-1"
-            size="24px"
+            icon-size="24px"
             :disabled="!page.activeElem.react.exists"
             @click="format('formatLine', 'header', 1)"
           />
           <ToolbarBtn
             tooltip="Header 2"
             icon="mdi-format-header-2"
-            size="24px"
+            icon-size="24px"
             :disabled="!page.activeElem.react.exists"
             @click="format('formatLine', 'header', 2)"
           />
@@ -152,7 +152,7 @@
           <ToolbarBtn
             tooltip="Clear formatting"
             icon="mdi-format-clear"
-            size="24px"
+            icon-size="24px"
             :disabled="!page.activeElem.react.exists"
             @click="format('removeFormat')"
           />
@@ -163,7 +163,7 @@
         <ToolbarBtn
           tooltip="Home"
           icon="mdi-home"
-          size="28px"
+          icon-size="28px"
           round
           href="/"
         />
@@ -177,7 +177,7 @@
         <ToolbarBtn
           tooltip="Account"
           icon="mdi-account-circle"
-          size="28px"
+          icon-size="28px"
           round
         >
           <q-menu

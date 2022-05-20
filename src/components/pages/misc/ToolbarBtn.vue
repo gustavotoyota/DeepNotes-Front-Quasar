@@ -3,13 +3,15 @@
     dense
     flat
     :round="round"
-    style="height: 28px; padding: 0"
+    style="padding: 0"
     :style="{
-      'min-width': round ? undefined : '28px',
+      'min-width': round ? undefined : btnSize ?? '28px',
+      height: btnSize ?? '28px',
+      width: btnSize ?? '28px',
     }"
   >
     <q-icon
-      :size="size ?? '19px'"
+      :size="iconSize ?? '19px'"
       :name="icon"
     />
 
@@ -32,7 +34,8 @@
 defineProps<{
   icon: string;
   tooltip: string;
-  size?: string;
+  iconSize?: string;
+  btnSize?: string;
   round?: boolean;
 }>();
 </script>

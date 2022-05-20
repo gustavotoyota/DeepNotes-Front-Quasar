@@ -2,7 +2,7 @@
   <ToolbarBtn
     tooltip="Settings"
     icon="mdi-cog"
-    size="28px"
+    icon-size="28px"
     round
     @click="visible = true"
   />

@@ -179,7 +179,36 @@
           icon="mdi-account-circle"
           size="28px"
           round
-        />
+        >
+          <q-menu
+            anchor="bottom right"
+            self="top right"
+          >
+            <q-list>
+              <q-item
+                clickable
+                v-close-popup
+                href="/account/general"
+              >
+                <q-item-section avatar>
+                  <q-icon name="mdi-account" />
+                </q-item-section>
+                <q-item-section>Account</q-item-section>
+              </q-item>
+              <q-item
+                clickable
+                v-close-popup
+                href="/"
+                @click="logout($api)"
+              >
+                <q-item-section avatar>
+                  <q-icon name="mdi-logout" />
+                </q-item-section>
+                <q-item-section>Logout</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </ToolbarBtn>
 
         <Gap style="width: 10px" />
       </div>
@@ -209,6 +238,7 @@
   setup
   lang="ts"
 >
+import { logout } from 'src/code/auth';
 import { NoteTextSection } from 'src/code/pages/app/page/notes/note';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';

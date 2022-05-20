@@ -13,6 +13,8 @@
       :name="icon"
     />
 
+    <slot></slot>
+
     <q-tooltip
       anchor="bottom middle"
       self="top middle"

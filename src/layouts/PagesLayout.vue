@@ -266,10 +266,6 @@ onBeforeUnmount(() => {
   user-select: none;
 }
 
-.pages-layout :deep(.q-tooltip) {
-  font-size: 12px;
-}
-
 .pages-layout :deep(.q-drawer) {
   transition: width 0.2s ease;
   overflow-x: hidden;

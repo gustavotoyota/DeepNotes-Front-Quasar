@@ -35,6 +35,10 @@ onMounted(async () => {
 </script>
 
 <style>
+.q-tooltip {
+  font-size: 12px;
+}
+
 .q-notifications__list {
   z-index: 2147483647;
 }

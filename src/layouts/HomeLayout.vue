@@ -35,7 +35,7 @@
           <q-btn
             label="Pages"
             flat
-            to="/pages"
+            href="/pages"
           />
           <q-btn
             label="Logout"

@@ -15,7 +15,8 @@ export class RealtimeClient {
 
   values: Record<string, string>;
 
-  readonly ready = new Resolvable();
+  connected!: Resolvable;
+  synced!: Resolvable;
 
   constructor() {
     this.values = reactive({});
@@ -24,6 +25,9 @@ export class RealtimeClient {
   }
 
   connect() {
+    this.connected = new Resolvable();
+    this.synced = new Resolvable();
+
     this._socket = new WebSocket(
       process.env.DEV
         ? 'ws://192.168.1.2:31074/'
@@ -34,6 +38,8 @@ export class RealtimeClient {
 
     this._socket.onopen = () => {
       console.log('Connected to server');
+
+      this.connected.resolve();
     };
     this._socket.onmessage = (event) => {
       this._handleMessage(new Uint8Array(event.data as any));
@@ -111,6 +117,6 @@ export class RealtimeClient {
       this.values[channel] = value;
     }
 
-    this.ready.resolve();
+    this.synced.resolve();
   }
 }

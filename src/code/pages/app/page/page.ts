@@ -202,9 +202,9 @@ export class AppPage extends PageRegion {
     );
 
     await Promise.all([
-      this.app.realtime.ready,
+      this.app.realtime.synced,
 
-      this.collab.websocketProvider.ready,
+      this.collab.websocketProvider.synced,
     ]);
 
     return response.data;

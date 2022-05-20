@@ -165,7 +165,7 @@
           icon="mdi-home"
           size="28px"
           round
-          to="/"
+          href="/"
         />
 
         <Gap style="width: 2px" />

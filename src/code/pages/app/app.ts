@@ -95,28 +95,6 @@ export class PagesApp {
     }
   }
 
-  async loadData(initialPageId: string) {
-    const response = await $api.post<{
-      pathPages: IPageReference[];
-      recentPages: IPageReference[];
-
-      templates: ITemplate[];
-      defaultTemplateId: string;
-    }>('/api/users/pages-data', {
-      initialPageId,
-    });
-
-    this.realtime.subscribe(
-      response.data.pathPages.map((page) => `pageName.${page.id}`)
-    );
-
-    this.react.pathPages = response.data.pathPages;
-    this.react.recentPages = response.data.recentPages;
-
-    this.templates.react.list = response.data.templates;
-    this.templates.react.defaultId = response.data.defaultTemplateId;
-  }
-
   async updatePathPages(pageId: string) {
     const newPageRef = this.react.pathPages.find((page) => page.id === pageId);
 
@@ -138,6 +116,30 @@ export class PagesApp {
     } else {
       await this.loadData(pageId);
     }
+  }
+
+  async loadData(initialPageId: string) {
+    const response = await $api.post<{
+      pathPages: IPageReference[];
+      recentPages: IPageReference[];
+
+      templates: ITemplate[];
+      defaultTemplateId: string;
+    }>('/api/users/pages-data', {
+      initialPageId,
+    });
+
+    await this.realtime.connected;
+
+    this.realtime.subscribe(
+      response.data.pathPages.map((page) => `pageName.${page.id}`)
+    );
+
+    this.react.pathPages = response.data.pathPages;
+    this.react.recentPages = response.data.recentPages;
+
+    this.templates.react.list = response.data.templates;
+    this.templates.react.defaultId = response.data.defaultTemplateId;
   }
 
   async setupPage(pageId: string) {

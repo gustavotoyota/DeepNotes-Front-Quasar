@@ -83,11 +83,6 @@ onMounted(async () => {
   mounted.value = true;
 });
 
-onBeforeUnmount(() => {
-  globalThis.$pages = null as any;
-  getCurrentInstance()!.appContext.config.globalProperties.$pages = null as any;
-});
-
 // Release pointer down for touchscreen
 
 onMounted(() => {

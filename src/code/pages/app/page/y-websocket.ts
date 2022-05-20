@@ -43,7 +43,7 @@ export class WebsocketProvider extends Observable<string> {
   wsconnecting: boolean; // True if this instance is currently connecting to the server.
   wsUnsuccessfulReconnects: number;
 
-  readonly ready = new Resolvable();
+  readonly synced = new Resolvable();
 
   ws: WebSocket;
   wsLastMessageReceived: number;
@@ -318,7 +318,7 @@ export class WebsocketProvider extends Observable<string> {
 
     this.sendSyncAllUpdatesMergedMessage(updateEndIndex);
 
-    this.ready.resolve();
+    this.synced.resolve();
   }
 
   sendSyncAllUpdatesMergedMessage(updateEndIndex: number) {

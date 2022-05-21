@@ -1,11 +1,12 @@
 <template>
-  <div></div>
+  <LoadingOverlay />
 </template>
 
 <script
   setup
   lang="ts"
 >
+import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 

@@ -171,11 +171,7 @@
     <!-- Template -->
 
     <div style="padding: 20px; display: flex; flex-direction: column">
-      <q-btn
-        label="Save as template"
-        color="primary"
-        style="flex: 1"
-      />
+      <SaveAsTemplateDialog />
     </div>
 
     <q-separator />
@@ -486,6 +482,7 @@ import { inject, Ref, toRef } from 'vue';
 import Checkbox from '../../misc/Checkbox.vue';
 import MiniSidebarBtn from '../../misc/MiniSidebarBtn.vue';
 import NewPageDialog from './NewPageDialog.vue';
+import SaveAsTemplateDialog from './SaveAsTemplateDialog.vue';
 
 const ui = useUI();
 

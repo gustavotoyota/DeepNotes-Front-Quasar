@@ -69,7 +69,7 @@ if (process.env.CLIENT) {
 
 useMeta(() => ({
   title: page?.value?.react.collab.name
-    ? `DeepNotes - ${page?.value?.react.collab.name}`
+    ? `${page?.value?.react.collab.name} - DeepNotes`
     : 'DeepNotes',
 }));
 

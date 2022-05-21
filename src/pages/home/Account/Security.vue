@@ -143,7 +143,7 @@ const $q = useQuasar();
 const api = useAPI();
 
 useMeta(() => ({
-  title: 'DeepNotes - Account - Security',
+  title: 'Security - Account - DeepNotes',
 }));
 
 const mounted = ref(false);

@@ -36,7 +36,7 @@ const $q = useQuasar();
 const api = useAPI();
 
 useMeta(() => ({
-  title: 'DeepNotes - Account - General',
+  title: 'General - Account - DeepNotes',
 }));
 
 const data = reactive({

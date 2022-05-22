@@ -18,7 +18,7 @@
       "
     >
       <q-card-section>
-        <div class="text-h5">Settings</div>
+        <div class="text-h5">User Settings</div>
       </q-card-section>
 
       <q-separator />
@@ -51,11 +51,11 @@
         <div
           style="flex: 1; padding: 32px; display: flex; flex-direction: column"
         >
-          <SettingsGeneralTab
+          <GeneralTab
             ref="generalTab"
             v-show="tab === 'general'"
           />
-          <SettingsTemplatesTab
+          <TemplatesTab
             ref="templatesTab"
             v-show="tab === 'templates'"
           />
@@ -88,18 +88,18 @@
   lang="ts"
 >
 import { cloneDeep } from 'lodash';
+import ToolbarBtn from 'src/components/pages/misc/ToolbarBtn.vue';
 import { nextTick, onMounted, ref, watch } from 'vue';
 
-import ToolbarBtn from '../misc/ToolbarBtn.vue';
-import SettingsGeneralTab from './SettingsGeneralTab.vue';
-import SettingsTemplatesTab from './SettingsTemplatesTab.vue';
+import GeneralTab from './GeneralTab.vue';
+import TemplatesTab from './TemplatesTab.vue';
 
 const visible = ref(false);
 
 const tab = ref('general');
 
-const generalTab = ref({} as InstanceType<typeof SettingsGeneralTab>);
-const templatesTab = ref({} as InstanceType<typeof SettingsTemplatesTab>);
+const generalTab = ref({} as InstanceType<typeof GeneralTab>);
+const templatesTab = ref({} as InstanceType<typeof TemplatesTab>);
 
 onMounted(() => {
   watch(
@@ -114,9 +114,9 @@ onMounted(() => {
       tab.value = 'general';
 
       templatesTab.value.templates = cloneDeep($pages.templates.react.list);
-      templatesTab.value.defaultTemplateId = $pages.templates.react.defaultId;
+      templatesTab.value.defaultId = $pages.templates.react.defaultId;
 
-      templatesTab.value.selectedTemplates.clear();
+      templatesTab.value.selectedIds.clear();
     },
     { immediate: true }
   );

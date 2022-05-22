@@ -34,14 +34,7 @@ import { PageRects } from './space/rects';
 import { PageSizes } from './space/sizes';
 import { WebsocketProvider } from './y-websocket';
 
-export interface IPageReference {
-  id: string;
-  name: string;
-}
-
 export const IPageCollab = IRegionCollab.extend({
-  name: z.string(),
-
   nextZIndex: z.number(),
 });
 export type IPageCollab = z.output<typeof IPageCollab>;
@@ -54,10 +47,12 @@ export interface IAppPageReact extends IRegionReact {
   collab: ComputedRef<IPageCollab>;
 
   size: number;
+
+  groupId?: string;
 }
 
 export interface IPageData {
-  pageName: string;
+  groupId: string;
   camera: ICameraData;
   encryptedSymmetricKey: string;
   lastDistributorsPublicKey: string;
@@ -166,10 +161,6 @@ export class AppPage extends PageRegion {
   }
 
   async preSync() {
-    // Subscribe to realtime page name
-
-    this.app.realtime.subscribe([`pageName.${this.id}`]);
-
     // Request page data
 
     const response = await $api.post<IPageData>('/api/pages/data', {
@@ -178,6 +169,17 @@ export class AppPage extends PageRegion {
     });
 
     this.app.react.parentPageId = null;
+
+    // Subscribe to realtime data
+
+    this.app.realtime.subscribe([
+      `pageName.${this.id}`,
+      `groupName.${response.data.groupId}`,
+    ]);
+
+    // Save group ID
+
+    this.react.groupId = response.data.groupId;
 
     // Decrypt symmetric key
 
@@ -211,8 +213,8 @@ export class AppPage extends PageRegion {
   }
 
   postSync(pageData: IPageData) {
-    if (this.collab.store.page.name == null) {
-      this.collab.reset(pageData.pageName);
+    if (this.collab.store.page.nextZIndex == null) {
+      this.collab.reset();
     }
 
     this.elems.setup();

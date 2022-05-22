@@ -25,11 +25,11 @@
       }"
     >
       <MiniSidebarPage
-        v-for="pageRef in $pages.react.pathPages"
-        :key="pageRef.id"
-        :name="$pages.realtime.values[`pageName.${pageRef.id}`]"
-        :active="pageRef.id === $pages.react.pageId"
-        @click="$pages.navigateTo(pageRef.id, $router)"
+        v-for="pageId in $pages.react.pathPageIds"
+        :key="pageId"
+        :name="$pages.realtime.values[`pageName.${pageId}`]"
+        :active="pageId === $pages.react.pageId"
+        @click="$pages.navigateTo(pageId, $router)"
       />
     </q-list>
   </q-drawer>

@@ -46,7 +46,7 @@ import { provide, toRef } from 'vue';
 
 import ArrowProperties from './ArrowProperties.vue';
 import NoteProperties from './NoteProperties/NoteProperties.vue';
-import PageProperties from './PageProperties.vue';
+import PageProperties from './PageProperties/PageProperties.vue';
 
 const ui = useUI();
 

@@ -29,11 +29,11 @@
         <template v-else>
           <q-btn
             label="Pages"
-            flat
             href="/pages"
+            color="primary"
           />
 
-          <Gap style="width: 8px" />
+          <Gap style="width: 12px" />
 
           <ToolbarBtn
             tooltip="Account"
@@ -50,7 +50,7 @@
                 <q-item
                   clickable
                   v-close-popup
-                  href="/account/general"
+                  to="/account/general"
                 >
                   <q-item-section avatar>
                     <q-icon name="mdi-account" />
@@ -60,7 +60,7 @@
                 <q-item
                   clickable
                   v-close-popup
-                  href="/"
+                  to="/"
                   @click="logout($api)"
                 >
                   <q-item-section avatar>

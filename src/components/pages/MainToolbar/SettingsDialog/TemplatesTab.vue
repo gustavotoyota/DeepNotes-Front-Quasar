@@ -40,19 +40,18 @@
           >
             <template #item="{ element: template }">
               <q-item
-                :key="template.id"
                 class="text-grey-1"
                 style="background-color: #424242"
                 clickable
                 v-ripple
                 active-class="bg-grey-7"
-                :active="selectedTemplates.has(template.id)"
-                @click="toggleSelection(template.id)"
+                :active="selectedIds.has(template.id)"
+                @click="select(template.id, $event)"
               >
                 <q-item-section>{{ template.name }}</q-item-section>
 
                 <q-item-section
-                  v-if="template.id === defaultTemplateId"
+                  v-if="template.id === defaultId"
                   side
                 >
                   <q-icon name="mdi-check-circle" />
@@ -78,21 +77,22 @@
           flex-direction: column;
         "
       >
-        <q-btn
-          label="Set as default"
-          color="primary"
-          :disable="
-            selectedTemplate == null || selectedTemplate.id == defaultTemplateId
-          "
-          @click="defaultTemplateId = selectedTemplate?.id ?? ''"
+        <q-input
+          label="Template name"
+          filled
+          dense
+          :disable="selected == null"
+          :model-value="selected?.name"
+          @update:model-value="selected!.name = $event!.toString()"
         />
 
         <Gap style="height: 16px" />
 
         <q-btn
-          label="Rename"
+          label="Set as default"
           color="primary"
-          :disable="selectedTemplate == null"
+          :disable="selected == null || selected.id == defaultId"
+          @click="defaultId = selected?.id ?? ''"
         />
 
         <Gap style="height: 16px" />
@@ -100,7 +100,7 @@
         <q-btn
           label="Toggle visibility"
           color="primary"
-          :disable="selectedTemplates.size === 0"
+          :disable="selectedIds.size === 0"
           @click="toggleVisibility()"
         />
 
@@ -109,7 +109,7 @@
         <q-btn
           label="Delete"
           color="primary"
-          :disable="selectedTemplates.size === 0"
+          :disable="selectedIds.size === 0"
           @click="deleteSelection()"
         />
       </div>
@@ -129,42 +129,49 @@ import { computed, reactive, ref } from 'vue';
 import draggable from 'vuedraggable';
 
 const templates = ref([] as ITemplate[]);
-const defaultTemplateId = ref('');
+const defaultId = ref('');
 
-const selectedTemplates = reactive(new Set<string>());
+const selectedIds = reactive(new Set<string>());
 
-const selectedTemplate = computed(() => {
-  if (selectedTemplates.size !== 1) {
+const selected = computed(() => {
+  if (selectedIds.size !== 1) {
     return null;
   }
 
   return templates.value.find(
-    (item) => item.id === selectedTemplates.values().next().value
+    (item) => item.id === selectedIds.values().next().value
   ) as ITemplate;
 });
 
 function selectAll() {
   for (const template of templates.value) {
-    selectedTemplates.add(template.id);
+    selectedIds.add(template.id);
   }
 }
 function deselectAll() {
   for (const template of templates.value) {
-    selectedTemplates.delete(template.id);
+    selectedIds.delete(template.id);
   }
 }
 
+function select(templateId: string, event: MouseEvent) {
+  if (!event.ctrlKey) {
+    selectedIds.clear();
+  }
+
+  toggleSelection(templateId);
+}
 function toggleSelection(templateId: string) {
-  if (selectedTemplates.has(templateId)) {
-    selectedTemplates.delete(templateId);
+  if (selectedIds.has(templateId)) {
+    selectedIds.delete(templateId);
   } else {
-    selectedTemplates.add(templateId);
+    selectedIds.add(templateId);
   }
 }
 
 function toggleVisibility() {
   let allVisible = true;
-  for (const templateId of selectedTemplates) {
+  for (const templateId of selectedIds) {
     const template = templates.value.find(
       (item) => item.id === templateId
     ) as ITemplate;
@@ -175,7 +182,7 @@ function toggleVisibility() {
     break;
   }
 
-  for (const templateId of selectedTemplates) {
+  for (const templateId of selectedIds) {
     const template = templates.value.find(
       (item) => item.id === templateId
     ) as ITemplate;
@@ -187,12 +194,12 @@ function toggleVisibility() {
 function deleteSelection() {
   // Check if default template is selected
 
-  for (const templateId of selectedTemplates) {
+  for (const templateId of selectedIds) {
     const template = templates.value.find(
       (item) => item.id === templateId
     ) as ITemplate;
 
-    if (defaultTemplateId.value !== template.id) continue;
+    if (defaultId.value !== template.id) continue;
 
     Notify.create({
       message: 'Default template cannot be deleted',
@@ -202,18 +209,18 @@ function deleteSelection() {
     return;
   }
 
-  remove(templates.value, (template) => selectedTemplates.has(template.id));
+  remove(templates.value, (template) => selectedIds.has(template.id));
 
-  selectedTemplates.clear();
+  selectedIds.clear();
 }
 
 async function save() {
   $pages.templates.react.list = templates.value;
-  $pages.templates.react.defaultId = defaultTemplateId.value;
+  $pages.templates.react.defaultId = defaultId.value;
 
   await $api.post('/api/templates/update-settings', {
     templates: templates.value,
-    defaultTemplateId: defaultTemplateId.value,
+    defaultTemplateId: defaultId.value,
   });
 
   console.log('Template settings save request sent');
@@ -221,8 +228,8 @@ async function save() {
 
 defineExpose({
   templates,
-  defaultTemplateId,
-  selectedTemplates,
+  defaultId,
+  selectedIds,
   save,
 });
 </script>

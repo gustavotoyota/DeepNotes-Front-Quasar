@@ -3,7 +3,7 @@
     class="checkbox"
     :label="label"
     :model-value="value"
-    @update:model-value="$emit('update', $event)"
+    @update:model-value="$emit('input', $event)"
     :disable="disable"
   />
 </template>
@@ -14,7 +14,7 @@
 >
 defineProps<{
   label: string;
-  value: boolean;
+  value?: boolean;
   disable?: boolean;
 }>();
 </script>

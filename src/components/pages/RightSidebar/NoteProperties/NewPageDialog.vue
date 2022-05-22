@@ -14,7 +14,7 @@
 
         <q-separator />
 
-        <q-card-section>
+        <q-card-section style="padding: 21px">
           <q-input
             label="Page name"
             ref="pageNameElem"

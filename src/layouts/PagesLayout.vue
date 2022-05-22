@@ -39,7 +39,7 @@ import { isUuid4 } from 'src/code/pages/static/utils';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import ContentDisplay from 'src/components/pages/ContentDisplay/ContentDisplay.vue';
 import LeftSidebar from 'src/components/pages/LeftSidebar.vue';
-import MainToolbar from 'src/components/pages/MainToolbar.vue';
+import MainToolbar from 'src/components/pages/MainToolbar/MainToolbar.vue';
 import RightSidebar from 'src/components/pages/RightSidebar/RightSidebar.vue';
 import { useApp } from 'src/stores/app';
 import {
@@ -67,11 +67,14 @@ if (process.env.CLIENT) {
   page = toRef($pages.react, 'page');
 }
 
-useMeta(() => ({
-  title: page?.value?.react.collab.name
-    ? `${page?.value?.react.collab.name} - DeepNotes`
-    : 'DeepNotes',
-}));
+useMeta(() => {
+  const pageName =
+    globalThis.$pages?.realtime.values[`pageName.${page?.value?.id}`];
+
+  return {
+    title: pageName ? `${pageName} - DeepNotes` : 'DeepNotes',
+  };
+});
 
 // Pages application
 

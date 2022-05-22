@@ -4,7 +4,7 @@ import { Router } from 'vue-router';
 import { Factory, factory } from '../static/composition-root';
 import { isUuid4 } from '../static/utils';
 import { refProp } from '../static/vue';
-import { AppPage, IPageReference } from './page/page';
+import { AppPage } from './page/page';
 import { AppPageCache } from './page-cache';
 import { RealtimeClient } from './realtime-client';
 import { AppSerialization } from './serialization';
@@ -34,8 +34,8 @@ declare module '@vue/runtime-core' {
 export interface IAppReact {
   mounted: boolean;
 
-  pathPages: IPageReference[];
-  recentPages: IPageReference[];
+  pathPageIds: string[];
+  recentPageIds: string[];
 
   page: ShallowRef<AppPage>;
   pageId: ComputedRef<string | null>;
@@ -60,8 +60,8 @@ export class PagesApp {
     this.react = refProp<IAppReact>(this, 'react', {
       mounted: false,
 
-      pathPages: [],
-      recentPages: [],
+      pathPageIds: [],
+      recentPageIds: [],
 
       page: shallowRef(null) as any,
       pageId: computed(() => {
@@ -96,47 +96,50 @@ export class PagesApp {
   }
 
   async updatePathPages(pageId: string) {
-    const newPageRef = this.react.pathPages.find((page) => page.id === pageId);
-
-    if (newPageRef != null) {
+    if (this.react.pathPageIds.find((item) => item === pageId)) {
       return;
     }
 
-    const currentPageIndex = this.react.pathPages.findIndex(
-      (page) => page.id === this.react.pageId
+    const currentPageIndex = this.react.pathPageIds.findIndex(
+      (pageId) => pageId === this.react.pageId
     );
 
-    if (currentPageIndex >= 0) {
-      this.react.pathPages.splice(currentPageIndex + 1);
+    if (currentPageIndex < 0) {
+      // Current page is does not exist in path
 
-      this.react.pathPages.push({
-        id: pageId,
-        name: '',
-      });
-    } else {
       await this.loadData(pageId);
+
+      return;
     }
+
+    // Current page exists in path
+
+    this.react.pathPageIds.splice(currentPageIndex + 1);
+
+    this.react.pathPageIds.push(pageId);
   }
 
   async loadData(initialPageId: string) {
     const response = await $api.post<{
-      pathPages: IPageReference[];
-      recentPages: IPageReference[];
+      pathPageIds: string[];
+      recentPageIds: string[];
 
       templates: ITemplate[];
       defaultTemplateId: string;
-    }>('/api/users/pages-data', {
+    }>('/api/users/pages', {
       initialPageId,
     });
 
     await this.realtime.connected;
 
     this.realtime.subscribe(
-      response.data.pathPages.map((page) => `pageName.${page.id}`)
+      response.data.pathPageIds
+        .concat(response.data.recentPageIds)
+        .map((pageId) => `pageName.${pageId}`)
     );
 
-    this.react.pathPages = response.data.pathPages;
-    this.react.recentPages = response.data.recentPages;
+    this.react.pathPageIds = response.data.pathPageIds;
+    this.react.recentPageIds = response.data.recentPageIds;
 
     this.templates.react.list = response.data.templates;
     this.templates.react.defaultId = response.data.defaultTemplateId;

@@ -23,8 +23,9 @@
         label="Page name"
         dense
         filled
-        v-model="page.react.collab.name"
-        @update:model-value="$pages.realtime.publish({ [`pageName.${page.id}`]:$event as string })"
+        :model-value="pageName"
+        @update:model-value="pageName = $event!.toString();
+        $pages.realtime.publish({ [`pageName.${page.id}`]: $event!.toString() })"
       />
     </div>
 
@@ -33,19 +34,23 @@
     <!-- Lock position and zoom -->
 
     <div style="padding: 20px; display: flex">
-      <q-checkbox
+      <Checkbox
         label="Lock position"
         v-model="page.camera.react.lockPos"
-        style="flex: 1; margin-left: -10px; margin-top: -10px"
       />
 
       <Gap style="width: 16px" />
 
-      <q-checkbox
+      <Checkbox
         label="Lock zoom"
         v-model="page.camera.react.lockZoom"
-        style="flex: 1; margin-left: -10px; margin-top: -10px"
       />
+    </div>
+
+    <q-separator />
+
+    <div style="padding: 20px; display: flex; flex-direction: column">
+      <GroupSettingsDialog />
     </div>
   </div>
 </template>
@@ -58,11 +63,23 @@ import { AppPage } from 'src/code/pages/app/page/page';
 import { negateProp } from 'src/code/pages/static/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
-import { inject, Ref } from 'vue';
+import { inject, Ref, ref, watch } from 'vue';
 
-import MiniSidebarBtn from '../misc/MiniSidebarBtn.vue';
+import Checkbox from '../../misc/Checkbox.vue';
+import MiniSidebarBtn from '../../misc/MiniSidebarBtn.vue';
+import GroupSettingsDialog from './GroupSettingsDialog/GroupSettingsDialog.vue';
 
 const ui = useUI();
 
 const page = inject<Ref<AppPage>>('page')!;
+
+const pageName = ref('');
+
+watch(
+  page,
+  () => {
+    pageName.value = $pages.realtime.values[`pageName.${page.value.id}`];
+  },
+  { immediate: true }
+);
 </script>

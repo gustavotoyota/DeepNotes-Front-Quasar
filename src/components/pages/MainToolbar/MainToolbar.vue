@@ -244,8 +244,8 @@ import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
 import { toRef } from 'vue';
 
-import SettingsDialog from './MainToolbar/SettingsDialog.vue';
-import ToolbarBtn from './misc/ToolbarBtn.vue';
+import ToolbarBtn from '../misc/ToolbarBtn.vue';
+import SettingsDialog from './SettingsDialog/SettingsDialog.vue';
 
 const ui = useUI();
 

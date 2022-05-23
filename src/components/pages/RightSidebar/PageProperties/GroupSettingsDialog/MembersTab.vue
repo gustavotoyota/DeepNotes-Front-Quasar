@@ -66,7 +66,7 @@
           label="Role"
           filled
           dense
-          :options="settings.roles.list"
+          :options="groupRoles"
           option-label="name"
           option-value="id"
           map-options
@@ -92,6 +92,7 @@
   setup
   lang="ts"
 >
+import { groupRoles } from 'src/code/pages/static/roles';
 import Gap from 'src/components/misc/Gap.vue';
 import { computed, inject, Ref } from 'vue';
 

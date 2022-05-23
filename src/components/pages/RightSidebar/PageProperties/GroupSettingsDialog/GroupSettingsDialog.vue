@@ -35,16 +35,6 @@
 
           <q-item
             clickable
-            :active="settings.tab === 'roles'"
-            active-class="bg-grey-9 text-grey-1"
-            v-ripple
-            @click="settings.tab = 'roles'"
-          >
-            <q-item-section>Roles</q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
             :active="settings.tab === 'users'"
             active-class="bg-grey-9 text-grey-1"
             v-ripple
@@ -69,12 +59,8 @@
             ref="generalTab"
             v-show="settings.tab === 'general'"
           />
-          <RolesTab
-            ref="rolesTab"
-            v-show="settings.tab === 'roles'"
-          />
-          <UsersTab
-            ref="usersTab"
+          <MembersTab
+            ref="membersTab"
             v-show="settings.tab === 'users'"
           />
 
@@ -103,24 +89,10 @@
 </template>
 
 <script lang="ts">
-export interface IGroupRole {
-  id: string;
-  name: string;
-  description: string;
-  rank: number;
-  permissions: {
-    manageOwnRank: boolean;
-    manageLowerRanks: boolean;
-
-    editGroupSettings: boolean;
-    editPages: boolean;
-  };
-}
-
 export interface IGroupUser {
   id: string;
-  roleId: string;
   displayName: string;
+  roleId: string;
 }
 
 export function initialSettings() {
@@ -133,16 +105,6 @@ export function initialSettings() {
       groupName: '',
     },
 
-    roles: {
-      list: [] as IGroupRole[],
-
-      selectedIds: new Set<string>(),
-
-      newRole: {
-        name: '',
-        rank: '',
-      },
-    },
     users: {
       list: [] as IGroupUser[],
 
@@ -161,8 +123,7 @@ import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { inject, provide, Ref, ref, watch } from 'vue';
 
 import GeneralTab from './GeneralTab.vue';
-import RolesTab from './RolesTab.vue';
-import UsersTab from './UsersTab.vue';
+import MembersTab from './MembersTab.vue';
 
 const visible = ref(false);
 
@@ -172,8 +133,7 @@ provide('settings', settings);
 const page = inject<Ref<AppPage>>('page')!;
 
 const generalTab = ref() as Ref<InstanceType<typeof GeneralTab>>;
-const rolesTab = ref() as Ref<InstanceType<typeof RolesTab>>;
-const usersTab = ref() as Ref<InstanceType<typeof UsersTab>>;
+const membersTab = ref() as Ref<InstanceType<typeof MembersTab>>;
 
 watch(visible, async (value) => {
   if (!value) {
@@ -183,8 +143,6 @@ watch(visible, async (value) => {
   settings.value = initialSettings();
 
   const response = await $api.post<{
-    roles: IGroupRole[];
-
     users: IGroupUser[];
   }>('/api/groups/load-settings', {
     groupId: page.value.react.groupId,
@@ -193,7 +151,6 @@ watch(visible, async (value) => {
   settings.value.general.groupName =
     $pages.realtime.values[`groupName.${page.value.react.groupId}`];
 
-  settings.value.roles.list = response.data.roles;
   settings.value.users.list = response.data.users;
 
   settings.value.loaded = true;

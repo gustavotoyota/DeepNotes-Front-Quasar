@@ -68,6 +68,7 @@ export async function tryRefreshTokens(api: AxiosInstance): Promise<void> {
 
   try {
     if (!localStorage.getItem('encrypted-private-key')) {
+      await logout(api);
       return;
     }
 
@@ -97,8 +98,8 @@ export async function tryRefreshTokens(api: AxiosInstance): Promise<void> {
 
     auth.loggedIn = true;
   } catch (err) {
-    logout(api);
     console.error(err);
+    await logout(api);
   }
 }
 
@@ -134,13 +135,12 @@ export function deleteToken(tokenName: string) {
 export async function logout(api: AxiosInstance) {
   const auth = useAuth();
 
-  if (!localStorage.getItem('encrypted-private-key')) {
-    return;
-  }
-
   // Notify server of logout
 
-  if (auth.loggedIn) {
+  const previouslyLoggedIn =
+    localStorage.getItem('encrypted-private-key') != null;
+
+  if (previouslyLoggedIn) {
     try {
       await api.post(authEndpoints.logout);
     } catch (err) {
@@ -162,4 +162,8 @@ export async function logout(api: AxiosInstance) {
 
   localStorage.removeItem('encrypted-private-key');
   privateKey.clear();
+
+  if (previouslyLoggedIn) {
+    location.href = homeURL;
+  }
 }

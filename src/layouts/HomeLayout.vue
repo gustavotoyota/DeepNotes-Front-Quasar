@@ -60,7 +60,6 @@
                 <q-item
                   clickable
                   v-close-popup
-                  to="/"
                   @click="logout($api)"
                 >
                   <q-item-section avatar>

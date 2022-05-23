@@ -198,7 +198,6 @@
               <q-item
                 clickable
                 v-close-popup
-                href="/"
                 @click="logout($api)"
               >
                 <q-item-section avatar>

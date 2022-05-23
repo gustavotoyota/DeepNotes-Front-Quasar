@@ -44,6 +44,13 @@
             </q-item-section>
           </q-item>
         </q-list>
+
+        <Gap style="height: 16px" />
+
+        <q-btn
+          label="Invite new user"
+          color="primary"
+        />
       </div>
 
       <div
@@ -67,13 +74,6 @@
           :disable="activeUser == null"
           :model-value="activeUser?.roleId"
           @update:model-value="activeUser!.roleId = $event"
-        />
-
-        <Gap style="height: 16px" />
-
-        <q-btn
-          label="Invite"
-          color="primary"
         />
 
         <Gap style="height: 16px" />

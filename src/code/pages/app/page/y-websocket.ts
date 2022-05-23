@@ -5,10 +5,9 @@ import { Observable } from 'lib0/observable';
 import * as time from 'lib0/time';
 import * as url from 'lib0/url';
 import { SymmetricKey } from 'src/code/crypto/symmetric-key';
+import { Resolvable } from 'src/code/utils';
 import * as awarenessProtocol from 'y-protocols/awareness';
 import * as Y from 'yjs';
-
-import { Resolvable } from '../../static/utils';
 
 export const MESSAGE_SYNC = 0;
 export const MESSAGE_AWARENESS = 1;

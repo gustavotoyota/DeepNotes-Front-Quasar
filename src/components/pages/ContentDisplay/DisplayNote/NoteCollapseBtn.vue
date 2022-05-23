@@ -29,7 +29,7 @@
   lang="ts"
 >
 import { NoteSection, PageNote } from 'src/code/pages/app/page/notes/note';
-import { negateProp } from 'src/code/pages/static/utils';
+import { negateProp } from 'src/code/utils';
 import { inject } from 'vue';
 
 defineProps<{

@@ -60,7 +60,7 @@
   lang="ts"
 >
 import { AppPage } from 'src/code/pages/app/page/page';
-import { negateProp } from 'src/code/pages/static/utils';
+import { negateProp } from 'src/code/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
 import { inject, Ref, ref, watch } from 'vue';

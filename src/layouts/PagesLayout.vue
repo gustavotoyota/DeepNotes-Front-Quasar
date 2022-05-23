@@ -35,7 +35,7 @@ import { useMeta } from 'quasar';
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { factory } from 'src/code/pages/static/composition-root';
-import { isUuid4 } from 'src/code/pages/static/utils';
+import { isUuid4 } from 'src/code/utils';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import ContentDisplay from 'src/components/pages/ContentDisplay/ContentDisplay.vue';
 import LeftSidebar from 'src/components/pages/LeftSidebar.vue';

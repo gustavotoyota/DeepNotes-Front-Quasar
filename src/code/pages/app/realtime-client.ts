@@ -1,8 +1,7 @@
 import * as decoding from 'lib0/decoding';
 import * as encoding from 'lib0/encoding';
+import { Resolvable } from 'src/code/utils';
 import { reactive } from 'vue';
-
-import { Resolvable } from '../static/utils';
 
 export const MSGTOSV_SUBSCRIBE = 0;
 export const MSGTOSV_UNSUBSCRIBE = 1;

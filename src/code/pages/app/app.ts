@@ -1,8 +1,8 @@
+import { isUuid4 } from 'src/code/utils';
 import { computed, ComputedRef, ShallowRef, shallowRef, UnwrapRef } from 'vue';
 import { Router } from 'vue-router';
 
 import { Factory, factory } from '../static/composition-root';
-import { isUuid4 } from '../static/utils';
 import { refProp } from '../static/vue';
 import { AppPage } from './page/page';
 import { AppPageCache } from './page-cache';

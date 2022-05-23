@@ -16,7 +16,7 @@
       <Gap style="width: 16px" />
 
       <q-btn
-        label="Deselect all"
+        label="Clear selection"
         color="primary"
         @click="deselectAll()"
       />

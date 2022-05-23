@@ -11,7 +11,7 @@
         display: flex;
         flex-direction: column;
         max-width: unset;
-        width: 900px;
+        width: 800px;
         height: 600px;
       "
     >
@@ -25,30 +25,30 @@
         <q-list style="flex: none; width: 180px">
           <q-item
             clickable
-            :active="data.tab === 'general'"
+            :active="settings.tab === 'general'"
             active-class="bg-grey-9 text-grey-1"
             v-ripple
-            @click="data.tab = 'general'"
+            @click="settings.tab = 'general'"
           >
             <q-item-section>General</q-item-section>
           </q-item>
 
           <q-item
             clickable
-            :active="data.tab === 'roles'"
+            :active="settings.tab === 'roles'"
             active-class="bg-grey-9 text-grey-1"
             v-ripple
-            @click="data.tab = 'roles'"
+            @click="settings.tab = 'roles'"
           >
             <q-item-section>Roles</q-item-section>
           </q-item>
 
           <q-item
             clickable
-            :active="data.tab === 'users'"
+            :active="settings.tab === 'users'"
             active-class="bg-grey-9 text-grey-1"
             v-ripple
-            @click="data.tab = 'users'"
+            @click="settings.tab = 'users'"
           >
             <q-item-section>Users</q-item-section>
           </q-item>
@@ -67,19 +67,18 @@
         >
           <GeneralTab
             ref="generalTab"
-            v-show="data.tab === 'general'"
+            v-show="settings.tab === 'general'"
           />
           <RolesTab
             ref="rolesTab"
-            v-show="data.tab === 'roles'"
-            :roles="data.roles"
+            v-show="settings.tab === 'roles'"
           />
           <UsersTab
             ref="usersTab"
-            v-show="data.tab === 'users'"
+            v-show="settings.tab === 'users'"
           />
 
-          <LoadingOverlay v-if="!data.loaded" />
+          <LoadingOverlay v-if="!settings.loaded" />
         </div>
       </q-card-section>
 
@@ -103,14 +102,57 @@
   </q-dialog>
 </template>
 
+<script lang="ts">
+export interface IGroupRole {
+  id: string;
+  name: string;
+  description: string;
+  rank: number;
+  permissions: {
+    manageOwnRank: boolean;
+    manageLowerRanks: boolean;
+
+    editPages: boolean;
+  };
+}
+
+export interface IGroupUser {
+  id: string;
+  roleId: string;
+  displayName: string;
+}
+
+export function initialSettings() {
+  return {
+    loaded: false,
+
+    tab: 'general',
+
+    general: {
+      groupName: '',
+    },
+
+    roles: {
+      list: [] as IGroupRole[],
+
+      selectedIds: new Set<string>(),
+    },
+    users: {
+      list: [] as IGroupUser[],
+
+      selectedIds: new Set<string>(),
+    },
+  };
+}
+</script>
+
 <script
   setup
   lang="ts"
 >
 import { AppPage } from 'src/code/pages/app/page/page';
-import { IRole } from 'src/code/pages/static/types';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
-import { inject, Ref, ref, watch } from 'vue';
+import { inject, provide, Ref, ref, watch } from 'vue';
 
 import GeneralTab from './GeneralTab.vue';
 import RolesTab from './RolesTab.vue';
@@ -118,13 +160,8 @@ import UsersTab from './UsersTab.vue';
 
 const visible = ref(false);
 
-const data = ref({
-  loaded: false,
-
-  tab: 'general',
-
-  roles: [] as IRole[],
-});
+const settings = ref(initialSettings());
+provide('settings', settings);
 
 const page = inject<Ref<AppPage>>('page')!;
 
@@ -137,35 +174,22 @@ watch(visible, async (value) => {
     return;
   }
 
-  data.value = {
-    loaded: false,
-
-    tab: 'general',
-
-    roles: [] as IRole[],
-  };
-
-  data.value.loaded = false;
-
-  data.value.tab = 'general';
+  settings.value = initialSettings();
 
   const response = await $api.post<{
-    roles: IRole[];
+    roles: IGroupRole[];
 
-    users: {
-      id: string;
-      role_id: string;
-    }[];
+    users: IGroupUser[];
   }>('/api/groups/load-settings', {
     groupId: page.value.react.groupId,
   });
 
-  generalTab.value.groupName =
+  settings.value.general.groupName =
     $pages.realtime.values[`groupName.${page.value.react.groupId}`];
 
-  data.value.roles = response.data.roles;
-  usersTab.value.users = response.data.users;
+  settings.value.roles.list = response.data.roles;
+  settings.value.users.list = response.data.users;
 
-  data.value.loaded = true;
+  settings.value.loaded = true;
 });
 </script>

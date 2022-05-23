@@ -2,9 +2,9 @@
   <div style="display: contents">
     <q-input
       label="Group name"
-      v-model="groupName"
+      v-model="settings.general.groupName"
       filled
-      dense
+      style="max-width: 300px"
     />
   </div>
 </template>
@@ -13,11 +13,9 @@
   setup
   lang="ts"
 >
-import { ref } from 'vue';
+import { inject, Ref } from 'vue';
 
-const groupName = ref('');
+import { initialSettings } from './GroupSettingsDialog.vue';
 
-defineExpose({
-  groupName,
-});
+const settings = inject<Ref<ReturnType<typeof initialSettings>>>('settings')!;
 </script>

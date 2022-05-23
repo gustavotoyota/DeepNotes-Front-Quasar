@@ -112,6 +112,7 @@ export interface IGroupRole {
     manageOwnRank: boolean;
     manageLowerRanks: boolean;
 
+    editGroupSettings: boolean;
     editPages: boolean;
   };
 }
@@ -136,6 +137,11 @@ export function initialSettings() {
       list: [] as IGroupRole[],
 
       selectedIds: new Set<string>(),
+
+      newRole: {
+        name: '',
+        rank: '',
+      },
     },
     users: {
       list: [] as IGroupUser[],

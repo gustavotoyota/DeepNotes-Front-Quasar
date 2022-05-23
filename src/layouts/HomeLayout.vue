@@ -38,7 +38,7 @@
           <ToolbarBtn
             tooltip="Account"
             icon="mdi-account-circle"
-            icon-size="40px"
+            icon-size="42px"
             btn-size="44px"
             round
           >

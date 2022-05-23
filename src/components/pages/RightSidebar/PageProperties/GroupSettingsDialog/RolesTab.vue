@@ -19,7 +19,7 @@
     <Gap style="height: 16px" />
 
     <div style="flex: 1; height: 0; display: flex">
-      <div style="flex: 1">
+      <div style="flex: 1; display: flex; flex-direction: column">
         <q-list
           style="
             border-radius: 10px;
@@ -44,16 +44,31 @@
             </q-item-section>
           </q-item>
         </q-list>
+
+        <Gap style="height: 16px" />
+
+        <div style="display: flex">
+          <q-btn
+            label="Create new"
+            color="primary"
+            style="flex: 1"
+          />
+
+          <Gap style="width: 16px" />
+
+          <q-btn
+            label="Remove"
+            color="primary"
+            style="flex: 1"
+            :disable="settings.roles.selectedIds.size === 0"
+          />
+        </div>
       </div>
 
+      <Gap style="width: 16px" />
+
       <div
-        style="
-          flex: none;
-          margin-left: 16px;
-          width: 250px;
-          display: flex;
-          flex-direction: column;
-        "
+        style="flex: none; width: 250px; display: flex; flex-direction: column"
       >
         <div style="display: flex">
           <q-input
@@ -79,27 +94,12 @@
 
         <Gap style="height: 16px" />
 
-        <q-btn
-          label="Add"
-          color="primary"
-        />
-
-        <Gap style="height: 16px" />
-
-        <q-btn
-          label="Delete"
-          color="primary"
-          :disable="settings.roles.selectedIds.size === 0"
-        />
-
-        <Gap style="height: 16px" />
-
         <Checkbox
-          label="Can edit pages"
+          label="Can edit group settings"
           style="flex: none"
           :disable="activeRole == null"
-          :model-value="activeRole?.permissions.editPages ?? false"
-          @update:model-value="activeRole!.permissions.editPages = $event"
+          :model-value="activeRole?.permissions.editGroupSettings ?? false"
+          @update:model-value="activeRole!.permissions.editGroupSettings = $event"
         />
 
         <Gap style="height: 16px" />
@@ -120,6 +120,27 @@
           :disable="activeRole == null"
           :model-value="activeRole?.permissions.manageLowerRanks ?? false"
           @update:model-value="activeRole!.permissions.manageLowerRanks = $event"
+        />
+
+        <Gap style="height: 16px" />
+
+        <Checkbox
+          label="Can edit pages"
+          style="flex: none"
+          :disable="activeRole == null"
+          :model-value="activeRole?.permissions.editPages ?? false"
+          @update:model-value="activeRole!.permissions.editPages = $event"
+        />
+
+        <Gap style="height: 16px" />
+
+        <q-input
+          label="Description"
+          filled
+          type="textarea"
+          :disable="activeRole == null"
+          :model-value="activeRole?.description"
+          @update:model-value="activeRole!.description = $event!.toString()"
         />
       </div>
     </div>
@@ -175,3 +196,12 @@ function toggleSelection(id: string) {
   }
 }
 </script>
+
+<style scoped>
+.q-field.q-textarea :deep(.q-field__control) {
+  height: 100px;
+}
+.q-field.q-textarea :deep(textarea) {
+  resize: none;
+}
+</style>

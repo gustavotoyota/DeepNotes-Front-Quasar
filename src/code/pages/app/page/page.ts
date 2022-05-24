@@ -43,17 +43,20 @@ export interface IAppPageReact extends IRegionReact {
   name: string;
 
   loaded: boolean;
+  hasPermission: boolean;
 
   collab: ComputedRef<IPageCollab>;
 
   size: number;
 
   groupId?: string;
+  roleId?: string;
 }
 
 export interface IPageData {
   groupId: string;
   camera: ICameraData;
+  roleId: string;
   encryptedSymmetricKey: string;
   lastDistributorsPublicKey: string;
 }
@@ -109,6 +112,7 @@ export class AppPage extends PageRegion {
       name: '',
 
       loaded: false,
+      hasPermission: true,
 
       collab: computed(() => this.collab.store.page),
 
@@ -177,9 +181,18 @@ export class AppPage extends PageRegion {
       `groupName.${response.data.groupId}`,
     ]);
 
-    // Save group ID
+    // Save important values
 
     this.react.groupId = response.data.groupId;
+    this.react.roleId = response.data.roleId;
+
+    // Check if has permission
+
+    if (response.data.encryptedSymmetricKey == null) {
+      this.react.loaded = true;
+      this.react.hasPermission = false;
+      return;
+    }
 
     // Decrypt symmetric key
 
@@ -229,7 +242,17 @@ export class AppPage extends PageRegion {
   async setup() {
     const pageData = await this.preSync();
 
-    this.postSync(pageData);
+    if (pageData != null) {
+      this.postSync(pageData);
+    }
+  }
+
+  async requestAccess() {
+    this.react.roleId = 'request';
+
+    await $api.post('/api/pages/access-request', {
+      pageId: this.id,
+    });
   }
 
   destroy() {

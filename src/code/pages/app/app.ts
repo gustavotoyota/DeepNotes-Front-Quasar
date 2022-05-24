@@ -95,30 +95,6 @@ export class PagesApp {
     }
   }
 
-  async updatePathPages(pageId: string) {
-    if (this.react.pathPageIds.find((item) => item === pageId)) {
-      return;
-    }
-
-    const currentPageIndex = this.react.pathPageIds.findIndex(
-      (pageId) => pageId === this.react.pageId
-    );
-
-    if (currentPageIndex < 0) {
-      // Current page is does not exist in path
-
-      await this.loadData(pageId);
-
-      return;
-    }
-
-    // Current page exists in path
-
-    this.react.pathPageIds.splice(currentPageIndex + 1);
-
-    this.react.pathPageIds.push(pageId);
-  }
-
   async loadData(initialPageId: string) {
     const response = await $api.post<{
       pathPageIds: string[];
@@ -143,6 +119,30 @@ export class PagesApp {
 
     this.templates.react.list = response.data.templates;
     this.templates.react.defaultId = response.data.defaultTemplateId;
+  }
+
+  async updatePathPages(pageId: string) {
+    if (this.react.pathPageIds.find((item) => item === pageId)) {
+      return;
+    }
+
+    const currentPageIndex = this.react.pathPageIds.findIndex(
+      (pageId) => pageId === this.react.pageId
+    );
+
+    if (currentPageIndex < 0) {
+      // Current page is does not exist in path
+
+      await this.loadData(pageId);
+
+      return;
+    }
+
+    // Current page exists in path
+
+    this.react.pathPageIds.splice(currentPageIndex + 1);
+
+    this.react.pathPageIds.push(pageId);
   }
 
   async setupPage(pageId: string) {

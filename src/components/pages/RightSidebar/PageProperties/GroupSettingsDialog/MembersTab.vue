@@ -29,14 +29,14 @@
           "
         >
           <q-item
-            v-for="user in settings.users.list"
+            v-for="user in settings.members.list"
             :key="user.id"
             class="text-grey-1"
             style="background-color: #424242"
             clickable
             v-ripple
             active-class="bg-grey-7"
-            :active="settings.users.selectedIds.has(user.id)"
+            :active="settings.members.selectedIds.has(user.id)"
             @click="select(user.id, $event)"
           >
             <q-item-section>
@@ -101,38 +101,39 @@ import { initialSettings } from './GroupSettingsDialog.vue';
 const settings = inject<Ref<ReturnType<typeof initialSettings>>>('settings')!;
 
 const activeUser = computed(() => {
-  if (settings.value.users.selectedIds.size !== 1) {
+  if (settings.value.members.selectedIds.size !== 1) {
     return null;
   }
 
-  return settings.value.users.list.find(
-    (item) => item.id === settings.value.users.selectedIds.values().next().value
+  return settings.value.members.list.find(
+    (item) =>
+      item.id === settings.value.members.selectedIds.values().next().value
   );
 });
 
 function selectAll() {
-  for (const role of settings.value.users.list) {
-    settings.value.users.selectedIds.add(role.id);
+  for (const role of settings.value.members.list) {
+    settings.value.members.selectedIds.add(role.id);
   }
 }
 function deselectAll() {
-  for (const role of settings.value.users.list) {
-    settings.value.users.selectedIds.delete(role.id);
+  for (const role of settings.value.members.list) {
+    settings.value.members.selectedIds.delete(role.id);
   }
 }
 
 function select(id: string, event: MouseEvent) {
   if (!event.ctrlKey) {
-    settings.value.users.selectedIds.clear();
+    settings.value.members.selectedIds.clear();
   }
 
   toggleSelection(id);
 }
 function toggleSelection(id: string) {
-  if (settings.value.users.selectedIds.has(id)) {
-    settings.value.users.selectedIds.delete(id);
+  if (settings.value.members.selectedIds.has(id)) {
+    settings.value.members.selectedIds.delete(id);
   } else {
-    settings.value.users.selectedIds.add(id);
+    settings.value.members.selectedIds.add(id);
   }
 }
 </script>

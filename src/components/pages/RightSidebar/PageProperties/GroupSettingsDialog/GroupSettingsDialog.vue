@@ -35,12 +35,12 @@
 
           <q-item
             clickable
-            :active="settings.tab === 'users'"
+            :active="settings.tab === 'members'"
             active-class="bg-grey-9 text-grey-1"
             v-ripple
-            @click="settings.tab = 'users'"
+            @click="settings.tab = 'members'"
           >
-            <q-item-section>Users</q-item-section>
+            <q-item-section>Members</q-item-section>
           </q-item>
         </q-list>
 
@@ -61,7 +61,7 @@
           />
           <MembersTab
             ref="membersTab"
-            v-show="settings.tab === 'users'"
+            v-show="settings.tab === 'members'"
           />
 
           <LoadingOverlay v-if="!settings.loaded" />
@@ -105,7 +105,7 @@ export function initialSettings() {
       groupName: '',
     },
 
-    users: {
+    members: {
       list: [] as IGroupUser[],
 
       selectedIds: new Set<string>(),
@@ -151,7 +151,7 @@ watch(visible, async (value) => {
   settings.value.general.groupName =
     $pages.realtime.values[`groupName.${page.value.react.groupId}`];
 
-  settings.value.users.list = response.data.users;
+  settings.value.members.list = response.data.users;
 
   settings.value.loaded = true;
 });

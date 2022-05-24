@@ -127,7 +127,7 @@
         <Checkbox
           label="Body"
           :value="note.collab.body.enabled"
-          @update="
+          @input="
             changeProp($event, (note, value) => {
               note.collab.body.enabled = value;
               note.collab.head.enabled ||= note.react.numEnabledSections === 0;

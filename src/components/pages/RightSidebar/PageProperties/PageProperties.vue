@@ -25,7 +25,7 @@
         filled
         :model-value="pageName"
         @update:model-value="pageName = $event!.toString();
-        $pages.realtime.publish({ [`pageName.${page.id}`]: $event!.toString() })"
+        $pages.realtime.values[`pageName.${page.id}`] = $event!.toString()"
       />
     </div>
 

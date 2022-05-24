@@ -1,5 +1,6 @@
 import * as decoding from 'lib0/decoding';
 import * as encoding from 'lib0/encoding';
+import { nextTick } from 'process';
 import { Resolvable } from 'src/code/utils';
 import { reactive } from 'vue';
 
@@ -17,8 +18,33 @@ export class RealtimeClient {
   connected!: Resolvable;
   synced!: Resolvable;
 
+  private _publishMode = true;
+  private _publishBuffer = new Map<string, string>();
+
   constructor() {
-    this.values = reactive({});
+    this.values = reactive(
+      new Proxy(
+        {},
+        {
+          set: (target, propertyKey, value, receiver) => {
+            if (this._publishMode) {
+              if (this._publishBuffer.size === 0) {
+                nextTick(() => {
+                  this._publish(Object.fromEntries(this._publishBuffer));
+                  this._publishBuffer.clear();
+                });
+              }
+
+              this._publishBuffer.set(propertyKey as string, value);
+            } else {
+              Reflect.set(target, propertyKey, value, receiver);
+            }
+
+            return true;
+          },
+        }
+      )
+    );
 
     this.connect();
   }
@@ -77,7 +103,7 @@ export class RealtimeClient {
     this._socket.send(encoding.toUint8Array(encoder));
   }
 
-  publish(values: Record<string, string>) {
+  _publish(values: Record<string, string>) {
     const encoder = new encoding.Encoder();
 
     encoding.writeVarUint(encoder, MSGTOSV_PUBLISH);
@@ -109,12 +135,16 @@ export class RealtimeClient {
   private _handleNotify(decoder: decoding.Decoder) {
     const numChannels = decoding.readVarUint(decoder);
 
+    this._publishMode = false;
+
     for (let i = 0; i < numChannels; i++) {
       const channel = decoding.readVarString(decoder);
       const value = decoding.readVarString(decoder);
 
       this.values[channel] = value;
     }
+
+    this._publishMode = true;
 
     this.synced.resolve();
   }

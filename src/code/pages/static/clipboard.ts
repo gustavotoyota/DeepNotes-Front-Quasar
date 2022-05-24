@@ -32,9 +32,9 @@ export async function getClipboardText(): Promise<string> {
   return '';
 }
 
-export function setClipboardText(text: string) {
+export async function setClipboardText(text: string) {
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text);
+    await navigator.clipboard.writeText(text);
     return;
   }
 

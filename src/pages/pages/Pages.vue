@@ -15,6 +15,6 @@ const router = useRouter();
 onMounted(async () => {
   const response = await $api.post('/api/users/starting-page-id');
 
-  router.replace({ path: `/pages/${response.data.startingPageId}` });
+  await router.replace({ path: `/pages/${response.data.startingPageId}` });
 });
 </script>

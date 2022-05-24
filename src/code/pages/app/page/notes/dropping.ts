@@ -10,7 +10,7 @@ export class PageDropping {
     this.page = page;
   }
 
-  perform(regionNote: PageNote, dropIndex: number) {
+  async perform(regionNote: PageNote, dropIndex: number) {
     const selectedNotes = this.page.selection.react.notes.slice();
 
     selectedNotes.sort(
@@ -29,12 +29,12 @@ export class PageDropping {
 
     this.page.activeRegion.react.id = regionNote.id;
 
-    nextTick(() => {
-      const lastSelectedNote = this.page.selection.react.notes.at(-1)!;
-
-      lastSelectedNote.scrollIntoView();
-    });
-
     this.page.dragging.cancel();
+
+    await nextTick();
+
+    const lastSelectedNote = this.page.selection.react.notes.at(-1)!;
+
+    lastSelectedNote.scrollIntoView();
   }
 }

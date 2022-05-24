@@ -10,7 +10,7 @@ export class PageCloning {
     this.page = page;
   }
 
-  perform() {
+  async perform() {
     // Serialize selection
 
     const serialRegion = this.page.app.serialization.serialize(
@@ -48,11 +48,11 @@ export class PageCloning {
     // Scroll into view
 
     if (this.page.selection.react.notes.length > 0) {
-      nextTick(() => {
-        const lastSelectedNote = this.page.selection.react.notes.at(-1)!;
+      await nextTick();
 
-        lastSelectedNote.scrollIntoView();
-      });
+      const lastSelectedNote = this.page.selection.react.notes.at(-1)!;
+
+      lastSelectedNote.scrollIntoView();
     }
   }
 }

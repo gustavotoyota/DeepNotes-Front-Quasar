@@ -44,7 +44,7 @@ export class PageResizing {
     });
   }
 
-  start(
+  async start(
     event: PointerEvent,
     note: PageNote,
     side: NoteSide,
@@ -110,11 +110,11 @@ export class PageResizing {
 
     this.activeGhost.collab.zIndex = nextZIndex++;
 
-    nextTick(() => {
-      listenPointerEvents(event, {
-        move: this._update,
-        up: this._finish,
-      });
+    await nextTick();
+
+    listenPointerEvents(event, {
+      move: this._update,
+      up: this._finish,
     });
   }
 

@@ -83,14 +83,14 @@ export class PageCamera {
   watchUpdates() {
     watch(
       () => this.react,
-      debounce(() => {
-        $api.post('/api/pages/update-camera', {
+      debounce(async () => {
+        console.log('Camera update sent');
+
+        await $api.post('/api/pages/update-camera', {
           pageId: this.page.id,
 
           camera: this.react,
         });
-
-        console.log('Camera update sent');
       }, 2000),
       { deep: true }
     );

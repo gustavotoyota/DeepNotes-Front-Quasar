@@ -10,6 +10,7 @@ module.exports = {
   parserOptions: {
     parser: require.resolve('@typescript-eslint/parser'),
     extraFileExtensions: ['.vue'],
+    project: './tsconfig.json',
   },
 
   env: {
@@ -106,5 +107,8 @@ module.exports = {
 
     'simple-import-sort/imports': 'error',
     'simple-import-sort/exports': 'error',
+
+    '@typescript-eslint/no-floating-promises': 'error',
+    '@typescript-eslint/await-thenable': 'error',
   },
 };

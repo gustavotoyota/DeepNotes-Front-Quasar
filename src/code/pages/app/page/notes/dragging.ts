@@ -57,7 +57,7 @@ export class PageDragging {
     });
   }
 
-  private _update = function (this: PageDragging, event: PointerEvent) {
+  private _update = async function (this: PageDragging, event: PointerEvent) {
     const clientPos = this.page.pos.eventToClient(event);
 
     if (!this.react.active) {
@@ -81,7 +81,7 @@ export class PageDragging {
       }
 
       if (this.page.activeRegion.react.id != null) {
-        this._dragOut(clientPos);
+        await this._dragOut(clientPos);
       }
     }
 
@@ -107,7 +107,7 @@ export class PageDragging {
     this.react.currentPos = clientPos;
   }.bind(this);
 
-  private _dragOut(clientPos: Vec2) {
+  private async _dragOut(clientPos: Vec2) {
     const worldPos = this.page.pos.clientToWorld(clientPos);
 
     // Store note positions
@@ -154,22 +154,22 @@ export class PageDragging {
     // Adjust note positions and sizes
     // With mouse in the center of the active element
 
-    nextTick(() => {
-      if (!(this.page.activeElem.react.elem instanceof PageNote)) {
-        return;
+    await nextTick();
+
+    if (!(this.page.activeElem.react.elem instanceof PageNote)) {
+      return;
+    }
+
+    const activeWorldRect =
+      this.page.activeElem.react.elem.getWorldRect('note-frame');
+
+    const mouseOffset = worldPos.sub(activeWorldRect.center);
+
+    this.page.collab.doc.transact(() => {
+      for (const selectedNote of this.page.selection.react.notes) {
+        selectedNote.collab.pos.x += mouseOffset.x;
+        selectedNote.collab.pos.y += mouseOffset.y;
       }
-
-      const activeWorldRect =
-        this.page.activeElem.react.elem.getWorldRect('note-frame');
-
-      const mouseOffset = worldPos.sub(activeWorldRect.center);
-
-      this.page.collab.doc.transact(() => {
-        for (const selectedNote of this.page.selection.react.notes) {
-          selectedNote.collab.pos.x += mouseOffset.x;
-          selectedNote.collab.pos.y += mouseOffset.y;
-        }
-      });
     });
   }
 

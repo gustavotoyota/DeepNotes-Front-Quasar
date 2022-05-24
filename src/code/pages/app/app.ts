@@ -89,7 +89,7 @@ export class PagesApp {
     if (isUuid4(dest)) {
       this.react.parentPageId = fromParent ? this.react.pageId : null;
 
-      router.push(`/pages/${dest}`);
+      await router.push(`/pages/${dest}`);
     } else {
       location.assign(dest);
     }
@@ -107,12 +107,6 @@ export class PagesApp {
     });
 
     await this.realtime.connected;
-
-    this.realtime.subscribe(
-      response.data.pathPageIds
-        .concat(response.data.recentPageIds)
-        .map((pageId) => `pageName.${pageId}`)
-    );
 
     this.react.pathPageIds = response.data.pathPageIds;
     this.react.recentPageIds = response.data.recentPageIds;

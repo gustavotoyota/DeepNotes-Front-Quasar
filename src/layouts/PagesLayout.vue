@@ -105,7 +105,7 @@ onMounted(() => {
   document.addEventListener('keypress', onKeyPress);
 });
 
-function onKeyDown(event: KeyboardEvent) {
+async function onKeyDown(event: KeyboardEvent) {
   const target = event.target as HTMLElement;
 
   if (target.isContentEditable && event.code === 'Escape') {
@@ -133,14 +133,14 @@ function onKeyDown(event: KeyboardEvent) {
   }
 
   if (event.ctrlKey && event.code === 'KeyD') {
-    page.value.cloning.perform();
+    await page.value.cloning.perform();
   }
 
   if (event.ctrlKey && event.code === 'KeyC') {
     page.value.clipboard.copy();
   }
   if (event.ctrlKey && event.code === 'KeyV' && window.clipboardData) {
-    page.value.clipboard.paste();
+    await page.value.clipboard.paste();
   }
   if (event.ctrlKey && event.code === 'KeyX') {
     page.value.clipboard.cut();
@@ -200,7 +200,7 @@ onMounted(() => {
   document.addEventListener('paste', onPaste);
 });
 
-function onPaste(event: ClipboardEvent) {
+async function onPaste(event: ClipboardEvent) {
   const target = event.target as HTMLElement;
 
   if (
@@ -213,7 +213,7 @@ function onPaste(event: ClipboardEvent) {
 
   const text = (event.clipboardData || window.clipboardData).getData('text');
 
-  page.value.clipboard.paste(text);
+  await page.value.clipboard.paste(text);
 }
 
 onBeforeUnmount(() => {
@@ -226,7 +226,7 @@ onMounted(() => {
   document.addEventListener('click', onClick);
 });
 
-function onClick(event: MouseEvent) {
+async function onClick(event: MouseEvent) {
   const target = event.target as HTMLElement;
 
   const anchor = target.closest('a[href]');
@@ -253,7 +253,7 @@ function onClick(event: MouseEvent) {
 
   const pageId = href.split('/').at(-1) ?? '';
 
-  router.push(`/pages/${pageId}`);
+  await router.push(`/pages/${pageId}`);
 }
 
 onBeforeUnmount(() => {

@@ -57,6 +57,7 @@
                   </q-item-section>
                   <q-item-section>Account</q-item-section>
                 </q-item>
+
                 <q-item
                   clickable
                   v-close-popup

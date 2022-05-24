@@ -12,7 +12,7 @@ export interface IGroupRole {
   description: string;
 }
 
-export const groupRoles: IGroupRole[] = [
+export const roles: IGroupRole[] = [
   {
     id: 'owner',
 
@@ -94,3 +94,8 @@ export const groupRoles: IGroupRole[] = [
     description: 'Can see pages, but not edit them',
   },
 ];
+
+export const rolesMap = roles.reduce((acc, role) => {
+  acc[role.id] = role;
+  return acc;
+}, {} as Record<string, IGroupRole>);

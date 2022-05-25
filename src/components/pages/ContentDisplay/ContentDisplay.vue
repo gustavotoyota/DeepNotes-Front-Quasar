@@ -31,18 +31,28 @@
       "
     >
       <div style="text-align: center">
-        <div>You don't have permission to access this page.</div>
+        <div>You do not have permission to access this page.</div>
 
         <Gap style="height: 12px" />
 
         <q-btn
-          :label="
-            page.react.roleId == null ? 'Request access' : 'Access requested'
-          "
-          :disable="page.react.roleId != null"
+          v-if="page.react.userStatus == null"
+          label="Request access"
           color="primary"
           @click="page.requestAccess()"
         />
+        <q-btn
+          v-if="page.react.userStatus === 'request'"
+          label="Access requested"
+          disable
+          color="primary"
+        />
+        <div
+          v-if="page.react.userStatus === 'rejected'"
+          style="color: red"
+        >
+          Your access request has been rejected.
+        </div>
       </div>
     </div>
   </div>

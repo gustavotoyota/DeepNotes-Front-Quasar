@@ -35,6 +35,16 @@
 
           <q-item
             clickable
+            :active="settings.tab === 'members'"
+            active-class="bg-grey-9 text-grey-1"
+            v-ripple
+            @click="settings.tab = 'members'"
+          >
+            <q-item-section>Members</q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
             :active="settings.tab === 'requests'"
             active-class="bg-grey-9 text-grey-1"
             v-ripple
@@ -45,12 +55,12 @@
 
           <q-item
             clickable
-            :active="settings.tab === 'members'"
+            :active="settings.tab === 'invitations'"
             active-class="bg-grey-9 text-grey-1"
             v-ripple
-            @click="settings.tab = 'members'"
+            @click="settings.tab = 'invitations'"
           >
-            <q-item-section>Members</q-item-section>
+            <q-item-section>Invitations</q-item-section>
           </q-item>
         </q-list>
 
@@ -78,13 +88,7 @@
       <q-card-actions align="right">
         <q-btn
           flat
-          label="Cancel"
-          color="primary"
-          v-close-popup
-        />
-        <q-btn
-          flat
-          label="Ok"
+          label="Close"
           color="primary"
           v-close-popup
         />
@@ -97,18 +101,32 @@
 export interface IGroupUser {
   id: string;
   roleId: string;
+  requestPageId: string;
+  publicKey: string;
 }
 
 export function initialSettings() {
   return {
     loaded: false,
 
+    encryptedSymmetricKey: new Uint8Array(),
+    distributorsPublicKey: new Uint8Array(),
+
     tab: 'general',
 
     general: {
       groupName: '',
     },
+    requests: {
+      list: [] as IGroupUser[],
 
+      selectedIds: new Set<string>(),
+    },
+    invitations: {
+      list: [] as IGroupUser[],
+
+      selectedIds: new Set<string>(),
+    },
     members: {
       list: [] as IGroupUser[],
 
@@ -122,6 +140,7 @@ export function initialSettings() {
   setup
   lang="ts"
 >
+import { from_base64 } from 'libsodium-wrappers';
 import { AppPage } from 'src/code/pages/app/page/page';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { inject, provide, Ref, ref, watch } from 'vue';
@@ -145,17 +164,31 @@ watch(visible, async (value) => {
   settings.value = initialSettings();
 
   const response = await $api.post<{
-    users: IGroupUser[];
+    encryptedSymmetricKey: string;
+    distributorsPublicKey: string;
+
+    requests: IGroupUser[];
+    invitations: IGroupUser[];
+    members: IGroupUser[];
+    banned: IGroupUser[];
   }>('/api/groups/load-settings', {
-    groupId: page.value.react.groupId,
+    groupId: page.value.groupId,
   });
+
+  settings.value.encryptedSymmetricKey = from_base64(
+    response.data.encryptedSymmetricKey
+  );
+  settings.value.distributorsPublicKey = from_base64(
+    response.data.distributorsPublicKey
+  );
 
   settings.value.general.groupName = await $pages.realtime.getAsync(
     'groupName',
-    page.value.react.groupId
+    page.value.groupId
   );
-
-  settings.value.members.list = response.data.users;
+  settings.value.requests.list = response.data.requests;
+  settings.value.invitations.list = response.data.invitations;
+  settings.value.members.list = response.data.members;
 
   settings.value.loaded = true;
 });

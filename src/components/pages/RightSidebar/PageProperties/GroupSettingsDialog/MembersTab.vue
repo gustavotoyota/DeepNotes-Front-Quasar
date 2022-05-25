@@ -49,7 +49,7 @@
 
         <q-btn
           label="Invite new user"
-          color="primary"
+          color="secondary"
         />
       </div>
 
@@ -79,8 +79,8 @@
         <Gap style="height: 16px" />
 
         <q-btn
-          label="Ban"
-          color="primary"
+          label="Remove"
+          color="negative"
           :disable="activeUser == null"
         />
       </div>

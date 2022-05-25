@@ -49,16 +49,16 @@ export interface IAppPageReact extends IRegionReact {
 
   size: number;
 
-  groupId: string;
-  roleId: string;
+  userStatus: string;
 }
 
 export interface IPageData {
   groupId: string;
   camera: ICameraData;
+  userStatus: string;
   roleId: string;
   encryptedSymmetricKey: string;
-  lastDistributorsPublicKey: string;
+  distributorsPublicKey: string;
 }
 
 export class AppPage extends PageRegion {
@@ -99,6 +99,9 @@ export class AppPage extends PageRegion {
 
   readonly arrows: PageArrows;
 
+  groupId!: string;
+  roleId!: string;
+
   constructor(factory: Factory, app: PagesApp, id: string) {
     super(null as any, id, ElemType.PAGE, null);
 
@@ -118,8 +121,7 @@ export class AppPage extends PageRegion {
 
       size: 0,
 
-      groupId: null as any,
-      roleId: null as any,
+      userStatus: null as any,
 
       // Elem
 
@@ -179,8 +181,10 @@ export class AppPage extends PageRegion {
 
     // Save important values
 
-    this.react.groupId = response.data.groupId;
-    this.react.roleId = response.data.roleId;
+    this.groupId = response.data.groupId;
+    this.roleId = response.data.roleId;
+
+    this.react.userStatus = response.data.userStatus;
 
     // Check if has permission
 
@@ -194,7 +198,7 @@ export class AppPage extends PageRegion {
 
     const decryptedSymmetricKey = privateKey.decrypt(
       from_base64(response.data.encryptedSymmetricKey),
-      from_base64(response.data.lastDistributorsPublicKey)
+      from_base64(response.data.distributorsPublicKey)
     );
 
     const symmetricKey = createSymmetricKey(decryptedSymmetricKey);
@@ -244,7 +248,7 @@ export class AppPage extends PageRegion {
   }
 
   async requestAccess() {
-    this.react.roleId = 'request';
+    this.react.userStatus = 'request';
 
     await $api.post('/api/pages/access-request', {
       pageId: this.id,

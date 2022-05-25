@@ -28,7 +28,7 @@ import { PagePos } from '../app/page/space/pos';
 import { PageRects } from '../app/page/space/rects';
 import { PageSizes } from '../app/page/space/sizes';
 import { AppPageCache } from '../app/page-cache';
-import { RealtimeClient } from '../app/realtime-client';
+import { RealtimeClient } from '../app/realtime';
 import { AppSerialization } from '../app/serialization';
 import { AppTemplates } from '../app/templates';
 import { Container } from './simple-di';

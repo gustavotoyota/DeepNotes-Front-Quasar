@@ -6,7 +6,7 @@ import { Factory, factory } from '../static/composition-root';
 import { refProp } from '../static/vue';
 import { AppPage } from './page/page';
 import { AppPageCache } from './page-cache';
-import { RealtimeClient } from './realtime-client';
+import { RealtimeClient } from './realtime';
 import { AppSerialization } from './serialization';
 import { AppTemplates, ITemplate } from './templates';
 

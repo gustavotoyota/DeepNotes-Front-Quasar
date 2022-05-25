@@ -40,7 +40,7 @@
             @click="select(user.id, $event)"
           >
             <q-item-section>
-              {{ user.displayName }}
+              {{ $pages.realtime.get('userName', user.id) }}
             </q-item-section>
           </q-item>
         </q-list>

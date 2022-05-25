@@ -25,7 +25,7 @@
         filled
         :model-value="pageName"
         @update:model-value="pageName = $event!.toString();
-        $pages.realtime.values[`pageName.${page.id}`] = $event!.toString()"
+        $pages.realtime.set('pageName', page.id, $event!.toString())"
       />
     </div>
 
@@ -78,7 +78,7 @@ const pageName = ref('');
 watch(
   page,
   () => {
-    pageName.value = $pages.realtime.values[`pageName.${page.value.id}`];
+    pageName.value = $pages.realtime.get('pageName', page.value.id);
   },
   { immediate: true }
 );

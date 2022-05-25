@@ -49,8 +49,8 @@ export interface IAppPageReact extends IRegionReact {
 
   size: number;
 
-  groupId?: string;
-  roleId?: string;
+  groupId: string;
+  roleId: string;
 }
 
 export interface IPageData {
@@ -118,6 +118,9 @@ export class AppPage extends PageRegion {
 
       size: 0,
 
+      groupId: null as any,
+      roleId: null as any,
+
       // Elem
 
       active: false,
@@ -173,13 +176,6 @@ export class AppPage extends PageRegion {
     });
 
     this.app.react.parentPageId = null;
-
-    // Subscribe to realtime data
-
-    this.app.realtime.subscribe([
-      `pageName.${this.id}`,
-      `groupName.${response.data.groupId}`,
-    ]);
 
     // Save important values
 
@@ -253,9 +249,5 @@ export class AppPage extends PageRegion {
     await $api.post('/api/pages/access-request', {
       pageId: this.id,
     });
-  }
-
-  destroy() {
-    this.app.realtime.unsubscribe([this.id]);
   }
 }

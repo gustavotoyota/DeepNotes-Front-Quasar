@@ -35,6 +35,16 @@
 
           <q-item
             clickable
+            :active="settings.tab === 'requests'"
+            active-class="bg-grey-9 text-grey-1"
+            v-ripple
+            @click="settings.tab = 'requests'"
+          >
+            <q-item-section>Requests</q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
             :active="settings.tab === 'members'"
             active-class="bg-grey-9 text-grey-1"
             v-ripple
@@ -55,14 +65,9 @@
             position: relative;
           "
         >
-          <GeneralTab
-            ref="generalTab"
-            v-show="settings.tab === 'general'"
-          />
-          <MembersTab
-            ref="membersTab"
-            v-show="settings.tab === 'members'"
-          />
+          <GeneralTab v-show="settings.tab === 'general'" />
+          <RequestsTab v-show="settings.tab === 'requests'" />
+          <MembersTab v-show="settings.tab === 'members'" />
 
           <LoadingOverlay v-if="!settings.loaded" />
         </div>
@@ -91,7 +96,6 @@
 <script lang="ts">
 export interface IGroupUser {
   id: string;
-  displayName: string;
   roleId: string;
 }
 
@@ -124,6 +128,7 @@ import { inject, provide, Ref, ref, watch } from 'vue';
 
 import GeneralTab from './GeneralTab.vue';
 import MembersTab from './MembersTab.vue';
+import RequestsTab from './RequestsTab.vue';
 
 const visible = ref(false);
 
@@ -131,9 +136,6 @@ const settings = ref(initialSettings());
 provide('settings', settings);
 
 const page = inject<Ref<AppPage>>('page')!;
-
-const generalTab = ref() as Ref<InstanceType<typeof GeneralTab>>;
-const membersTab = ref() as Ref<InstanceType<typeof MembersTab>>;
 
 watch(visible, async (value) => {
   if (!value) {
@@ -148,8 +150,10 @@ watch(visible, async (value) => {
     groupId: page.value.react.groupId,
   });
 
-  settings.value.general.groupName =
-    $pages.realtime.values[`groupName.${page.value.react.groupId}`];
+  settings.value.general.groupName = await $pages.realtime.getAsync(
+    'groupName',
+    page.value.react.groupId
+  );
 
   settings.value.members.list = response.data.users;
 

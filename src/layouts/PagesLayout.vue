@@ -68,8 +68,11 @@ if (process.env.CLIENT) {
 }
 
 useMeta(() => {
-  const pageName =
-    globalThis.$pages?.realtime.values[`pageName.${page?.value?.id}`];
+  const pageId = page?.value?.id;
+
+  const pageName = pageId
+    ? globalThis.$pages?.realtime.get('pageName', pageId)
+    : null;
 
   return {
     title: pageName ? `${pageName} - DeepNotes` : 'DeepNotes',
@@ -137,13 +140,13 @@ async function onKeyDown(event: KeyboardEvent) {
   }
 
   if (event.ctrlKey && event.code === 'KeyC') {
-    page.value.clipboard.copy();
+    await page.value.clipboard.copy();
   }
   if (event.ctrlKey && event.code === 'KeyV' && window.clipboardData) {
     await page.value.clipboard.paste();
   }
   if (event.ctrlKey && event.code === 'KeyX') {
-    page.value.clipboard.cut();
+    await page.value.clipboard.cut();
   }
 
   if (event.ctrlKey && event.code === 'KeyZ') {

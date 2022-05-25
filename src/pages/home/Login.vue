@@ -109,7 +109,7 @@ async function login() {
       message: 'Login successful',
     });
 
-    router.push('/pages');
+    await router.push('/pages');
   } catch (err: any) {
     $q.notify({
       color: 'negative',

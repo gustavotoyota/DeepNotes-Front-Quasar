@@ -15,7 +15,7 @@ export class PageClipboard {
     this.page = page;
   }
 
-  copy() {
+  async copy() {
     // Serialize selection
 
     const clipboardRegion = this.page.app.serialization.serialize(
@@ -48,7 +48,7 @@ export class PageClipboard {
 
     const clipboardText = JSON.stringify(clipboardRegion, null, 2);
 
-    setClipboardText(clipboardText);
+    await setClipboardText(clipboardText);
   }
 
   async paste(text?: string) {
@@ -97,8 +97,8 @@ export class PageClipboard {
     //this.page.undoRedo.resetCapturing()
   }
 
-  cut() {
-    this.copy();
+  async cut() {
+    await this.copy();
     this.page.deleting.perform();
   }
 }

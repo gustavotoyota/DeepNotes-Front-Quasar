@@ -86,7 +86,7 @@
         label="Link URL"
         :options="
           $pages.react.recentPageIds.map((pageId) => ({
-            label: $pages.realtime.values[`pageName.${pageId}`],
+            label: $pages.realtime.get('pageName', pageId),
             value: pageId,
           }))
         "

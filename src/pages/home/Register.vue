@@ -137,7 +137,7 @@ async function register() {
       message: 'Account created successfully!',
     });
 
-    router.push('/login');
+    await router.push('/login');
   } catch (err: any) {
     $q.notify({
       color: 'negative',

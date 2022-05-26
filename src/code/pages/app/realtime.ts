@@ -12,7 +12,7 @@ export const MSGTOCL_NOTIFY = 0;
 export class RealtimeClient {
   private _socket!: WebSocket;
 
-  private readonly _values: Record<string, string>;
+  private readonly _values: Record<string, string | undefined>;
 
   connected!: Resolvable;
   synced!: Resolvable;

@@ -53,10 +53,13 @@ export interface IAppPageReact extends IRegionReact {
 }
 
 export interface IPageData {
-  groupId: string;
   camera: ICameraData;
+
+  groupId: string;
+  ownerId: string;
   userStatus: string;
   roleId: string;
+
   encryptedSymmetricKey: string;
   distributorsPublicKey: string;
 }
@@ -100,6 +103,7 @@ export class AppPage extends PageRegion {
   readonly arrows: PageArrows;
 
   groupId!: string;
+  ownerId!: string;
   roleId!: string;
 
   constructor(factory: Factory, app: PagesApp, id: string) {
@@ -179,9 +183,15 @@ export class AppPage extends PageRegion {
 
     this.app.react.parentPageId = null;
 
+    // Update path page data
+
+    this.app.react.pathPage.groupId = response.data.groupId;
+    this.app.react.pathPage.ownerId = response.data.ownerId;
+
     // Save important values
 
     this.groupId = response.data.groupId;
+    this.ownerId = response.data.ownerId;
     this.roleId = response.data.roleId;
 
     this.react.userStatus = response.data.userStatus;

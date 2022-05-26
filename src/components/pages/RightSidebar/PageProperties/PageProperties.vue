@@ -77,8 +77,9 @@ const pageName = ref('');
 
 watch(
   page,
-  () => {
-    pageName.value = $pages.realtime.get('pageName', page.value.id);
+  async () => {
+    pageName.value =
+      (await $pages.realtime.getAsync('pageName', page.value.id)) ?? '';
   },
   { immediate: true }
 );

@@ -31,11 +31,19 @@ declare module '@vue/runtime-core' {
   }
 }
 
+export interface IPageRef {
+  id: string;
+  groupId: string | null;
+  ownerId: string | null;
+}
+
 export interface IAppReact {
   mounted: boolean;
 
-  pathPageIds: string[];
+  pathPages: IPageRef[];
   recentPageIds: string[];
+
+  pathPage: ComputedRef<IPageRef>;
 
   page: ShallowRef<AppPage>;
   pageId: ComputedRef<string | null>;
@@ -60,8 +68,13 @@ export class PagesApp {
     this.react = refProp<IAppReact>(this, 'react', {
       mounted: false,
 
-      pathPageIds: [],
+      pathPages: [],
       recentPageIds: [],
+
+      pathPage: computed(
+        () =>
+          this.react.pathPages.find((page) => page.id === this.react.pageId)!
+      ),
 
       page: shallowRef(null) as any,
       pageId: computed(() => {
@@ -97,7 +110,7 @@ export class PagesApp {
 
   async loadData(initialPageId: string) {
     const response = await $api.post<{
-      pathPageIds: string[];
+      pathPages: IPageRef[];
       recentPageIds: string[];
 
       templates: ITemplate[];
@@ -108,7 +121,7 @@ export class PagesApp {
 
     await this.realtime.connected;
 
-    this.react.pathPageIds = response.data.pathPageIds;
+    this.react.pathPages = response.data.pathPages;
     this.react.recentPageIds = response.data.recentPageIds;
 
     this.templates.react.list = response.data.templates;
@@ -116,12 +129,12 @@ export class PagesApp {
   }
 
   async updatePathPages(pageId: string) {
-    if (this.react.pathPageIds.find((item) => item === pageId)) {
+    if (this.react.pathPages.find((pathPage) => pathPage.id === pageId)) {
       return;
     }
 
-    const currentPageIndex = this.react.pathPageIds.findIndex(
-      (pageId) => pageId === this.react.pageId
+    const currentPageIndex = this.react.pathPages.findIndex(
+      (pagePage) => pagePage.id === this.react.pageId
     );
 
     if (currentPageIndex < 0) {
@@ -134,9 +147,9 @@ export class PagesApp {
 
     // Current page exists in path
 
-    this.react.pathPageIds.splice(currentPageIndex + 1);
+    this.react.pathPages.splice(currentPageIndex + 1);
 
-    this.react.pathPageIds.push(pageId);
+    this.react.pathPages.push({ id: pageId, groupId: null, ownerId: null });
   }
 
   async setupPage(pageId: string) {

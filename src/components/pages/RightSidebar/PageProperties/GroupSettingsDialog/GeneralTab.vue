@@ -1,14 +1,12 @@
 <template>
-  <div style="display: contents">
-    <q-input
-      label="Group name"
-      :model-value="settings.general.groupName"
-      @update:model-value="settings.general.groupName = $event as string;
+  <q-input
+    label="Group name"
+    :model-value="settings.general.groupName"
+    @update:model-value="settings.general.groupName = $event as string;
       $pages.realtime.set('groupName', page.groupId, $event as string)"
-      filled
-      style="max-width: 300px"
-    />
-  </div>
+    filled
+    style="max-width: 300px"
+  />
 </template>
 
 <script

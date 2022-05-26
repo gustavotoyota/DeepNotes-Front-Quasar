@@ -75,9 +75,10 @@
             position: relative;
           "
         >
-          <GeneralTab v-show="settings.tab === 'general'" />
-          <RequestsTab v-show="settings.tab === 'requests'" />
-          <MembersTab v-show="settings.tab === 'members'" />
+          <GeneralTab v-if="settings.tab === 'general'" />
+          <RequestsTab v-if="settings.tab === 'requests'" />
+          <MembersTab v-if="settings.tab === 'members'" />
+          <InvitationsTab v-if="settings.tab === 'invitations'" />
 
           <LoadingOverlay v-if="!settings.loaded" />
         </div>
@@ -147,7 +148,8 @@ import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { inject, provide, Ref, ref, watch } from 'vue';
 
 import GeneralTab from './GeneralTab.vue';
-import MembersTab from './MembersTab.vue';
+import InvitationsTab from './InvitationsTab.vue';
+import MembersTab from './MembersTab/MembersTab.vue';
 import RequestsTab from './RequestsTab.vue';
 
 const visible = ref(false);

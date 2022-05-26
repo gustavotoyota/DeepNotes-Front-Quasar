@@ -1,60 +1,55 @@
 <template>
-  <div style="display: contents">
-    <q-list
-      style="
-        border-radius: 10px;
-        max-height: 100%;
-        padding: 0;
-        overflow-y: auto;
-      "
-    >
-      <div v-if="settings.requests.list.length === 0">No access requests</div>
-
-      <q-item
-        v-for="user in settings.requests.list"
-        :key="user.id"
-        class="text-grey-1"
-        style="background-color: #424242"
-      >
-        <q-item-section>
-          {{ $pages.realtime.get('userName', user.id) }}
-        </q-item-section>
-
-        <q-item-section side>
-          <q-select
-            label="Role"
-            filled
-            dense
-            :options="roles"
-            option-label="name"
-            option-value="id"
-            map-options
-            emit-value
-            v-model="user.roleId"
-            style="width: 150px"
-          />
-        </q-item-section>
-
-        <q-item-section side>
-          <q-btn
-            label="Accept"
-            color="positive"
-            flat
-            @click="acceptRequest(user)"
-          />
-        </q-item-section>
-
-        <q-item-section side>
-          <q-btn
-            label="Reject"
-            color="negative"
-            flat
-            @click="rejectRequest(user)"
-          />
-        </q-item-section>
-      </q-item>
-    </q-list>
+  <div v-if="settings.requests.list.length === 0">
+    No access requests available.
   </div>
+
+  <q-list
+    style="border-radius: 10px; max-height: 100%; padding: 0; overflow-y: auto"
+  >
+    <q-item
+      v-for="user in settings.requests.list"
+      :key="user.id"
+      class="text-grey-1"
+      style="background-color: #424242"
+    >
+      <q-item-section>
+        {{ $pages.realtime.get('userName', user.id) }}
+      </q-item-section>
+
+      <q-item-section side>
+        <q-select
+          label="Role"
+          filled
+          dense
+          :options="roles"
+          option-label="name"
+          option-value="id"
+          map-options
+          emit-value
+          v-model="user.roleId"
+          style="width: 150px"
+        />
+      </q-item-section>
+
+      <q-item-section side>
+        <q-btn
+          label="Accept"
+          color="positive"
+          flat
+          @click="acceptRequest(user)"
+        />
+      </q-item-section>
+
+      <q-item-section side>
+        <q-btn
+          label="Reject"
+          color="negative"
+          flat
+          @click="rejectRequest(user)"
+        />
+      </q-item-section>
+    </q-item>
+  </q-list>
 </template>
 
 <script
@@ -104,6 +99,7 @@ async function acceptRequest(user: IGroupUser) {
   });
 
   pull(settings.value.requests.list, user);
+  settings.value.members.list.push(user);
 }
 async function rejectRequest(user: IGroupUser) {
   await $api.post('/api/groups/reject-request', {

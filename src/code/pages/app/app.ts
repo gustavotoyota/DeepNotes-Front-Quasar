@@ -130,6 +130,10 @@ export class PagesApp {
 
   async updatePathPages(pageId: string) {
     if (this.react.pathPages.find((pathPage) => pathPage.id === pageId)) {
+      await $api.post('/api/pages/bump', {
+        pageId,
+      });
+
       return;
     }
 
@@ -150,6 +154,11 @@ export class PagesApp {
     this.react.pathPages.splice(currentPageIndex + 1);
 
     this.react.pathPages.push({ id: pageId, groupId: null, ownerId: null });
+
+    await $api.post('/api/pages/bump', {
+      pageId,
+      parentPageId: this.react.pageId,
+    });
   }
 
   async setupPage(pageId: string) {

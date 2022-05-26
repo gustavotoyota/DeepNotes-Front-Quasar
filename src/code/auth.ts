@@ -4,7 +4,7 @@ import { from_base64 } from 'libsodium-wrappers';
 import { Cookies } from 'quasar';
 import { useAuth } from 'src/stores/auth';
 
-import { processSessionPrivateKey } from './crypto/crypto';
+import { reencryptSessionPrivateKey } from './crypto/crypto';
 import { privateKey } from './crypto/private-key';
 import { addDays } from './utils';
 
@@ -90,7 +90,7 @@ export async function tryRefreshTokens(api: AxiosInstance): Promise<void> {
 
     // Reencrypt private key
 
-    processSessionPrivateKey(
+    reencryptSessionPrivateKey(
       encryptedPrivateKey,
       from_base64(response.data.oldSessionKey),
       from_base64(response.data.newSessionKey)

@@ -58,8 +58,7 @@
 >
 import { from_base64, to_base64 } from 'libsodium-wrappers';
 import { pull } from 'lodash';
-import { decryptSymmetric, encryptAssymetric } from 'src/code/crypto/crypto';
-import { privateKey } from 'src/code/crypto/private-key';
+import { reencryptSymmetricKey } from 'src/code/crypto/crypto';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { roles } from 'src/code/pages/static/roles';
 import { inject, Ref } from 'vue';
@@ -71,31 +70,18 @@ const settings = inject<Ref<ReturnType<typeof initialSettings>>>('settings')!;
 const page = inject<Ref<AppPage>>('page')!;
 
 async function acceptRequest(user: IGroupUser) {
-  const encryptedPrivateKey = from_base64(
-    localStorage.getItem('encrypted-private-key')!
-  );
-
-  const decryptedPrivateKey = decryptSymmetric(
-    encryptedPrivateKey,
-    settings.value.sessionKey
-  );
-
-  const decryptedSymmetricKey = privateKey.decrypt(
+  const reencryptedSymmetricKey = reencryptSymmetricKey(
+    settings.value.sessionKey,
     settings.value.encryptedSymmetricKey,
-    settings.value.distributorsPublicKey
-  );
-
-  const encryptedSymmetricKey = encryptAssymetric(
-    decryptedSymmetricKey,
-    from_base64(user.publicKey),
-    decryptedPrivateKey
+    settings.value.distributorsPublicKey,
+    from_base64(user.publicKey)
   );
 
   await $api.post('/api/groups/accept-request', {
     groupId: page.value.groupId,
     userId: user.id,
     roleId: user.roleId,
-    encryptedSymmetricKey: to_base64(encryptedSymmetricKey),
+    encryptedSymmetricKey: to_base64(reencryptedSymmetricKey),
   });
 
   pull(settings.value.requests.list, user);

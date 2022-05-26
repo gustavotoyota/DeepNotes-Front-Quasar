@@ -148,7 +148,7 @@ import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { inject, provide, Ref, ref, watch } from 'vue';
 
 import GeneralTab from './GeneralTab.vue';
-import InvitationsTab from './InvitationsTab.vue';
+import InvitationsTab from './InvitationsTab/InvitationsTab.vue';
 import MembersTab from './MembersTab/MembersTab.vue';
 import RequestsTab from './RequestsTab.vue';
 

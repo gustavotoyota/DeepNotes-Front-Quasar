@@ -53,7 +53,7 @@ import { useAPI } from 'src/boot/external/axios';
 import { storeTokens } from 'src/code/auth';
 import {
   computeDerivedKeys,
-  processSessionPrivateKey,
+  reencryptSessionPrivateKey,
 } from 'src/code/crypto/crypto';
 import Gap from 'src/components/misc/Gap.vue';
 import { useAuth } from 'src/stores/auth';
@@ -92,7 +92,7 @@ async function login() {
 
     // Process session private key
 
-    processSessionPrivateKey(
+    reencryptSessionPrivateKey(
       from_base64(response.data.encryptedPrivateKey),
       derivedKeys.masterKey,
       from_base64(response.data.sessionKey)

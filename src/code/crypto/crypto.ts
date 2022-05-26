@@ -1,6 +1,6 @@
 import './argon2';
 
-import sodium, { to_base64 } from 'libsodium-wrappers';
+import sodium, { from_base64, to_base64 } from 'libsodium-wrappers';
 
 import { concatUint8Array } from '../utils';
 import { privateKey } from './private-key';
@@ -137,35 +137,61 @@ export async function generateRandomKeys(masterKey: Uint8Array) {
   };
 }
 
-export function processSessionPrivateKey(
+export function reencryptSessionPrivateKey(
   oldEncryptedPrivateKey: Uint8Array,
-  oldEncryptionKey: Uint8Array,
-  sessionKey: Uint8Array
+  oldSymmetricKey: Uint8Array,
+  newSessionSymmetricKey: Uint8Array
 ) {
   // Decrypt private key
 
   const decryptedPrivateKey = decryptSymmetric(
     oldEncryptedPrivateKey,
-    oldEncryptionKey
-  );
-
-  // Encrypt private key with session key
-
-  const newEncryptedPrivateKey = encryptSymmetric(
-    decryptedPrivateKey,
-    sessionKey
-  );
-
-  // Store encrypted private key on local storage
-
-  localStorage.setItem(
-    'encrypted-private-key',
-    to_base64(newEncryptedPrivateKey)
+    oldSymmetricKey
   );
 
   // Store private key on memory
 
   privateKey.set(decryptedPrivateKey);
 
+  // Reencrypt private key
+
+  const reencryptedPrivateKey = encryptSymmetric(
+    decryptedPrivateKey,
+    newSessionSymmetricKey
+  );
+
+  // Store encrypted private key on local storage
+
+  localStorage.setItem(
+    'encrypted-private-key',
+    to_base64(reencryptedPrivateKey)
+  );
+
   return decryptedPrivateKey;
+}
+
+export function reencryptSymmetricKey(
+  sessionKey: Uint8Array,
+  encryptedSymmetricKey: Uint8Array,
+  distributorsPublicKey: Uint8Array,
+  recipientsPublicKey: Uint8Array
+) {
+  const encryptedPrivateKey = from_base64(
+    localStorage.getItem('encrypted-private-key')!
+  );
+
+  const decryptedPrivateKey = decryptSymmetric(encryptedPrivateKey, sessionKey);
+
+  const decryptedSymmetricKey = privateKey.decrypt(
+    encryptedSymmetricKey,
+    distributorsPublicKey
+  );
+
+  const reencryptedSymmetricKey = encryptAssymetric(
+    decryptedSymmetricKey,
+    recipientsPublicKey,
+    decryptedPrivateKey
+  );
+
+  return reencryptedSymmetricKey;
 }

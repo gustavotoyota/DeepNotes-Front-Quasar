@@ -33,11 +33,7 @@
 
   <Gap style="height: 16px" />
 
-  <q-btn
-    label="Invite new member"
-    color="primary"
-    style="width: 180px"
-  />
+  <InviteUserDialog />
 </template>
 
 <script
@@ -48,7 +44,8 @@ import { rolesMap } from 'src/code/pages/static/roles';
 import Gap from 'src/components/misc/Gap.vue';
 import { inject, Ref } from 'vue';
 
-import { initialSettings } from './GroupSettingsDialog.vue';
+import { initialSettings } from '../GroupSettingsDialog.vue';
+import InviteUserDialog from './InviteUserDialog.vue';
 
 const settings = inject<Ref<ReturnType<typeof initialSettings>>>('settings')!;
 </script>

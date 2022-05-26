@@ -131,7 +131,7 @@ import { useAPI } from 'src/boot/external/axios';
 import {
   computeDerivedKeys,
   encryptSymmetric,
-  processSessionPrivateKey,
+  reencryptSessionPrivateKey,
 } from 'src/code/crypto/crypto';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
@@ -209,7 +209,7 @@ async function changePassword() {
 
     // Process session private key
 
-    const decryptedPrivateKey = processSessionPrivateKey(
+    const decryptedPrivateKey = reencryptSessionPrivateKey(
       from_base64(response.data.encryptedPrivateKey),
       oldDerivedKeys.masterKey,
       from_base64(response.data.sessionKey)

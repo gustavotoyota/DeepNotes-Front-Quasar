@@ -85,9 +85,11 @@
       <q-select
         label="Link URL"
         :options="
-          $pages.react.recentPageIds.map((pageId) => ({
-            label: $pages.realtime.get('pageName', pageId),
-            value: pageId,
+          $pages.react.recentPages.map((pageRef) => ({
+            label: $pages.realtime.get('pageName', pageRef.id),
+            value: pageRef.id,
+            groupId: pageRef.groupId,
+            ownerId: pageRef.ownerId,
           }))
         "
         emit-value
@@ -98,7 +100,19 @@
         dense
         hide-selected
         fill-input
-      />
+      >
+        <template v-slot:option="scope">
+          <q-item v-bind="scope.itemProps">
+            <q-item-section>
+              <q-item-label>{{ scope.opt.label }}</q-item-label>
+              <q-item-label caption>{{
+                $pages.realtime.get('groupName', scope.opt.groupId) ||
+                `${$pages.realtime.get('userName', scope.opt.ownerId)}'s group`
+              }}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </template>
+      </q-select>
 
       <Gap style="height: 16px" />
 

@@ -1,3 +1,4 @@
+import { pull } from 'lodash';
 import { isUuid4 } from 'src/code/utils';
 import { computed, ComputedRef, ShallowRef, shallowRef, UnwrapRef } from 'vue';
 import { Router } from 'vue-router';
@@ -41,9 +42,10 @@ export interface IAppReact {
   mounted: boolean;
 
   pathPages: IPageRef[];
-  recentPageIds: string[];
+  recentPages: IPageRef[];
 
   pathPage: ComputedRef<IPageRef>;
+  recentPage: ComputedRef<IPageRef>;
 
   page: ShallowRef<AppPage>;
   pageId: ComputedRef<string | null>;
@@ -69,11 +71,15 @@ export class PagesApp {
       mounted: false,
 
       pathPages: [],
-      recentPageIds: [],
+      recentPages: [],
 
       pathPage: computed(
         () =>
           this.react.pathPages.find((page) => page.id === this.react.pageId)!
+      ),
+      recentPage: computed(
+        () =>
+          this.react.recentPages.find((page) => page.id === this.react.pageId)!
       ),
 
       page: shallowRef(null) as any,
@@ -111,7 +117,7 @@ export class PagesApp {
   async loadData(initialPageId: string) {
     const response = await $api.post<{
       pathPages: IPageRef[];
-      recentPageIds: string[];
+      recentPages: IPageRef[];
 
       templates: ITemplate[];
       defaultTemplateId: string;
@@ -122,17 +128,42 @@ export class PagesApp {
     await this.realtime.connected;
 
     this.react.pathPages = response.data.pathPages;
-    this.react.recentPageIds = response.data.recentPageIds;
+    this.react.recentPages = response.data.recentPages;
 
     this.templates.react.list = response.data.templates;
     this.templates.react.defaultId = response.data.defaultTemplateId;
   }
 
+  async bumpPage(pageId: string, fromParent?: boolean) {
+    // New page exists in path
+
+    const recentPage = this.react.recentPages.find(
+      (page) => page.id === pageId
+    );
+
+    pull(this.react.recentPages, recentPage);
+
+    this.react.recentPages.splice(
+      0,
+      0,
+      recentPage ?? {
+        id: pageId,
+        groupId: null,
+        ownerId: null,
+      }
+    );
+
+    await $api.post('/api/pages/bump', {
+      pageId,
+      parentPageId: fromParent ? this.react.pageId : undefined,
+    });
+  }
+
   async updatePathPages(pageId: string) {
     if (this.react.pathPages.find((pathPage) => pathPage.id === pageId)) {
-      await $api.post('/api/pages/bump', {
-        pageId,
-      });
+      // New page exists in path
+
+      await this.bumpPage(pageId);
 
       return;
     }
@@ -141,24 +172,21 @@ export class PagesApp {
       (pagePage) => pagePage.id === this.react.pageId
     );
 
-    if (currentPageIndex < 0) {
-      // Current page is does not exist in path
+    if (currentPageIndex >= 0) {
+      // Current page exists in path
 
-      await this.loadData(pageId);
+      this.react.pathPages.splice(currentPageIndex + 1);
+      this.react.pathPages.push({ id: pageId, groupId: null, ownerId: null });
+
+      await this.bumpPage(pageId, true);
 
       return;
     }
 
-    // Current page exists in path
+    // Current page does not exist in path
+    // Reload all path pages
 
-    this.react.pathPages.splice(currentPageIndex + 1);
-
-    this.react.pathPages.push({ id: pageId, groupId: null, ownerId: null });
-
-    await $api.post('/api/pages/bump', {
-      pageId,
-      parentPageId: this.react.pageId,
-    });
+    await this.loadData(pageId);
   }
 
   async setupPage(pageId: string) {

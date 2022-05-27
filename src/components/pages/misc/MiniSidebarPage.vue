@@ -13,19 +13,7 @@
       <q-item-label>{{
         $pages.realtime.get('pageTitle', pageId)
       }}</q-item-label>
-      <q-item-label caption>{{
-        $pages.realtime.get(
-          'groupName',
-          $pages.react.dict[`groupId.${pageId}`]
-        ) ||
-        ($pages.react.dict[`ownerId.${pageId}`]
-          ? `${$pages.realtime.get(
-              'userName',
-              $pages.react.dict[`ownerId.${pageId}`]
-            )}'s Group`
-          : '') ||
-        ''
-      }}</q-item-label>
+      <q-item-label caption>{{ groupName }}</q-item-label>
     </q-item-section>
 
     <q-tooltip
@@ -37,7 +25,7 @@
       transition-show="jump-right"
       transition-hide="jump-left"
     >
-      {{ $pages.realtime.get('pageTitle', pageId) }}
+      {{ $pages.realtime.get('pageTitle', pageId) }} - {{ groupName }}
     </q-tooltip>
   </q-item>
 </template>
@@ -47,10 +35,13 @@
   lang="ts"
 >
 import { useUI } from 'src/stores/pages/ui';
+import { computed } from 'vue';
 
-defineProps<{
+const props = defineProps<{
   pageId: string;
 }>();
 
 const ui = useUI();
+
+const groupName = computed(() => $pages.computeGroupName(props.pageId));
 </script>

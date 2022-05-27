@@ -88,8 +88,6 @@
           $pages.react.recentPageIds.map((pageId) => ({
             label: $pages.realtime.get('pageTitle', pageId),
             value: pageId,
-            groupId: $pages.react.dict[`groupId.${pageId}`],
-            ownerId: $pages.react.dict[`ownerId.${pageId}`],
           }))
         "
         emit-value
@@ -106,14 +104,7 @@
             <q-item-section>
               <q-item-label>{{ scope.opt.label }}</q-item-label>
               <q-item-label caption>{{
-                $pages.realtime.get('groupName', scope.opt.groupId) ||
-                (scope.opt.ownerId
-                  ? `${$pages.realtime.get(
-                      'userName',
-                      scope.opt.ownerId
-                    )}'s Group`
-                  : '') ||
-                ''
+                $pages.computeGroupName(scope.opt.value)
               }}</q-item-label>
             </q-item-section>
           </q-item>

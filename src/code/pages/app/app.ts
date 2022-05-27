@@ -198,4 +198,20 @@ export class PagesApp {
       await $pages.react.page.setup();
     }
   }
+
+  computeGroupName(pageId: string) {
+    return (
+      $pages.realtime.get(
+        'groupName',
+        $pages.react.dict[`groupId.${pageId}`]
+      ) ||
+      ($pages.react.dict[`ownerId.${pageId}`]
+        ? `${$pages.realtime.get(
+            'userName',
+            $pages.react.dict[`ownerId.${pageId}`]
+          )}'s Group`
+        : '') ||
+      ''
+    );
+  }
 }

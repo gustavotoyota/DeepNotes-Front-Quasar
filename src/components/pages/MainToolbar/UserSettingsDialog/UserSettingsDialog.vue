@@ -27,20 +27,20 @@
         <q-list style="flex: none; width: 180px">
           <q-item
             clickable
-            :active="tab === 'general'"
+            :active="settings.tab === 'general'"
             active-class="bg-grey-9 text-grey-1"
             v-ripple
-            @click="tab = 'general'"
+            @click="settings.tab = 'general'"
           >
             <q-item-section>General</q-item-section>
           </q-item>
 
           <q-item
             clickable
-            :active="tab === 'templates'"
+            :active="settings.tab === 'templates'"
             active-class="bg-grey-9 text-grey-1"
             v-ripple
-            @click="tab = 'templates'"
+            @click="settings.tab = 'templates'"
           >
             <q-item-section>Templates</q-item-section>
           </q-item>
@@ -49,16 +49,18 @@
         <q-separator vertical />
 
         <div
-          style="flex: 1; padding: 32px; display: flex; flex-direction: column"
+          style="
+            flex: 1;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+          "
         >
-          <GeneralTab
-            ref="generalTab"
-            v-show="tab === 'general'"
-          />
-          <TemplatesTab
-            ref="templatesTab"
-            v-show="tab === 'templates'"
-          />
+          <GeneralTab v-if="settings.tab === 'general'" />
+          <TemplatesTab v-if="settings.tab === 'templates'" />
+
+          <LoadingOverlay v-if="!settings.loaded" />
         </div>
       </q-card-section>
 
@@ -67,62 +69,60 @@
       <q-card-actions align="right">
         <q-btn
           flat
-          label="Cancel"
+          label="Close"
           color="primary"
           v-close-popup
-        />
-        <q-btn
-          flat
-          label="Ok"
-          color="primary"
-          v-close-popup
-          @click="save()"
+          @click.prevent="save"
         />
       </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
 
+<script lang="ts">
+export function initialSettings() {
+  return {
+    loaded: false,
+
+    tab: 'general',
+
+    templates: {
+      selectedIds: new Set<string>(),
+    },
+  };
+}
+</script>
+
 <script
   setup
   lang="ts"
 >
-import { cloneDeep } from 'lodash';
+import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import ToolbarBtn from 'src/components/pages/misc/ToolbarBtn.vue';
-import { nextTick, onMounted, ref, watch } from 'vue';
+import { provide, ref, watch } from 'vue';
 
 import GeneralTab from './GeneralTab.vue';
 import TemplatesTab from './TemplatesTab.vue';
 
 const visible = ref(false);
 
-const tab = ref('general');
+const settings = ref(initialSettings());
+provide('settings', settings);
 
-const generalTab = ref({} as InstanceType<typeof GeneralTab>);
-const templatesTab = ref({} as InstanceType<typeof TemplatesTab>);
+watch(visible, async () => {
+  if (!visible.value) {
+    return;
+  }
 
-onMounted(() => {
-  watch(
-    visible,
-    async () => {
-      if (!visible.value) {
-        return;
-      }
+  settings.value = initialSettings();
 
-      await nextTick();
-
-      tab.value = 'general';
-
-      templatesTab.value.templates = cloneDeep($pages.templates.react.list);
-      templatesTab.value.defaultId = $pages.templates.react.defaultId;
-
-      templatesTab.value.selectedIds.clear();
-    },
-    { immediate: true }
-  );
+  settings.value.loaded = true;
 });
 
-function save() {
-  templatesTab.value.save();
+async function save() {
+  await $api.post('/api/templates/update-settings', {
+    templates: $pages.templates.react.list,
+    defaultTemplateId: $pages.templates.react.defaultId,
+  });
 }
 </script>

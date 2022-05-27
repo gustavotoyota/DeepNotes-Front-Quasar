@@ -170,7 +170,7 @@
 
         <Gap style="width: 2px" />
 
-        <SettingsDialog />
+        <UserSettingsDialog />
 
         <Gap style="width: 2px" />
 
@@ -244,7 +244,7 @@ import { useUI } from 'src/stores/pages/ui';
 import { toRef } from 'vue';
 
 import ToolbarBtn from '../misc/ToolbarBtn.vue';
-import SettingsDialog from './SettingsDialog/SettingsDialog.vue';
+import UserSettingsDialog from './UserSettingsDialog/UserSettingsDialog.vue';
 
 const ui = useUI();
 

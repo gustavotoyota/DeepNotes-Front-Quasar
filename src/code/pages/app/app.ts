@@ -160,52 +160,56 @@ export class PagesApp {
     });
   }
 
-  async updatePathPages(pageId: string) {
-    if (this.react.pathPageIds.find((pathPageId) => pathPageId === pageId)) {
+  async updatePathPages(prevPageId: string | null, nextPageId: string) {
+    if (
+      this.react.pathPageIds.find((pathPageId) => pathPageId === nextPageId)
+    ) {
       // New page exists in path
 
-      await this.bumpPage(pageId);
+      await this.bumpPage(nextPageId);
 
       return;
     }
 
-    const currentPageIndex = this.react.pathPageIds.findIndex(
-      (pagePageId) => pagePageId === this.react.pageId
+    const prevPageIndex = this.react.pathPageIds.findIndex(
+      (pagePageId) => pagePageId === prevPageId
     );
 
-    if (currentPageIndex >= 0) {
-      // Current page exists in path
+    if (prevPageIndex >= 0) {
+      // Previous page exists in path
 
-      this.react.pathPageIds.splice(currentPageIndex + 1);
-      this.react.pathPageIds.push(pageId);
+      this.react.pathPageIds.splice(prevPageIndex + 1);
+      this.react.pathPageIds.push(nextPageId);
 
-      await this.bumpPage(pageId, true);
+      await this.bumpPage(nextPageId, true);
 
       return;
     }
 
-    // Current page does not exist in path
+    // Previous page does not exist in path
     // Reload all path pages
 
-    await this.loadData(pageId);
+    await this.loadData(nextPageId);
   }
 
-  async setupPage(pageId: string) {
+  async setupPage(nextPageId: string) {
     console.log('Initialize page');
 
-    await this.updatePathPages(pageId);
+    const prevPageId = this.react.pageId;
+    const cached = this.pageCache.has(nextPageId);
 
-    if (this.pageCache.has(pageId)) {
-      $pages.react.page = this.pageCache.get(pageId)!;
-      return;
+    if (cached) {
+      $pages.react.page = this.pageCache.get(nextPageId)!;
+    } else {
+      const page = factory.makePage(this, nextPageId);
+      this.pageCache.add(page);
+      $pages.react.page = page;
     }
 
-    const page = factory.makePage(this, pageId);
+    await this.updatePathPages(prevPageId, nextPageId);
 
-    this.pageCache.add(page);
-
-    $pages.react.page = page;
-
-    await page.setup();
+    if (!cached) {
+      await $pages.react.page.setup();
+    }
   }
 }

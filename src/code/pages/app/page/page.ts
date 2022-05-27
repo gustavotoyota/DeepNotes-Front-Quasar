@@ -187,6 +187,7 @@ export class AppPage extends PageRegion {
 
     this.app.react.dict[`groupId.${this.id}`] = response.data.groupId;
     this.app.react.dict[`ownerId.${this.id}`] = response.data.ownerId;
+    this.app.react.dict[`roleId.${this.id}`] = response.data.roleId;
 
     // Save page values
 

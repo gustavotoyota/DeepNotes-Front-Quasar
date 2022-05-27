@@ -14,13 +14,13 @@
       <q-item-label caption>{{
         $pages.realtime.get(
           'groupName',
-          $pages.react.dictionary[`groupId.${pageId}`]
+          $pages.react.dict[`groupId.${pageId}`]
         ) ||
-        ($pages.react.dictionary[`ownerId.${pageId}`]
+        ($pages.react.dict[`ownerId.${pageId}`]
           ? `${$pages.realtime.get(
               'userName',
-              $pages.react.dictionary[`ownerId.${pageId}`]
-            )}'s group`
+              $pages.react.dict[`ownerId.${pageId}`]
+            )}'s Group`
           : '') ||
         ''
       }}</q-item-label>

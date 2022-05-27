@@ -57,7 +57,7 @@ export interface IAppReact {
 
   parentPageId: string | null;
 
-  dictionary: ShallowReactive<Record<string, any>>;
+  dict: ShallowReactive<Record<string, any>>;
 }
 
 export class PagesApp {
@@ -87,7 +87,7 @@ export class PagesApp {
 
       parentPageId: null,
 
-      dictionary: shallowReactive({}),
+      dict: shallowReactive({}),
     });
 
     globalThis.__DEEP_NOTES__ = {
@@ -131,12 +131,12 @@ export class PagesApp {
     this.react.recentPageIds = response.data.recentPages.map((page) => page.id);
 
     response.data.pathPages.forEach((page) => {
-      this.react.dictionary[`groupId.${page.id}`] = page.groupId;
-      this.react.dictionary[`ownerId.${page.id}`] = page.ownerId;
+      this.react.dict[`groupId.${page.id}`] = page.groupId;
+      this.react.dict[`ownerId.${page.id}`] = page.ownerId;
     });
     response.data.recentPages.forEach((page) => {
-      this.react.dictionary[`groupId.${page.id}`] = page.groupId;
-      this.react.dictionary[`ownerId.${page.id}`] = page.ownerId;
+      this.react.dict[`groupId.${page.id}`] = page.groupId;
+      this.react.dict[`ownerId.${page.id}`] = page.ownerId;
     });
 
     this.templates.react.list = response.data.templates;

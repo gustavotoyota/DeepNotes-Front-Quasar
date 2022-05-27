@@ -68,15 +68,32 @@ if (process.env.CLIENT) {
 }
 
 useMeta(() => {
-  const pageId = page?.value?.id;
+  let title = 'DeepNotes';
 
-  const pageName = pageId
-    ? globalThis.$pages?.realtime.get('pageName', pageId)
-    : null;
+  if (page == null || page.value == null) {
+    return { title };
+  }
 
-  return {
-    title: pageName ? `${pageName} - DeepNotes` : 'DeepNotes',
-  };
+  const pageId = page.value.id;
+  const pageName = $pages.realtime.get('pageName', pageId);
+
+  if (pageName) {
+    title = `${pageName} - ${title}`;
+  }
+
+  const groupId = $pages.react.dict[`groupId.${pageId}`];
+  const groupName = $pages.realtime.get('groupName', groupId);
+
+  const ownerId = $pages.react.dict[`ownerId.${pageId}`];
+  const ownerName = $pages.realtime.get('userName', ownerId);
+
+  const finalGroupName = groupName || (ownerName ? `${ownerName}'s Group` : '');
+
+  if (finalGroupName) {
+    title = `${finalGroupName} - ${title}`;
+  }
+
+  return { title };
 });
 
 // Pages application

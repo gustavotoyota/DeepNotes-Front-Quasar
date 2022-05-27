@@ -75,10 +75,10 @@ useMeta(() => {
   }
 
   const pageId = page.value.id;
-  const pageName = $pages.realtime.get('pageName', pageId);
+  const pageTitle = $pages.realtime.get('pageTitle', pageId);
 
-  if (pageName) {
-    title = `${pageName} - ${title}`;
+  if (pageTitle) {
+    title = `${pageTitle} - ${title}`;
   }
 
   const groupId = $pages.react.dict[`groupId.${pageId}`];

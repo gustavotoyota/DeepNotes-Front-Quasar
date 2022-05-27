@@ -10,7 +10,9 @@
     </q-item-section>
 
     <q-item-section>
-      <q-item-label>{{ $pages.realtime.get('pageName', pageId) }}</q-item-label>
+      <q-item-label>{{
+        $pages.realtime.get('pageTitle', pageId)
+      }}</q-item-label>
       <q-item-label caption>{{
         $pages.realtime.get(
           'groupName',
@@ -35,7 +37,7 @@
       transition-show="jump-right"
       transition-hide="jump-left"
     >
-      {{ $pages.realtime.get('pageName', pageId) }}
+      {{ $pages.realtime.get('pageTitle', pageId) }}
     </q-tooltip>
   </q-item>
 </template>

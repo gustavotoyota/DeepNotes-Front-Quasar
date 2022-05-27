@@ -16,9 +16,9 @@
 
         <q-card-section style="padding: 21px">
           <q-input
-            label="Page name"
-            ref="pageNameElem"
-            v-model="pageName"
+            label="Page title"
+            ref="pageTitleElem"
+            v-model="pageTitle"
             filled
           />
         </q-card-section>
@@ -60,8 +60,8 @@ const page = inject<Ref<AppPage>>('page')!;
 
 const visible = ref(false);
 
-const pageName = ref('');
-const pageNameElem = ref<HTMLElement>();
+const pageTitle = ref('');
+const pageTitleElem = ref<HTMLElement>();
 
 watch(visible, () => {
   if (!visible.value) {
@@ -69,7 +69,7 @@ watch(visible, () => {
   }
 
   setTimeout(() => {
-    pageName.value = '';
+    pageTitle.value = '';
 
     const activeElem = $pages.react.page.activeElem.react.elem;
     if (!(activeElem instanceof PageNote)) {
@@ -81,9 +81,9 @@ watch(visible, () => {
     }
 
     const text = activeElem.collab[activeElem.react.topSection].value;
-    pageName.value = text.toJSON().split('\n')[0];
+    pageTitle.value = text.toJSON().split('\n')[0];
 
-    pageNameElem.value?.focus();
+    pageTitleElem.value?.focus();
   });
 });
 
@@ -92,7 +92,7 @@ async function createPage() {
     pageId: string;
   }>('/api/pages/create', {
     parentPageId: page.value.id,
-    pageName: pageName.value,
+    pageTitle: pageTitle.value,
   });
 
   for (const selectedNote of page.value.selection.react.notes) {

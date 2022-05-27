@@ -16,16 +16,16 @@
   </q-list>
 
   <div v-else>
-    <!-- Page name -->
+    <!-- Page title -->
 
     <div style="padding: 20px">
       <q-input
-        label="Page name"
+        label="Page title"
         dense
         filled
-        :model-value="pageName"
-        @update:model-value="pageName = $event!.toString();
-        $pages.realtime.set('pageName', page.id, $event!.toString())"
+        :model-value="pageTitle"
+        @update:model-value="pageTitle = $event!.toString();
+        $pages.realtime.set('pageTitle', page.id, $event!.toString())"
       />
     </div>
 
@@ -73,13 +73,13 @@ const ui = useUI();
 
 const page = inject<Ref<AppPage>>('page')!;
 
-const pageName = ref('');
+const pageTitle = ref('');
 
 watch(
   page,
   async () => {
-    pageName.value =
-      (await $pages.realtime.getAsync('pageName', page.value.id)) ?? '';
+    pageTitle.value =
+      (await $pages.realtime.getAsync('pageTitle', page.value.id)) ?? '';
   },
   { immediate: true }
 );

@@ -28,7 +28,7 @@
         v-for="pathPageId in $pages.react.pathPageIds"
         :key="pathPageId"
         :page-id="pathPageId"
-        @click="$pages.navigateTo(pathPageId, $router)"
+        @click="$pages.goToPage(pathPageId, $router)"
       />
     </q-list>
   </q-drawer>

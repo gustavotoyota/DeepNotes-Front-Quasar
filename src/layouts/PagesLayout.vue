@@ -259,13 +259,13 @@ async function onClick(event: MouseEvent) {
 
   if (
     !isUuid4(href) &&
-    !(process.env.PROD && href.startsWith('https://deepnotes.app/')) &&
-    !(process.env.DEV && href.startsWith('http://192.168.1.2:60379/'))
+    !href.startsWith('https://deepnotes.app/pages/') &&
+    !href.startsWith('http://192.168.1.2:60379/pages/')
   ) {
-    return; // Return if it's an external link
+    return; // Allow default if it's not a page link
   }
 
-  event.preventDefault(); // Prevent true page navigation
+  event.preventDefault(); // Prevent default navigation
 
   if (event.altKey || target.isContentEditable) {
     return;
@@ -273,7 +273,7 @@ async function onClick(event: MouseEvent) {
 
   const pageId = href.split('/').at(-1) ?? '';
 
-  await router.push(`/pages/${pageId}`);
+  await $pages.goToPage(pageId, router, true);
 }
 
 onBeforeUnmount(() => {

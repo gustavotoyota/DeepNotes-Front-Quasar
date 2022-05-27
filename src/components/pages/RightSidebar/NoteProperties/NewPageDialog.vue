@@ -99,6 +99,6 @@ async function createPage() {
     selectedNote.collab.link = response.data.pageId;
   }
 
-  await $pages.navigateTo(response.data.pageId, router, true);
+  await $pages.goToPage(response.data.pageId, router, true);
 }
 </script>

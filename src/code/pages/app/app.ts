@@ -1,5 +1,4 @@
 import { pull } from 'lodash';
-import { isUuid4 } from 'src/code/utils';
 import {
   computed,
   ComputedRef,
@@ -55,8 +54,6 @@ export interface IAppReact {
   page: ShallowRef<AppPage>;
   pageId: ComputedRef<string | null>;
 
-  parentPageId: string | null;
-
   dict: ShallowReactive<Record<string, any>>;
 }
 
@@ -67,6 +64,8 @@ export class PagesApp {
   readonly realtime: AppRealtime;
 
   react: UnwrapRef<IAppReact>;
+
+  parentPageId: string | null = null;
 
   constructor(factory: Factory) {
     this.serialization = factory.makeSerialization(this);
@@ -85,8 +84,6 @@ export class PagesApp {
         return this.react.page?.id ?? null;
       }),
 
-      parentPageId: null,
-
       dict: shallowReactive({}),
     });
 
@@ -95,23 +92,10 @@ export class PagesApp {
     };
   }
 
-  async navigateTo(dest: string, router: Router, fromParent?: boolean) {
-    console.log('navigateTo', dest);
+  async goToPage(pageId: string, router: Router, fromParent?: boolean) {
+    this.parentPageId = fromParent ? this.react.pageId : null;
 
-    if (
-      dest.startsWith('http://192.168.1.2:60379/pages/') ||
-      dest.startsWith('https://deepnotes.app/pages/')
-    ) {
-      dest = dest.split('/').at(-1)!;
-    }
-
-    if (isUuid4(dest)) {
-      this.react.parentPageId = fromParent ? this.react.pageId : null;
-
-      await router.push(`/pages/${dest}`);
-    } else {
-      location.assign(dest);
-    }
+    await router.push(`/pages/${pageId}`);
   }
 
   async loadData(initialPageId: string) {
@@ -143,21 +127,23 @@ export class PagesApp {
     this.templates.react.defaultId = response.data.defaultTemplateId;
   }
 
-  async bumpPage(pageId: string, fromParent?: boolean) {
+  async bumpPage(pageId: string) {
     // New page exists in path
 
-    const recentPage = this.react.recentPageIds.find(
+    const recentPageId = this.react.recentPageIds.find(
       (recentPageId) => recentPageId === pageId
     );
 
-    pull(this.react.recentPageIds, recentPage);
+    pull(this.react.recentPageIds, recentPageId);
 
     this.react.recentPageIds.splice(0, 0, pageId);
 
     await $api.post('/api/pages/bump', {
       pageId,
-      parentPageId: fromParent ? this.react.pageId : undefined,
+      parentPageId: this.parentPageId,
     });
+
+    this.parentPageId = null;
   }
 
   async updatePathPages(prevPageId: string | null, nextPageId: string) {
@@ -181,7 +167,7 @@ export class PagesApp {
       this.react.pathPageIds.splice(prevPageIndex + 1);
       this.react.pathPageIds.push(nextPageId);
 
-      await this.bumpPage(nextPageId, true);
+      await this.bumpPage(nextPageId);
 
       return;
     }
@@ -196,9 +182,9 @@ export class PagesApp {
     console.log('Initialize page');
 
     const prevPageId = this.react.pageId;
-    const cached = this.pageCache.has(nextPageId);
+    const pageIsCached = this.pageCache.has(nextPageId);
 
-    if (cached) {
+    if (pageIsCached) {
       $pages.react.page = this.pageCache.get(nextPageId)!;
     } else {
       const page = factory.makePage(this, nextPageId);
@@ -208,7 +194,7 @@ export class PagesApp {
 
     await this.updatePathPages(prevPageId, nextPageId);
 
-    if (!cached) {
+    if (!pageIsCached) {
       await $pages.react.page.setup();
     }
   }

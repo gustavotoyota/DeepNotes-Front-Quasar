@@ -25,10 +25,10 @@
       }"
     >
       <MiniSidebarPage
-        v-for="pathPage in $pages.react.pathPages"
-        :key="pathPage.id"
-        :path-page="pathPage"
-        @click="$pages.navigateTo(pathPage.id, $router)"
+        v-for="pathPageId in $pages.react.pathPageIds"
+        :key="pathPageId"
+        :page-id="pathPageId"
+        @click="$pages.navigateTo(pathPageId, $router)"
       />
     </q-list>
   </q-drawer>

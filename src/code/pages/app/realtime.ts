@@ -9,7 +9,7 @@ export const MSGTOSV_PUBLISH = 2;
 
 export const MSGTOCL_NOTIFY = 0;
 
-export class RealtimeClient {
+export class AppRealtime {
   private _socket!: WebSocket;
 
   private readonly _values: Record<string, string | undefined>;

@@ -185,13 +185,8 @@ export class AppPage extends PageRegion {
 
     // Update path page data
 
-    this.app.react.pathPage.groupId = response.data.groupId;
-    this.app.react.pathPage.ownerId = response.data.ownerId;
-
-    // Update recent page data
-
-    this.app.react.recentPage.groupId = response.data.groupId;
-    this.app.react.recentPage.ownerId = response.data.ownerId;
+    this.app.react.dictionary[`groupId.${this.id}`] = response.data.groupId;
+    this.app.react.dictionary[`ownerId.${this.id}`] = response.data.ownerId;
 
     // Save page values
 

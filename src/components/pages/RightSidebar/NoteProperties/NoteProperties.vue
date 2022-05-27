@@ -85,11 +85,11 @@
       <q-select
         label="Link URL"
         :options="
-          $pages.react.recentPages.map((pageRef) => ({
-            label: $pages.realtime.get('pageName', pageRef.id),
-            value: pageRef.id,
-            groupId: pageRef.groupId,
-            ownerId: pageRef.ownerId,
+          $pages.react.recentPageIds.map((pageId) => ({
+            label: $pages.realtime.get('pageName', pageId),
+            value: pageId,
+            groupId: $pages.react.dictionary[`groupId.${pageId}`],
+            ownerId: $pages.react.dictionary[`ownerId.${pageId}`],
           }))
         "
         emit-value
@@ -107,7 +107,13 @@
               <q-item-label>{{ scope.opt.label }}</q-item-label>
               <q-item-label caption>{{
                 $pages.realtime.get('groupName', scope.opt.groupId) ||
-                `${$pages.realtime.get('userName', scope.opt.ownerId)}'s group`
+                (scope.opt.ownerId
+                  ? `${$pages.realtime.get(
+                      'userName',
+                      scope.opt.ownerId
+                    )}'s group`
+                  : '') ||
+                ''
               }}</q-item-label>
             </q-item-section>
           </q-item>

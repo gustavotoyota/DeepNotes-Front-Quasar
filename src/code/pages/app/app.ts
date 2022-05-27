@@ -1,13 +1,21 @@
 import { pull } from 'lodash';
 import { isUuid4 } from 'src/code/utils';
-import { computed, ComputedRef, ShallowRef, shallowRef, UnwrapRef } from 'vue';
+import {
+  computed,
+  ComputedRef,
+  ShallowReactive,
+  shallowReactive,
+  ShallowRef,
+  shallowRef,
+  UnwrapRef,
+} from 'vue';
 import { Router } from 'vue-router';
 
 import { Factory, factory } from '../static/composition-root';
 import { refProp } from '../static/vue';
 import { AppPage } from './page/page';
 import { AppPageCache } from './page-cache';
-import { RealtimeClient } from './realtime';
+import { AppRealtime } from './realtime';
 import { AppSerialization } from './serialization';
 import { AppTemplates, ITemplate } from './templates';
 
@@ -41,23 +49,22 @@ export interface IPageRef {
 export interface IAppReact {
   mounted: boolean;
 
-  pathPages: IPageRef[];
-  recentPages: IPageRef[];
-
-  pathPage: ComputedRef<IPageRef>;
-  recentPage: ComputedRef<IPageRef>;
+  pathPageIds: string[];
+  recentPageIds: string[];
 
   page: ShallowRef<AppPage>;
   pageId: ComputedRef<string | null>;
 
   parentPageId: string | null;
+
+  dictionary: ShallowReactive<Record<string, any>>;
 }
 
 export class PagesApp {
   readonly serialization: AppSerialization;
   readonly templates: AppTemplates;
   readonly pageCache: AppPageCache;
-  readonly realtime: RealtimeClient;
+  readonly realtime: AppRealtime;
 
   react: UnwrapRef<IAppReact>;
 
@@ -65,22 +72,13 @@ export class PagesApp {
     this.serialization = factory.makeSerialization(this);
     this.templates = factory.makeTemplates(this);
     this.pageCache = factory.makePageCache(this);
-    this.realtime = factory.makeRealtimeClient();
+    this.realtime = factory.makeRealtime();
 
     this.react = refProp<IAppReact>(this, 'react', {
       mounted: false,
 
-      pathPages: [],
-      recentPages: [],
-
-      pathPage: computed(
-        () =>
-          this.react.pathPages.find((page) => page.id === this.react.pageId)!
-      ),
-      recentPage: computed(
-        () =>
-          this.react.recentPages.find((page) => page.id === this.react.pageId)!
-      ),
+      pathPageIds: [],
+      recentPageIds: [],
 
       page: shallowRef(null) as any,
       pageId: computed(() => {
@@ -88,6 +86,8 @@ export class PagesApp {
       }),
 
       parentPageId: null,
+
+      dictionary: shallowReactive({}),
     });
 
     globalThis.__DEEP_NOTES__ = {
@@ -127,8 +127,17 @@ export class PagesApp {
 
     await this.realtime.connected;
 
-    this.react.pathPages = response.data.pathPages;
-    this.react.recentPages = response.data.recentPages;
+    this.react.pathPageIds = response.data.pathPages.map((page) => page.id);
+    this.react.recentPageIds = response.data.recentPages.map((page) => page.id);
+
+    response.data.pathPages.forEach((page) => {
+      this.react.dictionary[`groupId.${page.id}`] = page.groupId;
+      this.react.dictionary[`ownerId.${page.id}`] = page.ownerId;
+    });
+    response.data.recentPages.forEach((page) => {
+      this.react.dictionary[`groupId.${page.id}`] = page.groupId;
+      this.react.dictionary[`ownerId.${page.id}`] = page.ownerId;
+    });
 
     this.templates.react.list = response.data.templates;
     this.templates.react.defaultId = response.data.defaultTemplateId;
@@ -137,21 +146,13 @@ export class PagesApp {
   async bumpPage(pageId: string, fromParent?: boolean) {
     // New page exists in path
 
-    const recentPage = this.react.recentPages.find(
-      (page) => page.id === pageId
+    const recentPage = this.react.recentPageIds.find(
+      (recentPageId) => recentPageId === pageId
     );
 
-    pull(this.react.recentPages, recentPage);
+    pull(this.react.recentPageIds, recentPage);
 
-    this.react.recentPages.splice(
-      0,
-      0,
-      recentPage ?? {
-        id: pageId,
-        groupId: null,
-        ownerId: null,
-      }
-    );
+    this.react.recentPageIds.splice(0, 0, pageId);
 
     await $api.post('/api/pages/bump', {
       pageId,
@@ -160,7 +161,7 @@ export class PagesApp {
   }
 
   async updatePathPages(pageId: string) {
-    if (this.react.pathPages.find((pathPage) => pathPage.id === pageId)) {
+    if (this.react.pathPageIds.find((pathPageId) => pathPageId === pageId)) {
       // New page exists in path
 
       await this.bumpPage(pageId);
@@ -168,15 +169,15 @@ export class PagesApp {
       return;
     }
 
-    const currentPageIndex = this.react.pathPages.findIndex(
-      (pagePage) => pagePage.id === this.react.pageId
+    const currentPageIndex = this.react.pathPageIds.findIndex(
+      (pagePageId) => pagePageId === this.react.pageId
     );
 
     if (currentPageIndex >= 0) {
       // Current page exists in path
 
-      this.react.pathPages.splice(currentPageIndex + 1);
-      this.react.pathPages.push({ id: pageId, groupId: null, ownerId: null });
+      this.react.pathPageIds.splice(currentPageIndex + 1);
+      this.react.pathPageIds.push(pageId);
 
       await this.bumpPage(pageId, true);
 

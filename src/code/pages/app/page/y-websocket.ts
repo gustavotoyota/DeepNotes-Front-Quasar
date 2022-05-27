@@ -315,9 +315,9 @@ export class WebsocketProvider extends Observable<string> {
       this.handleSyncSingleUpdateMessage(decoder);
     }
 
-    this.sendSyncAllUpdatesMergedMessage(updateEndIndex);
-
     this.synced.resolve();
+
+    this.sendSyncAllUpdatesMergedMessage(updateEndIndex);
   }
 
   sendSyncAllUpdatesMergedMessage(updateEndIndex: number) {

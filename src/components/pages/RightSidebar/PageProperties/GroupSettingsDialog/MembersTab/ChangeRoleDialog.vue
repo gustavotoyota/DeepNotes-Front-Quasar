@@ -61,7 +61,7 @@ import { AppPage } from 'src/code/pages/app/page/page';
 import { roles } from 'src/code/pages/static/roles';
 import { inject, Ref, ref, watch } from 'vue';
 
-import { IGroupUser, initialSettings } from '../GroupSettingsDialog.vue';
+import { IGroupUser } from '../GroupSettingsDialog.vue';
 
 const props = defineProps<{
   disable?: boolean;
@@ -73,8 +73,6 @@ const visible = ref(false);
 const page = inject<Ref<AppPage>>('page')!;
 
 const roleId = ref<string | null>(null);
-
-const settings = inject<Ref<ReturnType<typeof initialSettings>>>('settings')!;
 
 watch(visible, async (value) => {
   if (!value) {
@@ -99,7 +97,7 @@ async function changeRole() {
     roleId: roleId.value,
   });
 
-  settings.value.members.list.find((user) => user === props.user)!.roleId =
-    roleId.value;
+  // eslint-disable-next-line vue/no-mutating-props
+  props.user.roleId = roleId.value;
 }
 </script>

@@ -65,6 +65,8 @@ export class PagesApp {
 
   react: UnwrapRef<IAppReact>;
 
+  userId!: string;
+
   parentPageId: string | null = null;
 
   constructor(factory: Factory) {
@@ -100,6 +102,8 @@ export class PagesApp {
 
   async loadData(initialPageId: string) {
     const response = await $api.post<{
+      userId: string;
+
       pathPages: IPageRef[];
       recentPages: IPageRef[];
 
@@ -109,7 +113,7 @@ export class PagesApp {
       initialPageId,
     });
 
-    await this.realtime.connected;
+    this.userId = response.data.userId;
 
     this.react.pathPageIds = response.data.pathPages.map((page) => page.id);
     this.react.recentPageIds = response.data.recentPages.map((page) => page.id);

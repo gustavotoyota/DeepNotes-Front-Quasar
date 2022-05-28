@@ -70,6 +70,7 @@
         label="Remove"
         color="negative"
         :disable="settings.members.selectedIds.size === 0"
+        @click="removeSelectedUsers()"
       />
     </div>
   </div>
@@ -145,5 +146,16 @@ function toggleSelection(id: string) {
   } else {
     settings.value.members.selectedIds.add(id);
   }
+}
+
+async function removeSelectedUsers() {
+  await $api.post('/api/groups/remove-users', {
+    groupId: page.value.groupId,
+    userIds: Array.from(settings.value.members.selectedIds),
+  });
+
+  settings.value.members.list = settings.value.members.list.filter(
+    (item) => !settings.value.members.selectedIds.has(item.id)
+  );
 }
 </script>

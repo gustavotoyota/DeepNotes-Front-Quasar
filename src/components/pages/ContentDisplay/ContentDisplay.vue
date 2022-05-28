@@ -4,7 +4,13 @@
     @wheel="onWheel"
     @pointerdown.middle.prevent="onMiddlePointerDown"
   >
-    <template v-if="page.react.loaded && page.react.hasPermission">
+    <template
+      v-if="
+        page.react.loaded &&
+        page.react.hasPermission &&
+        page.react.userStatus !== 'invite'
+      "
+    >
       <DisplayBackground />
       <DisplayNotes />
       <DisplayBoxSelection />
@@ -14,7 +20,7 @@
     <LoadingOverlay v-if="!page.react.loaded" />
 
     <div
-      v-if="!page.react.hasPermission"
+      v-if="!page.react.hasPermission || page.react.userStatus === 'invite'"
       style="
         position: absolute;
 
@@ -31,22 +37,41 @@
       "
     >
       <div style="text-align: center">
-        <div>You do not have permission to access this page.</div>
+        <template v-if="page.react.userStatus !== 'invite'">
+          <div>You do not have permission to access this page.</div>
 
-        <Gap style="height: 12px" />
+          <Gap style="height: 12px" />
 
-        <q-btn
-          v-if="page.react.userStatus == null"
-          label="Request access"
-          color="primary"
-          @click="page.requestAccess()"
-        />
-        <q-btn
-          v-if="page.react.userStatus === 'request'"
-          label="Access requested"
-          disable
-          color="primary"
-        />
+          <RequestAccessDialog v-if="page.react.userStatus == null" />
+
+          <q-btn
+            v-if="page.react.userStatus === 'request'"
+            label="Cancel request"
+            color="negative"
+            @click="cancelRequest()"
+          />
+        </template>
+
+        <template v-if="page.react.userStatus === 'invite'">
+          <div div>You were invited to access this group.</div>
+
+          <Gap style="height: 12px" />
+
+          <q-btn
+            label="Accept invitation"
+            color="positive"
+            @click="acceptInvitation()"
+          />
+
+          <Gap style="height: 16px" />
+
+          <q-btn
+            label="Reject invitation"
+            color="negative"
+            @click="rejectInvitation()"
+          />
+        </template>
+
         <div
           v-if="page.react.userStatus === 'rejected'"
           style="color: red"
@@ -71,6 +96,7 @@ import DisplayBackground from './DisplayBackground.vue';
 import DisplayBoxSelection from './DisplayBoxSelection.vue';
 import DisplayBtns from './DisplayBtns.vue';
 import DisplayNotes from './DisplayNotes.vue';
+import RequestAccessDialog from './RequestAccessDialog.vue';
 
 const props = defineProps<{
   page: AppPage;
@@ -84,6 +110,32 @@ function onWheel(event: WheelEvent) {
 
 function onMiddlePointerDown(event: PointerEvent) {
   props.page.panning.start(event);
+}
+
+async function cancelRequest() {
+  await $api.post('/api/groups/access-request/cancel', {
+    groupId: props.page.groupId,
+  });
+
+  // eslint-disable-next-line vue/no-mutating-props
+  props.page.react.userStatus = null;
+}
+
+async function acceptInvitation() {
+  await $api.post('/api/groups/access-invitation/accept', {
+    groupId: props.page.groupId,
+  });
+
+  // eslint-disable-next-line vue/no-mutating-props
+  props.page.react.userStatus = 'member';
+}
+async function rejectInvitation() {
+  await $api.post('/api/groups/access-invitation/reject', {
+    groupId: props.page.groupId,
+  });
+
+  // eslint-disable-next-line vue/no-mutating-props
+  props.page.react.userStatus = null;
 }
 </script>
 

@@ -77,7 +77,7 @@ async function acceptRequest(user: IGroupUser) {
     from_base64(user.publicKey)
   );
 
-  await $api.post('/api/groups/accept-request', {
+  await $api.post('/api/groups/access-request/accept', {
     groupId: page.value.groupId,
     userId: user.id,
     roleId: user.roleId,
@@ -88,7 +88,7 @@ async function acceptRequest(user: IGroupUser) {
   settings.value.members.list.push(user);
 }
 async function rejectRequest(user: IGroupUser) {
-  await $api.post('/api/groups/reject-request', {
+  await $api.post('/api/groups/access-request/reject', {
     groupId: page.value.groupId,
     userId: user.id,
   });

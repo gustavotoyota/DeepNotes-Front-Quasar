@@ -126,7 +126,7 @@ async function inviteUser() {
     from_base64(publicKey)
   );
 
-  await $api.post('/api/groups/invite-user', {
+  await $api.post('/api/groups/access-invitation/send', {
     groupId: page.value.groupId,
     userId: userId.value,
     roleId: roleId.value,

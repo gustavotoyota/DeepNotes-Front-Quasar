@@ -49,7 +49,7 @@ export interface IAppPageReact extends IRegionReact {
 
   size: number;
 
-  userStatus: string;
+  userStatus: string | null;
 }
 
 export interface IPageData {
@@ -125,7 +125,7 @@ export class AppPage extends PageRegion {
 
       size: 0,
 
-      userStatus: null as any,
+      userStatus: null,
 
       // Elem
 
@@ -256,13 +256,5 @@ export class AppPage extends PageRegion {
     if (pageData != null) {
       this.postSync(pageData);
     }
-  }
-
-  async requestAccess() {
-    this.react.userStatus = 'request';
-
-    await $api.post('/api/pages/access-request', {
-      pageId: this.id,
-    });
   }
 }

@@ -26,6 +26,7 @@
           label="Cancel"
           color="negative"
           flat
+          @click="cancelInvitation(user.id)"
         />
       </q-item-section>
     </q-item>
@@ -40,6 +41,7 @@
   setup
   lang="ts"
 >
+import { AppPage } from 'src/code/pages/app/page/page';
 import { rolesMap } from 'src/code/pages/static/roles';
 import Gap from 'src/components/misc/Gap.vue';
 import { inject, Ref } from 'vue';
@@ -48,4 +50,13 @@ import { initialSettings } from '../GroupSettingsDialog.vue';
 import InviteUserDialog from './InviteUserDialog.vue';
 
 const settings = inject<Ref<ReturnType<typeof initialSettings>>>('settings')!;
+
+const page = inject<Ref<AppPage>>('page')!;
+
+async function cancelInvitation(userId: string) {
+  await $api.post('/api/groups/access-invitation/cancel', {
+    groupId: page.value.groupId,
+    userId,
+  });
+}
 </script>

@@ -17,7 +17,7 @@
 
         <q-card-section style="padding: 21px">
           <q-input
-            label="User ID"
+            label="E-mail or ID"
             filled
             dense
             v-model="userId"
@@ -70,9 +70,9 @@ import { Notify } from 'quasar';
 import { reencryptSymmetricKey } from 'src/code/crypto/crypto';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { roles } from 'src/code/pages/static/roles';
-import { isUuid4 } from 'src/code/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import { inject, Ref, ref, watch } from 'vue';
+import { z } from 'zod';
 
 import { initialSettings } from '../GroupSettingsDialog.vue';
 
@@ -95,7 +95,9 @@ watch(visible, async (value) => {
 });
 
 async function inviteUser() {
-  if (!isUuid4(userId.value)) {
+  if (
+    !z.string().uuid().or(z.string().email()).safeParse(userId.value).success
+  ) {
     Notify.create({
       message: 'Invalid user ID',
       color: 'negative',

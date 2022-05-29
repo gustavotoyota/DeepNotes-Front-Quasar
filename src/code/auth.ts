@@ -3,6 +3,7 @@ import jwtDecode from 'jwt-decode';
 import { from_base64 } from 'libsodium-wrappers';
 import { Cookies } from 'quasar';
 import { useAuth } from 'src/stores/auth';
+import { Router } from 'vue-router';
 
 import { reencryptSessionPrivateKey } from './crypto/crypto';
 import { privateKey } from './crypto/private-key';
@@ -17,14 +18,6 @@ export const authEndpoints = {
   refresh: '/auth/refresh',
   logout: '/auth/logout',
 };
-
-export const homeURL = process.env.DEV
-  ? 'http://192.168.1.2:60379'
-  : 'https://deepnotes.app';
-
-export const pagesURL = process.env.DEV
-  ? 'http://192.168.1.2:60379/pages'
-  : 'https://deepnotes.app/pages';
 
 export function isTokenValid(tokenName: string): boolean {
   const exp = parseInt(localStorage.getItem(`${tokenName}-exp`) ?? '');
@@ -132,7 +125,7 @@ export function deleteToken(tokenName: string) {
   localStorage.removeItem(`${tokenName}-exp`);
 }
 
-export async function logout(api: AxiosInstance) {
+export async function logout(api: AxiosInstance, router?: Router) {
   const auth = useAuth();
 
   // Notify server of logout
@@ -164,6 +157,10 @@ export async function logout(api: AxiosInstance) {
   privateKey.clear();
 
   if (previouslyLoggedIn) {
-    location.href = homeURL;
+    if (router) {
+      await router.replace('/');
+    } else {
+      location.href = '/';
+    }
   }
 }

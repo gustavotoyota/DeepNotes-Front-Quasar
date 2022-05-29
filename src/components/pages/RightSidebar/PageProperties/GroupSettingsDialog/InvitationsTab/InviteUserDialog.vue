@@ -17,7 +17,7 @@
 
         <q-card-section style="padding: 21px">
           <q-input
-            label="E-mail or ID"
+            label="E-mail or User ID"
             filled
             dense
             v-model="userId"

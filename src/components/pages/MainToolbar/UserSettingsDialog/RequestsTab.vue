@@ -1,6 +1,6 @@
 <template>
   <div v-if="settings.requests.list.length === 0">
-    There are no pending access requests.
+    You don't have any pending group access requests.
   </div>
   <div v-else>
     You made these access requests:

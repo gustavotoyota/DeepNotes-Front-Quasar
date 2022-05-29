@@ -1,6 +1,6 @@
 <template>
   <div v-if="settings.invitations.list.length === 0">
-    You don't have any invitations.
+    You don't have any pending group access invitations.
   </div>
   <div v-else>
     You were invited to these groups:

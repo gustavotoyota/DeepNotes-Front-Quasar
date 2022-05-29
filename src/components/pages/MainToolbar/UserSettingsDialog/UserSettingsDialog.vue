@@ -97,6 +97,9 @@ export function initialSettings() {
 
     tab: 'General',
 
+    general: {
+      displayName: '',
+    },
     templates: {
       selectedIds: new Set<string>(),
     },
@@ -140,11 +143,17 @@ watch(visible, async () => {
 
   settings.value = initialSettings();
 
-  const request = await $api.post<{
-    groups: IGroupData[];
-    invitations: IGroupData[];
-    requests: IGroupData[];
-  }>('/api/users/load-settings');
+  const [request, displayName] = await Promise.all([
+    $api.post<{
+      groups: IGroupData[];
+      invitations: IGroupData[];
+      requests: IGroupData[];
+    }>('/api/users/load-settings'),
+
+    $pages.realtime.getAsync('userName', $pages.userId),
+  ]);
+
+  settings.value.general.displayName = displayName!;
 
   settings.value.groups.list = request.data.groups;
   settings.value.invitations.list = request.data.invitations;

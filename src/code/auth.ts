@@ -1,4 +1,3 @@
-import { AxiosInstance } from 'axios';
 import jwtDecode from 'jwt-decode';
 import { from_base64 } from 'libsodium-wrappers';
 import { Cookies } from 'quasar';
@@ -47,7 +46,7 @@ export function areTokensExpiring(): boolean {
   return isTokenExpiring('access-token') || isTokenExpiring('refresh-token');
 }
 
-export async function tryRefreshTokens(api: AxiosInstance): Promise<void> {
+export async function tryRefreshTokens(): Promise<void> {
   const auth = useAuth();
 
   if (
@@ -61,7 +60,7 @@ export async function tryRefreshTokens(api: AxiosInstance): Promise<void> {
 
   try {
     if (!localStorage.getItem('encrypted-private-key')) {
-      await logout(api);
+      await logout();
       return;
     }
 
@@ -69,7 +68,7 @@ export async function tryRefreshTokens(api: AxiosInstance): Promise<void> {
       localStorage.getItem('encrypted-private-key')!
     );
 
-    const response = await api.post<{
+    const response = await $api.post<{
       accessToken: string;
       refreshToken: string;
 
@@ -92,7 +91,7 @@ export async function tryRefreshTokens(api: AxiosInstance): Promise<void> {
     auth.loggedIn = true;
   } catch (err) {
     console.error(err);
-    await logout(api);
+    await logout();
   }
 }
 
@@ -125,7 +124,7 @@ export function deleteToken(tokenName: string) {
   localStorage.removeItem(`${tokenName}-exp`);
 }
 
-export async function logout(api: AxiosInstance, router?: Router) {
+export async function logout(router?: Router) {
   const auth = useAuth();
 
   // Notify server of logout
@@ -135,7 +134,7 @@ export async function logout(api: AxiosInstance, router?: Router) {
 
   if (previouslyLoggedIn) {
     try {
-      await api.post(authEndpoints.logout);
+      await $api.post(authEndpoints.logout);
     } catch (err) {
       console.error(err);
     }

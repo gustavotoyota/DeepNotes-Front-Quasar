@@ -81,7 +81,6 @@ export default {
 import { PreFetchOptions } from '@quasar/app-vite';
 import { to_base64 } from 'libsodium-wrappers';
 import { useQuasar } from 'quasar';
-import { useAPI } from 'src/boot/external/axios';
 import { computeDerivedKeys, generateRandomKeys } from 'src/code/crypto/crypto';
 import Gap from 'src/components/misc/Gap.vue';
 import { useAuth } from 'src/stores/auth';
@@ -90,7 +89,6 @@ import { useRouter } from 'vue-router';
 
 const $q = useQuasar();
 const router = useRouter();
-const api = useAPI();
 
 const data = reactive({
   email: '',
@@ -114,7 +112,7 @@ async function register() {
   const randomKeys = await generateRandomKeys(derivedKeys.masterKey);
 
   try {
-    await api.post('/auth/register', {
+    await $api.post('/auth/register', {
       email: data.email,
 
       displayName: data.displayName,

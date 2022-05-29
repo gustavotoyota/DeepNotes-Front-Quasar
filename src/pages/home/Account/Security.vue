@@ -127,7 +127,6 @@
 >
 import { from_base64 } from 'libsodium-wrappers';
 import { QForm, useMeta, useQuasar } from 'quasar';
-import { useAPI } from 'src/boot/external/axios';
 import {
   computeDerivedKeys,
   encryptSymmetric,
@@ -140,7 +139,6 @@ import { onMounted, reactive, Ref, ref } from 'vue';
 
 const app = useApp();
 const $q = useQuasar();
-const api = useAPI();
 
 useMeta(() => ({
   title: 'Security - Account - DeepNotes',
@@ -171,7 +169,7 @@ const data = reactive({
 onMounted(async () => {
   await app.ready;
 
-  const response = await api.post<{
+  const response = await $api.post<{
     devices: IDevice[];
   }>('/api/users/account/security/load');
 
@@ -199,7 +197,7 @@ async function changePassword() {
 
     // Reencrypt derived keys
 
-    const response = await api.post<{
+    const response = await $api.post<{
       encryptedPrivateKey: string;
       sessionKey: string;
     }>('/api/users/account/security/change-password', {
@@ -224,7 +222,7 @@ async function changePassword() {
 
     // Request password change
 
-    await api.post('/api/users/account/security/change-password', {
+    await $api.post('/api/users/account/security/change-password', {
       oldPasswordHash: oldDerivedKeys.passwordHash,
       newPasswordHash: newDerivedKeys.passwordHash,
       reencryptedPrivateKey,

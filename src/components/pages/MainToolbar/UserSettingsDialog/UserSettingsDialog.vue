@@ -25,25 +25,26 @@
 
       <q-card-section style="flex: 1; height: 0; display: flex; padding: 0">
         <q-list style="flex: none; width: 180px">
-          <q-item
-            clickable
-            :active="settings.tab === 'general'"
-            active-class="bg-grey-9 text-grey-1"
-            v-ripple
-            @click="settings.tab = 'general'"
-          >
-            <q-item-section>General</q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            :active="settings.tab === 'templates'"
-            active-class="bg-grey-9 text-grey-1"
-            v-ripple
-            @click="settings.tab = 'templates'"
-          >
-            <q-item-section>Templates</q-item-section>
-          </q-item>
+          <TabBtn
+            name="General"
+            :settings="settings"
+          />
+          <TabBtn
+            name="Templates"
+            :settings="settings"
+          />
+          <TabBtn
+            name="Groups"
+            :settings="settings"
+          />
+          <TabBtn
+            name="Invitations"
+            :settings="settings"
+          />
+          <TabBtn
+            name="Requests"
+            :settings="settings"
+          />
         </q-list>
 
         <q-separator vertical />
@@ -57,8 +58,11 @@
             position: relative;
           "
         >
-          <GeneralTab v-if="settings.tab === 'general'" />
-          <TemplatesTab v-if="settings.tab === 'templates'" />
+          <GeneralTab v-if="settings.tab === 'General'" />
+          <TemplatesTab v-if="settings.tab === 'Templates'" />
+          <GroupsTab v-if="settings.tab === 'Groups'" />
+          <InvitationsTab v-if="settings.tab === 'Invitations'" />
+          <RequestsTab v-if="settings.tab === 'Requests'" />
 
           <LoadingOverlay v-if="!settings.loaded" />
         </div>
@@ -80,14 +84,30 @@
 </template>
 
 <script lang="ts">
+export interface IGroupData {
+  groupId: string;
+  ownerId: string;
+  roleId: string;
+  mainPageId: string;
+}
+
 export function initialSettings() {
   return {
     loaded: false,
 
-    tab: 'general',
+    tab: 'General',
 
     templates: {
       selectedIds: new Set<string>(),
+    },
+    groups: {
+      list: [] as IGroupData[],
+    },
+    invitations: {
+      list: [] as IGroupData[],
+    },
+    requests: {
+      list: [] as IGroupData[],
     },
   };
 }
@@ -101,7 +121,11 @@ import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import ToolbarBtn from 'src/components/pages/misc/ToolbarBtn.vue';
 import { provide, ref, watch } from 'vue';
 
+import TabBtn from '../../misc/TabBtn.vue';
 import GeneralTab from './GeneralTab.vue';
+import GroupsTab from './GroupsTab.vue';
+import InvitationsTab from './InvitationsTab.vue';
+import RequestsTab from './RequestsTab.vue';
 import TemplatesTab from './TemplatesTab.vue';
 
 const visible = ref(false);
@@ -115,6 +139,23 @@ watch(visible, async () => {
   }
 
   settings.value = initialSettings();
+
+  const request = await $api.post<{
+    groups: IGroupData[];
+    invitations: IGroupData[];
+    requests: IGroupData[];
+  }>('/api/users/load-settings');
+
+  settings.value.groups.list = request.data.groups;
+  settings.value.invitations.list = request.data.invitations;
+  settings.value.requests.list = request.data.requests;
+
+  request.data.groups
+    .concat(request.data.invitations)
+    .concat(request.data.requests)
+    .forEach((group) => {
+      $pages.react.dict[`groupOwnerId.${group.groupId}`] = group.ownerId;
+    });
 
   settings.value.loaded = true;
 });

@@ -49,7 +49,6 @@
 >
 import { from_base64 } from 'libsodium-wrappers';
 import { useQuasar } from 'quasar';
-import { useAPI } from 'src/boot/external/axios';
 import { storeTokens } from 'src/code/auth';
 import {
   computeDerivedKeys,
@@ -60,7 +59,6 @@ import { useAuth } from 'src/stores/auth';
 import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
 
-const api = useAPI();
 const $q = useQuasar();
 const auth = useAuth();
 const router = useRouter();
@@ -74,7 +72,7 @@ async function login() {
   const derivedKeys = await computeDerivedKeys(data.email, data.password);
 
   try {
-    const response = await api.post<{
+    const response = await $api.post<{
       accessToken: string;
       refreshToken: string;
 

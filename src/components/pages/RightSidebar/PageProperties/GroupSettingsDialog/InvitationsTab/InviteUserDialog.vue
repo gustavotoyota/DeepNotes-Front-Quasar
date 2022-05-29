@@ -20,7 +20,7 @@
             label="E-mail or User ID"
             filled
             dense
-            v-model="userId"
+            v-model="identity"
           />
 
           <Gap style="height: 16px" />
@@ -80,7 +80,7 @@ const visible = ref(false);
 
 const page = inject<Ref<AppPage>>('page')!;
 
-const userId = ref<string>('');
+const identity = ref<string>('');
 const roleId = ref<string | null>(null);
 
 const settings = inject<Ref<ReturnType<typeof initialSettings>>>('settings')!;
@@ -90,13 +90,13 @@ watch(visible, async (value) => {
     return;
   }
 
-  userId.value = '';
+  identity.value = '';
   roleId.value = null;
 });
 
 async function inviteUser() {
   if (
-    !z.string().uuid().or(z.string().email()).safeParse(userId.value).success
+    !z.string().uuid().or(z.string().email()).safeParse(identity.value).success
   ) {
     Notify.create({
       message: 'Invalid user ID',
@@ -115,9 +115,13 @@ async function inviteUser() {
     return;
   }
 
-  const publicKey = (
-    await $api.post<string>('/api/users/public-key', {
-      userId: userId.value,
+  const userInfos = (
+    await $api.post<{
+      id: string;
+      email: string;
+      publicKey: string;
+    }>('/api/users/infos', {
+      identity: identity.value,
     })
   ).data;
 
@@ -125,14 +129,19 @@ async function inviteUser() {
     settings.value.sessionKey,
     settings.value.encryptedSymmetricKey,
     settings.value.distributorsPublicKey,
-    from_base64(publicKey)
+    from_base64(userInfos.publicKey)
   );
 
-  await $api.post('/api/groups/access-invitation/send', {
+  await $api.post('/api/groups/access-invitations/send', {
     groupId: page.value.groupId,
-    userId: userId.value,
+    userId: userInfos.id,
     roleId: roleId.value,
     encryptedSymmetricKey: to_base64(reencryptedSymmetricKey),
+  });
+
+  settings.value.invitations.list.push({
+    userId: userInfos.id,
+    roleId: roleId.value,
   });
 }
 </script>

@@ -11,13 +11,11 @@
 import { useMeta } from 'quasar';
 import { onMounted } from 'vue';
 
-import { useAPI } from './boot/external/axios';
 import { tryRefreshTokens } from './code/auth';
 import LoadingOverlay from './components/misc/LoadingOverlay.vue';
 import { useApp } from './stores/app';
 
 const app = useApp();
-const api = useAPI();
 
 useMeta(() => ({
   title: 'DeepNotes',
@@ -25,7 +23,7 @@ useMeta(() => ({
 
 onMounted(async () => {
   await (async function tokenRefreshLoop() {
-    await tryRefreshTokens(api);
+    await tryRefreshTokens();
 
     setTimeout(tokenRefreshLoop, 10000);
   })();

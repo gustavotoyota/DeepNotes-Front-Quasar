@@ -198,7 +198,7 @@
               <q-item
                 clickable
                 v-close-popup
-                @click="logout($api)"
+                @click="logout()"
               >
                 <q-item-section avatar>
                   <q-icon name="mdi-logout" />

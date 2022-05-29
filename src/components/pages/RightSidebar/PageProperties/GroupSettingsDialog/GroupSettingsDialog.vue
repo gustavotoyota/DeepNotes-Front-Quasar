@@ -23,45 +23,22 @@
 
       <q-card-section style="flex: 1; height: 0; display: flex; padding: 0">
         <q-list style="flex: none; width: 180px">
-          <q-item
-            clickable
-            :active="settings.tab === 'general'"
-            active-class="bg-grey-9 text-grey-1"
-            v-ripple
-            @click="settings.tab = 'general'"
-          >
-            <q-item-section>General</q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            :active="settings.tab === 'members'"
-            active-class="bg-grey-9 text-grey-1"
-            v-ripple
-            @click="settings.tab = 'members'"
-          >
-            <q-item-section>Members</q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            :active="settings.tab === 'requests'"
-            active-class="bg-grey-9 text-grey-1"
-            v-ripple
-            @click="settings.tab = 'requests'"
-          >
-            <q-item-section>Requests</q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            :active="settings.tab === 'invitations'"
-            active-class="bg-grey-9 text-grey-1"
-            v-ripple
-            @click="settings.tab = 'invitations'"
-          >
-            <q-item-section>Invitations</q-item-section>
-          </q-item>
+          <TabBtn
+            name="General"
+            :settings="settings"
+          />
+          <TabBtn
+            name="Members"
+            :settings="settings"
+          />
+          <TabBtn
+            name="Invitations"
+            :settings="settings"
+          />
+          <TabBtn
+            name="Requests"
+            :settings="settings"
+          />
         </q-list>
 
         <q-separator vertical />
@@ -75,10 +52,10 @@
             position: relative;
           "
         >
-          <GeneralTab v-if="settings.tab === 'general'" />
-          <RequestsTab v-if="settings.tab === 'requests'" />
-          <MembersTab v-if="settings.tab === 'members'" />
-          <InvitationsTab v-if="settings.tab === 'invitations'" />
+          <GeneralTab v-if="settings.tab === 'General'" />
+          <MembersTab v-if="settings.tab === 'Members'" />
+          <InvitationsTab v-if="settings.tab === 'Invitations'" />
+          <RequestsTab v-if="settings.tab === 'Requests'" />
 
           <LoadingOverlay v-if="!settings.loaded" />
         </div>
@@ -100,10 +77,10 @@
 
 <script lang="ts">
 export interface IGroupUser {
-  id: string;
+  userId: string;
   roleId: string;
-  requestPageId: string;
-  publicKey: string;
+  requestPageId?: string;
+  publicKey?: string;
 }
 
 export function initialSettings() {
@@ -114,12 +91,12 @@ export function initialSettings() {
     distributorsPublicKey: new Uint8Array(),
     sessionKey: new Uint8Array(),
 
-    tab: 'general',
+    tab: 'General',
 
     general: {
       groupName: '',
     },
-    requests: {
+    members: {
       list: [] as IGroupUser[],
 
       selectedIds: new Set<string>(),
@@ -129,7 +106,7 @@ export function initialSettings() {
 
       selectedIds: new Set<string>(),
     },
-    members: {
+    requests: {
       list: [] as IGroupUser[],
 
       selectedIds: new Set<string>(),
@@ -145,6 +122,7 @@ export function initialSettings() {
 import { from_base64 } from 'libsodium-wrappers';
 import { AppPage } from 'src/code/pages/app/page/page';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
+import TabBtn from 'src/components/pages/misc/TabBtn.vue';
 import { inject, provide, Ref, ref, watch } from 'vue';
 
 import GeneralTab from './GeneralTab.vue';
@@ -189,6 +167,7 @@ watch(visible, async (value) => {
 
   settings.value.general.groupName =
     (await $pages.realtime.getAsync('groupName', page.value.groupId)) ?? '';
+
   settings.value.requests.list = response.data.requests;
   settings.value.invitations.list = response.data.invitations;
   settings.value.members.list = response.data.members;

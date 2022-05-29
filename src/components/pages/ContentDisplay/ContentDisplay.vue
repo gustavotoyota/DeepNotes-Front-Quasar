@@ -113,7 +113,7 @@ function onMiddlePointerDown(event: PointerEvent) {
 }
 
 async function cancelRequest() {
-  await $api.post('/api/groups/access-request/cancel', {
+  await $api.post('/api/groups/access-requests/cancel', {
     groupId: props.page.groupId,
   });
 
@@ -122,7 +122,7 @@ async function cancelRequest() {
 }
 
 async function acceptInvitation() {
-  await $api.post('/api/groups/access-invitation/accept', {
+  await $api.post('/api/groups/access-invitations/accept', {
     groupId: props.page.groupId,
   });
 
@@ -130,7 +130,7 @@ async function acceptInvitation() {
   props.page.react.userStatus = 'member';
 }
 async function rejectInvitation() {
-  await $api.post('/api/groups/access-invitation/reject', {
+  await $api.post('/api/groups/access-invitations/reject', {
     groupId: props.page.groupId,
   });
 

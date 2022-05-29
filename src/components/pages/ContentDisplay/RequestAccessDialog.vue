@@ -71,7 +71,7 @@ watch(visible, async (value) => {
 });
 
 async function requestAccess(message: string) {
-  await $api.post('/api/groups/access-request/send', {
+  await $api.post('/api/groups/access-requests/send', {
     groupId: page.groupId,
     pageId: page.id,
     message,

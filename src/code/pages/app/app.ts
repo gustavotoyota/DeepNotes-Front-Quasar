@@ -40,7 +40,7 @@ declare module '@vue/runtime-core' {
 }
 
 export interface IPageRef {
-  id: string;
+  pageId: string;
   groupId: string | null;
   ownerId: string | null;
 }
@@ -115,17 +115,17 @@ export class PagesApp {
 
     this.userId = response.data.userId;
 
-    this.react.pathPageIds = response.data.pathPages.map((page) => page.id);
-    this.react.recentPageIds = response.data.recentPages.map((page) => page.id);
+    this.react.pathPageIds = response.data.pathPages.map((page) => page.pageId);
+    this.react.recentPageIds = response.data.recentPages.map(
+      (page) => page.pageId
+    );
 
-    response.data.pathPages.forEach((page) => {
-      this.react.dict[`groupId.${page.id}`] = page.groupId;
-      this.react.dict[`ownerId.${page.id}`] = page.ownerId;
-    });
-    response.data.recentPages.forEach((page) => {
-      this.react.dict[`groupId.${page.id}`] = page.groupId;
-      this.react.dict[`ownerId.${page.id}`] = page.ownerId;
-    });
+    response.data.pathPages
+      .concat(response.data.recentPages)
+      .forEach((page) => {
+        this.react.dict[`pageGroupId.${page.pageId}`] = page.groupId;
+        this.react.dict[`groupOwnerId.${page.groupId}`] = page.ownerId;
+      });
 
     this.templates.react.list = response.data.templates;
     this.templates.react.defaultId = response.data.defaultTemplateId;
@@ -203,19 +203,23 @@ export class PagesApp {
     }
   }
 
-  computeGroupName(pageId: string) {
-    return (
-      $pages.realtime.get(
-        'groupName',
-        $pages.react.dict[`groupId.${pageId}`]
-      ) ||
-      ($pages.react.dict[`ownerId.${pageId}`]
-        ? `${$pages.realtime.get(
-            'userName',
-            $pages.react.dict[`ownerId.${pageId}`]
-          )}'s Group`
-        : '') ||
-      ''
-    );
+  computeGroupName(groupId: string): string {
+    if (groupId == null) {
+      return '';
+    }
+
+    const groupOwnerId = $pages.react.dict[`groupOwnerId.${groupId}`];
+
+    if (groupOwnerId == null) {
+      return $pages.realtime.get('groupName', groupId) ?? '';
+    }
+
+    const groupOwnerName = $pages.realtime.get('userName', groupOwnerId);
+
+    if (groupOwnerName == null) {
+      return '';
+    }
+
+    return `${groupOwnerName}'s Group`;
   }
 }

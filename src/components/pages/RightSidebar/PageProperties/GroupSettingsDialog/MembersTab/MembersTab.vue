@@ -29,18 +29,18 @@
       >
         <q-item
           v-for="user in settings.members.list"
-          :key="user.id"
+          :key="user.userId"
           class="text-grey-1"
           style="background-color: #424242"
           clickable
           v-ripple
           active-class="bg-grey-7"
-          :active="settings.members.selectedIds.has(user.id)"
-          @click="select(user.id, $event)"
+          :active="settings.members.selectedIds.has(user.userId)"
+          @click="select(user.userId, $event)"
         >
           <q-item-section>
             <q-item-label>
-              {{ $pages.realtime.get('userName', user.id) }}
+              {{ $pages.realtime.get('userName', user.userId) }}
             </q-item-label>
             <q-item-label caption>
               {{ rolesMap[user.roleId].name }}
@@ -99,7 +99,7 @@ const activeUser = computed(() => {
 
   return settings.value.members.list.find(
     (item) =>
-      item.id === settings.value.members.selectedIds.values().next().value
+      item.userId === settings.value.members.selectedIds.values().next().value
   );
 });
 
@@ -124,12 +124,12 @@ const canChangeActiveRole = computed(() => {
 
 function selectAll() {
   for (const role of settings.value.members.list) {
-    settings.value.members.selectedIds.add(role.id);
+    settings.value.members.selectedIds.add(role.userId);
   }
 }
 function deselectAll() {
   for (const role of settings.value.members.list) {
-    settings.value.members.selectedIds.delete(role.id);
+    settings.value.members.selectedIds.delete(role.userId);
   }
 }
 
@@ -155,7 +155,7 @@ async function removeSelectedUsers() {
   });
 
   settings.value.members.list = settings.value.members.list.filter(
-    (item) => !settings.value.members.selectedIds.has(item.id)
+    (item) => !settings.value.members.selectedIds.has(item.userId)
   );
 }
 </script>

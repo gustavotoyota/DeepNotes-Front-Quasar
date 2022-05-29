@@ -25,7 +25,6 @@
   lang="ts"
 >
 import { useMeta, useQuasar } from 'quasar';
-import { useAPI } from 'src/boot/external/axios';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { useApp } from 'src/stores/app';
@@ -33,7 +32,6 @@ import { onMounted, reactive, ref } from 'vue';
 
 const app = useApp();
 const $q = useQuasar();
-const api = useAPI();
 
 useMeta(() => ({
   title: 'General - Account - DeepNotes',
@@ -48,7 +46,7 @@ const mounted = ref(false);
 onMounted(async () => {
   await app.ready;
 
-  const response = await api.post('/api/users/account/general/load');
+  const response = await $api.post('/api/users/account/general/load');
 
   data.displayName = response.data.displayName;
 
@@ -57,7 +55,7 @@ onMounted(async () => {
 
 async function save() {
   try {
-    await api.post('/api/users/account/general/save', {
+    await $api.post('/api/users/account/general/save', {
       displayName: data.displayName,
     });
 

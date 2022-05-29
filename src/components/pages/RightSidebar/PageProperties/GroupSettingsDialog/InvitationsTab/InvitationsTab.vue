@@ -8,13 +8,13 @@
   >
     <q-item
       v-for="user in settings.invitations.list"
-      :key="user.id"
+      :key="user.userId"
       class="text-grey-1"
       style="background-color: #424242"
     >
       <q-item-section>
         <q-item-label>
-          {{ $pages.realtime.get('userName', user.id) }}
+          {{ $pages.realtime.get('userName', user.userId) }}
         </q-item-label>
         <q-item-label caption>
           {{ rolesMap[user.roleId].name }}
@@ -26,7 +26,7 @@
           label="Cancel"
           color="negative"
           flat
-          @click="cancelInvitation(user.id)"
+          @click="cancelInvitation(user.userId)"
         />
       </q-item-section>
     </q-item>
@@ -54,7 +54,7 @@ const settings = inject<Ref<ReturnType<typeof initialSettings>>>('settings')!;
 const page = inject<Ref<AppPage>>('page')!;
 
 async function cancelInvitation(userId: string) {
-  await $api.post('/api/groups/access-invitation/cancel', {
+  await $api.post('/api/groups/access-invitations/cancel', {
     groupId: page.value.groupId,
     userId,
   });

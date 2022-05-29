@@ -8,12 +8,12 @@
   >
     <q-item
       v-for="user in settings.requests.list"
-      :key="user.id"
+      :key="user.userId"
       class="text-grey-1"
       style="background-color: #424242"
     >
       <q-item-section>
-        {{ $pages.realtime.get('userName', user.id) }}
+        {{ $pages.realtime.get('userName', user.userId) }}
       </q-item-section>
 
       <q-item-section side>
@@ -74,12 +74,12 @@ async function acceptRequest(user: IGroupUser) {
     settings.value.sessionKey,
     settings.value.encryptedSymmetricKey,
     settings.value.distributorsPublicKey,
-    from_base64(user.publicKey)
+    from_base64(user.publicKey!)
   );
 
-  await $api.post('/api/groups/access-request/accept', {
+  await $api.post('/api/groups/access-requests/accept', {
     groupId: page.value.groupId,
-    userId: user.id,
+    userId: user.userId,
     roleId: user.roleId,
     encryptedSymmetricKey: to_base64(reencryptedSymmetricKey),
   });
@@ -88,9 +88,9 @@ async function acceptRequest(user: IGroupUser) {
   settings.value.members.list.push(user);
 }
 async function rejectRequest(user: IGroupUser) {
-  await $api.post('/api/groups/access-request/reject', {
+  await $api.post('/api/groups/access-requests/reject', {
     groupId: page.value.groupId,
-    userId: user.id,
+    userId: user.userId,
   });
 
   pull(settings.value.requests.list, user);

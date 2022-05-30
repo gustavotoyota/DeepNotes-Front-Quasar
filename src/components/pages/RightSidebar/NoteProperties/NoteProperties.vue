@@ -357,10 +357,10 @@
           '#2E7D32', // green-9
           '#558B2F', // light-green-9
           '#9E9D24', // lime-9
-          '#F9A825', // yellow-9
-          '#FF8F00', // amber-9
-          '#EF6C00', // orange-9
-          '#D84315', // deep-orange-9
+          '#f57f17', // yellow-9
+          '#FF6F00', // amber-9
+          '#E65100', // orange-9
+          '#BF360C', // deep-orange-9
           '#4E342E', // brown-9
           '#37474F', // blue-grey-9
         ]"

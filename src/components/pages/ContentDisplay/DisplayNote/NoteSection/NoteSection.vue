@@ -8,8 +8,11 @@
   >
     <div
       :class="`note-${section}-section`"
-      style="display: flex; min-height: 36.45px"
-      :style="{ height: note.react[section].height }"
+      style="display: flex"
+      :style="{
+        height: note.react[section].height,
+        'min-height': section === 'container' ? '52.45px' : '36.45px',
+      }"
     >
       <slot></slot>
 

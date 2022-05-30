@@ -178,10 +178,7 @@ export class AppPage extends PageRegion {
 
     const response = await $api.post<IPageData>('/api/pages/data', {
       pageId: this.id,
-      parentPageId: this.app.parentPageId,
     });
-
-    this.app.parentPageId = null;
 
     // Update path page data
 

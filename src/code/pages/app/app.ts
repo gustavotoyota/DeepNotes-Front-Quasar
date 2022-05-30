@@ -156,8 +156,6 @@ export class PagesApp {
     ) {
       // New page exists in path
 
-      await this.bumpPage(nextPageId);
-
       return;
     }
 
@@ -170,8 +168,6 @@ export class PagesApp {
 
       this.react.pathPageIds.splice(prevPageIndex + 1);
       this.react.pathPageIds.push(nextPageId);
-
-      await this.bumpPage(nextPageId);
 
       return;
     }
@@ -198,9 +194,13 @@ export class PagesApp {
 
     await this.updatePathPages(prevPageId, nextPageId);
 
+    const promises = [this.bumpPage(nextPageId)];
+
     if (!pageIsCached) {
-      await $pages.react.page.setup();
+      promises.push($pages.react.page.setup());
     }
+
+    await Promise.all(promises);
   }
 
   computeGroupName(groupId: string): string {

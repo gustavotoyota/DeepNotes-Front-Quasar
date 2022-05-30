@@ -114,7 +114,7 @@ function onMiddlePointerDown(event: PointerEvent) {
 
 async function cancelRequest() {
   await $api.post('/api/groups/access-requests/cancel', {
-    groupId: props.page.groupId,
+    groupIds: [props.page.groupId],
   });
 
   // eslint-disable-next-line vue/no-mutating-props
@@ -123,7 +123,7 @@ async function cancelRequest() {
 
 async function acceptInvitation() {
   await $api.post('/api/groups/access-invitations/accept', {
-    groupId: props.page.groupId,
+    groupIds: [props.page.groupId],
   });
 
   // eslint-disable-next-line vue/no-mutating-props
@@ -131,7 +131,7 @@ async function acceptInvitation() {
 }
 async function rejectInvitation() {
   await $api.post('/api/groups/access-invitations/reject', {
-    groupId: props.page.groupId,
+    groupIds: [props.page.groupId],
   });
 
   // eslint-disable-next-line vue/no-mutating-props

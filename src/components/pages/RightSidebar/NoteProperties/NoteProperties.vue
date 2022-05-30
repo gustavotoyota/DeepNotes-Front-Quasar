@@ -318,6 +318,45 @@
 
     <q-separator />
 
+    <div style="padding: 20px">
+      <q-color
+        :model-value="note.collab.color"
+        @update:model-value="
+          changeProp($event, (note, value) => {
+            note.collab.color = value;
+          })
+        "
+        default-view="palette"
+        no-header
+        no-header-tabs
+        no-footer
+        default-value="#424242"
+        :palette="[
+          '#424242', // grey-9
+          '#c62828', // red-9
+          '#ad1457', // pink-9
+          '#6a1b9a', // purple-9
+          '#4527a0', // deep-purple-9
+          '#283593', // indigo-9
+          '#1565c0', // blue-9
+          '#0277BD', // light-blue-9
+          '#00838F', // cyan-9
+          '#00695C', // teal-9
+          '#2E7D32', // green-9
+          '#558B2F', // light-green-9
+          '#9E9D24', // lime-9
+          '#F9A825', // yellow-9
+          '#FF8F00', // amber-9
+          '#EF6C00', // orange-9
+          '#D84315', // deep-orange-9
+          '#4E342E', // brown-9
+          '#37474F', // blue-grey-9
+        ]"
+      />
+    </div>
+
+    <q-separator />
+
     <!-- Collapsing -->
 
     <div style="padding: 20px; display: flex; flex-direction: column">

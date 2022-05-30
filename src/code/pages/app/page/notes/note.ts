@@ -1,9 +1,11 @@
 import { SyncedText } from '@syncedstore/core';
+import Color from 'color';
 import Quill from 'quill';
 import { hasVertScrollbar } from 'src/code/pages/static/dom';
 import { Rect } from 'src/code/pages/static/rect';
 import { createSyncedText } from 'src/code/pages/static/synced-store';
 import { IVec2, Vec2 } from 'src/code/pages/static/vec2';
+import { darkenByAmount, lightenByAmount } from 'src/code/utils';
 import { computed, ComputedRef, UnwrapRef, WritableComputedRef } from 'vue';
 import { z } from 'zod';
 
@@ -73,6 +75,8 @@ export const INoteCollab = IRegionCollab.extend({
   movable: z.boolean().default(true),
   resizable: z.boolean().default(true),
   readOnly: z.boolean().default(false),
+
+  color: z.string().default('#424242'),
 
   zIndex: z.number().default(-1),
 });
@@ -156,6 +160,12 @@ export interface INoteReact extends IRegionReact {
   clientRect: ComputedRef<Rect>;
 
   cursor: ComputedRef<string | undefined>;
+
+  color: {
+    highlight: ComputedRef<string>;
+    light: ComputedRef<string>;
+    shadow: ComputedRef<string>;
+  };
 }
 
 export class PageNote extends PageRegion {
@@ -408,6 +418,18 @@ export class PageNote extends PageRegion {
 
         return undefined;
       }),
+
+      color: {
+        highlight: computed(() =>
+          lightenByAmount(Color(this.collab.color), 25).hex()
+        ),
+        light: computed(() =>
+          lightenByAmount(Color(this.collab.color), 12.5).hex()
+        ),
+        shadow: computed(() =>
+          darkenByAmount(Color(this.collab.color), 12.5).hex()
+        ),
+      },
     };
 
     Object.assign(this.react, react);

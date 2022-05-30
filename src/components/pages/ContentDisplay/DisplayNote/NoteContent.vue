@@ -10,6 +10,11 @@
       class="note-content"
       :style="{
         'background-color': backgroundColor,
+
+        'border-top-color': note.react.color.highlight,
+        'border-left-color': note.react.color.highlight,
+        'border-bottom-color': note.react.color.shadow,
+        'border-right-color': note.react.color.shadow,
       }"
       @pointerdown.left.stop="onPointerDown"
     >
@@ -32,11 +37,11 @@ const note = inject<PageNote>('note')!;
 
 const backgroundColor = computed(() => {
   if (note.react.active) {
-    return '#757575';
+    return note.react.color.highlight;
   } else if (note.react.selected) {
-    return '#616161';
+    return note.react.color.light;
   } else {
-    return '#424242';
+    return note.collab.color;
   }
 });
 
@@ -73,9 +78,8 @@ function onPointerDown(event: PointerEvent) {
 <style scoped>
 .note-content {
   border-radius: 7px;
-  border: 1px solid #212121;
-  border-left-color: #757575;
-  border-top-color: #757575;
+
+  border: 1px solid;
 
   height: 100%;
 

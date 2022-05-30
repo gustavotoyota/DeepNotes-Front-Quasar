@@ -319,11 +319,23 @@
     <q-separator />
 
     <div style="padding: 20px">
-      <q-color
-        :model-value="note.collab.color"
+      <Checkbox
+        label="Inherit color from parent"
+        :model-value="note.collab.color.inherit"
         @update:model-value="
           changeProp($event, (note, value) => {
-            note.collab.color = value;
+            note.collab.color.inherit = value;
+          })
+        "
+      />
+
+      <Gap style="height: 16px" />
+
+      <q-color
+        :model-value="note.collab.color.value"
+        @update:model-value="
+          changeProp($event, (note, value) => {
+            note.collab.color.value = value;
           })
         "
         default-view="palette"
@@ -333,7 +345,7 @@
         default-value="#424242"
         :palette="[
           '#424242', // grey-9
-          '#c62828', // red-9
+          '#b71c1c', // red-9
           '#ad1457', // pink-9
           '#6a1b9a', // purple-9
           '#4527a0', // deep-purple-9

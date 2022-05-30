@@ -76,7 +76,12 @@ export const INoteCollab = IRegionCollab.extend({
   resizable: z.boolean().default(true),
   readOnly: z.boolean().default(false),
 
-  color: z.string().default('#424242'),
+  color: z
+    .object({
+      inherit: z.boolean().default(false),
+      value: z.string().default('#424242'),
+    })
+    .default({}),
 
   zIndex: z.number().default(-1),
 });
@@ -164,7 +169,9 @@ export interface INoteReact extends IRegionReact {
   color: {
     highlight: ComputedRef<string>;
     light: ComputedRef<string>;
+    base: ComputedRef<string>;
     shadow: ComputedRef<string>;
+    background: ComputedRef<string>;
   };
 }
 
@@ -421,14 +428,28 @@ export class PageNote extends PageRegion {
 
       color: {
         highlight: computed(() =>
-          lightenByAmount(Color(this.collab.color), 25).hex()
+          lightenByAmount(Color(this.react.color.base), 25).hex()
         ),
         light: computed(() =>
-          lightenByAmount(Color(this.collab.color), 12.5).hex()
+          lightenByAmount(Color(this.react.color.base), 12.5).hex()
+        ),
+        base: computed(() =>
+          this.collab.color.inherit && this.react.parent != null
+            ? this.react.parent.react.color.base
+            : this.collab.color.value
         ),
         shadow: computed(() =>
-          darkenByAmount(Color(this.collab.color), 12.5).hex()
+          darkenByAmount(Color(this.react.color.base), 12.5).hex()
         ),
+        background: computed(() => {
+          if (this.react.active) {
+            return this.react.color.highlight;
+          } else if (this.react.selected) {
+            return this.react.color.light;
+          } else {
+            return this.react.color.base;
+          }
+        }),
       },
     };
 

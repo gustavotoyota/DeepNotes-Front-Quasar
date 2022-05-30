@@ -9,7 +9,7 @@
     <div
       class="note-content"
       :style="{
-        'background-color': backgroundColor,
+        'background-color': note.react.color.background,
 
         'border-top-color': note.react.color.highlight,
         'border-left-color': note.react.color.highlight,
@@ -30,20 +30,10 @@
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { isMouseOverScrollbar } from 'src/code/pages/static/dom';
-import { computed, inject } from 'vue';
+import { inject } from 'vue';
 
 const page = inject<AppPage>('page')!;
 const note = inject<PageNote>('note')!;
-
-const backgroundColor = computed(() => {
-  if (note.react.active) {
-    return note.react.color.highlight;
-  } else if (note.react.selected) {
-    return note.react.color.light;
-  } else {
-    return note.collab.color;
-  }
-});
 
 function onPointerDown(event: PointerEvent) {
   const target = event.target as Element;

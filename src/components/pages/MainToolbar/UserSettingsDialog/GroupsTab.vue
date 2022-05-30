@@ -1,62 +1,123 @@
 <template>
-  <div v-if="settings.groups.list.length === 0">
-    You are not a member of any group.
-  </div>
-  <div v-else>
-    You are a member of these groups:
+  <div style="display: flex">
+    <q-btn
+      label="Select all"
+      color="primary"
+      :disable="selectedIds.size === settings.groups.list.length"
+      @click="selectAll()"
+    />
 
-    <Gap style="height: 16px" />
+    <Gap style="width: 16px" />
+
+    <q-btn
+      label="Clear selection"
+      color="primary"
+      :disable="selectedIds.size === 0"
+      @click="deselectAll()"
+    />
   </div>
 
-  <q-list style="border-radius: 10px; padding: 0; overflow-y: auto">
-    <q-item
-      v-for="group in settings.groups.list"
-      :key="group.groupId"
-      class="text-grey-1"
-      style="background-color: #424242"
+  <Gap style="height: 16px" />
+
+  <div style="flex: 1; height: 0; display: flex">
+    <div style="flex: 1">
+      <q-list style="border-radius: 10px; padding: 0; overflow-y: auto">
+        <q-item
+          v-for="group in settings.groups.list"
+          :key="group.groupId"
+          class="text-grey-1"
+          style="background-color: #424242"
+          clickable
+          v-ripple
+          active-class="bg-grey-7"
+          :active="selectedIds.has(group.groupId)"
+          @click="select(group.groupId, $event)"
+        >
+          <q-item-section>
+            {{ $pages.computeGroupName(group.groupId) }}
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </div>
+
+    <Gap style="width: 16px" />
+
+    <div
+      style="flex: none; width: 200px; display: flex; flex-direction: column"
     >
-      <q-item-section>
-        {{ $pages.computeGroupName(group.groupId) }}
-      </q-item-section>
+      <q-btn
+        label="Go to main page"
+        color="secondary"
+        :disable="activeGroup == null"
+        :to="`/pages/${activeGroup?.mainPageId}`"
+      />
 
-      <q-item-section side>
-        <q-btn
-          label="Go to main page"
-          color="primary"
-          flat
-          :to="`/pages/${group.mainPageId}`"
-        />
-      </q-item-section>
+      <Gap style="height: 16px" />
 
-      <q-item-section side>
-        <q-btn
-          label="Leave"
-          color="negative"
-          flat
-          @click="leaveGroup(group.groupId)"
-        />
-      </q-item-section>
-    </q-item>
-  </q-list>
+      <q-btn
+        label="Leave"
+        color="negative"
+        :disable="selectedIds.size === 0"
+        @click="leaveSelectedGroups()"
+      />
+    </div>
+  </div>
 </template>
 
 <script
   setup
   lang="ts"
 >
-import { remove } from 'lodash';
 import Gap from 'src/components/misc/Gap.vue';
-import { inject, Ref } from 'vue';
+import { computed, inject, Ref } from 'vue';
 
 import { initialSettings } from './UserSettingsDialog.vue';
 
 const settings = inject<Ref<ReturnType<typeof initialSettings>>>('settings')!;
 
-async function leaveGroup(groupId: string) {
+const selectedIds = computed(() => settings.value.groups.selectedIds);
+
+const activeGroup = computed(() => {
+  if (selectedIds.value.size !== 1) {
+    return null;
+  }
+
+  return settings.value.groups.list.find(
+    (item) => item.groupId === selectedIds.value.values().next().value
+  )!;
+});
+
+function selectAll() {
+  for (const group of settings.value.groups.list) {
+    selectedIds.value.add(group.groupId);
+  }
+}
+function deselectAll() {
+  for (const group of settings.value.groups.list) {
+    selectedIds.value.delete(group.groupId);
+  }
+}
+
+function select(groupId: string, event: MouseEvent) {
+  if (!event.ctrlKey) {
+    selectedIds.value.clear();
+  }
+
+  if (selectedIds.value.has(groupId)) {
+    selectedIds.value.delete(groupId);
+  } else {
+    selectedIds.value.add(groupId);
+  }
+}
+
+async function leaveSelectedGroups() {
   await $api.post('/api/groups/leave', {
-    groupId,
+    groupIds: Array.from(selectedIds.value),
   });
 
-  remove(settings.value.groups.list, { groupId });
+  settings.value.groups.list = settings.value.groups.list.filter(
+    (group) => !selectedIds.value.has(group.groupId)
+  );
+  selectedIds.value.clear();
 }
 </script>

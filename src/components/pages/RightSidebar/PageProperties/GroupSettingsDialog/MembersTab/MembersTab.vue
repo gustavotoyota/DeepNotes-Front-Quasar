@@ -3,6 +3,7 @@
     <q-btn
       label="Select all"
       color="primary"
+      :disable="selectedIds.size === settings.members.list.length"
       @click="selectAll()"
     />
 
@@ -11,6 +12,7 @@
     <q-btn
       label="Clear selection"
       color="primary"
+      :disable="selectedIds.size === 0"
       @click="deselectAll()"
     />
   </div>
@@ -35,7 +37,7 @@
           clickable
           v-ripple
           active-class="bg-grey-7"
-          :active="settings.members.selectedIds.has(user.userId)"
+          :active="selectedIds.has(user.userId)"
           @click="select(user.userId, $event)"
         >
           <q-item-section>
@@ -50,14 +52,10 @@
       </q-list>
     </div>
 
+    <Gap style="width: 16px" />
+
     <div
-      style="
-        flex: none;
-        margin-left: 16px;
-        width: 200px;
-        display: flex;
-        flex-direction: column;
-      "
+      style="flex: none; width: 200px; display: flex; flex-direction: column"
     >
       <ChangeRoleDialog
         :disable="!canChangeActiveRole"
@@ -69,7 +67,7 @@
       <q-btn
         label="Remove"
         color="negative"
-        :disable="settings.members.selectedIds.size === 0"
+        :disable="selectedIds.size === 0"
         @click="removeSelectedUsers()"
       />
     </div>
@@ -92,16 +90,40 @@ const page = inject<Ref<AppPage>>('page')!;
 
 const settings = inject<Ref<ReturnType<typeof initialSettings>>>('settings')!;
 
+const selectedIds = computed(() => settings.value.members.selectedIds);
+
 const activeUser = computed(() => {
-  if (settings.value.members.selectedIds.size !== 1) {
+  if (selectedIds.value.size !== 1) {
     return null;
   }
 
   return settings.value.members.list.find(
-    (item) =>
-      item.userId === settings.value.members.selectedIds.values().next().value
+    (user) => user.userId === selectedIds.value.values().next().value
   );
 });
+
+function selectAll() {
+  for (const role of settings.value.members.list) {
+    selectedIds.value.add(role.userId);
+  }
+}
+function deselectAll() {
+  for (const role of settings.value.members.list) {
+    selectedIds.value.delete(role.userId);
+  }
+}
+
+function select(id: string, event: MouseEvent) {
+  if (!event.ctrlKey) {
+    selectedIds.value.clear();
+  }
+
+  if (selectedIds.value.has(id)) {
+    selectedIds.value.delete(id);
+  } else {
+    selectedIds.value.add(id);
+  }
+}
 
 const canChangeActiveRole = computed(() => {
   if (activeUser.value == null) {
@@ -122,40 +144,15 @@ const canChangeActiveRole = computed(() => {
   return false;
 });
 
-function selectAll() {
-  for (const role of settings.value.members.list) {
-    settings.value.members.selectedIds.add(role.userId);
-  }
-}
-function deselectAll() {
-  for (const role of settings.value.members.list) {
-    settings.value.members.selectedIds.delete(role.userId);
-  }
-}
-
-function select(id: string, event: MouseEvent) {
-  if (!event.ctrlKey) {
-    settings.value.members.selectedIds.clear();
-  }
-
-  toggleSelection(id);
-}
-function toggleSelection(id: string) {
-  if (settings.value.members.selectedIds.has(id)) {
-    settings.value.members.selectedIds.delete(id);
-  } else {
-    settings.value.members.selectedIds.add(id);
-  }
-}
-
 async function removeSelectedUsers() {
   await $api.post('/api/groups/remove-users', {
     groupId: page.value.groupId,
-    userIds: Array.from(settings.value.members.selectedIds),
+    userIds: Array.from(selectedIds.value),
   });
 
   settings.value.members.list = settings.value.members.list.filter(
-    (item) => !settings.value.members.selectedIds.has(item.userId)
+    (item) => !selectedIds.value.has(item.userId)
   );
+  selectedIds.value.clear();
 }
 </script>

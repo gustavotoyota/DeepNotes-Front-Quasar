@@ -110,6 +110,8 @@ export function initialSettings() {
       list: [] as IGroupUser[],
 
       selectedIds: new Set<string>(),
+
+      roleId: null,
     },
   };
 }
@@ -128,7 +130,7 @@ import { inject, provide, Ref, ref, watch } from 'vue';
 import GeneralTab from './GeneralTab.vue';
 import InvitationsTab from './InvitationsTab/InvitationsTab.vue';
 import MembersTab from './MembersTab/MembersTab.vue';
-import RequestsTab from './RequestsTab.vue';
+import RequestsTab from './RequestsTab/RequestsTab.vue';
 
 const visible = ref(false);
 

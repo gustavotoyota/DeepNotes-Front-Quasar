@@ -105,12 +105,18 @@ export function initialSettings() {
     },
     groups: {
       list: [] as IGroupData[],
+
+      selectedIds: new Set<string>(),
     },
     invitations: {
       list: [] as IGroupData[],
+
+      selectedIds: new Set<string>(),
     },
     requests: {
       list: [] as IGroupData[],
+
+      selectedIds: new Set<string>(),
     },
   };
 }

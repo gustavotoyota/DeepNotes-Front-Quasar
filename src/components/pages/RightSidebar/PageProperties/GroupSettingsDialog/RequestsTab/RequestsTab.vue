@@ -1,9 +1,9 @@
 <template>
-  <div v-if="settings.requests.list.length === 0">
-    There are no pending group access requests.
-  </div>
+  <template v-if="settings.requests.list.length === 0">
+    No access requests available.
+  </template>
 
-  <div v-else>
+  <template v-else>
     <div style="display: flex">
       <q-btn
         label="Select all"
@@ -26,20 +26,27 @@
 
     <div style="flex: 1; height: 0; display: flex">
       <div style="flex: 1">
-        <q-list style="border-radius: 10px; padding: 0; overflow-y: auto">
+        <q-list
+          style="
+            border-radius: 10px;
+            max-height: 100%;
+            padding: 0;
+            overflow-y: auto;
+          "
+        >
           <q-item
-            v-for="group in settings.requests.list"
-            :key="group.groupId"
+            v-for="user in settings.requests.list"
+            :key="user.userId"
             class="text-grey-1"
             style="background-color: #424242"
             clickable
             v-ripple
             active-class="bg-grey-7"
-            :active="selectedIds.has(group.groupId)"
-            @click="select(group.groupId, $event)"
+            :active="selectedIds.has(user.userId)"
+            @click="select(user.userId, $event)"
           >
             <q-item-section>
-              {{ $pages.computeGroupName(group.groupId) }}
+              {{ $pages.realtime.get('userName', user.userId) }}
             </q-item-section>
           </q-item>
         </q-list>
@@ -50,77 +57,69 @@
       <div
         style="flex: none; width: 200px; display: flex; flex-direction: column"
       >
-        <q-btn
-          label="Go to main page"
-          color="primary"
-          :disable="activeGroup == null"
-          :to="`/pages/${activeGroup?.mainPageId}`"
-        />
+        <AcceptRequestDialog />
+
+        <Gap style="height: 16px" />
 
         <q-btn
-          label="Cancel"
+          label="Reject"
           color="negative"
           :disable="selectedIds.size === 0"
-          @click="cancelSelectedRequests()"
+          @click="rejectSelectedRequests()"
         />
       </div>
     </div>
-  </div>
+  </template>
 </template>
 
 <script
   setup
   lang="ts"
 >
+import { AppPage } from 'src/code/pages/app/page/page';
 import Gap from 'src/components/misc/Gap.vue';
 import { computed, inject, Ref } from 'vue';
 
-import { initialSettings } from './UserSettingsDialog.vue';
+import { initialSettings } from '../GroupSettingsDialog.vue';
+import AcceptRequestDialog from './AcceptRequestDialog.vue';
+
+const page = inject<Ref<AppPage>>('page')!;
 
 const settings = inject<Ref<ReturnType<typeof initialSettings>>>('settings')!;
 
 const selectedIds = computed(() => settings.value.requests.selectedIds);
 
-const activeGroup = computed(() => {
-  if (selectedIds.value.size !== 1) {
-    return null;
-  }
-
-  return settings.value.requests.list.find(
-    (item) => item.groupId === selectedIds.value.values().next().value
-  )!;
-});
-
 function selectAll() {
-  for (const group of settings.value.requests.list) {
-    selectedIds.value.add(group.groupId);
+  for (const role of settings.value.requests.list) {
+    selectedIds.value.add(role.userId);
   }
 }
 function deselectAll() {
-  for (const group of settings.value.requests.list) {
-    selectedIds.value.delete(group.groupId);
+  for (const role of settings.value.requests.list) {
+    selectedIds.value.delete(role.userId);
   }
 }
 
-function select(groupId: string, event: MouseEvent) {
+function select(id: string, event: MouseEvent) {
   if (!event.ctrlKey) {
     selectedIds.value.clear();
   }
 
-  if (selectedIds.value.has(groupId)) {
-    selectedIds.value.delete(groupId);
+  if (selectedIds.value.has(id)) {
+    selectedIds.value.delete(id);
   } else {
-    selectedIds.value.add(groupId);
+    selectedIds.value.add(id);
   }
 }
 
-async function cancelSelectedRequests() {
-  await $api.post('/api/groups/access-requests/cancel', {
-    groupIds: Array.from(selectedIds.value),
+async function rejectSelectedRequests() {
+  await $api.post('/api/groups/access-requests/reject', {
+    groupId: page.value.groupId,
+    userIds: Array.from(selectedIds.value),
   });
 
   settings.value.requests.list = settings.value.requests.list.filter(
-    (group) => !selectedIds.value.has(group.groupId)
+    (user) => !selectedIds.value.has(user.userId)
   );
   selectedIds.value.clear();
 }

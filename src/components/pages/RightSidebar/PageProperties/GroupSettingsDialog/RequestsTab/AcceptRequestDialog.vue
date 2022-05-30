@@ -1,8 +1,8 @@
 <template>
   <q-btn
-    label="Invite new member"
-    color="primary"
-    style="width: 180px"
+    label="Accept"
+    color="positive"
+    :disable="selectedIds.size === 0"
     @click="visible = true"
   />
 
@@ -10,21 +10,12 @@
     <q-card style="width: 300px">
       <q-form>
         <q-card-section style="padding: 12px">
-          <div class="text-h6">Invite user</div>
+          <div class="text-h6">Accept requests</div>
         </q-card-section>
 
         <q-separator />
 
         <q-card-section style="padding: 21px">
-          <q-input
-            label="E-mail or User ID"
-            filled
-            dense
-            v-model="identity"
-          />
-
-          <Gap style="height: 16px" />
-
           <q-select
             label="Role"
             :options="roles"
@@ -52,7 +43,7 @@
             flat
             label="Ok"
             color="primary"
-            @click.prevent="inviteUser()"
+            @click.prevent="acceptRequests()"
           />
         </q-card-actions>
       </q-form>
@@ -69,9 +60,7 @@ import { Notify } from 'quasar';
 import { reencryptSymmetricKey } from 'src/code/crypto/crypto';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { roles } from 'src/code/pages/static/roles';
-import Gap from 'src/components/misc/Gap.vue';
-import { inject, Ref, ref, watch } from 'vue';
-import { z } from 'zod';
+import { computed, inject, Ref, ref, watch } from 'vue';
 
 import { initialSettings } from '../GroupSettingsDialog.vue';
 
@@ -79,32 +68,21 @@ const visible = ref(false);
 
 const page = inject<Ref<AppPage>>('page')!;
 
-const identity = ref<string>('');
 const roleId = ref<string | null>(null);
 
 const settings = inject<Ref<ReturnType<typeof initialSettings>>>('settings')!;
+
+const selectedIds = computed(() => settings.value.requests.selectedIds);
 
 watch(visible, async (value) => {
   if (!value) {
     return;
   }
 
-  identity.value = '';
   roleId.value = null;
 });
 
-async function inviteUser() {
-  if (
-    !z.string().uuid().or(z.string().email()).safeParse(identity.value).success
-  ) {
-    Notify.create({
-      message: 'Invalid user ID',
-      color: 'negative',
-    });
-
-    return;
-  }
-
+async function acceptRequests() {
   if (roleId.value == null) {
     Notify.create({
       message: 'Please select a role',
@@ -116,33 +94,38 @@ async function inviteUser() {
 
   visible.value = false;
 
-  const userInfos = (
-    await $api.post<{
-      id: string;
-      email: string;
-      publicKey: string;
-    }>('/api/users/infos', {
-      identity: identity.value,
-    })
-  ).data;
-
-  const reencryptedSymmetricKey = reencryptSymmetricKey(
-    settings.value.sessionKey,
-    settings.value.encryptedSymmetricKey,
-    settings.value.distributorsPublicKey,
-    from_base64(userInfos.publicKey)
+  const selectedUsers = settings.value.requests.list.filter((user) =>
+    selectedIds.value.has(user.userId)
   );
 
-  await $api.post('/api/groups/access-invitations/send', {
+  await $api.post('/api/groups/access-requests/accept', {
     groupId: page.value.groupId,
-    userId: userInfos.id,
-    roleId: roleId.value,
-    encryptedSymmetricKey: to_base64(reencryptedSymmetricKey),
+    users: selectedUsers.map((user) => {
+      const reencryptedSymmetricKey = reencryptSymmetricKey(
+        settings.value.sessionKey,
+        settings.value.encryptedSymmetricKey,
+        settings.value.distributorsPublicKey,
+        from_base64(user.publicKey!)
+      );
+
+      return {
+        userId: user.userId,
+        roleId: roleId.value,
+        encryptedSymmetricKey: to_base64(reencryptedSymmetricKey),
+      };
+    }),
   });
 
-  settings.value.invitations.list.push({
-    userId: userInfos.id,
-    roleId: roleId.value,
-  });
+  for (const user of selectedUsers) {
+    settings.value.members.list.push({
+      userId: user.userId,
+      roleId: roleId.value,
+    });
+  }
+
+  settings.value.requests.list = settings.value.requests.list.filter(
+    (user) => !selectedIds.value.has(user.userId)
+  );
+  selectedIds.value.clear();
 }
 </script>

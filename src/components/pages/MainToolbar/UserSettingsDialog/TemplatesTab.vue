@@ -9,6 +9,7 @@
     <q-btn
       label="Select all"
       color="primary"
+      :disable="selectedIds.size === $pages.templates.react.list.length"
       @click="selectAll()"
     />
 
@@ -17,6 +18,7 @@
     <q-btn
       label="Clear selection"
       color="primary"
+      :disable="selectedIds.size === 0"
       @click="deselectAll()"
     />
   </div>
@@ -44,7 +46,7 @@
               clickable
               v-ripple
               active-class="bg-grey-7"
-              :active="settings.templates.selectedIds.has(template.id)"
+              :active="selectedIds.has(template.id)"
               @click="select(template.id, $event)"
             >
               <q-item-section>{{ template.name }}</q-item-section>
@@ -78,9 +80,9 @@
         label="Template name"
         filled
         dense
-        :disable="selected == null"
-        :model-value="selected?.name"
-        @update:model-value="selected!.name = $event!.toString()"
+        :disable="activeTemplate == null"
+        :model-value="activeTemplate?.name"
+        @update:model-value="activeTemplate!.name = $event!.toString()"
       />
 
       <Gap style="height: 16px" />
@@ -89,9 +91,10 @@
         label="Set as default"
         color="primary"
         :disable="
-          selected == null || selected.id == $pages.templates.react.defaultId
+          activeTemplate == null ||
+          activeTemplate.id == $pages.templates.react.defaultId
         "
-        @click="$pages.templates.react.defaultId = selected?.id ?? ''"
+        @click="$pages.templates.react.defaultId = activeTemplate?.id ?? ''"
       />
 
       <Gap style="height: 16px" />
@@ -99,7 +102,7 @@
       <q-btn
         label="Toggle visibility"
         color="primary"
-        :disable="settings.templates.selectedIds.size === 0"
+        :disable="selectedIds.size === 0"
         @click="toggleVisibility()"
       />
 
@@ -108,7 +111,7 @@
       <q-btn
         label="Delete"
         color="primary"
-        :disable="settings.templates.selectedIds.size === 0"
+        :disable="selectedIds.size === 0"
         @click="deleteSelection()"
       />
     </div>
@@ -130,46 +133,44 @@ import { initialSettings } from './UserSettingsDialog.vue';
 
 const settings = inject<Ref<ReturnType<typeof initialSettings>>>('settings')!;
 
-const selected = computed(() => {
-  if (settings.value.templates.selectedIds.size !== 1) {
+const selectedIds = computed(() => settings.value.templates.selectedIds);
+
+const activeTemplate = computed(() => {
+  if (selectedIds.value.size !== 1) {
     return null;
   }
 
   return $pages.templates.react.list.find(
-    (item) =>
-      item.id === settings.value.templates.selectedIds.values().next().value
-  ) as ITemplate;
+    (item) => item.id === selectedIds.value.values().next().value
+  )!;
 });
 
 function selectAll() {
   for (const template of $pages.templates.react.list) {
-    settings.value.templates.selectedIds.add(template.id);
+    selectedIds.value.add(template.id);
   }
 }
 function deselectAll() {
   for (const template of $pages.templates.react.list) {
-    settings.value.templates.selectedIds.delete(template.id);
+    selectedIds.value.delete(template.id);
   }
 }
 
 function select(templateId: string, event: MouseEvent) {
   if (!event.ctrlKey) {
-    settings.value.templates.selectedIds.clear();
+    selectedIds.value.clear();
   }
 
-  toggleSelection(templateId);
-}
-function toggleSelection(templateId: string) {
-  if (settings.value.templates.selectedIds.has(templateId)) {
-    settings.value.templates.selectedIds.delete(templateId);
+  if (selectedIds.value.has(templateId)) {
+    selectedIds.value.delete(templateId);
   } else {
-    settings.value.templates.selectedIds.add(templateId);
+    selectedIds.value.add(templateId);
   }
 }
 
 function toggleVisibility() {
   let allVisible = true;
-  for (const templateId of settings.value.templates.selectedIds) {
+  for (const templateId of selectedIds.value) {
     const template = $pages.templates.react.list.find(
       (item) => item.id === templateId
     ) as ITemplate;
@@ -180,7 +181,7 @@ function toggleVisibility() {
     break;
   }
 
-  for (const templateId of settings.value.templates.selectedIds) {
+  for (const templateId of selectedIds.value) {
     const template = $pages.templates.react.list.find(
       (item) => item.id === templateId
     ) as ITemplate;
@@ -192,7 +193,7 @@ function toggleVisibility() {
 function deleteSelection() {
   // Check if default template is selected
 
-  for (const templateId of settings.value.templates.selectedIds) {
+  for (const templateId of selectedIds.value) {
     const template = $pages.templates.react.list.find(
       (item) => item.id === templateId
     ) as ITemplate;
@@ -208,9 +209,9 @@ function deleteSelection() {
   }
 
   remove($pages.templates.react.list, (template) =>
-    settings.value.templates.selectedIds.has(template.id)
+    selectedIds.value.has(template.id)
   );
 
-  settings.value.templates.selectedIds.clear();
+  selectedIds.value.clear();
 }
 </script>

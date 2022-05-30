@@ -220,7 +220,7 @@ export class AppPage extends PageRegion {
     this.collab.websocketProvider = new WebsocketProvider(
       process.env.DEV
         ? 'ws://192.168.1.2:33245'
-        : 'wss://yjs-server.deepnotes.app/',
+        : 'wss://yjs-server.deepnotes.app',
       roomName,
       this.collab.doc,
       symmetricKey

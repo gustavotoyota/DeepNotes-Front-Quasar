@@ -1,9 +1,7 @@
 import * as decoding from 'lib0/decoding';
 import * as encoding from 'lib0/encoding';
 import * as math from 'lib0/math';
-import { Observable } from 'lib0/observable';
 import * as time from 'lib0/time';
-import * as url from 'lib0/url';
 import { throttle } from 'lodash';
 import { SymmetricKey } from 'src/code/crypto/symmetric-key';
 import { Resolvable } from 'src/code/utils';
@@ -18,8 +16,6 @@ export const MESSAGE_SYNC_ALL_UPDATES_UNMERGED = 1;
 export const MESSAGE_SYNC_ALL_UPDATES_MERGED = 2;
 export const MESSAGE_SYNC_SINGLE_UPDATE = 3;
 
-// @todo - this should depend on awareness.outdatedTime
-
 const MESSAGE_RECONNECT_TIMEOUT = 30000;
 
 interface IAwarenessChanges {
@@ -28,79 +24,47 @@ interface IAwarenessChanges {
   removed: number[];
 }
 
-export class WebsocketProvider extends Observable<string> {
-  readonly maxBackoffTime: number;
-
-  readonly roomname: string;
-  readonly broadcastChannel: string;
+export class WebsocketProvider {
   readonly url: string;
 
-  readonly doc: Y.Doc;
-  private readonly _WS: typeof WebSocket;
   readonly awareness: awarenessProtocol.Awareness;
 
+  ws: WebSocket;
+
+  shouldConnect: boolean; // If false, the client will not try to reconnect.
   wsconnected: boolean; //  True if this instance is currently connected to the server.
   wsconnecting: boolean; // True if this instance is currently connecting to the server.
+  wsLastMessageReceived: number;
   wsUnsuccessfulReconnects: number;
+  private readonly _checkInterval: NodeJS.Timer;
+  readonly maxBackoffTime: number;
 
   readonly synced = new Resolvable();
 
-  ws: WebSocket;
-  wsLastMessageReceived: number;
-
-  shouldConnect: boolean; // If false, the client will not try to reconnect.
-
   size = 0;
-
-  private readonly _checkInterval: NodeJS.Timer;
-
-  readonly symmetricKey: SymmetricKey;
 
   private _updateBuffer: Uint8Array | null = null;
 
   constructor(
-    serverUrl: string,
-    roomname: string,
-    doc: Y.Doc,
-    symmetricKey: SymmetricKey,
-    {
-      connect = true,
-      awareness = new awarenessProtocol.Awareness(doc),
-      params = {},
-      WebSocketPolyfill = WebSocket, // Optionally provide a WebSocket polyfill
-      maxBackoffTime = 2500, // Maximum amount of time to wait before trying to reconnect (we try to reconnect using exponential backoff)
-    } = {}
+    readonly host: string,
+    readonly roomname: string,
+
+    readonly doc: Y.Doc,
+
+    readonly symmetricKey: SymmetricKey
   ) {
-    super();
+    this.url = `${host}/${roomname}`;
 
-    // Ensure that url is always ends with /
-
-    while (serverUrl[serverUrl.length - 1] === '/') {
-      serverUrl = serverUrl.slice(0, serverUrl.length - 1);
-    }
-
-    const encodedParams = url.encodeQueryParams(params);
-    this.maxBackoffTime = maxBackoffTime;
-    this.broadcastChannel = serverUrl + '/' + roomname;
-    this.url =
-      serverUrl +
-      '/' +
-      roomname +
-      (encodedParams.length === 0 ? '' : '?' + encodedParams);
-    this.roomname = roomname;
-    this.doc = doc;
-    this._WS = WebSocketPolyfill;
-    this.awareness = awareness;
-    this.wsconnected = false;
-    this.wsconnecting = false;
-    this.wsUnsuccessfulReconnects = 0;
+    this.awareness = new awarenessProtocol.Awareness(doc);
 
     this.ws = null as any;
+
+    this.shouldConnect = true;
+    this.wsconnected = false;
+    this.wsconnecting = false;
     this.wsLastMessageReceived = 0;
-
-    this.shouldConnect = connect;
-
-    this.symmetricKey = symmetricKey;
+    this.wsUnsuccessfulReconnects = 0;
+    this.maxBackoffTime = 2500;
 
     // Setup reconnection timeout
 
@@ -120,7 +84,7 @@ export class WebsocketProvider extends Observable<string> {
     // Setup update-handling methods
 
     this.doc.on('updateV2', this.handleDocumentUpdate);
-    awareness.on('update', this.handleAwarenessUpdate);
+    this.awareness.on('update', this.handleAwarenessUpdate);
 
     // Setup unload handling
 
@@ -130,7 +94,7 @@ export class WebsocketProvider extends Observable<string> {
       process.on('exit', this.clearAwareness);
     }
 
-    if (connect) {
+    if (this.shouldConnect) {
       this.connect();
     }
   }
@@ -146,24 +110,24 @@ export class WebsocketProvider extends Observable<string> {
       return;
     }
 
-    const websocket = new this._WS(this.url);
-    websocket.binaryType = 'arraybuffer';
-    this.ws = websocket;
+    this.ws = new WebSocket(this.url);
+    this.ws.binaryType = 'arraybuffer';
+
     this.wsconnecting = true;
     this.wsconnected = false;
 
-    websocket.onmessage = (event) => {
+    this.ws.onmessage = (event) => {
       this.wsLastMessageReceived = time.getUnixTime();
 
       this.handleMessage(new Uint8Array(event.data as any));
     };
 
-    websocket.onerror = (event) => {
-      this.emit('connection-error', [event, this]);
+    this.ws.onerror = (event) => {
+      console.error('Websocket error', event);
     };
 
-    websocket.onclose = (event) => {
-      this.emit('connection-close', [event, this]);
+    this.ws.onclose = (event) => {
+      console.log('Websocket closed', event);
 
       this.ws = null as any;
       this.wsconnecting = false;
@@ -180,12 +144,6 @@ export class WebsocketProvider extends Observable<string> {
           ),
           this
         );
-
-        this.emit('status', [
-          {
-            status: 'disconnected',
-          },
-        ]);
       } else {
         this.wsUnsuccessfulReconnects++;
       }
@@ -202,17 +160,11 @@ export class WebsocketProvider extends Observable<string> {
       );
     };
 
-    websocket.onopen = () => {
+    this.ws.onopen = () => {
       this.wsLastMessageReceived = time.getUnixTime();
       this.wsconnecting = false;
       this.wsconnected = true;
       this.wsUnsuccessfulReconnects = 0;
-
-      this.emit('status', [
-        {
-          status: 'connected',
-        },
-      ]);
 
       // Broadcast local awareness state
 
@@ -227,15 +179,9 @@ export class WebsocketProvider extends Observable<string> {
           ])
         );
 
-        websocket.send(encoding.toUint8Array(encoderAwareness));
+        this.ws.send(encoding.toUint8Array(encoderAwareness));
       }
     };
-
-    this.emit('status', [
-      {
-        status: 'connecting',
-      },
-    ]);
   };
 
   handleDocumentUpdate = (update: Uint8Array, origin: any) => {
@@ -402,7 +348,5 @@ export class WebsocketProvider extends Observable<string> {
 
     this.awareness.off('update', this.handleAwarenessUpdate);
     this.doc.off('updateV2', this.handleDocumentUpdate);
-
-    super.destroy();
   }
 }

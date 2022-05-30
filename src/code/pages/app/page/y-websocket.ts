@@ -4,6 +4,7 @@ import * as math from 'lib0/math';
 import { Observable } from 'lib0/observable';
 import * as time from 'lib0/time';
 import * as url from 'lib0/url';
+import { throttle } from 'lodash';
 import { SymmetricKey } from 'src/code/crypto/symmetric-key';
 import { Resolvable } from 'src/code/utils';
 import * as awarenessProtocol from 'y-protocols/awareness';
@@ -54,6 +55,8 @@ export class WebsocketProvider extends Observable<string> {
   private readonly _checkInterval: NodeJS.Timer;
 
   readonly symmetricKey: SymmetricKey;
+
+  private _updateBuffer: Uint8Array | null = null;
 
   constructor(
     serverUrl: string,
@@ -240,7 +243,13 @@ export class WebsocketProvider extends Observable<string> {
       return;
     }
 
-    this.sendSyncSingleUpdateMessage(update);
+    if (this._updateBuffer == null) {
+      this._updateBuffer = update;
+    } else {
+      this._updateBuffer = Y.mergeUpdatesV2([this._updateBuffer, update]);
+    }
+
+    this.sendSyncSingleUpdateMessage();
   };
   handleAwarenessUpdate = ({ added, updated, removed }: IAwarenessChanges) => {
     const changedClients = added.concat(updated).concat(removed);
@@ -340,7 +349,7 @@ export class WebsocketProvider extends Observable<string> {
     this.size = decryptedUpdate.length;
   }
 
-  sendSyncSingleUpdateMessage(update: Uint8Array) {
+  sendSyncSingleUpdateMessage = throttle(() => {
     console.log('Sync single update message sent');
 
     const encoder = encoding.createEncoder();
@@ -349,11 +358,14 @@ export class WebsocketProvider extends Observable<string> {
     encoding.writeVarUint(encoder, MESSAGE_SYNC_SINGLE_UPDATE);
 
     // Send encrypted update
-    const encryptedUpdate = this.symmetricKey.encrypt(update);
+    const encryptedUpdate = this.symmetricKey.encrypt(this._updateBuffer!);
+    this._updateBuffer = null;
+
     encoding.writeVarUint8Array(encoder, encryptedUpdate);
 
     this.ws.send(encoding.toUint8Array(encoder));
-  }
+  }, 200);
+
   handleSyncSingleUpdateMessage(decoder: decoding.Decoder) {
     // Apply decrypted update
     const encryptedUpdate = decoding.readVarUint8Array(decoder);

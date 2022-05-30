@@ -1,4 +1,4 @@
-export function concatUint8Array(...arrays: any[]) {
+export function concatUint8Array(...arrays: Uint8Array[]) {
   let totalLength = 0;
 
   for (const arr of arrays) {

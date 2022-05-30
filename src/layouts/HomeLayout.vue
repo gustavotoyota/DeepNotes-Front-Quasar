@@ -29,8 +29,8 @@
         <template v-else>
           <q-btn
             label="Pages"
-            href="/pages"
             color="primary"
+            to="/pages"
           />
 
           <Gap style="width: 12px" />

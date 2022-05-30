@@ -33,6 +33,10 @@ onMounted(async () => {
 </script>
 
 <style>
+* {
+  user-select: none;
+}
+
 .q-tooltip {
   font-size: 12px;
 }

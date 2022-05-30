@@ -280,9 +280,6 @@ onBeforeUnmount(() => {
 .pages-layout :deep(*) {
   touch-action: pan-x pan-y;
 }
-.pages-layout :deep(*:not(input)) {
-  user-select: none;
-}
 
 .pages-layout :deep(.q-drawer) {
   transition: width 0.2s ease;

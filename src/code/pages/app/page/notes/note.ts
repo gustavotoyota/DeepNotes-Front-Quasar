@@ -173,6 +173,10 @@ export interface INoteReact extends IRegionReact {
     shadow: ComputedRef<string>;
     background: ComputedRef<string>;
   };
+
+  link: {
+    external: ComputedRef<boolean>;
+  };
 }
 
 export class PageNote extends PageRegion {
@@ -449,6 +453,27 @@ export class PageNote extends PageRegion {
           } else {
             return this.react.color.base;
           }
+        }),
+      },
+
+      link: {
+        external: computed(() => {
+          if (this.collab.link == null) {
+            return false;
+          }
+
+          if (
+            !this.collab.link.startsWith('http://') &&
+            !this.collab.link.startsWith('https://')
+          ) {
+            return false;
+          }
+
+          if (this.collab.link.startsWith(`${window.location.origin}/pages/`)) {
+            return false;
+          }
+
+          return true;
         }),
       },
     };

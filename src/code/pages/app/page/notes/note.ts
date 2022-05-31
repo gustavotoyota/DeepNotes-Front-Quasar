@@ -78,7 +78,7 @@ export const INoteCollab = IRegionCollab.extend({
 
   color: z
     .object({
-      inherit: z.boolean().default(false),
+      inherit: z.boolean().default(true),
       value: z.string().default('#424242'),
     })
     .default({}),

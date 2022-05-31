@@ -82,7 +82,7 @@
     <!-- Link -->
 
     <div style="padding: 20px; display: flex; flex-direction: column">
-      <q-select
+      <Combobox
         label="Link URL"
         :options="
           $pages.react.recentPageIds.map((pageId) => ({
@@ -90,28 +90,24 @@
             value: pageId,
           }))
         "
-        emit-value
-        v-model="note.collab.link"
-        @input-value="note.collab.link = $event"
-        use-input
-        filled
-        dense
-        hide-selected
-        fill-input
+        :model-value="note.collab.link"
+        @update:model-value="
+          changeProp($event, (note, value) => {
+            note.collab.link = value;
+          })
+        "
       >
-        <template v-slot:option="scope">
-          <q-item v-bind="scope.itemProps">
-            <q-item-section>
-              <q-item-label>{{ scope.opt.label }}</q-item-label>
-              <q-item-label caption>{{
-                $pages.computeGroupName(
-                  $pages.react.dict[`pageGroupId.${scope.opt.value}`]
-                )
-              }}</q-item-label>
-            </q-item-section>
-          </q-item>
+        <template #item="scope">
+          <q-item-section>
+            <q-item-label>{{ scope.opt.label }}</q-item-label>
+            <q-item-label caption>{{
+              $pages.computeGroupName(
+                $pages.react.dict[`pageGroupId.${scope.opt.value}`]
+              )
+            }}</q-item-label>
+          </q-item-section>
         </template>
-      </q-select>
+      </Combobox>
 
       <Gap style="height: 16px" />
 
@@ -248,33 +244,29 @@
 
     <div style="padding: 20px; display: flex; flex-direction: column">
       <div style="display: flex">
-        <q-select
+        <Combobox
           label="Width"
           :options="[{ label: 'Auto', value: 'auto' }]"
-          v-model="note.collab.width[note.react.sizeProp]"
-          @input-value="note.collab.width[note.react.sizeProp] = $event"
-          filled
-          dense
-          use-input
-          fill-input
-          hide-selected
-          emit-value
+          :model-value="note.collab.width[note.react.sizeProp]"
+          @update:model-value="
+            changeProp($event, (note, value) => {
+              note.collab.width[note.react.sizeProp] = value;
+            })
+          "
           style="flex: 1; min-width: 0"
         />
 
         <Gap style="width: 16px" />
 
-        <q-select
+        <Combobox
           label="Head height"
           :options="[{ label: 'Auto', value: 'auto' }]"
-          emit-value
-          v-model="note.collab.head.height[note.react.sizeProp]"
-          @input-value="note.collab.head.height[note.react.sizeProp] = $event"
-          use-input
-          filled
-          dense
-          hide-selected
-          fill-input
+          :model-value="note.collab.head.height[note.react.sizeProp]"
+          @update:model-value="
+            changeProp($event, (note, value) => {
+              note.collab.head.height[note.react.sizeProp] = value;
+            })
+          "
           style="flex: 1; min-width: 0"
         />
       </div>
@@ -282,35 +274,29 @@
       <Gap style="height: 16px" />
 
       <div style="display: flex">
-        <q-select
+        <Combobox
           label="Body height"
           :options="[{ label: 'Auto', value: 'auto' }]"
-          emit-value
-          v-model="note.collab.body.height[note.react.sizeProp]"
-          @input-value="note.collab.body.height[note.react.sizeProp] = $event"
-          use-input
-          filled
-          dense
-          hide-selected
-          fill-input
+          :model-value="note.collab.body.height[note.react.sizeProp]"
+          @update:model-value="
+            changeProp($event, (note, value) => {
+              note.collab.body.height[note.react.sizeProp] = value;
+            })
+          "
           style="flex: 1; min-width: 0"
         />
 
         <Gap style="width: 16px" />
 
-        <q-select
+        <Combobox
           label="Container height"
           :options="[{ label: 'Auto', value: 'auto' }]"
-          emit-value
-          v-model="note.collab.container.height[note.react.sizeProp]"
-          @input-value="
-            note.collab.container.height[note.react.sizeProp] = $event
+          :model-value="note.collab.container.height[note.react.sizeProp]"
+          @update:model-value="
+            changeProp($event, (note, value) => {
+              note.collab.container.height[note.react.sizeProp] = value;
+            })
           "
-          use-input
-          filled
-          dense
-          hide-selected
-          fill-input
           style="flex: 1; min-width: 0"
         />
       </div>
@@ -559,6 +545,7 @@ import { useUI } from 'src/stores/pages/ui';
 import { inject, Ref, toRef } from 'vue';
 
 import Checkbox from '../../misc/Checkbox.vue';
+import Combobox from '../../misc/Combobox.vue';
 import MiniSidebarBtn from '../../misc/MiniSidebarBtn.vue';
 import NewPageDialog from './NewPageDialog.vue';
 import SaveAsTemplateDialog from './SaveAsTemplateDialog.vue';

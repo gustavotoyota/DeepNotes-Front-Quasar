@@ -140,7 +140,7 @@ export class PagesApp {
 
     pull(this.react.recentPageIds, recentPageId);
 
-    this.react.recentPageIds.splice(0, 0, pageId);
+    this.react.recentPageIds.unshift(pageId);
 
     await $api.post('/api/pages/bump', {
       pageId,

@@ -487,6 +487,18 @@
           :disable="!note.collab.container.enabled"
         />
       </div>
+
+      <Gap style="height: 24px" />
+
+      <q-btn
+        label="Reverse children"
+        color="primary"
+        @click="
+          changeProp($event, (note, value) => {
+            note.reverseChildren();
+          })
+        "
+      />
     </div>
 
     <q-separator />

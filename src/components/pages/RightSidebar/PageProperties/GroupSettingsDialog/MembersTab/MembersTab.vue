@@ -57,10 +57,7 @@
     <div
       style="flex: none; width: 200px; display: flex; flex-direction: column"
     >
-      <ChangeRoleDialog
-        :disable="!canChangeActiveRole"
-        :user="activeUser!"
-      />
+      <ChangeRoleDialog />
 
       <Gap style="height: 16px" />
 
@@ -92,16 +89,6 @@ const settings = inject<Ref<ReturnType<typeof initialSettings>>>('settings')!;
 
 const selectedIds = computed(() => settings.value.members.selectedIds);
 
-const activeUser = computed(() => {
-  if (selectedIds.value.size !== 1) {
-    return null;
-  }
-
-  return settings.value.members.list.find(
-    (user) => user.userId === selectedIds.value.values().next().value
-  );
-});
-
 function selectAll() {
   for (const role of settings.value.members.list) {
     selectedIds.value.add(role.userId);
@@ -124,25 +111,6 @@ function select(id: string, event: MouseEvent) {
     selectedIds.value.add(id);
   }
 }
-
-const canChangeActiveRole = computed(() => {
-  if (activeUser.value == null) {
-    return false;
-  }
-
-  const myRole = rolesMap[page.value.roleId];
-  const userRole = rolesMap[activeUser.value.roleId];
-
-  if (myRole.permissions.manageOwnRank && userRole.rank === myRole.rank) {
-    return true;
-  }
-
-  if (myRole.permissions.manageLowerRanks && userRole.rank < myRole.rank) {
-    return true;
-  }
-
-  return false;
-});
 
 async function removeSelectedUsers() {
   await $api.post('/api/groups/remove-users', {

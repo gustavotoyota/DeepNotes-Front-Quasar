@@ -2,7 +2,7 @@
   <q-btn
     label="Change role"
     color="secondary"
-    :disable="disable"
+    :disable="selectedIds.size === 0"
     @click="visible = true"
   />
 
@@ -59,20 +59,19 @@
 import { Notify } from 'quasar';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { roles } from 'src/code/pages/static/roles';
-import { inject, Ref, ref, watch } from 'vue';
+import { computed, inject, Ref, ref, watch } from 'vue';
 
-import { IGroupUser } from '../GroupSettingsDialog.vue';
-
-const props = defineProps<{
-  disable?: boolean;
-  user: IGroupUser;
-}>();
+import { initialSettings } from '../GroupSettingsDialog.vue';
 
 const visible = ref(false);
 
 const page = inject<Ref<AppPage>>('page')!;
 
 const roleId = ref<string | null>(null);
+
+const settings = inject<Ref<ReturnType<typeof initialSettings>>>('settings')!;
+
+const selectedIds = computed(() => settings.value.members.selectedIds);
 
 watch(visible, async (value) => {
   if (!value) {
@@ -91,13 +90,10 @@ async function changeRole() {
     return;
   }
 
-  await $api.post('/api/groups/change-role', {
+  await $api.post('/api/groups/change-roles', {
     groupId: page.value.groupId,
-    userId: props.user.userId,
+    userIds: selectedIds.value,
     roleId: roleId.value,
   });
-
-  // eslint-disable-next-line vue/no-mutating-props
-  props.user.roleId = roleId.value;
 }
 </script>

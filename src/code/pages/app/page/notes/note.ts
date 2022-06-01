@@ -1,4 +1,4 @@
-import { getYjsValue, SyncedText, Y } from '@syncedstore/core';
+import { SyncedText } from '@syncedstore/core';
 import Color from 'color';
 import Quill from 'quill';
 import { hasVertScrollbar } from 'src/code/pages/static/dom';
@@ -535,8 +535,13 @@ export class PageNote extends PageRegion {
   }
 
   reverseChildren() {
-    const yArray = getYjsValue(this.collab.noteIds) as Y.Array<string>;
+    this.page.collab.doc.transact(() => {
+      const children = this.collab.noteIds.splice(
+        0,
+        this.collab.noteIds.length
+      );
 
-    this.collab.noteIds = yArray.toJSON().reverse();
+      this.collab.noteIds.push(...children.reverse());
+    });
   }
 }

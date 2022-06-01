@@ -92,7 +92,7 @@ async function changeRole() {
 
   await $api.post('/api/groups/change-roles', {
     groupId: page.value.groupId,
-    userIds: selectedIds.value,
+    userIds: Array.from(selectedIds.value),
     roleId: roleId.value,
   });
 }

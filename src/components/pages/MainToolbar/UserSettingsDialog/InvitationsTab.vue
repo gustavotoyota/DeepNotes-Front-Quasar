@@ -39,7 +39,12 @@
             @click="select(group.groupId, $event)"
           >
             <q-item-section>
-              {{ $pages.computeGroupName(group.groupId) }}
+              <q-item-label>
+                {{ $pages.computeGroupName(group.groupId) }}
+              </q-item-label>
+              <q-item-label caption>
+                {{ rolesMap[group.roleId].name }}
+              </q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
@@ -79,6 +84,7 @@
   setup
   lang="ts"
 >
+import { rolesMap } from 'src/code/pages/static/roles';
 import Gap from 'src/components/misc/Gap.vue';
 import { computed, inject, Ref } from 'vue';
 

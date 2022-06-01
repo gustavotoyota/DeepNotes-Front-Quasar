@@ -46,7 +46,12 @@
             @click="select(user.userId, $event)"
           >
             <q-item-section>
-              {{ $pages.realtime.get('userName', user.userId) }}
+              <q-item-label>
+                {{ $pages.realtime.get('userName', user.userId) }}
+              </q-item-label>
+              <q-item-label caption>
+                {{ rolesMap[user.roleId].name }}
+              </q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
@@ -77,6 +82,7 @@
   lang="ts"
 >
 import { AppPage } from 'src/code/pages/app/page/page';
+import { rolesMap } from 'src/code/pages/static/roles';
 import Gap from 'src/components/misc/Gap.vue';
 import { computed, inject, Ref } from 'vue';
 

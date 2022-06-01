@@ -17,6 +17,20 @@
         <q-card-section
           style="padding: 21px; display: flex; flex-direction: column"
         >
+          <q-select
+            label="Role"
+            :options="roles"
+            option-label="name"
+            option-value="id"
+            filled
+            emit-value
+            map-options
+            dense
+            v-model="roleId"
+          />
+
+          <Gap style="height: 16px" />
+
           <q-input
             label="Message (optional)"
             type="textarea"
@@ -53,11 +67,15 @@
   setup
   lang="ts"
 >
+import { Notify } from 'quasar';
 import { AppPage } from 'src/code/pages/app/page/page';
+import { roles } from 'src/code/pages/static/roles';
+import Gap from 'src/components/misc/Gap.vue';
 import { inject, ref, watch } from 'vue';
 
 const visible = ref(false);
 
+const roleId = ref();
 const message = ref('');
 
 const page = inject<AppPage>('page')!;
@@ -67,12 +85,23 @@ watch(visible, async (value) => {
     return;
   }
 
+  roleId.value = null;
   message.value = '';
 });
 
 async function requestAccess(message: string) {
+  if (roleId.value == null) {
+    Notify.create({
+      message: 'Please select a role',
+      color: 'negative',
+    });
+
+    return;
+  }
+
   await $api.post('/api/groups/access-requests/send', {
     groupId: page.groupId,
+    roleId: roleId.value,
     pageId: page.id,
     message,
   });

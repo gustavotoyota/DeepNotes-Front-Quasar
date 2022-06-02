@@ -204,13 +204,13 @@ export class AppRealtime {
   private _handleNotify(decoder: decoding.Decoder) {
     const numChannels = decoding.readVarUint(decoder);
 
-    console.log('Received', numChannels, 'channels');
-
     this._publishMode = false;
 
     for (let i = 0; i < numChannels; i++) {
       const channel = decoding.readVarString(decoder);
       const value = decoding.readVarString(decoder);
+
+      console.log(`[${channel}] Notify: ${value}`);
 
       this._values[channel] = value;
 

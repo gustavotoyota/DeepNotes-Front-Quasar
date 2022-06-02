@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { from_base64 } from 'libsodium-wrappers';
 import { pull } from 'lodash';
 import {
   computed,
@@ -67,6 +68,7 @@ export class PagesApp {
   react: UnwrapRef<IAppReact>;
 
   userId!: string;
+  publicKey!: Uint8Array;
 
   parentPageId: string | null = null;
 
@@ -104,17 +106,28 @@ export class PagesApp {
   async loadData(initialPageId: string) {
     const response = await $api.post<{
       userId: string;
-
-      pathPages: IPageRef[];
-      recentPages: IPageRef[];
+      publicKey: string;
 
       templates: ITemplate[];
       defaultTemplateId: string;
+
+      pathPages: IPageRef[];
+      recentPages: IPageRef[];
     }>('/api/users/pages', {
       initialPageId,
     });
 
+    // Load user data
+
     this.userId = response.data.userId;
+    this.publicKey = from_base64(response.data.publicKey);
+
+    // Load templates
+
+    this.templates.react.list = response.data.templates;
+    this.templates.react.defaultId = response.data.defaultTemplateId;
+
+    // Load pages
 
     this.react.pathPageIds = response.data.pathPages.map((page) => page.pageId);
     this.react.recentPageIds = response.data.recentPages.map(
@@ -127,9 +140,6 @@ export class PagesApp {
         this.react.dict[`pageGroupId.${page.pageId}`] = page.groupId;
         this.react.dict[`groupOwnerId.${page.groupId}`] = page.ownerId;
       });
-
-    this.templates.react.list = response.data.templates;
-    this.templates.react.defaultId = response.data.defaultTemplateId;
   }
 
   async bumpPage(pageId: string) {

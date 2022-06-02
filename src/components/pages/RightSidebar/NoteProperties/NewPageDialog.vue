@@ -21,6 +21,24 @@
             v-model="pageTitle"
             filled
           />
+
+          <Gap style="height: 16px" />
+
+          <Checkbox
+            label="Create new group"
+            v-model="createGroup"
+          />
+
+          <template v-if="createGroup">
+            <Gap style="height: 16px" />
+
+            <q-input
+              label="Group name"
+              ref="groupNameElem"
+              filled
+              v-model="groupName"
+            />
+          </template>
         </q-card-section>
 
         <q-separator />
@@ -37,7 +55,6 @@
             flat
             label="Ok"
             color="primary"
-            v-close-popup
             @click.prevent="createPage()"
           />
         </q-card-actions>
@@ -50,10 +67,16 @@
   setup
   lang="ts"
 >
+import { randombytes_buf, to_base64 } from 'libsodium-wrappers';
+import { Notify } from 'quasar';
+import { privateKey } from 'src/code/crypto/private-key';
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
-import { inject, Ref, ref, watch } from 'vue';
+import Gap from 'src/components/misc/Gap.vue';
+import { inject, nextTick, Ref, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
+
+import Checkbox from '../../misc/Checkbox.vue';
 
 const router = useRouter();
 const page = inject<Ref<AppPage>>('page')!;
@@ -63,14 +86,20 @@ const visible = ref(false);
 const pageTitle = ref('');
 const pageTitleElem = ref<HTMLElement>();
 
-watch(visible, () => {
+const createGroup = ref(false);
+const groupName = ref('');
+const groupNameElem = ref<HTMLElement>();
+
+watch(visible, async () => {
   if (!visible.value) {
     return;
   }
 
-  setTimeout(() => {
-    pageTitle.value = '';
+  pageTitle.value = '';
+  createGroup.value = false;
+  groupName.value = '';
 
+  setTimeout(() => {
     const activeElem = $pages.react.page.activeElem.react.elem;
     if (!(activeElem instanceof PageNote)) {
       return;
@@ -87,18 +116,62 @@ watch(visible, () => {
   });
 });
 
-async function createPage() {
-  const response = await $api.post<{
-    pageId: string;
-  }>('/api/pages/create', {
-    parentPageId: page.value.id,
-    pageTitle: pageTitle.value,
-  });
-
-  for (const selectedNote of page.value.selection.react.notes) {
-    selectedNote.collab.link = response.data.pageId;
+watch(createGroup, async (value) => {
+  if (!value) {
+    return;
   }
 
-  await $pages.goToPage(response.data.pageId, router, true);
+  await nextTick();
+
+  groupNameElem.value?.focus();
+});
+
+async function createPage() {
+  if (createGroup.value && groupName.value === '') {
+    Notify.create({
+      message: 'Please enter a group name',
+      color: 'negative',
+    });
+
+    return;
+  }
+
+  try {
+    const groupSymmetricKey = randombytes_buf(32);
+
+    const encryptedGroupSymmetricKey = privateKey.encrypt(
+      groupSymmetricKey,
+      $pages.publicKey
+    );
+
+    const response = await $api.post<{
+      pageId: string;
+    }>('/api/pages/create', {
+      parentPageId: page.value.id,
+      pageTitle: pageTitle.value,
+
+      createGroup: createGroup.value,
+      groupName: groupName.value,
+      encryptedGroupSymmetricKey: to_base64(encryptedGroupSymmetricKey),
+    });
+
+    for (const selectedNote of page.value.selection.react.notes) {
+      selectedNote.collab.link = response.data.pageId;
+    }
+
+    await $pages.goToPage(response.data.pageId, router, true);
+
+    visible.value = false;
+
+    Notify.create({
+      message: 'Page created successfully',
+      color: 'positive',
+    });
+  } catch (err: any) {
+    Notify.create({
+      message: err.response?.data.message ?? 'An error has occurred',
+      color: 'negative',
+    });
+  }
 }
 </script>

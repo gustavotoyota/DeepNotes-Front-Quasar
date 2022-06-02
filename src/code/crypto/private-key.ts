@@ -1,4 +1,4 @@
-import { decryptAssymetric } from './crypto';
+import { decryptAssymetric, encryptAssymetric } from './crypto';
 
 export function createPrivateKey(value: Uint8Array | null = null) {
   let _value = value;
@@ -15,6 +15,12 @@ export function createPrivateKey(value: Uint8Array | null = null) {
       return _value != null;
     }
 
+    encrypt(
+      nonceAndPlaintext: Uint8Array,
+      recipientsPublicKey: Uint8Array
+    ): Uint8Array {
+      return encryptAssymetric(nonceAndPlaintext, recipientsPublicKey, _value!);
+    }
     decrypt(
       nonceAndCiphertext: Uint8Array,
       sendersPublicKey: Uint8Array

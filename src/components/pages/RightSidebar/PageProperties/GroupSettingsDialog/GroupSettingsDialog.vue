@@ -167,8 +167,10 @@ watch(visible, async (value) => {
   );
   settings.value.sessionKey = from_base64(response.data.sessionKey);
 
-  settings.value.general.groupName =
-    (await $pages.realtime.getAsync('groupName', page.value.groupId)) ?? '';
+  if (page.value.ownerId == null) {
+    settings.value.general.groupName =
+      (await $pages.realtime.getAsync('groupName', page.value.groupId)) ?? '';
+  }
 
   settings.value.requests.list = response.data.requests;
   settings.value.invitations.list = response.data.invitations;

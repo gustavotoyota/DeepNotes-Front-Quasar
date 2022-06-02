@@ -4,23 +4,17 @@
     @wheel="onWheel"
     @pointerdown.middle.prevent="onMiddlePointerDown"
   >
-    <template
-      v-if="
-        page.react.loaded &&
-        page.react.hasPermission &&
-        page.react.userStatus !== 'invite'
-      "
-    >
+    <template v-if="page.react.status === 'success'">
       <DisplayBackground />
       <DisplayNotes />
       <DisplayBoxSelection />
       <DisplayBtns />
     </template>
 
-    <LoadingOverlay v-if="!page.react.loaded" />
+    <LoadingOverlay v-if="page.react.status === 'loading'" />
 
     <div
-      v-if="!page.react.hasPermission || page.react.userStatus === 'invite'"
+      v-if="!['loading', 'success'].includes(page.react.status)"
       style="
         position: absolute;
 
@@ -32,26 +26,12 @@
         background-color: #181818;
 
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
       "
     >
-      <div style="text-align: center">
-        <template v-if="page.react.userStatus !== 'invite'">
-          <div>You do not have permission to access this page.</div>
-
-          <Gap style="height: 12px" />
-
-          <RequestAccessDialog v-if="page.react.userStatus == null" />
-
-          <q-btn
-            v-if="page.react.userStatus === 'request'"
-            label="Cancel request"
-            color="negative"
-            @click="cancelRequest()"
-          />
-        </template>
-
+      <template v-if="page.react.status === 'unauthorized'">
         <template v-if="page.react.userStatus === 'invite'">
           <div div>You were invited to access this group.</div>
 
@@ -72,13 +52,32 @@
           />
         </template>
 
-        <div
-          v-if="page.react.userStatus === 'rejected'"
-          style="color: red"
-        >
-          Your access request has been rejected.
-        </div>
-      </div>
+        <template v-else>
+          <div>You do not have permission to access this page.</div>
+
+          <Gap style="height: 12px" />
+
+          <RequestAccessDialog v-if="page.react.userStatus == null" />
+
+          <q-btn
+            v-if="page.react.userStatus === 'request'"
+            label="Cancel request"
+            color="negative"
+            @click="cancelRequest()"
+          />
+
+          <div
+            v-if="page.react.userStatus === 'rejected'"
+            style="color: red"
+          >
+            Your access request has been rejected.
+          </div>
+        </template>
+      </template>
+
+      <template v-if="page.react.status === 'error'">
+        {{ page.react.errorMessage }}
+      </template>
     </div>
   </div>
 </template>
@@ -135,8 +134,7 @@ async function acceptInvitation() {
       groupIds: [props.page.groupId],
     });
 
-    // eslint-disable-next-line vue/no-mutating-props
-    props.page.react.userStatus = 'member';
+    await props.page.setup();
   } catch (err: any) {
     Notify.create({
       color: 'negative',

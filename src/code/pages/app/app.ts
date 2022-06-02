@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { pull } from 'lodash';
 import {
   computed,
@@ -179,28 +180,35 @@ export class PagesApp {
   }
 
   async setupPage(nextPageId: string) {
-    console.log('Initialize page');
+    try {
+      const prevPageId = this.react.pageId;
+      const wasCached = this.pageCache.has(nextPageId);
 
-    const prevPageId = this.react.pageId;
-    const pageIsCached = this.pageCache.has(nextPageId);
+      let page;
 
-    if (pageIsCached) {
-      $pages.react.page = this.pageCache.get(nextPageId)!;
-    } else {
-      const page = factory.makePage(this, nextPageId);
-      this.pageCache.add(page);
+      if (wasCached) {
+        page = this.pageCache.get(nextPageId)!;
+      } else {
+        page = factory.makePage(this, nextPageId);
+
+        this.pageCache.add(page);
+      }
+
       $pages.react.page = page;
+
+      await this.updatePathPages(prevPageId, nextPageId);
+
+      if (wasCached) {
+        await this.bumpPage(nextPageId);
+      } else {
+        await page.setup();
+      }
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        $pages.react.page.react.status = 'error';
+        $pages.react.page.react.errorMessage = err.response?.data.message;
+      }
     }
-
-    await this.updatePathPages(prevPageId, nextPageId);
-
-    const promises = [this.bumpPage(nextPageId)];
-
-    if (!pageIsCached) {
-      promises.push($pages.react.page.setup());
-    }
-
-    await Promise.all(promises);
   }
 
   computeGroupName(groupId: string): string {

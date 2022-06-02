@@ -42,14 +42,12 @@ export type IPageCollab = z.output<typeof IPageCollab>;
 export interface IAppPageReact extends IRegionReact {
   name: string;
 
-  loaded: boolean;
-  hasPermission: boolean;
-
   collab: ComputedRef<IPageCollab>;
-
   size: number;
 
+  status: string;
   userStatus: string | null;
+  errorMessage: string;
 }
 
 export interface IPageData {
@@ -118,14 +116,12 @@ export class AppPage extends PageRegion {
 
       name: '',
 
-      loaded: false,
-      hasPermission: true,
-
       collab: computed(() => this.collab.store.page),
-
       size: 0,
 
+      status: 'loading',
       userStatus: null,
+      errorMessage: '',
 
       // Elem
 
@@ -178,7 +174,10 @@ export class AppPage extends PageRegion {
 
     const response = await $api.post<IPageData>('/api/pages/data', {
       pageId: this.id,
+      parentPageId: this.app.parentPageId,
     });
+
+    this.app.parentPageId = null;
 
     // Update path page data
 
@@ -198,9 +197,11 @@ export class AppPage extends PageRegion {
 
     // Check if has permission
 
-    if (response.data.encryptedSymmetricKey == null) {
-      this.react.loaded = true;
-      this.react.hasPermission = false;
+    if (
+      response.data.encryptedSymmetricKey == null ||
+      this.react.userStatus === 'invite'
+    ) {
+      this.react.status = 'unauthorized';
       return;
     }
 
@@ -246,7 +247,7 @@ export class AppPage extends PageRegion {
 
     this.react.size = this.collab.websocketProvider.size;
 
-    this.react.loaded = true;
+    this.react.status = 'success';
   }
 
   async setup() {

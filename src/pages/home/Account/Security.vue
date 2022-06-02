@@ -126,7 +126,7 @@
   lang="ts"
 >
 import { from_base64 } from 'libsodium-wrappers';
-import { QForm, useMeta, useQuasar } from 'quasar';
+import { Notify, QForm, useMeta } from 'quasar';
 import {
   computeDerivedKeys,
   encryptSymmetric,
@@ -138,7 +138,6 @@ import { useApp } from 'src/stores/app';
 import { onMounted, reactive, Ref, ref } from 'vue';
 
 const app = useApp();
-const $q = useQuasar();
 
 useMeta(() => ({
   title: 'Security - Account - DeepNotes',
@@ -180,10 +179,11 @@ onMounted(async () => {
 
 async function changePassword() {
   if (data.newPassword !== data.confirmNewPassword) {
-    $q.notify({
+    Notify.create({
       color: 'negative',
       message: 'New passwords do not match',
     });
+
     return;
   }
 
@@ -228,16 +228,16 @@ async function changePassword() {
       reencryptedPrivateKey,
     });
 
-    $q.notify({
+    Notify.create({
       color: 'positive',
       message: 'Password changed successfully',
     });
 
     passwordChangeForm.value.reset();
   } catch (err: any) {
-    $q.notify({
+    Notify.create({
       color: 'negative',
-      message: err.response?.data.error ?? 'An error has occurred',
+      message: err.response?.data.message ?? 'An error has occurred',
     });
   }
 }

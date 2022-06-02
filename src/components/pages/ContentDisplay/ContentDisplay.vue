@@ -87,6 +87,7 @@
   setup
   lang="ts"
 >
+import { Notify } from 'quasar';
 import { AppPage } from 'src/code/pages/app/page/page';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
@@ -113,29 +114,50 @@ function onMiddlePointerDown(event: PointerEvent) {
 }
 
 async function cancelRequest() {
-  await $api.post('/api/groups/access-requests/cancel', {
-    groupIds: [props.page.groupId],
-  });
+  try {
+    await $api.post('/api/groups/access-requests/cancel', {
+      groupIds: [props.page.groupId],
+    });
 
-  // eslint-disable-next-line vue/no-mutating-props
-  props.page.react.userStatus = null;
+    // eslint-disable-next-line vue/no-mutating-props
+    props.page.react.userStatus = null;
+  } catch (err: any) {
+    Notify.create({
+      color: 'negative',
+      message: err.response?.data.message ?? 'An error has occurred',
+    });
+  }
 }
 
 async function acceptInvitation() {
-  await $api.post('/api/groups/access-invitations/accept', {
-    groupIds: [props.page.groupId],
-  });
+  try {
+    await $api.post('/api/groups/access-invitations/accept', {
+      groupIds: [props.page.groupId],
+    });
 
-  // eslint-disable-next-line vue/no-mutating-props
-  props.page.react.userStatus = 'member';
+    // eslint-disable-next-line vue/no-mutating-props
+    props.page.react.userStatus = 'member';
+  } catch (err: any) {
+    Notify.create({
+      color: 'negative',
+      message: err.response?.data.message ?? 'An error has occurred',
+    });
+  }
 }
 async function rejectInvitation() {
-  await $api.post('/api/groups/access-invitations/reject', {
-    groupIds: [props.page.groupId],
-  });
+  try {
+    await $api.post('/api/groups/access-invitations/reject', {
+      groupIds: [props.page.groupId],
+    });
 
-  // eslint-disable-next-line vue/no-mutating-props
-  props.page.react.userStatus = null;
+    // eslint-disable-next-line vue/no-mutating-props
+    props.page.react.userStatus = null;
+  } catch (err: any) {
+    Notify.create({
+      color: 'negative',
+      message: err.response?.data.message ?? 'An error has occurred',
+    });
+  }
 }
 </script>
 

@@ -81,6 +81,7 @@
   setup
   lang="ts"
 >
+import { Notify } from 'quasar';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { rolesMap } from 'src/code/pages/static/roles';
 import Gap from 'src/components/misc/Gap.vue';
@@ -119,14 +120,21 @@ function select(id: string, event: MouseEvent) {
 }
 
 async function cancelSelectedInvitations() {
-  await $api.post('/api/groups/access-invitations/cancel', {
-    groupId: page.value.groupId,
-    userIds: Array.from(selectedIds.value),
-  });
+  try {
+    await $api.post('/api/groups/access-invitations/cancel', {
+      groupId: page.value.groupId,
+      userIds: Array.from(selectedIds.value),
+    });
 
-  settings.value.invitations.list = settings.value.invitations.list.filter(
-    (item) => !selectedIds.value.has(item.userId)
-  );
-  selectedIds.value.clear();
+    settings.value.invitations.list = settings.value.invitations.list.filter(
+      (item) => !selectedIds.value.has(item.userId)
+    );
+    selectedIds.value.clear();
+  } catch (err: any) {
+    Notify.create({
+      color: 'negative',
+      message: err.response?.data.message ?? 'An error has occurred',
+    });
+  }
 }
 </script>

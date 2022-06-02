@@ -81,6 +81,7 @@
   setup
   lang="ts"
 >
+import { Notify } from 'quasar';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { rolesMap } from 'src/code/pages/static/roles';
 import Gap from 'src/components/misc/Gap.vue';
@@ -119,14 +120,21 @@ function select(id: string, event: MouseEvent) {
 }
 
 async function rejectSelectedRequests() {
-  await $api.post('/api/groups/access-requests/reject', {
-    groupId: page.value.groupId,
-    userIds: Array.from(selectedIds.value),
-  });
+  try {
+    await $api.post('/api/groups/access-requests/reject', {
+      groupId: page.value.groupId,
+      userIds: Array.from(selectedIds.value),
+    });
 
-  settings.value.requests.list = settings.value.requests.list.filter(
-    (user) => !selectedIds.value.has(user.userId)
-  );
-  selectedIds.value.clear();
+    settings.value.requests.list = settings.value.requests.list.filter(
+      (user) => !selectedIds.value.has(user.userId)
+    );
+    selectedIds.value.clear();
+  } catch (err: any) {
+    Notify.create({
+      color: 'negative',
+      message: err.response?.data.message ?? 'An error has occurred',
+    });
+  }
 }
 </script>

@@ -48,7 +48,7 @@
   lang="ts"
 >
 import { from_base64 } from 'libsodium-wrappers';
-import { useQuasar } from 'quasar';
+import { Notify } from 'quasar';
 import { storeTokens } from 'src/code/auth';
 import {
   computeDerivedKeys,
@@ -59,7 +59,6 @@ import { useAuth } from 'src/stores/auth';
 import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
 
-const $q = useQuasar();
 const auth = useAuth();
 const router = useRouter();
 
@@ -102,18 +101,17 @@ async function login() {
 
     auth.loggedIn = true;
 
-    $q.notify({
+    Notify.create({
       color: 'positive',
       message: 'Login successful',
     });
 
     await router.push('/pages');
   } catch (err: any) {
-    $q.notify({
+    Notify.create({
       color: 'negative',
-      message: err.response?.data.error ?? 'An error has occurred',
+      message: err.response?.data.message ?? 'An error has occurred',
     });
-    return;
   }
 }
 </script>

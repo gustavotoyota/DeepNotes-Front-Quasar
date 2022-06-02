@@ -133,16 +133,23 @@ async function inviteUser() {
     from_base64(userInfos.publicKey)
   );
 
-  await $api.post('/api/groups/access-invitations/send', {
-    groupId: page.value.groupId,
-    userId: userInfos.id,
-    roleId: roleId.value,
-    encryptedSymmetricKey: to_base64(reencryptedSymmetricKey),
-  });
+  try {
+    await $api.post('/api/groups/access-invitations/send', {
+      groupId: page.value.groupId,
+      userId: userInfos.id,
+      roleId: roleId.value,
+      encryptedSymmetricKey: to_base64(reencryptedSymmetricKey),
+    });
 
-  settings.value.invitations.list.push({
-    userId: userInfos.id,
-    roleId: roleId.value,
-  });
+    settings.value.invitations.list.push({
+      userId: userInfos.id,
+      roleId: roleId.value,
+    });
+  } catch (err: any) {
+    Notify.create({
+      color: 'negative',
+      message: err.response?.data.message ?? 'An error has occurred',
+    });
+  }
 }
 </script>

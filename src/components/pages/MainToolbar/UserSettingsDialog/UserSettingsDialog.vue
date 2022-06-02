@@ -126,6 +126,7 @@ export function initialSettings() {
   setup
   lang="ts"
 >
+import { Notify } from 'quasar';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import ToolbarBtn from 'src/components/pages/misc/ToolbarBtn.vue';
 import { provide, ref, watch } from 'vue';
@@ -149,36 +150,50 @@ watch(visible, async () => {
 
   settings.value = initialSettings();
 
-  const [request, displayName] = await Promise.all([
-    $api.post<{
-      groups: IGroupData[];
-      invitations: IGroupData[];
-      requests: IGroupData[];
-    }>('/api/users/load-settings'),
+  try {
+    const [request, displayName] = await Promise.all([
+      $api.post<{
+        groups: IGroupData[];
+        invitations: IGroupData[];
+        requests: IGroupData[];
+      }>('/api/users/load-settings'),
 
-    $pages.realtime.getAsync('userName', $pages.userId),
-  ]);
+      $pages.realtime.getAsync('userName', $pages.userId),
+    ]);
 
-  settings.value.general.displayName = displayName!;
+    settings.value.general.displayName = displayName!;
 
-  settings.value.groups.list = request.data.groups;
-  settings.value.invitations.list = request.data.invitations;
-  settings.value.requests.list = request.data.requests;
+    settings.value.groups.list = request.data.groups;
+    settings.value.invitations.list = request.data.invitations;
+    settings.value.requests.list = request.data.requests;
 
-  request.data.groups
-    .concat(request.data.invitations)
-    .concat(request.data.requests)
-    .forEach((group) => {
-      $pages.react.dict[`groupOwnerId.${group.groupId}`] = group.ownerId;
+    request.data.groups
+      .concat(request.data.invitations)
+      .concat(request.data.requests)
+      .forEach((group) => {
+        $pages.react.dict[`groupOwnerId.${group.groupId}`] = group.ownerId;
+      });
+
+    settings.value.loaded = true;
+  } catch (err: any) {
+    Notify.create({
+      color: 'negative',
+      message: err.response?.data.message ?? 'An error has occurred',
     });
-
-  settings.value.loaded = true;
+  }
 });
 
 async function save() {
-  await $api.post('/api/templates/update-settings', {
-    templates: $pages.templates.react.list,
-    defaultTemplateId: $pages.templates.react.defaultId,
-  });
+  try {
+    await $api.post('/api/templates/update-settings', {
+      templates: $pages.templates.react.list,
+      defaultTemplateId: $pages.templates.react.defaultId,
+    });
+  } catch (err: any) {
+    Notify.create({
+      color: 'negative',
+      message: err.response?.data.message ?? 'An error has occurred',
+    });
+  }
 }
 </script>

@@ -24,14 +24,13 @@
   setup
   lang="ts"
 >
-import { useMeta, useQuasar } from 'quasar';
+import { Notify, useMeta } from 'quasar';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { useApp } from 'src/stores/app';
 import { onMounted, reactive, ref } from 'vue';
 
 const app = useApp();
-const $q = useQuasar();
 
 useMeta(() => ({
   title: 'General - Account - DeepNotes',
@@ -59,14 +58,14 @@ async function save() {
       displayName: data.displayName,
     });
 
-    $q.notify({
+    Notify.create({
       color: 'positive',
       message: 'Saved',
     });
   } catch (err: any) {
-    $q.notify({
+    Notify.create({
       color: 'negative',
-      message: err.response?.data.error ?? 'An error has occurred',
+      message: err.response?.data.message ?? 'An error has occurred',
     });
   }
 }

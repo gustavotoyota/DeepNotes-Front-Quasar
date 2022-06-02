@@ -98,34 +98,41 @@ async function acceptRequests() {
     selectedIds.value.has(user.userId)
   );
 
-  await $api.post('/api/groups/access-requests/accept', {
-    groupId: page.value.groupId,
-    users: selectedUsers.map((user) => {
-      const reencryptedSymmetricKey = reencryptSymmetricKey(
-        settings.value.sessionKey,
-        settings.value.encryptedSymmetricKey,
-        settings.value.distributorsPublicKey,
-        from_base64(user.publicKey!)
-      );
+  try {
+    await $api.post('/api/groups/access-requests/accept', {
+      groupId: page.value.groupId,
+      users: selectedUsers.map((user) => {
+        const reencryptedSymmetricKey = reencryptSymmetricKey(
+          settings.value.sessionKey,
+          settings.value.encryptedSymmetricKey,
+          settings.value.distributorsPublicKey,
+          from_base64(user.publicKey!)
+        );
 
-      return {
+        return {
+          userId: user.userId,
+          roleId: roleId.value,
+          encryptedSymmetricKey: to_base64(reencryptedSymmetricKey),
+        };
+      }),
+    });
+
+    for (const user of selectedUsers) {
+      settings.value.members.list.push({
         userId: user.userId,
         roleId: roleId.value,
-        encryptedSymmetricKey: to_base64(reencryptedSymmetricKey),
-      };
-    }),
-  });
+      });
+    }
 
-  for (const user of selectedUsers) {
-    settings.value.members.list.push({
-      userId: user.userId,
-      roleId: roleId.value,
+    settings.value.requests.list = settings.value.requests.list.filter(
+      (user) => !selectedIds.value.has(user.userId)
+    );
+    selectedIds.value.clear();
+  } catch (err: any) {
+    Notify.create({
+      color: 'negative',
+      message: err.response?.data.message ?? 'An error has occurred',
     });
   }
-
-  settings.value.requests.list = settings.value.requests.list.filter(
-    (user) => !selectedIds.value.has(user.userId)
-  );
-  selectedIds.value.clear();
 }
 </script>

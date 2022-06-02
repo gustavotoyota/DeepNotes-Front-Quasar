@@ -90,10 +90,23 @@ async function changeRole() {
     return;
   }
 
-  await $api.post('/api/groups/change-roles', {
-    groupId: page.value.groupId,
-    userIds: Array.from(selectedIds.value),
-    roleId: roleId.value,
-  });
+  try {
+    await $api.post('/api/groups/change-roles', {
+      groupId: page.value.groupId,
+      userIds: Array.from(selectedIds.value),
+      roleId: roleId.value,
+    });
+
+    for (const user of settings.value.members.list) {
+      if (selectedIds.value.has(user.userId)) {
+        user.roleId = roleId.value;
+      }
+    }
+  } catch (err: any) {
+    Notify.create({
+      color: 'negative',
+      message: err.response?.data.message ?? 'An error has occurred',
+    });
+  }
 }
 </script>

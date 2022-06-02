@@ -99,14 +99,21 @@ async function requestAccess(message: string) {
     return;
   }
 
-  await $api.post('/api/groups/access-requests/send', {
-    groupId: page.groupId,
-    roleId: roleId.value,
-    pageId: page.id,
-    message,
-  });
+  try {
+    await $api.post('/api/groups/access-requests/send', {
+      groupId: page.groupId,
+      roleId: roleId.value,
+      pageId: page.id,
+      message,
+    });
 
-  page.react.userStatus = 'request';
+    page.react.userStatus = 'request';
+  } catch (err: any) {
+    Notify.create({
+      color: 'negative',
+      message: err.response?.data.message ?? 'An error has occurred',
+    });
+  }
 }
 </script>
 

@@ -58,6 +58,7 @@
   setup
   lang="ts"
 >
+import { Notify } from 'quasar';
 import { ref } from 'vue';
 
 const visible = ref(false);
@@ -70,25 +71,32 @@ async function saveAsTemplate() {
     arrowIds: [],
   }).notes[0];
 
-  const response = await $api.post<{
-    templateId: string;
-  }>('/api/templates/save', {
-    name: templateName.value,
-    data: templateData,
-  });
-
-  const template = $pages.templates.react.list.find(
-    (template) => template.name === templateName.value
-  );
-
-  if (template != null) {
-    template.data = templateData;
-  } else {
-    $pages.templates.react.list.push({
-      id: response.data.templateId,
+  try {
+    const response = await $api.post<{
+      templateId: string;
+    }>('/api/templates/save', {
       name: templateName.value,
-      visible: true,
       data: templateData,
+    });
+
+    const template = $pages.templates.react.list.find(
+      (template) => template.name === templateName.value
+    );
+
+    if (template != null) {
+      template.data = templateData;
+    } else {
+      $pages.templates.react.list.push({
+        id: response.data.templateId,
+        name: templateName.value,
+        visible: true,
+        data: templateData,
+      });
+    }
+  } catch (err: any) {
+    Notify.create({
+      color: 'negative',
+      message: err.response?.data.message ?? 'An error has occurred',
     });
   }
 }

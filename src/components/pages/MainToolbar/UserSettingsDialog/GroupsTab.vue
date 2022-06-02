@@ -73,6 +73,7 @@
   setup
   lang="ts"
 >
+import { Notify } from 'quasar';
 import { rolesMap } from 'src/code/pages/static/roles';
 import Gap from 'src/components/misc/Gap.vue';
 import { computed, inject, Ref } from 'vue';
@@ -117,13 +118,20 @@ function select(groupId: string, event: MouseEvent) {
 }
 
 async function leaveSelectedGroups() {
-  await $api.post('/api/groups/leave', {
-    groupIds: Array.from(selectedIds.value),
-  });
+  try {
+    await $api.post('/api/groups/leave', {
+      groupIds: Array.from(selectedIds.value),
+    });
 
-  settings.value.groups.list = settings.value.groups.list.filter(
-    (group) => !selectedIds.value.has(group.groupId)
-  );
-  selectedIds.value.clear();
+    settings.value.groups.list = settings.value.groups.list.filter(
+      (group) => !selectedIds.value.has(group.groupId)
+    );
+    selectedIds.value.clear();
+  } catch (err: any) {
+    Notify.create({
+      color: 'negative',
+      message: err.response?.data.message ?? 'An error has occurred',
+    });
+  }
 }
 </script>

@@ -80,14 +80,13 @@ export default {
 >
 import { PreFetchOptions } from '@quasar/app-vite';
 import { to_base64 } from 'libsodium-wrappers';
-import { useQuasar } from 'quasar';
+import { Notify } from 'quasar';
 import { computeDerivedKeys, generateRandomKeys } from 'src/code/crypto/crypto';
 import Gap from 'src/components/misc/Gap.vue';
 import { useAuth } from 'src/stores/auth';
 import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
 
-const $q = useQuasar();
 const router = useRouter();
 
 const data = reactive({
@@ -101,10 +100,11 @@ async function register() {
   // Password validation
 
   if (data.password !== data.repeatPassword) {
-    $q.notify({
+    Notify.create({
       color: 'negative',
       message: 'Passwords do not match',
     });
+
     return;
   }
 
@@ -130,18 +130,17 @@ async function register() {
       ),
     });
 
-    $q.notify({
+    Notify.create({
       color: 'positive',
       message: 'Account created successfully!',
     });
 
     await router.push('/login');
   } catch (err: any) {
-    $q.notify({
+    Notify.create({
       color: 'negative',
-      message: err.response?.data.error ?? 'An error has occurred',
+      message: err.response?.data.message ?? 'An error has occurred',
     });
-    return;
   }
 }
 </script>

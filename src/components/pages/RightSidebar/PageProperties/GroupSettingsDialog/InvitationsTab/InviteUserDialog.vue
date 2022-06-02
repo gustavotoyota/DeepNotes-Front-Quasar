@@ -129,7 +129,7 @@ async function inviteUser() {
   const reencryptedSymmetricKey = reencryptSymmetricKey(
     settings.value.sessionKey,
     settings.value.encryptedSymmetricKey,
-    settings.value.distributorsPublicKey,
+    settings.value.encryptersPublicKey,
     from_base64(userInfos.publicKey)
   );
 

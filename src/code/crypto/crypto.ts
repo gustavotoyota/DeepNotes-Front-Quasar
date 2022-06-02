@@ -173,7 +173,7 @@ export function reencryptSessionPrivateKey(
 export function reencryptSymmetricKey(
   sessionKey: Uint8Array,
   encryptedSymmetricKey: Uint8Array,
-  distributorsPublicKey: Uint8Array,
+  encryptersPublicKey: Uint8Array,
   recipientsPublicKey: Uint8Array
 ) {
   const encryptedPrivateKey = from_base64(
@@ -184,7 +184,7 @@ export function reencryptSymmetricKey(
 
   const decryptedSymmetricKey = privateKey.decrypt(
     encryptedSymmetricKey,
-    distributorsPublicKey
+    encryptersPublicKey
   );
 
   const reencryptedSymmetricKey = encryptAssymetric(

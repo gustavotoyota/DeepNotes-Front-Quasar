@@ -88,7 +88,7 @@ export function initialSettings() {
     loaded: false,
 
     encryptedSymmetricKey: new Uint8Array(),
-    distributorsPublicKey: new Uint8Array(),
+    encryptersPublicKey: new Uint8Array(),
     sessionKey: new Uint8Array(),
 
     tab: 'General',
@@ -148,7 +148,7 @@ watch(visible, async (value) => {
 
   const response = await $api.post<{
     encryptedSymmetricKey: string;
-    distributorsPublicKey: string;
+    encryptersPublicKey: string;
     sessionKey: string;
 
     requests: IGroupUser[];
@@ -162,8 +162,8 @@ watch(visible, async (value) => {
   settings.value.encryptedSymmetricKey = from_base64(
     response.data.encryptedSymmetricKey
   );
-  settings.value.distributorsPublicKey = from_base64(
-    response.data.distributorsPublicKey
+  settings.value.encryptersPublicKey = from_base64(
+    response.data.encryptersPublicKey
   );
   settings.value.sessionKey = from_base64(response.data.sessionKey);
 

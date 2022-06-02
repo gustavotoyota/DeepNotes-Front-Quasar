@@ -59,7 +59,7 @@ export interface IPageData {
   roleId: string;
 
   encryptedSymmetricKey: string;
-  distributorsPublicKey: string;
+  encryptersPublicKey: string;
 }
 
 export class AppPage extends PageRegion {
@@ -209,7 +209,7 @@ export class AppPage extends PageRegion {
 
     const decryptedSymmetricKey = privateKey.decrypt(
       from_base64(response.data.encryptedSymmetricKey),
-      from_base64(response.data.distributorsPublicKey)
+      from_base64(response.data.encryptersPublicKey)
     );
 
     const symmetricKey = createSymmetricKey(decryptedSymmetricKey);

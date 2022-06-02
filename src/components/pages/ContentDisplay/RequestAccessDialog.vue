@@ -54,7 +54,6 @@
             flat
             label="Ok"
             color="primary"
-            v-close-popup
             @click.prevent="requestAccess(message)"
           />
         </q-card-actions>
@@ -114,6 +113,8 @@ async function requestAccess(message: string) {
       message: err.response?.data.message ?? 'An error has occurred',
     });
   }
+
+  visible.value = false;
 }
 </script>
 

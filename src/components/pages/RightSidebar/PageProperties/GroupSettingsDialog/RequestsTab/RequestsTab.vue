@@ -122,7 +122,7 @@ function select(id: string, event: MouseEvent) {
 async function rejectSelectedRequests() {
   try {
     await $api.post('/api/groups/access-requests/reject', {
-      groupId: page.value.groupId,
+      groupId: page.value.react.groupId,
       userIds: Array.from(selectedIds.value),
     });
 

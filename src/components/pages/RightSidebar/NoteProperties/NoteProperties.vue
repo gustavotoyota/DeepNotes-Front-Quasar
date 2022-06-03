@@ -3,6 +3,7 @@
     <MiniSidebarBtn
       tooltip="Head"
       icon="mdi-page-layout-header"
+      :disable="page.react.readonly"
       :active="note.collab.head.enabled"
       @click="
         changeProp(!note.collab.head.enabled, (note, value) => {
@@ -15,6 +16,7 @@
     <MiniSidebarBtn
       tooltip="Swap head and body"
       icon="mdi-swap-vertical"
+      :disable="page.react.readonly"
       @click="
         changeProp(true, (note, value) => {
           swapSyncedTexts(note.collab.head.value, note.collab.body.value);
@@ -25,6 +27,7 @@
     <MiniSidebarBtn
       tooltip="Body"
       icon="mdi-page-layout-body"
+      :disable="page.react.readonly"
       :active="note.collab.body.enabled"
       @click="
         changeProp(!note.collab.body.enabled, (note, value) => {
@@ -39,6 +42,7 @@
     <MiniSidebarBtn
       tooltip="Container"
       icon="mdi-page-layout-footer"
+      :disable="page.react.readonly"
       :active="note.collab.container.enabled"
       @click="
         changeProp(!note.collab.container.enabled, (note, value) => {
@@ -53,6 +57,7 @@
     <MiniSidebarBtn
       tooltip="Collapsible"
       icon="mdi-minus-box"
+      :disable="page.react.readonly"
       :active="note.collab.collapsing.enabled"
       @click="
         changeProp(!note.collab.collapsing.enabled, (note, value) => {
@@ -69,7 +74,7 @@
           : 'mdi-chevron-up-box-outline'
       "
       :active="note.react.collapsing.collapsed"
-      :disabled="!note.collab.collapsing.enabled"
+      :disable="page.react.readonly || !note.collab.collapsing.enabled"
       @click="
         changeProp(!note.react.collapsing.collapsed, (note, value) => {
           note.react.collapsing.collapsed = value;
@@ -84,6 +89,7 @@
     <div style="padding: 20px; display: flex; flex-direction: column">
       <Combobox
         label="Link URL"
+        :disable="page.react.readonly"
         :options="
           $pages.react.recentPageIds.map((pageId) => ({
             label: $pages.realtime.get('pageTitle', pageId),
@@ -122,8 +128,9 @@
       <div style="display: flex">
         <Checkbox
           label="Head"
-          :value="note.collab.head.enabled"
-          @input="
+          :disable="page.react.readonly"
+          :model-value="note.collab.head.enabled"
+          @update:model-value="
             changeProp($event, (note, value) => {
               note.collab.head.enabled = value;
               note.collab.body.enabled ||= note.react.numEnabledSections === 0;
@@ -135,8 +142,9 @@
 
         <Checkbox
           label="Body"
-          :value="note.collab.body.enabled"
-          @input="
+          :disable="page.react.readonly"
+          :model-value="note.collab.body.enabled"
+          @update:model-value="
             changeProp($event, (note, value) => {
               note.collab.body.enabled = value;
               note.collab.head.enabled ||= note.react.numEnabledSections === 0;
@@ -151,6 +159,7 @@
         <q-btn
           label="Swap"
           color="primary"
+          :disable="page.react.readonly"
           dense
           style="flex: 1"
           @click="
@@ -165,6 +174,7 @@
         <q-btn
           label="Float"
           color="primary"
+          :disable="page.react.readonly"
           dense
           style="flex: 1"
           @click="
@@ -194,6 +204,7 @@
       <div style="flex: 1">
         <q-select
           label="X anchor"
+          :disable="page.react.readonly"
           :model-value="note.collab.anchor.x"
           @update:model-value="
             changeProp($event, (note, value) => {
@@ -219,6 +230,7 @@
       <div style="flex: 1">
         <q-select
           label="Y anchor"
+          :disable="page.react.readonly"
           :model-value="note.collab.anchor.y"
           @update:model-value="
             changeProp($event, (note, value) => {
@@ -246,6 +258,7 @@
       <div style="display: flex">
         <Combobox
           label="Width"
+          :disable="page.react.readonly"
           :options="[{ label: 'Auto', value: 'auto' }]"
           :model-value="note.collab.width[note.react.sizeProp]"
           @update:model-value="
@@ -260,6 +273,7 @@
 
         <Combobox
           label="Head height"
+          :disable="page.react.readonly"
           :options="[{ label: 'Auto', value: 'auto' }]"
           :model-value="note.collab.head.height[note.react.sizeProp]"
           @update:model-value="
@@ -276,6 +290,7 @@
       <div style="display: flex">
         <Combobox
           label="Body height"
+          :disable="page.react.readonly"
           :options="[{ label: 'Auto', value: 'auto' }]"
           :model-value="note.collab.body.height[note.react.sizeProp]"
           @update:model-value="
@@ -290,6 +305,7 @@
 
         <Combobox
           label="Container height"
+          :disable="page.react.readonly"
           :options="[{ label: 'Auto', value: 'auto' }]"
           :model-value="note.collab.container.height[note.react.sizeProp]"
           @update:model-value="
@@ -307,6 +323,7 @@
     <div style="padding: 20px">
       <Checkbox
         label="Inherit color from parent"
+        :disable="page.react.readonly"
         :model-value="note.collab.color.inherit"
         @update:model-value="
           changeProp($event, (note, value) => {
@@ -318,6 +335,7 @@
       <Gap style="height: 16px" />
 
       <q-color
+        :disable="page.react.readonly"
         :model-value="note.collab.color.value"
         @update:model-value="
           changeProp($event, (note, value) => {
@@ -361,8 +379,9 @@
       <div style="display: flex">
         <Checkbox
           label="Collapsible"
-          :value="note.collab.collapsing.enabled"
-          @input="
+          :disable="page.react.readonly"
+          :model-value="note.collab.collapsing.enabled"
+          @update:model-value="
             changeProp($event, (note, value) => {
               note.collab.collapsing.enabled = value;
             })
@@ -373,13 +392,13 @@
 
         <Checkbox
           label="Collapsed"
-          :value="note.collab.collapsing.collapsed"
-          @input="
+          :model-value="note.collab.collapsing.collapsed"
+          @update:model-value="
             changeProp($event, (note, value) => {
               note.collab.collapsing.collapsed = value;
             })
           "
-          :disable="!note.collab.collapsing.enabled"
+          :disable="page.react.readonly || !note.collab.collapsing.enabled"
         />
       </div>
 
@@ -388,26 +407,27 @@
       <div style="display: flex">
         <Checkbox
           label="Local collapsing"
-          :value="note.collab.collapsing.localCollapsing"
-          @input="
+          :model-value="note.collab.collapsing.localCollapsing"
+          @update:model-value="
             changeProp($event, (note, value) => {
               note.collab.collapsing.localCollapsing = value;
             })
           "
-          :disable="!note.collab.collapsing.enabled"
+          :disable="page.react.readonly || !note.collab.collapsing.enabled"
         />
 
         <Gap style="width: 16px" />
 
         <Checkbox
           label="Locally collapsed"
-          :value="note.react.collapsing.locallyCollapsed"
-          @input="
+          :model-value="note.react.collapsing.locallyCollapsed"
+          @update:model-value="
             changeProp($event, (note, value) => {
               note.react.collapsing.locallyCollapsed = value;
             })
           "
           :disable="
+            page.react.readonly ||
             !note.collab.collapsing.enabled ||
             !note.collab.collapsing.localCollapsing
           "
@@ -423,8 +443,9 @@
       <div style="display: flex">
         <Checkbox
           label="Container"
-          :value="note.collab.container.enabled"
-          @input="
+          :disable="page.react.readonly"
+          :model-value="note.collab.container.enabled"
+          @update:model-value="
             changeProp($event, (note, value) => {
               note.collab.container.enabled = value;
               note.collab.body.enabled ||= note.react.numEnabledSections === 0;
@@ -436,13 +457,13 @@
 
         <Checkbox
           label="Horizontal"
-          :value="note.collab.container.horizontal"
-          @input="
+          :model-value="note.collab.container.horizontal"
+          @update:model-value="
             changeProp($event, (note, value) => {
               note.collab.container.horizontal = value;
             })
           "
-          :disable="!note.collab.container.enabled"
+          :disable="page.react.readonly || !note.collab.container.enabled"
         />
       </div>
 
@@ -451,26 +472,26 @@
       <div style="display: flex">
         <Checkbox
           label="Stretch children"
-          :value="note.collab.container.stretchChildren"
-          @input="
+          :model-value="note.collab.container.stretchChildren"
+          @update:model-value="
             changeProp($event, (note, value) => {
               note.collab.container.stretchChildren = value;
             })
           "
-          :disable="!note.collab.container.enabled"
+          :disable="page.react.readonly || !note.collab.container.enabled"
         />
 
         <Gap style="width: 16px" />
 
         <Checkbox
           label="Wrap children"
-          :value="note.collab.container.wrapChildren"
-          @input="
+          :model-value="note.collab.container.wrapChildren"
+          @update:model-value="
             changeProp($event, (note, value) => {
               note.collab.container.wrapChildren = value;
             })
           "
-          :disable="!note.collab.container.enabled"
+          :disable="page.react.readonly || !note.collab.container.enabled"
         />
       </div>
 
@@ -478,6 +499,7 @@
 
       <q-btn
         label="Reverse children"
+        :disable="page.react.readonly"
         color="primary"
         @click="
           changeProp($event, (note, value) => {
@@ -492,8 +514,9 @@
     <div style="padding: 20px; display: flex">
       <Checkbox
         label="Movable"
-        :value="note.collab.movable"
-        @input="
+        :disable="page.react.readonly"
+        :model-value="note.collab.movable"
+        @update:model-value="
           changeProp($event, (note, value) => {
             note.collab.movable = value;
           })
@@ -504,8 +527,9 @@
 
       <Checkbox
         label="Resizable"
-        :value="note.collab.resizable"
-        @input="
+        :disable="page.react.readonly"
+        :model-value="note.collab.resizable"
+        @update:model-value="
           changeProp($event, (note, value) => {
             note.collab.resizable = value;
           })
@@ -518,8 +542,9 @@
     <div style="padding: 20px; display: flex">
       <Checkbox
         label="Read-only"
-        :value="note.collab.readOnly"
-        @input="
+        :disable="page.react.readonly"
+        :model-value="note.collab.readOnly"
+        @update:model-value="
           changeProp($event, (note, value) => {
             note.collab.readOnly = value;
           })

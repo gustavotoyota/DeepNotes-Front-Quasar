@@ -156,7 +156,7 @@ watch(visible, async (value) => {
     members: IGroupUser[];
     banned: IGroupUser[];
   }>('/api/groups/load-settings', {
-    groupId: page.value.groupId,
+    groupId: page.value.react.groupId,
   });
 
   settings.value.encryptedSymmetricKey = from_base64(
@@ -167,9 +167,10 @@ watch(visible, async (value) => {
   );
   settings.value.sessionKey = from_base64(response.data.sessionKey);
 
-  if (page.value.ownerId == null) {
+  if (page.value.react.ownerId == null) {
     settings.value.general.groupName =
-      (await $pages.realtime.getAsync('groupName', page.value.groupId)) ?? '';
+      (await $pages.realtime.getAsync('groupName', page.value.react.groupId)) ??
+      '';
   }
 
   settings.value.requests.list = response.data.requests;

@@ -2,6 +2,7 @@
   <q-btn
     label="Create new page"
     color="primary"
+    :disable="page.react.readonly"
     @click="visible = true"
   />
 

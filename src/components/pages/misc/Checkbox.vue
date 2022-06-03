@@ -2,8 +2,8 @@
   <q-checkbox
     class="checkbox"
     :label="label"
-    :model-value="value"
-    @update:model-value="$emit('input', $event)"
+    :model-value="modelValue"
+    @update:model-value="$emit('update:model-value', $event)"
     :disable="disable"
   />
 </template>
@@ -14,7 +14,7 @@
 >
 defineProps<{
   label: string;
-  value?: boolean;
+  modelValue?: boolean;
   disable?: boolean;
 }>();
 </script>

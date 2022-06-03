@@ -11,6 +11,10 @@ export class PageCloning {
   }
 
   async perform() {
+    if (this.page.react.readonly) {
+      return;
+    }
+
     // Serialize selection
 
     const serialRegion = this.page.app.serialization.serialize(

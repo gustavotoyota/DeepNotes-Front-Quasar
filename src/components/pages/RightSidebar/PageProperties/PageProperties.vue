@@ -23,6 +23,7 @@
         label="Page title"
         dense
         filled
+        :disable="page.react.readonly"
         :model-value="pageTitle"
         @update:model-value="pageTitle = $event!.toString();
         $pages.realtime.set('pageTitle', page.id, $event!.toString())"

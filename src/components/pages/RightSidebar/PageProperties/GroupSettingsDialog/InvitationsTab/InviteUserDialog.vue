@@ -135,7 +135,7 @@ async function inviteUser() {
 
   try {
     await $api.post('/api/groups/access-invitations/send', {
-      groupId: page.value.groupId,
+      groupId: page.value.react.groupId,
       userId: userInfos.id,
       roleId: roleId.value,
       encryptedSymmetricKey: to_base64(reencryptedSymmetricKey),

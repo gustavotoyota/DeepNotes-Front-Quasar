@@ -36,24 +36,25 @@
           <ToolbarBtn
             tooltip="Cut"
             icon="mdi-content-cut"
-            :disabled="!page.activeElem.react.exists"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
             @click="page.clipboard.cut()"
           />
           <ToolbarBtn
             tooltip="Copy"
             icon="mdi-content-copy"
-            :disabled="!page.activeElem.react.exists"
+            :disable="!page.activeElem.react.exists"
             @click="page.clipboard.copy()"
           />
           <ToolbarBtn
             tooltip="Paste"
             icon="mdi-content-paste"
+            :disable="page.react.readonly"
             @click="page.clipboard.paste()"
           />
           <ToolbarBtn
             tooltip="Duplicate"
             icon="mdi-content-duplicate"
-            :disabled="!page.activeElem.react.exists"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
             @click="page.cloning.perform()"
           />
 
@@ -65,10 +66,12 @@
           <ToolbarBtn
             tooltip="Undo"
             icon="mdi-undo"
+            :disable="page.react.readonly"
           />
           <ToolbarBtn
             tooltip="Redo"
             icon="mdi-redo"
+            :disable="page.react.readonly"
           />
 
           <q-separator
@@ -86,7 +89,7 @@
             tooltip="Delete"
             icon="mdi-delete-outline"
             icon-size="24px"
-            :disabled="!page.activeElem.react.exists"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
             @click="page.deleting.perform()"
           />
 
@@ -99,28 +102,28 @@
             tooltip="Align left"
             icon="mdi-format-align-left"
             icon-size="21px"
-            :disabled="!page.activeElem.react.exists"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
             @click="format('formatLine', 'align', '')"
           />
           <ToolbarBtn
             tooltip="Align center"
             icon="mdi-format-align-center"
             icon-size="21px"
-            :disabled="!page.activeElem.react.exists"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
             @click="format('formatLine', 'align', 'center')"
           />
           <ToolbarBtn
             tooltip="Align right"
             icon="mdi-format-align-right"
             icon-size="21px"
-            :disabled="!page.activeElem.react.exists"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
             @click="format('formatLine', 'align', 'right')"
           />
           <ToolbarBtn
             tooltip="Justify"
             icon="mdi-format-align-justify"
             icon-size="21px"
-            :disabled="!page.activeElem.react.exists"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
             @click="format('formatLine', 'align', 'justify')"
           />
 
@@ -133,14 +136,14 @@
             tooltip="Header 1"
             icon="mdi-format-header-1"
             icon-size="24px"
-            :disabled="!page.activeElem.react.exists"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
             @click="format('formatLine', 'header', 1)"
           />
           <ToolbarBtn
             tooltip="Header 2"
             icon="mdi-format-header-2"
             icon-size="24px"
-            :disabled="!page.activeElem.react.exists"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
             @click="format('formatLine', 'header', 2)"
           />
 
@@ -153,7 +156,7 @@
             tooltip="Clear formatting"
             icon="mdi-format-clear"
             icon-size="24px"
-            :disabled="!page.activeElem.react.exists"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
             @click="format('removeFormat')"
           />
         </div>

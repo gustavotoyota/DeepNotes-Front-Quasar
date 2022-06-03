@@ -2,6 +2,7 @@
   <q-btn
     dense
     flat
+    :disable="disable"
     :round="round"
     style="padding: 0"
     :style="{
@@ -9,6 +10,7 @@
       height: btnSize ?? '28px',
       width: btnSize ?? '28px',
     }"
+    :href="href"
   >
     <q-icon
       :size="iconSize ?? '19px'"
@@ -34,6 +36,8 @@
 defineProps<{
   icon: string;
   tooltip: string;
+  href?: string;
+  disable?: boolean;
   iconSize?: string;
   btnSize?: string;
   round?: boolean;

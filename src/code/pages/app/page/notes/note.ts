@@ -266,14 +266,20 @@ export class PageNote extends PageRegion {
               return false;
             }
 
-            if (this.collab.collapsing.localCollapsing) {
+            if (
+              this.page.react.readonly ||
+              this.collab.collapsing.localCollapsing
+            ) {
               return this.react.collapsing.locallyCollapsed;
             }
 
             return this.collab.collapsing.collapsed;
           },
           set: (val) => {
-            if (this.collab.collapsing.localCollapsing) {
+            if (
+              this.page.react.readonly ||
+              this.collab.collapsing.localCollapsing
+            ) {
               this.react.collapsing.locallyCollapsed = val;
             } else {
               this.collab.collapsing.collapsed = val;

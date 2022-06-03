@@ -62,7 +62,7 @@ async function acceptRequests() {
 
   try {
     await $api.post('/api/groups/access-requests/accept', {
-      groupId: page.value.groupId,
+      groupId: page.value.react.groupId,
       users: selectedUsers.map((user) => {
         const reencryptedSymmetricKey = reencryptSymmetricKey(
           settings.value.sessionKey,

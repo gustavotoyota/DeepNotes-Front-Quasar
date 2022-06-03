@@ -50,6 +50,10 @@ export class PageResizing {
     side: NoteSide,
     section?: NoteSection | null
   ) {
+    if (this.page.react.readonly) {
+      return;
+    }
+
     this.react = {
       active: true,
 

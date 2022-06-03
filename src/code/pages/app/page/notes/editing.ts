@@ -35,7 +35,7 @@ export class PageEditing {
       this.stop();
     }
 
-    if (note.collab.readOnly) {
+    if (this.page.react.readonly || note.collab.readOnly) {
       return;
     }
 

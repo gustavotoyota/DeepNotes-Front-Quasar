@@ -5,6 +5,7 @@
     :options="options"
     :model-value="modelValue"
     @input-value="$emit('update:model-value', $event)"
+    :disable="disable"
     filled
     dense
     use-input
@@ -38,6 +39,7 @@ defineProps<{
   label: string;
   options: any;
   modelValue: any;
+  disable?: boolean;
 }>();
 
 const combobox = ref();

@@ -8,6 +8,20 @@ export class PageDeleting {
     this.page = page;
   }
 
+  perform() {
+    if (this.page.react.readonly) {
+      return;
+    }
+
+    this.page.collab.doc.transact(() => {
+      this._performAux(
+        this.page.selection.react.notes
+        //this.page.selection.react.arrows
+      );
+    });
+
+    this.page.selection.clear();
+  }
   private _performAux(notes: PageNote[]) {
     // Delete arrows
 
@@ -41,15 +55,5 @@ export class PageDeleting {
 
       delete this.page.collab.store.notes[note.id];
     }
-  }
-  perform() {
-    this.page.collab.doc.transact(() => {
-      this._performAux(
-        this.page.selection.react.notes
-        //this.page.selection.react.arrows
-      );
-    });
-
-    this.page.selection.clear();
   }
 }

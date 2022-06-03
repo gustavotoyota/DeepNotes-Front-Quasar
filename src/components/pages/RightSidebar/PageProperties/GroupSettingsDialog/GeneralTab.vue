@@ -3,11 +3,11 @@
     label="Group name"
     :model-value="
       userGroup
-        ? $pages.computeGroupName(page.groupId)
+        ? $pages.computeGroupName(page.react.groupId)
         : settings.general.groupName
     "
     @update:model-value="settings.general.groupName = $event as string;
-      $pages.realtime.set('groupName', page.groupId, $event as string)"
+      $pages.realtime.set('groupName', page.react.groupId, $event as string)"
     filled
     style="max-width: 300px"
     :disable="userGroup"
@@ -28,5 +28,5 @@ const settings = inject<Ref<ReturnType<typeof initialSettings>>>('settings')!;
 const page = inject<Ref<AppPage>>('page')!;
 
 const userGroup =
-  $pages.react.dict[`groupOwnerId.${page.value.groupId}`] != null;
+  $pages.react.dict[`groupOwnerId.${page.value.react.groupId}`] != null;
 </script>

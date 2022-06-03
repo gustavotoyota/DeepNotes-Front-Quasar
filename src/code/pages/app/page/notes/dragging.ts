@@ -35,6 +35,10 @@ export class PageDragging {
   }
 
   start(event: PointerEvent) {
+    if (this.page.react.readonly) {
+      return;
+    }
+
     // Prevent dragging unmovable notes
 
     if (

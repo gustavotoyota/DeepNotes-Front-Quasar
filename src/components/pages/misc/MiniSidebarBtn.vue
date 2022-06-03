@@ -3,7 +3,7 @@
     clickable
     :active="active"
     v-ripple
-    :disable="disabled"
+    :disable="disable"
   >
     <q-item-section avatar>
       <q-icon :name="icon" />
@@ -30,6 +30,6 @@ defineProps<{
   active?: boolean;
   icon: string;
   tooltip: string;
-  disabled?: boolean;
+  disable?: boolean;
 }>();
 </script>

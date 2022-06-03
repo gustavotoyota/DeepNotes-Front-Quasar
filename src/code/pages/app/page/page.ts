@@ -6,6 +6,7 @@ import { computed, ComputedRef, UnwrapRef } from 'vue';
 import { z } from 'zod';
 
 import { Factory } from '../../static/composition-root';
+import { rolesMap } from '../../static/roles';
 import { PagesApp } from '../app';
 import { PageArrows } from './arrows/arrows';
 import { ICameraData, PageCamera } from './camera/camera';
@@ -40,14 +41,18 @@ export const IPageCollab = IRegionCollab.extend({
 export type IPageCollab = z.output<typeof IPageCollab>;
 
 export interface IAppPageReact extends IRegionReact {
-  name: string;
-
   collab: ComputedRef<IPageCollab>;
   size: number;
 
   status: string;
   userStatus: string | null;
   errorMessage: string;
+
+  groupId: ComputedRef<string>;
+  ownerId: ComputedRef<string | null>;
+  roleId: ComputedRef<string | null>;
+
+  readonly: ComputedRef<boolean>;
 }
 
 export interface IPageData {
@@ -100,10 +105,6 @@ export class AppPage extends PageRegion {
 
   readonly arrows: PageArrows;
 
-  groupId!: string;
-  ownerId!: string;
-  roleId!: string;
-
   constructor(factory: Factory, app: PagesApp, id: string) {
     super(null as any, id, ElemType.PAGE, null);
 
@@ -114,8 +115,6 @@ export class AppPage extends PageRegion {
     this.react = refProp<IAppPageReact>(this, 'react', {
       // Page
 
-      name: '',
-
       collab: computed(() => this.collab.store.page),
       size: 0,
 
@@ -123,7 +122,21 @@ export class AppPage extends PageRegion {
       userStatus: null,
       errorMessage: '',
 
+      groupId: computed(() => this.app.react.dict[`pageGroupId.${this.id}`]),
+      ownerId: computed(
+        () => this.app.react.dict[`groupOwnerId.${this.react.groupId}`]
+      ),
+      roleId: computed(
+        () => this.app.react.dict[`groupRoleId.${this.react.groupId}`]
+      ),
+
+      readonly: computed(
+        () => !rolesMap[this.react.roleId!]?.permissions.editPages ?? true
+      ),
+
       // Elem
+
+      parentId: null,
 
       active: false,
       selected: false,
@@ -179,19 +192,13 @@ export class AppPage extends PageRegion {
 
     this.app.parentPageId = null;
 
-    // Update path page data
+    // Save reactive data
 
     this.app.react.dict[`pageGroupId.${this.id}`] = response.data.groupId;
     this.app.react.dict[`groupOwnerId.${response.data.groupId}`] =
       response.data.ownerId;
     this.app.react.dict[`groupRoleId.${response.data.groupId}`] =
       response.data.roleId;
-
-    // Save page values
-
-    this.groupId = response.data.groupId;
-    this.ownerId = response.data.ownerId;
-    this.roleId = response.data.roleId;
 
     this.react.userStatus = response.data.userStatus;
 

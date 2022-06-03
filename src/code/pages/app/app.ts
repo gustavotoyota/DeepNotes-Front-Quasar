@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { from_base64 } from 'libsodium-wrappers';
 import { pull } from 'lodash';
+import { logout } from 'src/code/auth';
 import {
   computed,
   ComputedRef,
@@ -215,8 +216,14 @@ export class PagesApp {
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        $pages.react.page.react.status = 'error';
-        $pages.react.page.react.errorMessage = err.response?.data.message;
+        if (err.response?.status === 401) {
+          await logout();
+        } else {
+          $pages.react.page.react.status = 'error';
+          $pages.react.page.react.errorMessage = err.response?.data.message;
+        }
+      } else {
+        console.error(err);
       }
     }
   }

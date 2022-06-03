@@ -52,6 +52,10 @@ export class PageClipboard {
   }
 
   async paste(text?: string) {
+    if (this.page.react.readonly) {
+      return;
+    }
+
     // Get from clipboard
 
     const clipboardText = text ?? (await getClipboardText());

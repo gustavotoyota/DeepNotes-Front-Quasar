@@ -33,7 +33,7 @@
     >
       <template v-if="page.react.status === 'unauthorized'">
         <template v-if="page.react.userStatus === 'invite'">
-          <div div>You were invited to access this group.</div>
+          <div>You were invited to access this group.</div>
 
           <Gap style="height: 12px" />
 
@@ -115,7 +115,7 @@ function onMiddlePointerDown(event: PointerEvent) {
 async function cancelRequest() {
   try {
     await $api.post('/api/groups/access-requests/cancel', {
-      groupIds: [props.page.groupId],
+      groupIds: [props.page.react.groupId],
     });
 
     // eslint-disable-next-line vue/no-mutating-props
@@ -131,7 +131,7 @@ async function cancelRequest() {
 async function acceptInvitation() {
   try {
     await $api.post('/api/groups/access-invitations/accept', {
-      groupIds: [props.page.groupId],
+      groupIds: [props.page.react.groupId],
     });
 
     await props.page.setup();
@@ -145,7 +145,7 @@ async function acceptInvitation() {
 async function rejectInvitation() {
   try {
     await $api.post('/api/groups/access-invitations/reject', {
-      groupIds: [props.page.groupId],
+      groupIds: [props.page.react.groupId],
     });
 
     // eslint-disable-next-line vue/no-mutating-props

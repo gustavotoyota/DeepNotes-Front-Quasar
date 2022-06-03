@@ -100,7 +100,7 @@ async function requestAccess(message: string) {
 
   try {
     await $api.post('/api/groups/access-requests/send', {
-      groupId: page.groupId,
+      groupId: page.react.groupId,
       roleId: roleId.value,
       pageId: page.id,
       message,

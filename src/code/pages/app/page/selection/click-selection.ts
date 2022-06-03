@@ -13,7 +13,7 @@ export class PageClickSelection {
     // Container shift-selection
 
     if (
-      elem.parentId != null &&
+      elem.react.parentId != null &&
       event.shiftKey &&
       this.page.activeElem.react.elem instanceof PageNote &&
       elem instanceof PageNote
@@ -32,7 +32,7 @@ export class PageClickSelection {
     // And the clicked element is not selected
 
     if (!event.ctrlKey && !event.shiftKey && !elem.react.selected) {
-      this.page.selection.clear(elem.parentId);
+      this.page.selection.clear(elem.react.parentId);
     }
 
     // Remove element if selected and holding Ctrl

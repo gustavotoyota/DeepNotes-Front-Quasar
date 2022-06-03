@@ -70,8 +70,8 @@ export class PageSelection {
         continue;
       }
 
-      if (elem.parentId != this.page.activeRegion.react.id) {
-        this.clear(elem.parentId);
+      if (elem.react.parentId != this.page.activeRegion.react.id) {
+        this.clear(elem.react.parentId);
       }
 
       elem.react.selected = true;

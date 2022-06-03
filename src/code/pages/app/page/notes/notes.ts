@@ -57,6 +57,7 @@ export class PageNotes {
 
   createAndObserveChildren(noteId: string, parentId: string | null): void {
     if (noteId in this.react.map) {
+      this.react.map[noteId].react.parentId = parentId;
       return;
     }
 

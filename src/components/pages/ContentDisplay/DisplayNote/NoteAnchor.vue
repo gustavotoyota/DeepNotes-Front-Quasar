@@ -2,12 +2,12 @@
   <div
     :id="`note-${note.id}`"
     class="note-anchor"
-    :class="{ absolute: note.parentId == null }"
+    :class="{ absolute: note.react.parentId == null }"
     :style="{
-      position: note.parentId == null ? 'absolute' : 'relative',
-      left: note.parentId == null ? `${note.collab.pos.x}px` : undefined,
-      top: note.parentId == null ? `${note.collab.pos.y}px` : undefined,
-      'z-index': note.parentId == null ? note.collab.zIndex : undefined,
+      position: note.react.parentId == null ? 'absolute' : 'relative',
+      left: note.react.parentId == null ? `${note.collab.pos.x}px` : undefined,
+      top: note.react.parentId == null ? `${note.collab.pos.y}px` : undefined,
+      'z-index': note.react.parentId == null ? note.collab.zIndex : undefined,
       visibility: note.react.resizing ? 'hidden' : undefined,
     }"
   >

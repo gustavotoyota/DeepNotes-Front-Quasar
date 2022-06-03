@@ -10,6 +10,8 @@ export enum ElemType {
 }
 
 export interface IElemReact {
+  parentId: string | null;
+
   active: boolean;
   selected: boolean;
 }
@@ -19,7 +21,6 @@ export class PageElem {
 
   readonly id: string;
   readonly type: ElemType;
-  parentId: string | null;
 
   react: UnwrapRef<IElemReact>;
 
@@ -33,9 +34,10 @@ export class PageElem {
 
     this.id = id;
     this.type = type;
-    this.parentId = parentId;
 
     this.react = refProp<IElemReact>(this, 'react', {
+      parentId: parentId,
+
       active: this.page && this.page.activeElem.is(this.id),
       selected: this.page && this.page.selection.has(this),
     });

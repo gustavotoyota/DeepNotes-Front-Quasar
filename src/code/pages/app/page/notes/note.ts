@@ -215,7 +215,7 @@ export class PageNote extends PageRegion {
     const react: Omit<INoteReact, keyof IElemReact> = {
       parent: computed({
         get: () => {
-          return page?.notes.fromId(parentId) ?? this._parent;
+          return page?.notes.fromId(this.react.parentId) ?? this._parent;
         },
         set: (val) => {
           this._parent = val;
@@ -230,7 +230,7 @@ export class PageNote extends PageRegion {
       }),
 
       editing: false,
-      dragging: page?.dragging.react.active && this.react.selected,
+      dragging: false,
       resizing: false,
       ghost: false,
 
@@ -490,25 +490,33 @@ export class PageNote extends PageRegion {
   }
 
   getNode(part: string | null): Element {
-    if (part == null)
+    if (part == null) {
       return document.getElementById(`note-${this.id}`) as Element;
-    else return document.querySelector(`#note-${this.id} .${part}`) as Element;
+    } else {
+      return document.querySelector(`#note-${this.id} .${part}`) as Element;
+    }
   }
 
   scrollIntoView() {
-    if (this.parentId == null) return;
+    if (this.react.parentId == null) {
+      return;
+    }
 
     const frameNode = this.getNode('note-frame');
 
     let auxNode = frameNode as Node;
 
     while (auxNode != null) {
-      if (hasVertScrollbar(auxNode as HTMLElement)) break;
+      if (hasVertScrollbar(auxNode as HTMLElement)) {
+        break;
+      }
 
       auxNode = auxNode.parentNode as Node;
     }
 
-    if (auxNode == null) return;
+    if (auxNode == null) {
+      return;
+    }
 
     frameNode.scrollIntoView({
       behavior: 'smooth',

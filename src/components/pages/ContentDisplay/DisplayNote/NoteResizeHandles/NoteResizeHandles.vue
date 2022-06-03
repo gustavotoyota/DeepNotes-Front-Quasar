@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-if="note.parentId == null">
+    <template v-if="note.react.parentId == null">
       <NoteResizeHandle
         side="nw"
         :section="note.react.topSection"

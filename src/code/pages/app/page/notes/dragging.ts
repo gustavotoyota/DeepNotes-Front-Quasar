@@ -145,7 +145,7 @@ export class PageDragging {
 
         this.page.react.collab.noteIds.push(selectedNote.id);
 
-        selectedNote.parentId = null;
+        selectedNote.react.parentId = null;
       }
     });
 

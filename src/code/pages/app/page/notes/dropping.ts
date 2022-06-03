@@ -23,7 +23,7 @@ export class PageDropping {
 
         regionNote.collab.noteIds.splice(dropIndex++, 0, selectedNote.id);
 
-        selectedNote.parentId = regionNote.id;
+        selectedNote.react.parentId = regionNote.id;
       }
     });
 

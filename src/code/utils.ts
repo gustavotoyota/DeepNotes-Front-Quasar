@@ -39,28 +39,20 @@ export function isUuid4(text: string) {
   return pattern.test(text);
 }
 
-export class Resolvable extends Promise<any> {
-  resolve!: (value?: any) => void;
+export class Resolvable<T = void> implements PromiseLike<T> {
+  resolve!: (value: T) => void;
   reject!: (reason?: any) => void;
 
-  constructor(
-    executor?: (
-      resolve: (value?: any) => void,
-      reject: (reason?: any) => void
-    ) => void
-  ) {
-    let _resolve!: (value?: any) => void;
-    let _reject!: (reason?: any) => void;
+  readonly promise = new Promise<T>((resolve, reject) => {
+    this.resolve = resolve;
+    this.reject = reject;
+  });
 
-    super((resolve: any, reject: any) => {
-      _resolve = resolve;
-      _reject = reject;
-
-      executor?.(resolve, reject);
-    });
-
-    this.resolve = _resolve;
-    this.reject = _reject;
+  then<TResult1 = T, TResult2 = never>(
+    onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null,
+    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null
+  ): PromiseLike<TResult1 | TResult2> {
+    return this.promise.then(onfulfilled, onrejected);
   }
 }
 

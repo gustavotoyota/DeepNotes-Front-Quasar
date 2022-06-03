@@ -339,6 +339,7 @@
         :model-value="note.collab.color.value"
         @update:model-value="
           changeProp($event, (note, value) => {
+            note.collab.color.inherit = false;
             note.collab.color.value = value;
           })
         "

@@ -86,7 +86,6 @@ onMounted(async () => {
           quill.setSelection(0, Infinity, 'user');
         }
       } else {
-        quill.enable(false);
         quill.setSelection(null as any);
         // @ts-ignore
         quill.theme.tooltip.hide();

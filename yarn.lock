@@ -229,10 +229,10 @@
     estree-walker "^2.0.1"
     picomatch "^2.2.2"
 
-"@syncedstore/core@0.3.7":
-  version "0.3.7"
-  resolved "https://registry.yarnpkg.com/@syncedstore/core/-/core-0.3.7.tgz#c29187b9722e246b3dc1114865375aef618067f4"
-  integrity sha512-uxer5y/2RpMVzPbTvRik6EsjPNRd+LhrX3paSTzNFvuc4SedT+GnJ3VMGDPLXkdhVA65F+E+2IkNrAEb+WAo3Q==
+"@syncedstore/core@0.3.9":
+  version "0.3.9"
+  resolved "https://registry.yarnpkg.com/@syncedstore/core/-/core-0.3.9.tgz#7afa9821885f0f3abb2987b3d98e8f536e7e3661"
+  integrity sha512-mqlihErZISehtHbF7QFh5gDboJt8DSUZccWHq3wXruOEerqgW8IsgqlTAPIpa2jXUb2r0WLST1sYvJww+6FCzA==
   dependencies:
     "@reactivedata/reactive" "0.1.16"
     "@syncedstore/yjs-reactive-bindings" "^0.3.7"

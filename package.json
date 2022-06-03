@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@quasar/extras": "1.13.6",
-    "@syncedstore/core": "0.3.7",
+    "@syncedstore/core": "0.3.9",
     "argon2-browser": "1.18.0",
     "axios": "0.21.4",
     "color": "4.2.3",

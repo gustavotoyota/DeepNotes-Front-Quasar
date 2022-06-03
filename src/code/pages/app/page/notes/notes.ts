@@ -56,10 +56,12 @@ export class PageNotes {
   }
 
   createAndObserveChildren(noteId: string, parentId: string | null): void {
+    if (noteId in this.react.map) {
+      return;
+    }
+
     const collab = this.react.collab[noteId];
-
     const note = this.factory.makeNote(this.page, noteId, parentId, collab);
-
     this.react.map[note.id] = note;
 
     this.createAndObserveIds(note.collab.noteIds, note.id);
@@ -71,10 +73,11 @@ export class PageNotes {
 
     (getYjsValue(noteIds) as SyncedArray<string>).observe((event) => {
       for (const delta of event.changes.delta) {
-        if (delta.insert == null) continue;
-
-        for (const noteId of delta.insert)
-          this.createAndObserveChildren(noteId, parentId);
+        if (delta.insert != null) {
+          for (const noteId of delta.insert) {
+            this.createAndObserveChildren(noteId, parentId);
+          }
+        }
       }
     });
   }
@@ -84,9 +87,9 @@ export class PageNotes {
       getYjsValue(this.react.collab) as SyncedMap<z.output<typeof INoteCollab>>
     ).observe((event) => {
       for (const [noteId, change] of event.changes.keys) {
-        if (change.action !== 'delete') continue;
-
-        delete this.react.map[noteId];
+        if (change.action === 'delete') {
+          delete this.react.map[noteId];
+        }
       }
     });
   }

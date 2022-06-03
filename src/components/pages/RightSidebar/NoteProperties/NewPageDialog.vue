@@ -9,7 +9,7 @@
     <q-card style="width: 300px">
       <q-form>
         <q-card-section style="padding: 12px">
-          <div class="text-h6">New page</div>
+          <div class="text-h6">Create new page</div>
         </q-card-section>
 
         <q-separator />
@@ -25,7 +25,7 @@
           <Gap style="height: 16px" />
 
           <Checkbox
-            label="Create new group"
+            label="Create as main page of a new group"
             v-model="createGroup"
           />
 

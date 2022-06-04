@@ -3,7 +3,8 @@ import { from_base64 } from 'libsodium-wrappers';
 import { pull } from 'lodash';
 import { logout } from 'src/code/auth';
 import { privateKey } from 'src/code/crypto/private-key';
-import { createSymmetricKey as wrapSymmetricKey } from 'src/code/crypto/symmetric-key';
+import { wrapSymmetricKey as wrapSymmetricKey } from 'src/code/crypto/symmetric-key';
+import { Resolvable } from 'src/code/utils';
 import {
   computed,
   ComputedRef,
@@ -79,6 +80,8 @@ export class PagesApp {
   publicKey!: Uint8Array;
 
   parentPageId: string | null = null;
+
+  readonly loadedPromise = new Resolvable();
 
   constructor(factory: Factory) {
     this.serialization = factory.makeSerialization(this);
@@ -168,6 +171,8 @@ export class PagesApp {
           );
       }
     });
+
+    this.loadedPromise.resolve();
   }
 
   async bumpPage(pageId: string) {

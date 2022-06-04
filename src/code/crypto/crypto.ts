@@ -132,7 +132,11 @@ export async function generateRandomKeys(masterKey: Uint8Array) {
   return {
     publicKey: keyPair.publicKey,
     encryptedPrivateKey,
+
+    userSymmetricKey,
     encryptedUserSymmetricKey,
+
+    groupSymmetricKey,
     encryptedGroupSymmetricKey,
   };
 }

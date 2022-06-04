@@ -1,5 +1,8 @@
 import * as decoding from 'lib0/decoding';
 import * as encoding from 'lib0/encoding';
+import { from_base64, to_base64 } from 'libsodium-wrappers';
+import { throttle } from 'lodash';
+import { SymmetricKey } from 'src/code/crypto/symmetric-key';
 import { Resolvable } from 'src/code/utils';
 import { nextTick, reactive } from 'vue';
 
@@ -94,24 +97,7 @@ export class AppRealtime {
 
     if (this._subscriptionBuffer.size === 0) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      nextTick(async () => {
-        await this.connected;
-
-        const channels = Array.from(this._subscriptionBuffer);
-        this._subscriptionBuffer.clear();
-
-        console.log('Subscribing to', channels);
-
-        const encoder = new encoding.Encoder();
-
-        encoding.writeVarUint(encoder, MSGTOSV_SUBSCRIBE);
-        encoding.writeVarUint(encoder, channels.length);
-        for (const channel of channels) {
-          encoding.writeVarString(encoder, channel);
-        }
-
-        this._socket.send(encoding.toUint8Array(encoder));
-      });
+      nextTick(this._subscribeFinal);
     }
 
     for (const channel of channels) {
@@ -120,6 +106,25 @@ export class AppRealtime {
       this._notificationPromises.set(channel, new Resolvable());
     }
   }
+  private _subscribeFinal = async () => {
+    await this.connected;
+    await $pages.loadedPromise;
+
+    console.log('Subscribing to', this._subscriptionBuffer.values());
+
+    const encoder = new encoding.Encoder();
+
+    encoding.writeVarUint(encoder, MSGTOSV_SUBSCRIBE);
+    encoding.writeVarUint(encoder, this._subscriptionBuffer.size);
+    for (const channel of this._subscriptionBuffer) {
+      encoding.writeVarString(encoder, channel);
+    }
+
+    this._socket.send(encoding.toUint8Array(encoder));
+
+    this._subscriptionBuffer.clear();
+  };
+
   async unsubscribe(channels: string[]) {
     channels = channels.filter((channel) => this._subscriptions.has(channel));
 
@@ -161,33 +166,57 @@ export class AppRealtime {
 
     if (this._publishBuffer.size === 0) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      nextTick(async () => {
-        await this.connected;
-
-        const values = Object.fromEntries(this._publishBuffer);
-        this._publishBuffer.clear();
-
-        console.log('Publishing', values);
-
-        const encoder = new encoding.Encoder();
-
-        encoding.writeVarUint(encoder, MSGTOSV_PUBLISH);
-
-        encoding.writeVarUint(encoder, entries.length);
-
-        for (const [channel, value] of entries) {
-          encoding.writeVarString(encoder, channel);
-          encoding.writeVarString(encoder, value);
-        }
-
-        this._socket.send(encoding.toUint8Array(encoder));
-      });
+      this._publishFinal();
     }
 
     for (const [channel, value] of entries) {
       this._publishBuffer.set(channel, value);
     }
   }
+  private _publishFinal = throttle(
+    async () => {
+      await this.connected;
+
+      console.log('Publishing', this._publishBuffer.entries());
+
+      const encoder = new encoding.Encoder();
+
+      encoding.writeVarUint(encoder, MSGTOSV_PUBLISH);
+
+      encoding.writeVarUint(encoder, this._publishBuffer.size);
+
+      for (const entry of this._publishBuffer) {
+        const channel = entry[0];
+        let value = entry[1];
+
+        encoding.writeVarString(encoder, channel);
+
+        const [type, id] = channel.split('.');
+
+        if (type === 'pageTitle') {
+          try {
+            const groupId: string = $pages.react.dict[`pageGroupId.${id}`];
+            const symmetricKey: SymmetricKey =
+              $pages.react.dict[`groupSymmetricKey.${groupId}`];
+
+            value = to_base64(
+              symmetricKey.encrypt(new TextEncoder().encode(value))
+            );
+          } catch (err) {
+            console.error(err);
+          }
+        }
+
+        encoding.writeVarString(encoder, value);
+      }
+
+      this._socket.send(encoding.toUint8Array(encoder));
+
+      this._publishBuffer.clear();
+    },
+    500,
+    { leading: false }
+  );
 
   private _handleMessage(message: Uint8Array) {
     const decoder = new decoding.Decoder(message);
@@ -208,11 +237,27 @@ export class AppRealtime {
 
     for (let i = 0; i < numChannels; i++) {
       const channel = decoding.readVarString(decoder);
-      const value = decoding.readVarString(decoder);
+      let value = decoding.readVarString(decoder);
 
-      console.log(`[${channel}] Notify: ${value}`);
+      const [type, id] = channel.split('.');
+
+      if (type === 'pageTitle') {
+        try {
+          const groupId: string = $pages.react.dict[`pageGroupId.${id}`];
+          const symmetricKey: SymmetricKey =
+            $pages.react.dict[`groupSymmetricKey.${groupId}`];
+
+          value = new TextDecoder('utf-8').decode(
+            symmetricKey.decrypt(from_base64(value))
+          );
+        } catch (err) {
+          console.error(err);
+        }
+      }
 
       this._values[channel] = value;
+
+      console.log(`[${channel}] Notify: ${value}`);
 
       if (this._notificationPromises.has(channel)) {
         this._notificationPromises.get(channel)!.resolve();

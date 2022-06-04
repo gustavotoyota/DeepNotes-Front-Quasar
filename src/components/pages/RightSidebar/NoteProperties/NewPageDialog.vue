@@ -71,6 +71,7 @@
 import { randombytes_buf, to_base64 } from 'libsodium-wrappers';
 import { Notify } from 'quasar';
 import { privateKey } from 'src/code/crypto/private-key';
+import { wrapSymmetricKey } from 'src/code/crypto/symmetric-key';
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
 import Gap from 'src/components/misc/Gap.vue';
@@ -138,22 +139,43 @@ async function createPage() {
   }
 
   try {
-    const groupSymmetricKey = randombytes_buf(32);
+    let groupSymmetricKey;
+    let encryptedGroupSymmetricKey;
 
-    const encryptedGroupSymmetricKey = privateKey.encrypt(
-      groupSymmetricKey,
-      $pages.publicKey
-    );
+    let encryptedPageTitle;
+
+    if (createGroup.value) {
+      groupSymmetricKey = randombytes_buf(32);
+
+      encryptedGroupSymmetricKey = privateKey.encrypt(
+        groupSymmetricKey,
+        $pages.publicKey
+      );
+
+      encryptedPageTitle = to_base64(
+        wrapSymmetricKey(groupSymmetricKey).encrypt(
+          new TextEncoder().encode(pageTitle.value)
+        )
+      );
+    } else {
+      encryptedPageTitle = to_base64(
+        page.value.react.symmetricKey.encrypt(
+          new TextEncoder().encode(pageTitle.value)
+        )
+      );
+    }
 
     const response = await $api.post<{
       pageId: string;
     }>('/api/pages/create', {
       parentPageId: page.value.id,
-      pageTitle: pageTitle.value,
+      encryptedPageTitle: encryptedPageTitle,
 
       createGroup: createGroup.value,
       groupName: groupName.value,
-      encryptedGroupSymmetricKey: to_base64(encryptedGroupSymmetricKey),
+      encryptedGroupSymmetricKey: encryptedGroupSymmetricKey
+        ? to_base64(encryptedGroupSymmetricKey)
+        : null,
     });
 
     for (const selectedNote of page.value.selection.react.notes) {

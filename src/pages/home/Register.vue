@@ -82,6 +82,7 @@ import { PreFetchOptions } from '@quasar/app-vite';
 import { to_base64 } from 'libsodium-wrappers';
 import { Notify } from 'quasar';
 import { computeDerivedKeys, generateRandomKeys } from 'src/code/crypto/crypto';
+import { wrapSymmetricKey } from 'src/code/crypto/symmetric-key';
 import Gap from 'src/components/misc/Gap.vue';
 import { useAuth } from 'src/stores/auth';
 import { reactive } from 'vue';
@@ -128,6 +129,12 @@ async function register() {
       encryptedGroupSymmetricKey: to_base64(
         randomKeys.encryptedGroupSymmetricKey
       ),
+
+      encryptedMainPageTitle: to_base64(
+        wrapSymmetricKey(randomKeys.groupSymmetricKey).encrypt(
+          new TextEncoder().encode('Main page')
+        )
+      ),
     });
 
     Notify.create({
@@ -141,6 +148,8 @@ async function register() {
       color: 'negative',
       message: err.response?.data.message ?? 'An error has occurred',
     });
+
+    console.error(err);
   }
 }
 </script>

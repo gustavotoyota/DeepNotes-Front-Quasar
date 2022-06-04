@@ -1,6 +1,6 @@
 import { decryptSymmetric, encryptSymmetric } from './crypto';
 
-export function createSymmetricKey(value: Uint8Array | null = null) {
+export function wrapSymmetricKey(value: Uint8Array | null = null) {
   let _value = value;
 
   return new (class SymmetricKey {
@@ -30,4 +30,4 @@ export function createSymmetricKey(value: Uint8Array | null = null) {
   })();
 }
 
-export type SymmetricKey = ReturnType<typeof createSymmetricKey>;
+export type SymmetricKey = ReturnType<typeof wrapSymmetricKey>;

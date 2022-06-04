@@ -1,6 +1,9 @@
 import { from_base64 } from 'libsodium-wrappers';
 import { privateKey } from 'src/code/crypto/private-key';
-import { createSymmetricKey as wrapSymmetricKey } from 'src/code/crypto/symmetric-key';
+import {
+  SymmetricKey,
+  wrapSymmetricKey as wrapSymmetricKey,
+} from 'src/code/crypto/symmetric-key';
 import { refProp } from 'src/code/pages/static/vue';
 import { computed, ComputedRef, UnwrapRef } from 'vue';
 import { z } from 'zod';
@@ -51,6 +54,7 @@ export interface IAppPageReact extends IRegionReact {
   groupId: ComputedRef<string>;
   ownerId: ComputedRef<string | null>;
   roleId: ComputedRef<string | null>;
+  symmetricKey: ComputedRef<SymmetricKey>;
 
   readonly: ComputedRef<boolean>;
 }
@@ -128,6 +132,9 @@ export class AppPage extends PageRegion {
       ),
       roleId: computed(
         () => this.app.react.dict[`groupRoleId.${this.react.groupId}`]
+      ),
+      symmetricKey: computed(
+        () => this.app.react.dict[`groupSymmetricKey.${this.react.groupId}`]
       ),
 
       readonly: computed(

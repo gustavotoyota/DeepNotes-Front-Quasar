@@ -2,7 +2,6 @@ import jwtDecode from 'jwt-decode';
 import { from_base64 } from 'libsodium-wrappers';
 import { Cookies } from 'quasar';
 import { useAuth } from 'src/stores/auth';
-import { Router } from 'vue-router';
 
 import { reencryptSessionPrivateKey } from './crypto/crypto';
 import { privateKey } from './crypto/private-key';
@@ -49,18 +48,14 @@ export function areTokensExpiring(): boolean {
 export async function tryRefreshTokens(): Promise<void> {
   const auth = useAuth();
 
-  if (
-    isTokenValid('refresh-token') &&
-    !areTokensExpiring() &&
-    privateKey.exists()
-  ) {
-    auth.loggedIn = true;
-    return;
-  }
-
   try {
-    if (!localStorage.getItem('encrypted-private-key')) {
-      await logout();
+    if (
+      !isTokenValid('refresh-token') ||
+      areTokensExpiring() ||
+      localStorage.getItem('encrypted-private-key') == null
+    ) {
+      logout();
+      enforceRouteRules();
       return;
     }
 
@@ -91,7 +86,29 @@ export async function tryRefreshTokens(): Promise<void> {
     auth.loggedIn = true;
   } catch (err) {
     console.error(err);
-    await logout();
+    logout();
+  }
+
+  enforceRouteRules();
+}
+
+export function enforceRouteRules() {
+  const auth = useAuth();
+
+  if (auth.loggedIn) {
+    if (
+      location.pathname.startsWith('/login') ||
+      location.pathname.startsWith('/register')
+    ) {
+      location.href = '/';
+    }
+  } else {
+    if (
+      location.pathname.startsWith('/pages') ||
+      location.pathname.startsWith('/account')
+    ) {
+      location.href = '/';
+    }
   }
 }
 
@@ -124,23 +141,19 @@ export function deleteToken(tokenName: string) {
   localStorage.removeItem(`${tokenName}-exp`);
 }
 
-export async function logout(router?: Router) {
+export function logout() {
   const auth = useAuth();
 
   // Notify server of logout
 
-  const previouslyLoggedIn =
-    localStorage.getItem('encrypted-private-key') != null;
-
-  if (previouslyLoggedIn) {
+  if (auth.loggedIn) {
     try {
-      await $api.post(authEndpoints.logout);
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      $api.post(authEndpoints.logout);
     } catch (err) {
       console.error(err);
     }
   }
-
-  auth.loggedIn = false;
 
   // Delete token data
 
@@ -155,11 +168,7 @@ export async function logout(router?: Router) {
   localStorage.removeItem('encrypted-private-key');
   privateKey.clear();
 
-  if (previouslyLoggedIn) {
-    if (router) {
-      await router.replace('/');
-    } else {
-      location.href = '/';
-    }
-  }
+  auth.loggedIn = false;
+
+  enforceRouteRules();
 }

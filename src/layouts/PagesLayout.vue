@@ -252,7 +252,10 @@ async function onClick(event: MouseEvent) {
   const href = anchor.getAttribute('href') ?? '';
 
   if (
-    (href.startsWith('http://') || href.startsWith('https://')) &&
+    (href.startsWith('http://') ||
+      href.startsWith('https://') ||
+      href.startsWith('/')) &&
+    !href.startsWith('/pages/') &&
     !href.startsWith(`${window.location.origin}/pages/`)
   ) {
     return; // Allow default if it's not a page link

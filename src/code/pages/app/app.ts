@@ -249,7 +249,7 @@ export class PagesApp {
     } catch (err) {
       if (axios.isAxiosError(err)) {
         if (err.response?.status === 401) {
-          await logout();
+          logout();
         } else {
           $pages.react.page.react.status = 'error';
           $pages.react.page.react.errorMessage = err.response?.data.message;

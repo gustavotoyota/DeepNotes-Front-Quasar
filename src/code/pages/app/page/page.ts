@@ -1,6 +1,6 @@
 import { from_base64 } from 'libsodium-wrappers';
 import { privateKey } from 'src/code/crypto/private-key';
-import { createSymmetricKey } from 'src/code/crypto/symmetric-key';
+import { createSymmetricKey as wrapSymmetricKey } from 'src/code/crypto/symmetric-key';
 import { refProp } from 'src/code/pages/static/vue';
 import { computed, ComputedRef, UnwrapRef } from 'vue';
 import { z } from 'zod';
@@ -212,14 +212,17 @@ export class AppPage extends PageRegion {
       return;
     }
 
-    // Decrypt symmetric key
+    // Decrypt, wrap and save symmetric key
 
-    const decryptedSymmetricKey = privateKey.decrypt(
-      from_base64(response.data.encryptedSymmetricKey),
-      from_base64(response.data.encryptersPublicKey)
+    const symmetricKey = wrapSymmetricKey(
+      privateKey.decrypt(
+        from_base64(response.data.encryptedSymmetricKey),
+        from_base64(response.data.encryptersPublicKey)
+      )
     );
 
-    const symmetricKey = createSymmetricKey(decryptedSymmetricKey);
+    this.app.react.dict[`groupSymmetricKey.${response.data.groupId}`] =
+      symmetricKey;
 
     // Setup websocket
 

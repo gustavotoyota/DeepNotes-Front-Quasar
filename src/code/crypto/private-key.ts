@@ -1,6 +1,6 @@
 import { decryptAssymetric, encryptAssymetric } from './crypto';
 
-export function createPrivateKey(value: Uint8Array | null = null) {
+export function wrapPrivateKey(value: Uint8Array | null = null) {
   let _value = value;
 
   return new (class PrivateKey {
@@ -30,6 +30,6 @@ export function createPrivateKey(value: Uint8Array | null = null) {
   })();
 }
 
-export type PrivateKey = ReturnType<typeof createPrivateKey>;
+export type PrivateKey = ReturnType<typeof wrapPrivateKey>;
 
-export const privateKey = createPrivateKey();
+export const privateKey = wrapPrivateKey();

@@ -2,6 +2,8 @@ import axios from 'axios';
 import { from_base64 } from 'libsodium-wrappers';
 import { pull } from 'lodash';
 import { logout } from 'src/code/auth';
+import { privateKey } from 'src/code/crypto/private-key';
+import { createSymmetricKey as wrapSymmetricKey } from 'src/code/crypto/symmetric-key';
 import {
   computed,
   ComputedRef,
@@ -42,10 +44,15 @@ declare module '@vue/runtime-core' {
   }
 }
 
-export interface IPageRef {
+export interface IPageData {
   pageId: string;
   groupId: string | null;
+}
+export interface IGroupData {
+  groupId: string;
   ownerId: string | null;
+  encryptedSymmetricKey: string | null;
+  encryptersPublicKey: string | null;
 }
 
 export interface IAppReact {
@@ -112,8 +119,10 @@ export class PagesApp {
       templates: ITemplate[];
       defaultTemplateId: string;
 
-      pathPages: IPageRef[];
-      recentPages: IPageRef[];
+      pathPages: IPageData[];
+      recentPages: IPageData[];
+
+      groups: IGroupData[];
     }>('/api/users/pages', {
       initialPageId,
     });
@@ -135,12 +144,30 @@ export class PagesApp {
       (page) => page.pageId
     );
 
+    // Save values
+
     response.data.pathPages
       .concat(response.data.recentPages)
       .forEach((page) => {
         this.react.dict[`pageGroupId.${page.pageId}`] = page.groupId;
-        this.react.dict[`groupOwnerId.${page.groupId}`] = page.ownerId;
       });
+
+    response.data.groups.forEach((group) => {
+      this.react.dict[`groupOwnerId.${group.groupId}`] = group.ownerId;
+
+      if (
+        group.encryptedSymmetricKey != null &&
+        group.encryptersPublicKey != null
+      ) {
+        this.react.dict[`groupSymmetricKey.${group.groupId}`] =
+          wrapSymmetricKey(
+            privateKey.decrypt(
+              from_base64(group.encryptedSymmetricKey),
+              from_base64(group.encryptersPublicKey)
+            )
+          );
+      }
+    });
   }
 
   async bumpPage(pageId: string) {

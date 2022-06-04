@@ -295,22 +295,26 @@ export class WebsocketProvider {
     this.size = decryptedUpdate.length;
   }
 
-  sendSyncSingleUpdateMessage = throttle(() => {
-    console.log('Sync single update message sent');
+  sendSyncSingleUpdateMessage = throttle(
+    () => {
+      console.log('Sync single update message sent');
 
-    const encoder = encoding.createEncoder();
+      const encoder = encoding.createEncoder();
 
-    encoding.writeVarUint(encoder, MESSAGE_SYNC);
-    encoding.writeVarUint(encoder, MESSAGE_SYNC_SINGLE_UPDATE);
+      encoding.writeVarUint(encoder, MESSAGE_SYNC);
+      encoding.writeVarUint(encoder, MESSAGE_SYNC_SINGLE_UPDATE);
 
-    // Send encrypted update
-    const encryptedUpdate = this.symmetricKey.encrypt(this._updateBuffer!);
-    this._updateBuffer = null;
+      // Send encrypted update
+      const encryptedUpdate = this.symmetricKey.encrypt(this._updateBuffer!);
+      this._updateBuffer = null;
 
-    encoding.writeVarUint8Array(encoder, encryptedUpdate);
+      encoding.writeVarUint8Array(encoder, encryptedUpdate);
 
-    this.ws.send(encoding.toUint8Array(encoder));
-  }, 200);
+      this.ws.send(encoding.toUint8Array(encoder));
+    },
+    200,
+    { leading: false }
+  );
 
   handleSyncSingleUpdateMessage(decoder: decoding.Decoder) {
     // Apply decrypted update

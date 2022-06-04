@@ -343,7 +343,7 @@ export class WebsocketProvider {
     if (typeof window !== 'undefined') {
       window.removeEventListener('beforeunload', this.clearAwareness);
     } else if (typeof process !== 'undefined') {
-      process.off('exit', () => this.clearAwareness);
+      process.off('exit', this.clearAwareness);
     }
 
     this.awareness.off('update', this.handleAwarenessUpdate);

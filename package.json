@@ -38,7 +38,7 @@
     "vuedraggable": "4.1.0",
     "y-protocols": "1.0.5",
     "y-quill": "0.1.4",
-    "yjs": "13.5.36",
+    "yjs": "13.5.38",
     "zod": "3.15.1"
   },
   "devDependencies": {

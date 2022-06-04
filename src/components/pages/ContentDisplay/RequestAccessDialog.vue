@@ -107,6 +107,11 @@ async function requestAccess(message: string) {
     });
 
     page.react.userStatus = 'request';
+
+    Notify.create({
+      message: 'Access request sent',
+      color: 'positive',
+    });
   } catch (err: any) {
     Notify.create({
       color: 'negative',

@@ -157,9 +157,11 @@ async function rejectSelectedInvitations() {
     selectedIds.value.clear();
   } catch (err: any) {
     Notify.create({
-      color: 'negative',
       message: err.response?.data.message ?? 'An error has occurred',
+      color: 'negative',
     });
+
+    console.error(err);
   }
 }
 </script>

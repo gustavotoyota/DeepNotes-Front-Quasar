@@ -138,15 +138,15 @@ async function register() {
     });
 
     Notify.create({
-      color: 'positive',
       message: 'Account created successfully!',
+      color: 'positive',
     });
 
     await router.push('/login');
   } catch (err: any) {
     Notify.create({
-      color: 'negative',
       message: err.response?.data.message ?? 'An error has occurred',
+      color: 'negative',
     });
 
     console.error(err);

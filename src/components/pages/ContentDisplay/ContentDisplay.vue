@@ -122,9 +122,11 @@ async function cancelRequest() {
     props.page.react.userStatus = null;
   } catch (err: any) {
     Notify.create({
-      color: 'negative',
       message: err.response?.data.message ?? 'An error has occurred',
+      color: 'negative',
     });
+
+    console.error(err);
   }
 }
 
@@ -137,9 +139,11 @@ async function acceptInvitation() {
     await props.page.setup();
   } catch (err: any) {
     Notify.create({
-      color: 'negative',
       message: err.response?.data.message ?? 'An error has occurred',
+      color: 'negative',
     });
+
+    console.error(err);
   }
 }
 async function rejectInvitation() {
@@ -152,9 +156,11 @@ async function rejectInvitation() {
     props.page.react.userStatus = null;
   } catch (err: any) {
     Notify.create({
-      color: 'negative',
       message: err.response?.data.message ?? 'An error has occurred',
+      color: 'negative',
     });
+
+    console.error(err);
   }
 }
 </script>

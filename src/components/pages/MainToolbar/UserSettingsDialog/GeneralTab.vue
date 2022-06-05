@@ -22,7 +22,7 @@ watch(
   () => {
     $pages.realtime.set(
       'userName',
-      $pages.userId,
+      $pages.react.userId,
       settings.value.general.displayName
     );
   }

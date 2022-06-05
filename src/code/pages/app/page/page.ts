@@ -5,7 +5,7 @@ import {
   wrapSymmetricKey as wrapSymmetricKey,
 } from 'src/code/crypto/symmetric-key';
 import { refProp } from 'src/code/pages/static/vue';
-import { computed, ComputedRef, UnwrapRef } from 'vue';
+import { computed, ComputedRef, UnwrapRef, watch } from 'vue';
 import { z } from 'zod';
 
 import { Factory } from '../../static/composition-root';
@@ -249,6 +249,16 @@ export class AppPage extends PageRegion {
 
       this.collab.websocketProvider.synced,
     ]);
+
+    watch(
+      () => this.app.realtime.get('userName', this.app.react.userId),
+      (value) => {
+        this.collab.websocketProvider.awareness.setLocalStateField('user', {
+          name: value,
+        });
+      },
+      { immediate: true }
+    );
 
     return response.data;
   }

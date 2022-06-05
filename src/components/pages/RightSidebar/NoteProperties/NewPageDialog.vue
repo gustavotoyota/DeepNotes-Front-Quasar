@@ -149,7 +149,7 @@ async function createPage() {
 
       encryptedGroupSymmetricKey = privateKey.encrypt(
         groupSymmetricKey,
-        $pages.publicKey
+        $pages.react.publicKey
       );
 
       encryptedPageTitle = to_base64(

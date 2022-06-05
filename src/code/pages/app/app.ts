@@ -57,13 +57,14 @@ export interface IGroupData {
 }
 
 export interface IAppReact {
-  mounted: boolean;
-
   pathPageIds: string[];
   recentPageIds: string[];
 
   page: ShallowRef<AppPage>;
   pageId: ComputedRef<string | null>;
+
+  userId: string;
+  publicKey: Uint8Array;
 
   dict: ShallowReactive<Record<string, any>>;
 }
@@ -76,9 +77,6 @@ export class PagesApp {
 
   react: UnwrapRef<IAppReact>;
 
-  userId!: string;
-  publicKey!: Uint8Array;
-
   parentPageId: string | null = null;
 
   readonly loadedPromise = new Resolvable();
@@ -90,8 +88,6 @@ export class PagesApp {
     this.realtime = factory.makeRealtime();
 
     this.react = refProp<IAppReact>(this, 'react', {
-      mounted: false,
-
       pathPageIds: [],
       recentPageIds: [],
 
@@ -99,6 +95,9 @@ export class PagesApp {
       pageId: computed(() => {
         return this.react.page?.id ?? null;
       }),
+
+      userId: null as any,
+      publicKey: null as any,
 
       dict: shallowReactive({}),
     });
@@ -132,8 +131,8 @@ export class PagesApp {
 
     // Load user data
 
-    this.userId = response.data.userId;
-    this.publicKey = from_base64(response.data.publicKey);
+    this.react.userId = response.data.userId;
+    this.react.publicKey = from_base64(response.data.publicKey);
 
     // Load templates
 

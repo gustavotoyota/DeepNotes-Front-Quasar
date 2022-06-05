@@ -15,12 +15,16 @@
             .y}px)`,
       }"
     >
-      <DisplayNote
-        v-for="(note, index) in page.react.notes"
-        :key="note.id"
-        :note="note"
-        :index="index"
-      />
+      <template
+        v-for="(noteId, index) in page.react.noteIds"
+        :key="noteId"
+      >
+        <DisplayNote
+          v-if="page.notes.fromId(noteId) != null"
+          :note="page.notes.fromId(noteId)!"
+          :index="index"
+        />
+      </template>
 
       <template v-if="page.resizing.react.active">
         <DisplayNote

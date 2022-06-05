@@ -20,8 +20,9 @@ export class AppRealtime {
   connected!: Resolvable;
   synced!: Resolvable;
 
-  private readonly _subscriptionBuffer = new Set<string>();
-  private readonly _subscriptions = new Set<string>();
+  private readonly _subscribeBuffer = new Set<string>();
+
+  private readonly _unsubscribeBuffer = new Set<string>();
 
   private _publishMode = true;
   private readonly _publishBuffer = new Map<string, string>();
@@ -37,7 +38,7 @@ export class AppRealtime {
   get(type: string, key: string) {
     const channel = `${type}.${key}`;
 
-    this._subscribe([channel]);
+    this.subscribe([channel]);
 
     return this._values[channel];
   }
@@ -45,7 +46,7 @@ export class AppRealtime {
     const channel = `${type}.${key}`;
 
     if (this._values[channel] == null) {
-      this._subscribe([channel]);
+      this.subscribe([channel]);
 
       await this._notificationPromises.get(channel)!;
     }
@@ -57,7 +58,7 @@ export class AppRealtime {
     const channel = `${type}.${key}`;
 
     if (this._publishMode) {
-      this._publish({ [channel]: value });
+      this.publish({ [channel]: value });
     } else {
       this._values[channel] = value;
     }
@@ -88,77 +89,82 @@ export class AppRealtime {
     };
   }
 
-  private _subscribe(channels: string[]) {
-    channels = channels.filter((channel) => !this._subscriptions.has(channel));
-
+  subscribe(channels: string[]) {
     if (channels.length === 0) {
       return;
     }
 
-    if (this._subscriptionBuffer.size === 0) {
+    if (this._subscribeBuffer.size === 0) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      nextTick(this._subscribeFinal);
+      nextTick(this._subscribeFlush);
     }
 
     for (const channel of channels) {
-      this._subscriptions.add(channel);
-      this._subscriptionBuffer.add(channel);
-      this._notificationPromises.set(channel, new Resolvable());
+      this._subscribeBuffer.add(channel);
     }
   }
-  private _subscribeFinal = async () => {
+  private _subscribeFlush = async () => {
     await this.connected;
     await $pages.loadedPromise;
 
-    console.log('Subscribing to', this._subscriptionBuffer.values());
+    console.log('Subscribing to', this._subscribeBuffer.values());
 
     const encoder = new encoding.Encoder();
 
     encoding.writeVarUint(encoder, MSGTOSV_SUBSCRIBE);
-    encoding.writeVarUint(encoder, this._subscriptionBuffer.size);
-    for (const channel of this._subscriptionBuffer) {
+    encoding.writeVarUint(encoder, this._subscribeBuffer.size);
+    for (const channel of this._subscribeBuffer) {
       encoding.writeVarString(encoder, channel);
+
+      const [type] = channel.split('.');
+
+      if (!type.endsWith('Notification')) {
+        this._notificationPromises.set(channel, new Resolvable());
+      }
     }
 
     this._socket.send(encoding.toUint8Array(encoder));
 
-    this._subscriptionBuffer.clear();
+    this._subscribeBuffer.clear();
   };
 
-  async unsubscribe(channels: string[]) {
-    channels = channels.filter((channel) => this._subscriptions.has(channel));
-
+  unsubscribe(channels: string[]) {
     if (channels.length === 0) {
       return;
     }
 
-    console.log('Unsubscribing from', channels);
-
-    for (const channel of channels) {
-      this._subscriptions.delete(channel);
+    if (this._unsubscribeBuffer.size === 0) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      nextTick(this._unsubscribeFlush);
     }
 
+    for (const channel of channels) {
+      this._unsubscribeBuffer.add(channel);
+    }
+  }
+  private _unsubscribeFlush = async () => {
     await this.connected;
+    await $pages.loadedPromise;
+
+    console.log('Unsubscribing', this._unsubscribeBuffer.entries());
 
     const encoder = new encoding.Encoder();
 
     encoding.writeVarUint(encoder, MSGTOSV_UNSUBSCRIBE);
 
-    encoding.writeVarUint(encoder, channels.length);
+    encoding.writeVarUint(encoder, this._unsubscribeBuffer.size);
 
-    for (const channel of channels) {
+    for (const channel of this._unsubscribeBuffer) {
       encoding.writeVarString(encoder, channel);
 
       delete this._values[channel];
     }
 
     this._socket.send(encoding.toUint8Array(encoder));
-  }
+  };
 
-  _publish(values: Record<string, string>) {
-    const entries = Object.entries(values).filter(
-      ([channel, value]) => value !== this._values[channel]
-    );
+  publish(values: Record<string, string>) {
+    const entries = Object.entries(values);
 
     if (entries.length === 0) {
       return;
@@ -166,16 +172,17 @@ export class AppRealtime {
 
     if (this._publishBuffer.size === 0) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this._publishFinal();
+      this._publishFlush();
     }
 
     for (const [channel, value] of entries) {
       this._publishBuffer.set(channel, value);
     }
   }
-  private _publishFinal = throttle(
+  private _publishFlush = throttle(
     async () => {
       await this.connected;
+      await $pages.loadedPromise;
 
       console.log('Publishing', this._publishBuffer.entries());
 
@@ -239,6 +246,8 @@ export class AppRealtime {
       const channel = decoding.readVarString(decoder);
       let value = decoding.readVarString(decoder);
 
+      console.log(`[${channel}] Notify: ${value}`);
+
       const [type, id] = channel.split('.');
 
       if (type === 'pageTitle') {
@@ -255,9 +264,11 @@ export class AppRealtime {
         }
       }
 
-      this._values[channel] = value;
+      if (type.endsWith('Notification')) {
+        continue;
+      }
 
-      console.log(`[${channel}] Notify: ${value}`);
+      this._values[channel] = value;
 
       if (this._notificationPromises.has(channel)) {
         this._notificationPromises.get(channel)!.resolve();

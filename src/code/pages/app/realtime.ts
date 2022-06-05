@@ -20,8 +20,9 @@ export class AppRealtime {
   connected!: Resolvable;
   synced!: Resolvable;
 
-  private readonly _subscribeBuffer = new Set<string>();
+  private readonly _subscriptions = new Set<string>();
 
+  private readonly _subscribeBuffer = new Set<string>();
   private readonly _unsubscribeBuffer = new Set<string>();
 
   private _publishMode = true;
@@ -90,6 +91,8 @@ export class AppRealtime {
   }
 
   subscribe(channels: string[]) {
+    channels = channels.filter((channel) => !this._subscriptions.has(channel));
+
     if (channels.length === 0) {
       return;
     }
@@ -101,6 +104,7 @@ export class AppRealtime {
 
     for (const channel of channels) {
       this._subscribeBuffer.add(channel);
+      this._subscriptions.add(channel);
     }
   }
   private _subscribeFlush = async () => {
@@ -129,6 +133,8 @@ export class AppRealtime {
   };
 
   unsubscribe(channels: string[]) {
+    channels = channels.filter((channel) => this._subscriptions.has(channel));
+
     if (channels.length === 0) {
       return;
     }

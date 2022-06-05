@@ -39,20 +39,44 @@ export function isUuid4(text: string) {
   return pattern.test(text);
 }
 
-export class Resolvable<T = void> implements PromiseLike<T> {
+export class Resolvable<T = void> implements Promise<T> {
+  [Symbol.toStringTag]: string;
+
   resolve!: (value: T) => void;
   reject!: (reason?: any) => void;
 
+  isSettled = false;
+  isFulfilled = false;
+  isRejected = false;
+
   readonly promise = new Promise<T>((resolve, reject) => {
-    this.resolve = resolve;
-    this.reject = reject;
+    this.resolve = (value) => {
+      this.isSettled = true;
+      this.isFulfilled = true;
+
+      resolve(value);
+    };
+    this.reject = (reason?: any) => {
+      this.isSettled = true;
+      this.isRejected = true;
+
+      reject(reason);
+    };
   });
 
   then<TResult1 = T, TResult2 = never>(
     onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null,
-    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null
-  ): PromiseLike<TResult1 | TResult2> {
+    onrejected?: ((reason?: any) => TResult2 | PromiseLike<TResult2>) | null
+  ): Promise<TResult1 | TResult2> {
     return this.promise.then(onfulfilled, onrejected);
+  }
+  catch<TResult = never>(
+    onrejected?: ((reason?: any) => TResult | PromiseLike<TResult>) | null
+  ): Promise<T | TResult> {
+    return this.promise.catch(onrejected);
+  }
+  finally(onfinally?: (() => void) | null): Promise<T> {
+    return this.promise.finally(onfinally);
   }
 }
 

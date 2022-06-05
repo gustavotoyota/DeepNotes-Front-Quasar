@@ -42,7 +42,7 @@
         >
           <q-item-section>
             <q-item-label>
-              {{ $pages.realtime.get('userName', user.userId) }}
+              {{ $pages.realtime.get('userDisplayName', user.userId) }}
             </q-item-label>
             <q-item-label caption>
               {{ rolesMap[user.roleId].name }}

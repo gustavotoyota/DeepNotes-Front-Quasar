@@ -158,7 +158,7 @@ watch(visible, async () => {
         requests: IGroupData[];
       }>('/api/users/load-settings'),
 
-      $pages.realtime.getAsync('userName', $pages.react.userId),
+      $pages.realtime.getAsync('userDisplayName', $pages.react.userId),
     ]);
 
     settings.value.general.displayName = displayName!;

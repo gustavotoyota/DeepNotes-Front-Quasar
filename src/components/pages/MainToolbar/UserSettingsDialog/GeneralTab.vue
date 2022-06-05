@@ -21,7 +21,7 @@ watch(
   () => settings.value.general.displayName,
   () => {
     $pages.realtime.set(
-      'userName',
+      'userDisplayName',
       $pages.react.userId,
       settings.value.general.displayName
     );

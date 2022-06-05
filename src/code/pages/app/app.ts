@@ -270,7 +270,7 @@ export class PagesApp {
       return $pages.realtime.get('groupName', groupId) ?? '';
     }
 
-    const groupOwnerName = $pages.realtime.get('userName', groupOwnerId);
+    const groupOwnerName = $pages.realtime.get('userDisplayName', groupOwnerId);
 
     if (groupOwnerName == null) {
       return '';

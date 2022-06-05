@@ -251,7 +251,7 @@ export class AppPage extends PageRegion {
     ]);
 
     watch(
-      () => this.app.realtime.get('userName', this.app.react.userId),
+      () => this.app.realtime.get('userDisplayName', this.app.react.userId),
       (value) => {
         this.collab.websocketProvider.awareness.setLocalStateField('user', {
           name: value,

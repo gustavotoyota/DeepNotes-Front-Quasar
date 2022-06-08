@@ -1,8 +1,6 @@
 import * as decoding from 'lib0/decoding';
 import * as encoding from 'lib0/encoding';
-import { from_base64, to_base64 } from 'libsodium-wrappers';
 import { throttle } from 'lodash';
-import { SymmetricKey } from 'src/code/crypto/symmetric-key';
 import { Resolvable } from 'src/code/utils';
 import { nextTick, reactive } from 'vue';
 
@@ -198,28 +196,8 @@ export class AppRealtime {
 
       encoding.writeVarUint(encoder, this._publishBuffer.size);
 
-      for (const entry of this._publishBuffer) {
-        const channel = entry[0];
-        let value = entry[1];
-
+      for (const [channel, value] of this._publishBuffer) {
         encoding.writeVarString(encoder, channel);
-
-        const [type, id] = channel.split('.');
-
-        if (type === 'pageTitle') {
-          try {
-            const groupId: string = $pages.react.dict[`pageGroupId.${id}`];
-            const symmetricKey: SymmetricKey =
-              $pages.react.dict[`groupSymmetricKey.${groupId}`];
-
-            value = to_base64(
-              symmetricKey.encrypt(new TextEncoder().encode(value))
-            );
-          } catch (err) {
-            console.error(err);
-          }
-        }
-
         encoding.writeVarString(encoder, value);
       }
 
@@ -250,26 +228,11 @@ export class AppRealtime {
 
     for (let i = 0; i < numChannels; i++) {
       const channel = decoding.readVarString(decoder);
-      let value = decoding.readVarString(decoder);
+      const value = decoding.readVarString(decoder);
 
       console.log(`[${channel}] Notify: ${value}`);
 
-      const [type, id] = channel.split('.');
-
-      if (type === 'pageTitle') {
-        try {
-          const groupId: string = $pages.react.dict[`pageGroupId.${id}`];
-          const symmetricKey: SymmetricKey =
-            $pages.react.dict[`groupSymmetricKey.${groupId}`];
-
-          value = new TextDecoder('utf-8').decode(
-            symmetricKey.decrypt(from_base64(value))
-          );
-        } catch (err) {
-          console.error(err);
-          value = '[Encrypted page title]';
-        }
-      }
+      const [type] = channel.split('.');
 
       if (type.endsWith('Notification')) {
         continue;

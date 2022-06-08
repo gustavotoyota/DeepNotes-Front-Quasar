@@ -20,13 +20,14 @@
 
     <div style="padding: 20px">
       <q-input
+        ref="pageTitleElem"
         label="Page title"
         dense
         filled
         :disable="page.react.readonly"
         :model-value="pageTitle"
         @update:model-value="pageTitle = $event!.toString();
-        $pages.realtime.set('pageTitle', page.id, $event!.toString())"
+        $pages.react.dict[`pageTitle.${page.id}`] = $event!.toString()"
       />
     </div>
 
@@ -75,12 +76,19 @@ const ui = useUI();
 const page = inject<Ref<AppPage>>('page')!;
 
 const pageTitle = ref('');
+const pageTitleElem = ref();
 
 watch(
-  page,
-  async () => {
-    pageTitle.value =
-      (await $pages.realtime.getAsync('pageTitle', page.value.id)) ?? '';
+  [pageTitleElem, () => $pages.react.dict[`pageTitle.${page.value.id}`]],
+  () => {
+    if (
+      document.activeElement ===
+      pageTitleElem.value?.$el.querySelector(':scope input')
+    ) {
+      return;
+    }
+
+    pageTitle.value = $pages.react.dict[`pageTitle.${page.value.id}`];
   },
   { immediate: true }
 );

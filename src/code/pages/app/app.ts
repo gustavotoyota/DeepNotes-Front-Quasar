@@ -1,19 +1,14 @@
 import axios from 'axios';
-import { from_base64 } from 'libsodium-wrappers';
+import { from_base64, to_base64 } from 'libsodium-wrappers';
 import { pull } from 'lodash';
 import { logout } from 'src/code/auth';
 import { privateKey } from 'src/code/crypto/private-key';
-import { wrapSymmetricKey as wrapSymmetricKey } from 'src/code/crypto/symmetric-key';
-import { Resolvable } from 'src/code/utils';
 import {
-  computed,
-  ComputedRef,
-  ShallowReactive,
-  shallowReactive,
-  ShallowRef,
-  shallowRef,
-  UnwrapRef,
-} from 'vue';
+  SymmetricKey,
+  wrapSymmetricKey as wrapSymmetricKey,
+} from 'src/code/crypto/symmetric-key';
+import { Resolvable } from 'src/code/utils';
+import { computed, ComputedRef, ShallowRef, shallowRef, UnwrapRef } from 'vue';
 import { Router } from 'vue-router';
 
 import { Factory, factory } from '../static/composition-root';
@@ -66,7 +61,7 @@ export interface IAppReact {
   userId: string;
   publicKey: Uint8Array;
 
-  dict: ShallowReactive<Record<string, any>>;
+  dict: Record<string, any>;
 }
 
 export class PagesApp {
@@ -99,7 +94,7 @@ export class PagesApp {
       userId: null as any,
       publicKey: null as any,
 
-      dict: shallowReactive({}),
+      dict: {},
     });
 
     globalThis.__DEEP_NOTES__ = {
@@ -152,6 +147,9 @@ export class PagesApp {
       .concat(response.data.recentPages)
       .forEach((page) => {
         this.react.dict[`pageGroupId.${page.pageId}`] = page.groupId;
+        this.react.dict[`pageTitle.${page.pageId}`] = computed(
+          this.pageTitleComputation(page.pageId)
+        );
       });
 
     response.data.groups.forEach((group) => {
@@ -259,6 +257,44 @@ export class PagesApp {
     }
   }
 
+  pageTitleComputation(pageId: string) {
+    return {
+      get: () => {
+        const groupId: string = $pages.react.dict[`pageGroupId.${pageId}`];
+        const symmetricKey: SymmetricKey =
+          $pages.react.dict[`groupSymmetricKey.${groupId}`];
+
+        if (symmetricKey == null) {
+          return '[Encrypted page title]';
+        }
+
+        const encryptedPageTitle = this.realtime.get('pageTitle', pageId);
+
+        if (encryptedPageTitle == null) {
+          return '';
+        }
+
+        return new TextDecoder('utf-8').decode(
+          symmetricKey.decrypt(from_base64(encryptedPageTitle))
+        );
+      },
+      set: (value: string) => {
+        const groupId: string = $pages.react.dict[`pageGroupId.${pageId}`];
+        const symmetricKey: SymmetricKey =
+          $pages.react.dict[`groupSymmetricKey.${groupId}`];
+
+        if (symmetricKey == null) {
+          return;
+        }
+
+        const encryptedPageTitle = to_base64(
+          symmetricKey.encrypt(new TextEncoder().encode(value))
+        );
+
+        this.realtime.set('pageTitle', pageId, encryptedPageTitle);
+      },
+    };
+  }
   computeGroupName(groupId: string): string {
     if (groupId == null) {
       return '';

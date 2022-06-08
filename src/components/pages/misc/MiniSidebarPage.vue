@@ -11,7 +11,7 @@
 
     <q-item-section>
       <q-item-label>{{
-        $pages.realtime.get('pageTitle', pageId)
+        $pages.react.dict[`pageTitle.${pageId}`]
       }}</q-item-label>
       <q-item-label caption>{{ groupName }}</q-item-label>
     </q-item-section>
@@ -25,7 +25,7 @@
       transition-show="jump-right"
       transition-hide="jump-left"
     >
-      {{ $pages.realtime.get('pageTitle', pageId) }} - {{ groupName }}
+      {{ $pages.react.dict[`pageTitle.${pageId}`] }} - {{ groupName }}
     </q-tooltip>
   </q-item>
 </template>

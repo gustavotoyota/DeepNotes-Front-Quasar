@@ -107,9 +107,9 @@
           <q-item-section>
             <q-item-label>{{ scope.opt.label }}</q-item-label>
             <q-item-label caption>{{
-              $pages.computeGroupName(
+              $pages.react.groupNames[
                 $pages.react.dict[`pageGroupId.${scope.opt.value}`]
-              )
+              ]
             }}</q-item-label>
           </q-item-section>
         </template>

@@ -40,7 +40,7 @@
           >
             <q-item-section>
               <q-item-label>
-                {{ $pages.computeGroupName(group.groupId) }}
+                {{ $pages.react.groupNames[group.groupId] }}
               </q-item-label>
               <q-item-label caption>
                 {{ rolesMap[group.roleId].name }}

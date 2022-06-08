@@ -267,6 +267,7 @@ export class AppRealtime {
           );
         } catch (err) {
           console.error(err);
+          value = '[Encrypted page title]';
         }
       }
 

@@ -92,7 +92,7 @@
         :disable="page.react.readonly"
         :options="
           $pages.react.recentPageIds.map((pageId) => ({
-            label: $pages.react.dict[`pageTitle.${pageId}`],
+            label: $pages.react.pageTitles[pageId],
             value: pageId,
           }))
         "

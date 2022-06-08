@@ -27,7 +27,7 @@
         :disable="page.react.readonly"
         :model-value="pageTitle"
         @update:model-value="pageTitle = $event!.toString();
-        $pages.react.dict[`pageTitle.${page.id}`] = $event!.toString()"
+        $pages.react.pageTitles[page.id] = $event!.toString()"
       />
     </div>
 
@@ -79,7 +79,7 @@ const pageTitle = ref('');
 const pageTitleElem = ref();
 
 watch(
-  [pageTitleElem, () => $pages.react.dict[`pageTitle.${page.value.id}`]],
+  [pageTitleElem, () => $pages.react.pageTitles[page.value.id]],
   () => {
     if (
       document.activeElement ===
@@ -88,7 +88,7 @@ watch(
       return;
     }
 
-    pageTitle.value = $pages.react.dict[`pageTitle.${page.value.id}`];
+    pageTitle.value = $pages.react.pageTitles[page.value.id];
   },
   { immediate: true }
 );

@@ -12,6 +12,7 @@ import { computed, ComputedRef, ShallowRef, shallowRef, UnwrapRef } from 'vue';
 import { Router } from 'vue-router';
 
 import { Factory, factory } from '../static/composition-root';
+import { createComputedDict } from '../static/computed-dict';
 import { refProp } from '../static/vue';
 import { AppPage } from './page/page';
 import { AppPageCache } from './page-cache';
@@ -62,6 +63,8 @@ export interface IAppReact {
   publicKey: Uint8Array;
 
   dict: Record<string, any>;
+
+  pageTitles: Record<string, string>;
 }
 
 export class PagesApp {
@@ -95,6 +98,43 @@ export class PagesApp {
       publicKey: null as any,
 
       dict: {},
+
+      pageTitles: createComputedDict({
+        get: (pageId: string) => {
+          const groupId: string = this.react.dict[`pageGroupId.${pageId}`];
+          const symmetricKey: SymmetricKey =
+            this.react.dict[`groupSymmetricKey.${groupId}`];
+
+          if (symmetricKey == null) {
+            return '[Encrypted page title]';
+          }
+
+          const encryptedPageTitle = this.realtime.get('pageTitle', pageId);
+
+          if (encryptedPageTitle == null) {
+            return '';
+          }
+
+          return new TextDecoder('utf-8').decode(
+            symmetricKey.decrypt(from_base64(encryptedPageTitle))
+          );
+        },
+        set: (pageId: string, value: string) => {
+          const groupId: string = this.react.dict[`pageGroupId.${pageId}`];
+          const symmetricKey: SymmetricKey =
+            this.react.dict[`groupSymmetricKey.${groupId}`];
+
+          if (symmetricKey == null) {
+            return;
+          }
+
+          const encryptedPageTitle = to_base64(
+            symmetricKey.encrypt(new TextEncoder().encode(value))
+          );
+
+          this.realtime.set('pageTitle', pageId, encryptedPageTitle);
+        },
+      }),
     });
 
     globalThis.__DEEP_NOTES__ = {
@@ -147,9 +187,6 @@ export class PagesApp {
       .concat(response.data.recentPages)
       .forEach((page) => {
         this.react.dict[`pageGroupId.${page.pageId}`] = page.groupId;
-        this.react.dict[`pageTitle.${page.pageId}`] = computed(
-          this.pageTitleComputation(page.pageId)
-        );
       });
 
     response.data.groups.forEach((group) => {
@@ -257,44 +294,6 @@ export class PagesApp {
     }
   }
 
-  pageTitleComputation(pageId: string) {
-    return {
-      get: () => {
-        const groupId: string = $pages.react.dict[`pageGroupId.${pageId}`];
-        const symmetricKey: SymmetricKey =
-          $pages.react.dict[`groupSymmetricKey.${groupId}`];
-
-        if (symmetricKey == null) {
-          return '[Encrypted page title]';
-        }
-
-        const encryptedPageTitle = this.realtime.get('pageTitle', pageId);
-
-        if (encryptedPageTitle == null) {
-          return '';
-        }
-
-        return new TextDecoder('utf-8').decode(
-          symmetricKey.decrypt(from_base64(encryptedPageTitle))
-        );
-      },
-      set: (value: string) => {
-        const groupId: string = $pages.react.dict[`pageGroupId.${pageId}`];
-        const symmetricKey: SymmetricKey =
-          $pages.react.dict[`groupSymmetricKey.${groupId}`];
-
-        if (symmetricKey == null) {
-          return;
-        }
-
-        const encryptedPageTitle = to_base64(
-          symmetricKey.encrypt(new TextEncoder().encode(value))
-        );
-
-        this.realtime.set('pageTitle', pageId, encryptedPageTitle);
-      },
-    };
-  }
   computeGroupName(groupId: string): string {
     if (groupId == null) {
       return '';

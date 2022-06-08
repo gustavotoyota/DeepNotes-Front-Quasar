@@ -74,7 +74,7 @@ useMeta(() => {
   }
 
   const pageId = page.value.id;
-  const pageTitle = $pages.react.dict[`pageTitle.${pageId}`];
+  const pageTitle = $pages.react.pageTitles[pageId];
 
   const groupId = $pages.react.dict[`pageGroupId.${pageId}`];
   const groupName = $pages.computeGroupName(groupId);

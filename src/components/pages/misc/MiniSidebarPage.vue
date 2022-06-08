@@ -10,9 +10,7 @@
     </q-item-section>
 
     <q-item-section>
-      <q-item-label>{{
-        $pages.react.dict[`pageTitle.${pageId}`]
-      }}</q-item-label>
+      <q-item-label>{{ $pages.react.pageTitles[pageId] }}</q-item-label>
       <q-item-label caption>{{ groupName }}</q-item-label>
     </q-item-section>
 
@@ -25,7 +23,7 @@
       transition-show="jump-right"
       transition-hide="jump-left"
     >
-      {{ $pages.react.dict[`pageTitle.${pageId}`] }} - {{ groupName }}
+      {{ $pages.react.pageTitles[pageId] }} - {{ groupName }}
     </q-tooltip>
   </q-item>
 </template>

@@ -176,21 +176,14 @@ export class PagesApp {
     await router.push(`/pages/${pageId}`);
   }
 
-  async loadData(initialPageId: string) {
+  async loadData() {
     const response = await $api.post<{
       userId: string;
       publicKey: string;
 
       templates: ITemplate[];
       defaultTemplateId: string;
-
-      pathPages: IPageData[];
-      recentPages: IPageData[];
-
-      groups: IGroupData[];
-    }>('/api/users/pages', {
-      initialPageId,
-    });
+    }>('/api/users/data');
 
     // Load user data
 
@@ -201,6 +194,19 @@ export class PagesApp {
 
     this.templates.react.list = response.data.templates;
     this.templates.react.defaultId = response.data.defaultTemplateId;
+
+    this.loadedPromise.resolve();
+  }
+
+  async loadPages(initialPageId: string) {
+    const response = await $api.post<{
+      pathPages: IPageData[];
+      recentPages: IPageData[];
+
+      groups: IGroupData[];
+    }>('/api/users/pages', {
+      initialPageId,
+    });
 
     // Load pages
 
@@ -233,8 +239,6 @@ export class PagesApp {
           );
       }
     });
-
-    this.loadedPromise.resolve();
   }
 
   async bumpPage(pageId: string) {
@@ -281,7 +285,7 @@ export class PagesApp {
     // Previous page does not exist in path
     // Reload all path pages
 
-    await this.loadData(nextPageId);
+    await this.loadPages(nextPageId);
   }
 
   async setupPage(nextPageId: string) {

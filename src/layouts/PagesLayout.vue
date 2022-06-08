@@ -95,7 +95,11 @@ useMeta(() => {
 onMounted(async () => {
   await app.ready;
 
-  await $pages.setupPage(route.params.page_id as string);
+  await Promise.all([
+    $pages.loadData(),
+
+    $pages.setupPage(route.params.page_id as string),
+  ]);
 
   mounted.value = true;
 });

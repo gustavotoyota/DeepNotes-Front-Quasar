@@ -61,12 +61,20 @@ async function acceptRequests() {
   );
 
   try {
+    const userKeys = await $api.post<{
+      sessionKey: string;
+      encryptedSymmetricKey: string;
+      encryptersPublicKey: string;
+    }>('/api/users/keys', {
+      groupId: page.value.react.groupId,
+    });
+
     await Promise.all(
       selectedUsers.map((user) => {
         const reencryptedSymmetricKey = reencryptSymmetricKey(
-          settings.value.sessionKey,
-          settings.value.encryptedSymmetricKey,
-          settings.value.encryptersPublicKey,
+          from_base64(userKeys.data.sessionKey),
+          from_base64(userKeys.data.encryptedSymmetricKey),
+          from_base64(userKeys.data.encryptersPublicKey),
           from_base64(user.publicKey!)
         );
 

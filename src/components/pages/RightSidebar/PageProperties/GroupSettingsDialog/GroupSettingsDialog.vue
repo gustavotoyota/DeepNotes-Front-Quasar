@@ -87,10 +87,6 @@ export function initialSettings() {
   return {
     loaded: false,
 
-    encryptedSymmetricKey: new Uint8Array(),
-    encryptersPublicKey: new Uint8Array(),
-    sessionKey: new Uint8Array(),
-
     tab: 'General',
 
     general: {
@@ -121,7 +117,6 @@ export function initialSettings() {
   setup
   lang="ts"
 >
-import { from_base64 } from 'libsodium-wrappers';
 import { AppPage } from 'src/code/pages/app/page/page';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import TabBtn from 'src/components/pages/misc/TabBtn.vue';
@@ -147,10 +142,6 @@ watch(visible, async (value) => {
   settings.value = initialSettings();
 
   const response = await $api.post<{
-    encryptedSymmetricKey: string;
-    encryptersPublicKey: string;
-    sessionKey: string;
-
     requests: IGroupUser[];
     invitations: IGroupUser[];
     members: IGroupUser[];
@@ -158,14 +149,6 @@ watch(visible, async (value) => {
   }>('/api/groups/load-settings', {
     groupId: page.value.react.groupId,
   });
-
-  settings.value.encryptedSymmetricKey = from_base64(
-    response.data.encryptedSymmetricKey
-  );
-  settings.value.encryptersPublicKey = from_base64(
-    response.data.encryptersPublicKey
-  );
-  settings.value.sessionKey = from_base64(response.data.sessionKey);
 
   if (page.value.react.ownerId == null) {
     settings.value.general.groupName =

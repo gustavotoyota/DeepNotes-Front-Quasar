@@ -116,33 +116,41 @@ async function inviteUser() {
 
   visible.value = false;
 
-  const userInfos = (
-    await $api.post<{
-      id: string;
+  const [inviterKeys, inviteeInfos] = await Promise.all([
+    $api.post<{
+      sessionKey: string;
+      encryptedSymmetricKey: string;
+      encryptersPublicKey: string;
+    }>('/api/users/keys', {
+      groupId: page.value.react.groupId,
+    }),
+
+    $api.post<{
+      userId: string;
       email: string;
       publicKey: string;
     }>('/api/users/infos', {
       identity: identity.value,
-    })
-  ).data;
+    }),
+  ]);
 
   const reencryptedSymmetricKey = reencryptSymmetricKey(
-    settings.value.sessionKey,
-    settings.value.encryptedSymmetricKey,
-    settings.value.encryptersPublicKey,
-    from_base64(userInfos.publicKey)
+    from_base64(inviterKeys.data.sessionKey),
+    from_base64(inviterKeys.data.encryptedSymmetricKey),
+    from_base64(inviterKeys.data.encryptersPublicKey),
+    from_base64(inviteeInfos.data.publicKey)
   );
 
   try {
     await $api.post('/api/groups/access-invitations/send', {
       groupId: page.value.react.groupId,
-      userId: userInfos.id,
+      userId: inviteeInfos.data.userId,
       roleId: roleId.value,
       encryptedSymmetricKey: to_base64(reencryptedSymmetricKey),
     });
 
     settings.value.invitations.list.push({
-      userId: userInfos.id,
+      userId: inviteeInfos.data.userId,
       roleId: roleId.value,
     });
   } catch (err: any) {

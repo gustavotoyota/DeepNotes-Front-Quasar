@@ -37,7 +37,7 @@ export class AppRealtime {
   get(type: string, key: string) {
     const channel = `${type}.${key}`;
 
-    this.subscribe([channel]);
+    this.subscribe(channel);
 
     return this._values[channel];
   }
@@ -45,7 +45,7 @@ export class AppRealtime {
     const channel = `${type}.${key}`;
 
     if (this._values[channel] == null) {
-      this.subscribe([channel]);
+      this.subscribe(channel);
 
       await this._notificationPromises.get(channel)!;
     }
@@ -88,7 +88,7 @@ export class AppRealtime {
     };
   }
 
-  subscribe(channels: string[]) {
+  subscribe(...channels: string[]) {
     channels = channels.filter((channel) => !this._subscriptions.has(channel));
 
     if (channels.length === 0) {
@@ -130,7 +130,7 @@ export class AppRealtime {
     this._subscribeBuffer.clear();
   };
 
-  unsubscribe(channels: string[]) {
+  unsubscribe(...channels: string[]) {
     channels = channels.filter((channel) => this._subscriptions.has(channel));
 
     if (channels.length === 0) {
@@ -168,7 +168,9 @@ export class AppRealtime {
   };
 
   publish(values: Record<string, string>) {
-    const entries = Object.entries(values);
+    const entries = Object.entries(values).filter(
+      ([channel, value]) => this._values[channel] !== value
+    );
 
     if (entries.length === 0) {
       return;

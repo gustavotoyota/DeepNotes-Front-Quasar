@@ -190,6 +190,8 @@ export class PagesApp {
     this.react.userId = response.data.userId;
     this.react.publicKey = from_base64(response.data.publicKey);
 
+    this.realtime.subscribe(`userNotification.${this.react.userId}`);
+
     // Load templates
 
     this.templates.react.list = response.data.templates;

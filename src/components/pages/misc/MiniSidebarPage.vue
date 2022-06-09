@@ -18,12 +18,14 @@
       v-if="ui.leftSidebarMini"
       anchor="center right"
       self="center left"
-      :offset="[10, 10]"
       max-width="200px"
       transition-show="jump-right"
       transition-hide="jump-left"
     >
-      {{ $pages.react.pageTitles[pageId] }} - {{ groupName }}
+      <div style="font-weight: bold; font-size: 14px">
+        {{ $pages.react.pageTitles[pageId] }}
+      </div>
+      <div style="font-size: 12px">{{ groupName }}</div>
     </q-tooltip>
   </q-item>
 </template>

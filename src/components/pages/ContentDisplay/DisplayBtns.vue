@@ -2,6 +2,7 @@
   <div class="display-btns">
     <DisplayBtn
       icon="mdi-magnify-remove-outline"
+      tooltip="Reset zoom"
       @click="page.camera.resetZoom()"
     />
 
@@ -9,6 +10,7 @@
 
     <DisplayBtn
       icon="mdi-image-filter-center-focus-weak"
+      tooltip="Fit to screen"
       @click="page.camera.fitToScreen()"
     />
   </div>

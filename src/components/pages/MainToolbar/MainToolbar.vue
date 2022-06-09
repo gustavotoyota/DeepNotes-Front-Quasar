@@ -173,6 +173,15 @@
 
         <Gap style="width: 2px" />
 
+        <ToolbarBtn
+          tooltip="Notifications"
+          icon="mdi-bell"
+          icon-size="24px"
+          round
+        />
+
+        <Gap style="width: 2px" />
+
         <UserSettingsDialog />
 
         <Gap style="width: 2px" />

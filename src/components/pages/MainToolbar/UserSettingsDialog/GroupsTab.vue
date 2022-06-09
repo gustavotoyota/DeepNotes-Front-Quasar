@@ -119,9 +119,13 @@ function select(groupId: string, event: MouseEvent) {
 
 async function leaveSelectedGroups() {
   try {
-    await $api.post('/api/groups/leave', {
-      groupIds: Array.from(selectedIds.value),
-    });
+    await Promise.all(
+      Array.from(selectedIds.value).map((groupId) =>
+        $api.post('/api/groups/leave', {
+          groupId,
+        })
+      )
+    );
 
     settings.value.groups.list = settings.value.groups.list.filter(
       (group) => !selectedIds.value.has(group.groupId)

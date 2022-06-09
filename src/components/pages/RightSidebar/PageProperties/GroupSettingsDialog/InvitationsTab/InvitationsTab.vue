@@ -121,10 +121,14 @@ function select(id: string, event: MouseEvent) {
 
 async function cancelSelectedInvitations() {
   try {
-    await $api.post('/api/groups/access-invitations/cancel', {
-      groupId: page.value.react.groupId,
-      userIds: Array.from(selectedIds.value),
-    });
+    await Promise.all(
+      Array.from(selectedIds.value).map((userId) =>
+        $api.post('/api/groups/access-invitations/cancel', {
+          groupId: page.value.react.groupId,
+          userId,
+        })
+      )
+    );
 
     settings.value.invitations.list = settings.value.invitations.list.filter(
       (item) => !selectedIds.value.has(item.userId)

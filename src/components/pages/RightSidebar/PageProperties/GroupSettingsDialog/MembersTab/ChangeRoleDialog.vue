@@ -91,11 +91,15 @@ async function changeRole() {
   }
 
   try {
-    await $api.post('/api/groups/change-roles', {
-      groupId: page.value.react.groupId,
-      userIds: Array.from(selectedIds.value),
-      roleId: roleId.value,
-    });
+    await Promise.all(
+      Array.from(selectedIds.value).map((userId) =>
+        $api.post('/api/groups/change-user-role', {
+          groupId: page.value.react.groupId,
+          userId,
+          roleId: roleId.value,
+        })
+      )
+    );
 
     for (const user of settings.value.members.list) {
       if (selectedIds.value.has(user.userId)) {

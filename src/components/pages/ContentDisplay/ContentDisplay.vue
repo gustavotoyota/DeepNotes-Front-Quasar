@@ -133,7 +133,7 @@ async function cancelRequest() {
 async function acceptInvitation() {
   try {
     await $api.post('/api/groups/access-invitations/accept', {
-      groupIds: [props.page.react.groupId],
+      groupId: props.page.react.groupId,
     });
 
     await props.page.setup();

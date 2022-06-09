@@ -121,10 +121,14 @@ function select(id: string, event: MouseEvent) {
 
 async function rejectSelectedRequests() {
   try {
-    await $api.post('/api/groups/access-requests/reject', {
-      groupId: page.value.react.groupId,
-      userIds: Array.from(selectedIds.value),
-    });
+    await Promise.all(
+      Array.from(selectedIds.value).map((userId) =>
+        $api.post('/api/groups/access-requests/reject', {
+          groupId: page.value.react.groupId,
+          userId,
+        })
+      )
+    );
 
     settings.value.requests.list = settings.value.requests.list.filter(
       (user) => !selectedIds.value.has(user.userId)

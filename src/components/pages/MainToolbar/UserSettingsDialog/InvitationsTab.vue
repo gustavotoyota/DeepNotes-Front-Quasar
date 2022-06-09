@@ -130,9 +130,13 @@ function select(groupId: string, event: MouseEvent) {
 
 async function acceptSelectedInvitations() {
   try {
-    await $api.post('/api/groups/access-invitations/accept', {
-      groupIds: Array.from(selectedIds.value),
-    });
+    await Promise.all(
+      Array.from(selectedIds.value).map((groupId) =>
+        $api.post('/api/groups/access-invitations/accept', {
+          groupId,
+        })
+      )
+    );
 
     settings.value.invitations.list = settings.value.invitations.list.filter(
       (group) => !selectedIds.value.has(group.groupId)
@@ -147,9 +151,13 @@ async function acceptSelectedInvitations() {
 }
 async function rejectSelectedInvitations() {
   try {
-    await $api.post('/api/groups/access-invitations/accept', {
-      groupIds: Array.from(selectedIds.value),
-    });
+    await Promise.all(
+      Array.from(selectedIds.value).map((groupId) =>
+        $api.post('/api/groups/access-invitations/reject', {
+          groupId,
+        })
+      )
+    );
 
     settings.value.invitations.list = settings.value.invitations.list.filter(
       (group) => !selectedIds.value.has(group.groupId)

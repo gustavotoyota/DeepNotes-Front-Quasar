@@ -61,9 +61,8 @@ async function acceptRequests() {
   );
 
   try {
-    await $api.post('/api/groups/access-requests/accept', {
-      groupId: page.value.react.groupId,
-      users: selectedUsers.map((user) => {
+    await Promise.all(
+      selectedUsers.map((user) => {
         const reencryptedSymmetricKey = reencryptSymmetricKey(
           settings.value.sessionKey,
           settings.value.encryptedSymmetricKey,
@@ -71,12 +70,13 @@ async function acceptRequests() {
           from_base64(user.publicKey!)
         );
 
-        return {
+        return $api.post('/api/groups/access-requests/accept', {
+          groupId: page.value.react.groupId,
           userId: user.userId,
-          encryptedSymmetricKey: to_base64(reencryptedSymmetricKey),
-        };
-      }),
-    });
+          reencryptedSymmetricKey: to_base64(reencryptedSymmetricKey),
+        });
+      })
+    );
 
     for (const user of selectedUsers) {
       settings.value.members.list.push(user);

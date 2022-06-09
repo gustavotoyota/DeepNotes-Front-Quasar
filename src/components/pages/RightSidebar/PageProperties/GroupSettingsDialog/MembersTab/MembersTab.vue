@@ -115,10 +115,14 @@ function select(id: string, event: MouseEvent) {
 
 async function removeSelectedUsers() {
   try {
-    await $api.post('/api/groups/remove-users', {
-      groupId: page.value.react.groupId,
-      userIds: Array.from(selectedIds.value),
-    });
+    await Promise.all(
+      Array.from(selectedIds.value).map((userId) =>
+        $api.post('/api/groups/remove-user', {
+          groupId: page.value.react.groupId,
+          userId,
+        })
+      )
+    );
 
     settings.value.members.list = settings.value.members.list.filter(
       (item) => !selectedIds.value.has(item.userId)

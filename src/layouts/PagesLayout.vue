@@ -165,10 +165,10 @@ async function onKeyDown(event: KeyboardEvent) {
   }
 
   if (event.ctrlKey && event.code === 'KeyZ') {
-    //page.value.undoRedo.undo()
+    page.value.undoRedo.undo();
   }
   if (event.ctrlKey && event.code === 'KeyY') {
-    //page.value.undoRedo.redo()
+    page.value.undoRedo.redo();
   }
 
   if (

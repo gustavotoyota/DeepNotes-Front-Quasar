@@ -66,12 +66,14 @@
           <ToolbarBtn
             tooltip="Undo"
             icon="mdi-undo"
-            :disable="page.react.readonly"
+            :disable="page.react.readonly || !page.undoRedo.react.canUndo"
+            @click="page.undoRedo.undo()"
           />
           <ToolbarBtn
             tooltip="Redo"
             icon="mdi-redo"
-            :disable="page.react.readonly"
+            :disable="page.react.readonly || !page.undoRedo.react.canRedo"
+            @click="page.undoRedo.redo()"
           />
 
           <q-separator

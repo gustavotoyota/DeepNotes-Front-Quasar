@@ -95,10 +95,6 @@ export class PageClipboard {
     const arrows = this.page.arrows.fromIds(arrowIds);
 
     this.page.selection.set(...(notes as PageElem[]).concat(arrows));
-
-    // Reset undo-redo capturing
-
-    //this.page.undoRedo.resetCapturing()
   }
 
   async cut() {

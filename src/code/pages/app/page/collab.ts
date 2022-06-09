@@ -1,6 +1,5 @@
 import syncedStore, { getYjsValue, Y } from '@syncedstore/core';
 import { WebsocketProvider } from 'src/code/pages/app/page/y-websocket';
-import { reactive } from 'vue';
 import { z } from 'zod';
 
 import { IArrowCollab } from './arrows/arrow';
@@ -24,13 +23,11 @@ export class PageCollab {
   constructor(page: AppPage) {
     this.page = page;
 
-    this.store = reactive(
-      syncedStore({
-        page: {},
-        notes: {},
-        arrows: {},
-      })
-    ) as IAppCollabStore;
+    this.store = syncedStore({
+      page: {},
+      notes: {},
+      arrows: {},
+    }) as IAppCollabStore;
 
     this.doc = getYjsValue(this.store) as Y.Doc;
   }

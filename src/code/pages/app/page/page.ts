@@ -36,6 +36,7 @@ import { PageSelection } from './selection/selection';
 import { PagePos } from './space/pos';
 import { PageRects } from './space/rects';
 import { PageSizes } from './space/sizes';
+import { PageUndoRedo } from './undoRedo';
 import { WebsocketProvider } from './y-websocket';
 
 export const IPageCollab = IRegionCollab.extend({
@@ -79,6 +80,7 @@ export class AppPage extends PageRegion {
   react: UnwrapRef<IAppPageReact>;
 
   readonly collab: PageCollab;
+  readonly undoRedo: PageUndoRedo;
 
   readonly pos: PagePos;
   readonly rects: PageRects;
@@ -158,6 +160,7 @@ export class AppPage extends PageRegion {
     });
 
     this.collab = factory.makeCollab(this);
+    this.undoRedo = factory.makeUndoRedo(this);
 
     this.pos = factory.makePos(this);
     this.rects = factory.makeRects(this);
@@ -271,6 +274,8 @@ export class AppPage extends PageRegion {
     this.elems.setup();
 
     this.camera.setup(pageData.camera);
+
+    this.undoRedo.setup();
 
     this.react.size = this.collab.websocketProvider.size;
 

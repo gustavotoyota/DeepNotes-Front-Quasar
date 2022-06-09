@@ -185,7 +185,7 @@ export class WebsocketProvider {
   };
 
   handleDocumentUpdate = (update: Uint8Array, origin: any) => {
-    if (origin != null) {
+    if (origin === this) {
       return;
     }
 

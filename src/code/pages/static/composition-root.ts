@@ -27,6 +27,7 @@ import { PageSelection } from '../app/page/selection/selection';
 import { PagePos } from '../app/page/space/pos';
 import { PageRects } from '../app/page/space/rects';
 import { PageSizes } from '../app/page/space/sizes';
+import { PageUndoRedo } from '../app/page/undoRedo';
 import { AppPageCache } from '../app/page-cache';
 import { AppRealtime } from '../app/realtime';
 import { AppSerialization } from '../app/serialization';
@@ -45,6 +46,7 @@ export const container = new Container({
     new AppPage(factory, app, id),
 
   collab: () => (page: AppPage) => new PageCollab(page),
+  undoRedo: () => (page: AppPage) => new PageUndoRedo(page),
 
   pos: () => (page: AppPage) => new PagePos(page),
   rects: () => (page: AppPage) => new PageRects(page),

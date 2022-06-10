@@ -16,6 +16,7 @@
         'border-bottom-color': note.react.color.shadow,
         'border-right-color': note.react.color.shadow,
       }"
+      @touchstart="onTouchStart"
       @pointerdown.left.stop="onPointerDown"
     >
       <slot />
@@ -29,11 +30,28 @@
 >
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
-import { isMouseOverScrollbar } from 'src/code/pages/static/dom';
+import {
+  hasScrollbar,
+  isMouseOverScrollbar,
+  isTouchOverScrollbar,
+} from 'src/code/pages/static/dom';
 import { inject } from 'vue';
 
 const page = inject<AppPage>('page')!;
 const note = inject<PageNote>('note')!;
+
+function onTouchStart(event: TouchEvent) {
+  const possiblyScrolling = hasScrollbar(event.target as HTMLElement);
+
+  if (
+    getComputedStyle(event.target as Element).touchAction !== 'none' &&
+    (!possiblyScrolling ||
+      (possiblyScrolling &&
+        !isTouchOverScrollbar(event, page.camera.react.zoom)))
+  ) {
+    event.preventDefault();
+  }
+}
 
 function onPointerDown(event: PointerEvent) {
   const target = event.target as Element;

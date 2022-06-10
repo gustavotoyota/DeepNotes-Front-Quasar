@@ -104,7 +104,7 @@ onMounted(async () => {
   mounted.value = true;
 });
 
-// Release pointer down for touchscreen
+// Release pointer capture for touchscreen
 
 onMounted(() => {
   document.addEventListener('pointerdown', onPointerDownCapture, true);
@@ -282,10 +282,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.pages-layout :deep(*) {
-  touch-action: pan-x pan-y;
-}
-
 .pages-layout :deep(.q-drawer) {
   transition: width 0.2s ease;
   overflow-x: hidden;

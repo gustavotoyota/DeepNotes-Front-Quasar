@@ -21,6 +21,7 @@ export class PageBoxSelection {
   react: UnwrapRef<IBoxSelectionReact>;
 
   downEvent!: PointerEvent;
+  touchTimer: NodeJS.Timeout | null = null;
 
   constructor(page: AppPage) {
     this.page = page;
@@ -45,16 +46,37 @@ export class PageBoxSelection {
 
     this.downEvent = event;
 
-    listenPointerEvents(event, {
-      move: this._pointerMove,
-      up: this._pointerUp,
-    });
+    if (event.pointerType === 'mouse') {
+      listenPointerEvents(event, {
+        move: this._pointerMove,
+        up: this._pointerUp,
+      });
+
+      return;
+    } else {
+      // Only activate box-selection if the touch stays
+      // in the same place for 300ms
+
+      this.clearTimer();
+
+      this.touchTimer = setTimeout(() => {
+        this.react.active = true;
+        this.touchTimer = null;
+
+        listenPointerEvents(event, {
+          move: this._pointerMove,
+          up: this._pointerUp,
+        });
+      }, 300);
+
+      listenPointerEvents(event, {
+        move: this._timerPointerMove,
+        up: this.clearTimer,
+      });
+    }
   }
 
-  private _pointerMove = function (
-    this: PageBoxSelection,
-    event: PointerEvent
-  ) {
+  private _pointerMove = (event: PointerEvent) => {
     const displayPos = this.page.pos.eventToDisplay(event);
 
     if (!this.react.active) {
@@ -68,9 +90,9 @@ export class PageBoxSelection {
     }
 
     this.react.displayEnd = new Vec2(displayPos);
-  }.bind(this);
+  };
 
-  private _pointerUp = function (this: PageBoxSelection, event: PointerEvent) {
+  private _pointerUp = (event: PointerEvent) => {
     this.react.active = false;
 
     const clientStart = this.page.pos.displayToClient(this.react.displayStart);
@@ -111,5 +133,27 @@ export class PageBoxSelection {
     //   else
     //     this.page.selection.add(arrow)
     // }
-  }.bind(this);
+  };
+
+  private _timerPointerMove = (event: PointerEvent) => {
+    if (this.touchTimer == null || this.react.active) {
+      return;
+    }
+
+    const displayPos = this.page.pos.eventToDisplay(event);
+
+    const dist = displayPos.sub(this.react.displayStart).length();
+
+    if (dist >= PageBoxSelection.MIN_DISTANCE) {
+      this.clearTimer();
+
+      this.page.panning.start(this.downEvent);
+    }
+  };
+
+  clearTimer = () => {
+    clearTimeout(this.touchTimer!);
+
+    this.touchTimer = null;
+  };
 }

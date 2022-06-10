@@ -182,4 +182,8 @@ async function rejectInvitation() {
 
   color: #64b5f6;
 }
+
+.display :deep(*) {
+  touch-action: none;
+}
 </style>

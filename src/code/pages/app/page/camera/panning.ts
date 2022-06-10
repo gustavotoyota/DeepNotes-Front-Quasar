@@ -25,9 +25,6 @@ export class PagePanning {
   }
 
   private _update = function (this: PagePanning, event: PointerEvent) {
-    // if (this.page.pinching.active)
-    //   return
-
     const clientPos = this.page.pos.eventToClient(event);
 
     this.page.camera.react.pos = this.page.camera.react.pos.sub(

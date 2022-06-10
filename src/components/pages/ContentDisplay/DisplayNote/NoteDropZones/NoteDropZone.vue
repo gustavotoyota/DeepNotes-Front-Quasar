@@ -48,12 +48,10 @@ function onPointerLeave() {
   page.dragging.react.dropIndex = null;
 }
 
-async function onPointerUp(event: PointerEvent) {
+async function onPointerUp() {
   if (!page.dragging.react.active) {
     return;
   }
-
-  event.stopPropagation();
 
   await page.dropping.perform(props.parentNote, props.index ?? 0);
 }

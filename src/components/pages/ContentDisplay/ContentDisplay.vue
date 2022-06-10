@@ -2,6 +2,7 @@
   <div
     class="display"
     @wheel="onWheel"
+    @pointerdown.left.capture="onLeftPointerDown"
     @pointerdown.middle.prevent="onMiddlePointerDown"
   >
     <template v-if="page.react.status === 'success'">
@@ -106,6 +107,14 @@ provide('page', props.page);
 
 function onWheel(event: WheelEvent) {
   props.page.zooming.perform(event);
+}
+
+function onLeftPointerDown(event: PointerEvent) {
+  props.page.pinching.addPointer(event);
+
+  if (props.page.pinching.react.active) {
+    event.stopPropagation();
+  }
 }
 
 function onMiddlePointerDown(event: PointerEvent) {

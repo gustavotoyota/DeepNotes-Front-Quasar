@@ -5,6 +5,7 @@ import { IArrowCollab, PageArrow } from '../app/page/arrows/arrow';
 import { PageArrows } from '../app/page/arrows/arrows';
 import { PageCamera } from '../app/page/camera/camera';
 import { PagePanning } from '../app/page/camera/panning';
+import { PagePinching } from '../app/page/camera/pinching';
 import { PageZooming } from '../app/page/camera/zooming';
 import { PageCollab } from '../app/page/collab';
 import { PageClipboard } from '../app/page/elems/clipboard';
@@ -55,6 +56,7 @@ export const container = new Container({
   camera: () => (page: AppPage) => new PageCamera(page),
   panning: () => (page: AppPage) => new PagePanning(page),
   zooming: () => (page: AppPage) => new PageZooming(page),
+  pinching: () => (page: AppPage) => new PagePinching(page),
 
   selection: () => (page: AppPage) => new PageSelection(page),
   activeElem: () => (page: AppPage) => new PageActiveElem(page),

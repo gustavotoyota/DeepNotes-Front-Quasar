@@ -14,6 +14,7 @@ import { PagesApp } from '../app';
 import { PageArrows } from './arrows/arrows';
 import { ICameraData, PageCamera } from './camera/camera';
 import { PagePanning } from './camera/panning';
+import { PagePinching } from './camera/pinching';
 import { PageZooming } from './camera/zooming';
 import { PageCollab } from './collab';
 import { PageClipboard } from './elems/clipboard';
@@ -89,6 +90,7 @@ export class AppPage extends PageRegion {
   readonly camera: PageCamera;
   readonly panning: PagePanning;
   readonly zooming: PageZooming;
+  readonly pinching: PagePinching;
 
   readonly selection: PageSelection;
   readonly activeElem: PageActiveElem;
@@ -169,6 +171,7 @@ export class AppPage extends PageRegion {
     this.camera = factory.makeCamera(this);
     this.panning = factory.makePanning(this);
     this.zooming = factory.makeZooming(this);
+    this.pinching = factory.makePinching(this);
 
     this.selection = factory.makeSelection(this);
     this.activeElem = factory.makeActiveElem(this);

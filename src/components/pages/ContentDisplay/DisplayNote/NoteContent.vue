@@ -54,22 +54,16 @@ function onTouchStart(event: TouchEvent) {
 }
 
 function onPointerDown(event: PointerEvent) {
-  const target = event.target as Element;
+  if (isMouseOverScrollbar(event) || note.react.editing) {
+    return;
+  }
 
   if (
-    (note.collab.link || target.closest('a[href]')) &&
+    (note.collab.link || (event.target as Element).closest('a[href]')) &&
     !event.altKey &&
     !event.shiftKey &&
     !note.react.selected
   ) {
-    return;
-  }
-
-  if (isMouseOverScrollbar(event)) {
-    return;
-  }
-
-  if (note.react.editing) {
     return;
   }
 

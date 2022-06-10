@@ -7,8 +7,12 @@
   >
     <template v-if="page.react.status === 'success'">
       <DisplayBackground />
+
+      <DisplayArrows />
       <DisplayNotes />
+
       <DisplayBoxSelection />
+
       <DisplayBtns />
     </template>
 
@@ -94,10 +98,11 @@ import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { provide } from 'vue';
 
+import DisplayArrows from './DisplayArrows/DisplayArrows.vue';
 import DisplayBackground from './DisplayBackground.vue';
 import DisplayBoxSelection from './DisplayBoxSelection.vue';
 import DisplayBtns from './DisplayBtns.vue';
-import DisplayNotes from './DisplayNotes.vue';
+import DisplayNotes from './DisplayNotes/DisplayNotes.vue';
 import RequestAccessDialog from './RequestAccessDialog.vue';
 
 const props = defineProps<{

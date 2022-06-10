@@ -17,7 +17,8 @@
         'border-right-color': note.react.color.shadow,
       }"
       @touchstart="onTouchStart"
-      @pointerdown.left.stop="onPointerDown"
+      @pointerdown.left.stop="onLeftPointerDown"
+      @pointerup.left="onLeftPointerUp"
     >
       <slot />
     </div>
@@ -53,7 +54,7 @@ function onTouchStart(event: TouchEvent) {
   }
 }
 
-function onPointerDown(event: PointerEvent) {
+function onLeftPointerDown(event: PointerEvent) {
   if (isMouseOverScrollbar(event) || note.react.editing) {
     return;
   }
@@ -73,6 +74,16 @@ function onPointerDown(event: PointerEvent) {
 
   if (note.react.selected) {
     page.dragging.start(event);
+  }
+}
+
+function onLeftPointerUp(event: PointerEvent) {
+  if (page.arrowCreation.react.active) {
+    event.stopPropagation();
+
+    page.arrowCreation.finish(note);
+
+    return;
   }
 }
 </script>

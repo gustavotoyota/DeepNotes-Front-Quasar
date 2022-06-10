@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { PagesApp } from '../app/app';
 import { IArrowCollab, PageArrow } from '../app/page/arrows/arrow';
+import { PageArrowCreation } from '../app/page/arrows/arrow-creation';
 import { PageArrows } from '../app/page/arrows/arrows';
 import { PageCamera } from '../app/page/camera/camera';
 import { PagePanning } from '../app/page/camera/panning';
@@ -97,6 +98,7 @@ export const container = new Container({
       collab: IArrowCollab
     ) =>
       new PageArrow(page, id, parentId, collab),
+  arrowCreation: () => (page: AppPage) => new PageArrowCreation(page),
 });
 
 export const factory = container.factory;

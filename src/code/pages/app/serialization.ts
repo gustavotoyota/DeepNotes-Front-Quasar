@@ -4,7 +4,6 @@ import { z } from 'zod';
 
 import { Op } from '../static/quill';
 import { createSyncedText } from '../static/synced-store';
-import { IVec2 } from '../static/vec2';
 import { PagesApp } from './app';
 import { IArrowCollab } from './page/arrows/arrow';
 import { INoteCollab } from './page/notes/note';
@@ -12,16 +11,10 @@ import { IRegionCollab } from './page/regions/region';
 
 // Arrow
 
-export const ISerialArrowEndpoint = z
-  .object({
-    noteIndex: z.number().nullable().default(null),
-    pos: IVec2.default({ x: 0, y: 0 }),
-  })
-  .default({});
-
-export const ISerialArrow = z.object({
-  start: ISerialArrowEndpoint,
-  end: ISerialArrowEndpoint,
+export const ISerialArrow = IArrowCollab.omit({
+  label: true,
+}).extend({
+  label: Op.array().default([{ insert: '\n' }]),
 });
 
 // Note
@@ -136,7 +129,9 @@ export class AppSerialization {
       // Rest of the properties
 
       const collabKeys = Object.keys(note.collab);
+
       pull(collabKeys, 'head', 'body', 'noteIds', 'arrowIds', 'zIndex');
+
       for (const collabKey of collabKeys) {
         // @ts-ignore
         serialNote[collabKey] = cloneDeep(note.collab[collabKey]);
@@ -151,14 +146,9 @@ export class AppSerialization {
 
     for (const arrow of page.arrows.fromIds(container.arrowIds)) {
       const serialArrow: z.output<typeof ISerialArrow> = {
-        start: {
-          noteIndex: noteMap.get(arrow.collab.start.noteId ?? '') ?? null,
-          pos: arrow.collab.start.pos,
-        },
-        end: {
-          noteIndex: noteMap.get(arrow.collab.end.noteId ?? '') ?? null,
-          pos: arrow.collab.end.pos,
-        },
+        ...arrow.collab,
+
+        label: arrow.collab.label.toDelta(),
       };
 
       serialRegion.arrows.push(serialArrow);
@@ -202,6 +192,7 @@ export class AppSerialization {
         // Rest of the keys
 
         const collabKeys = Object.keys(serialNote);
+
         pull(collabKeys, 'head', 'body', 'notes', 'arrows');
 
         for (const collabKey of collabKeys) {
@@ -239,14 +230,9 @@ export class AppSerialization {
     if (serialRegion.arrows != null) {
       for (const serialArrow of serialRegion.arrows) {
         const arrowCollab: IArrowCollab = {
-          start: {
-            noteId: noteMap.get(serialArrow.start.noteIndex ?? -1) ?? null,
-            pos: serialArrow.start.pos,
-          },
-          end: {
-            noteId: noteMap.get(serialArrow.end.noteIndex ?? -1) ?? null,
-            pos: serialArrow.end.pos,
-          },
+          ...serialArrow,
+
+          label: createSyncedText(serialArrow.label),
         };
 
         const arrowId = v4();

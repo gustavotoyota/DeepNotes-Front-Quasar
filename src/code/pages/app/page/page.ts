@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { Factory } from '../../static/composition-root';
 import { rolesMap } from '../../static/roles';
 import { PagesApp } from '../app';
+import { PageArrowCreation } from './arrows/arrow-creation';
 import { PageArrows } from './arrows/arrows';
 import { ICameraData, PageCamera } from './camera/camera';
 import { PagePanning } from './camera/panning';
@@ -112,6 +113,7 @@ export class AppPage extends PageRegion {
   readonly resizing: PageResizing;
 
   readonly arrows: PageArrows;
+  readonly arrowCreation: PageArrowCreation;
 
   constructor(factory: Factory, app: PagesApp, id: string) {
     super(null as any, id, ElemType.PAGE, null);
@@ -193,6 +195,7 @@ export class AppPage extends PageRegion {
     this.resizing = factory.makeResizing(this);
 
     this.arrows = factory.makeArrows(this);
+    this.arrowCreation = factory.makeArrowCreation(this);
   }
 
   async preSync() {

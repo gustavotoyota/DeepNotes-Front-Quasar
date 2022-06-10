@@ -1,32 +1,108 @@
-import { IVec2 } from 'src/code/pages/static/vec2';
+import { SyncedText } from '@syncedstore/core';
+import { getLineRectIntersection } from 'src/code/pages/static/geometry';
+import { Line } from 'src/code/pages/static/line';
+import { createSyncedText } from 'src/code/pages/static/synced-store';
+import { Vec2 } from 'src/code/pages/static/vec2';
+import { computed, ComputedRef, UnwrapRef } from 'vue';
 import { z } from 'zod';
 
-import { ElemType, PageElem } from '../elems/elem';
+import { ElemType, IElemReact, PageElem } from '../elems/elem';
+import { PageNote } from '../notes/note';
 import { AppPage } from '../page';
 
-export const IArrowEndpoint = z.object({
-  noteId: z.string().nullable().default(null),
-  pos: IVec2.default({ x: 0, y: 0 }),
-});
-export type IArrowEndpoint = z.output<typeof IArrowEndpoint>;
-
 export const IArrowCollab = z.object({
-  start: IArrowEndpoint,
-  end: IArrowEndpoint,
+  sourceId: z.string().uuid(),
+  targetId: z.string().uuid(),
+
+  label: z
+    .any()
+    .default(() =>
+      createSyncedText([{ insert: '\n' }])
+    ) as z.ZodType<SyncedText>,
+
+  head: z.boolean().default(true),
+  pattern: z.string().default('solid'),
+  tail: z.boolean().default(false),
+
+  color: z.string().default('#b0b0b0'),
 });
 export type IArrowCollab = z.output<typeof IArrowCollab>;
 
+export interface IArrowReact extends IElemReact {
+  fake: boolean;
+  _targetPos: Vec2;
+
+  sourceNote: ComputedRef<PageNote>;
+  targetNote: ComputedRef<PageNote>;
+
+  targetCenter: ComputedRef<Vec2>;
+
+  sourcePos: ComputedRef<Vec2>;
+  targetPos: ComputedRef<Vec2>;
+}
+
 export class PageArrow extends PageElem {
   readonly collab: IArrowCollab;
+
+  declare readonly react: UnwrapRef<IArrowReact>;
 
   constructor(
     page: AppPage,
     id: string,
     parentId: string | null,
-    collab: IArrowCollab
+    collab: IArrowCollab,
+    fake = false
   ) {
     super(page, id, ElemType.ARROW, parentId);
 
     this.collab = collab;
+
+    const react: Omit<IArrowReact, keyof IElemReact> = {
+      fake,
+      _targetPos: new Vec2(),
+
+      sourceNote: computed(
+        () => this.page.notes.react.map[this.collab.sourceId]
+      ),
+      targetNote: computed(
+        () => this.page.notes.react.map[this.collab.targetId]
+      ),
+
+      targetCenter: computed(() => {
+        if (this.react.fake) {
+          return this.react._targetPos;
+        } else {
+          return this.react.targetNote.react.worldCenter;
+        }
+      }),
+
+      sourcePos: computed(
+        () =>
+          getLineRectIntersection(
+            new Line(
+              this.react.targetCenter,
+              this.react.sourceNote.react.worldCenter
+            ),
+            this.react.sourceNote.react.worldRect.grow(12)
+          ) ?? this.react.sourceNote.react.worldCenter
+      ),
+      targetPos: computed(() => {
+        if (this.react.fake) {
+          return this.react._targetPos;
+        }
+
+        return (
+          getLineRectIntersection(
+            new Line(
+              this.react.sourceNote.react.worldCenter,
+              this.react.targetNote.react.worldCenter
+            ),
+            this.react.targetNote.react.worldRect.grow(12)
+          ) ?? this.react.targetNote.react.worldCenter
+        );
+      }),
+    };
+
+    Object.assign(this.react, react);
   }
 }

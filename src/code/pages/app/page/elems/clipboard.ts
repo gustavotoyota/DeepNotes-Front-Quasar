@@ -32,18 +32,6 @@ export class PageClipboard {
       clipboardNote.pos.y -= worldCenter.y;
     }
 
-    for (const clipboardArrow of clipboardRegion.arrows) {
-      if (clipboardArrow.start.noteIndex == null) {
-        clipboardArrow.start.pos.x -= worldCenter.x;
-        clipboardArrow.start.pos.y -= worldCenter.y;
-      }
-
-      if (clipboardArrow.end.noteIndex == null) {
-        clipboardArrow.end.pos.x -= worldCenter.x;
-        clipboardArrow.end.pos.y -= worldCenter.y;
-      }
-    }
-
     // Copy to clipboard
 
     const clipboardText = JSON.stringify(clipboardRegion, null, 2);

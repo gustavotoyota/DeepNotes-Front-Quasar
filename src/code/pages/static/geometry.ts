@@ -2,7 +2,7 @@ import { Line } from './line';
 import { Rect } from './rect';
 import { Vec2 } from './vec2';
 
-export function lineRectIntersection(line: Line, rect: Rect): Vec2 | null {
+export function getLineRectIntersection(line: Line, rect: Rect): Vec2 | null {
   const result = liangBarsky(
     line.start,
     line.end,
@@ -10,7 +10,9 @@ export function lineRectIntersection(line: Line, rect: Rect): Vec2 | null {
     rect.bottomRight
   );
 
-  if (result == null) return null;
+  if (result == null) {
+    return null;
+  }
 
   return result[0];
 }

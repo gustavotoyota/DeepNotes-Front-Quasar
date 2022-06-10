@@ -3,6 +3,8 @@
     <NoteDropZones />
 
     <NoteFrame>
+      <NoteArrowHandles />
+
       <NoteResizeHandles />
 
       <NoteLinkIcon />
@@ -30,6 +32,7 @@ import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { provide, watchEffect } from 'vue';
 
 import NoteAnchor from './NoteAnchor.vue';
+import NoteArrowHandles from './NoteArrowHandles/NoteArrowHandles.vue';
 import NoteContent from './NoteContent.vue';
 import NoteDivider from './NoteDivider.vue';
 import NoteDropZones from './NoteDropZones/NoteDropZones.vue';

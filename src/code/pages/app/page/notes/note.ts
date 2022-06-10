@@ -161,6 +161,7 @@ export interface INoteReact extends IRegionReact {
 
   worldSize: Vec2;
   worldRect: ComputedRef<Rect>;
+  worldCenter: ComputedRef<Vec2>;
 
   clientRect: ComputedRef<Rect>;
 
@@ -409,6 +410,7 @@ export class PageNote extends PageRegion {
             )
           )
       ),
+      worldCenter: computed(() => this.react.worldRect.center),
 
       clientRect: computed(() =>
         page.rects.worldToClient(this.react.worldRect)

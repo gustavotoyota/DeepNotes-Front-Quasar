@@ -29,8 +29,7 @@ export const IArrowCollab = z.object({
 export type IArrowCollab = z.output<typeof IArrowCollab>;
 
 export interface IArrowReact extends IElemReact {
-  fake: boolean;
-  _targetPos: Vec2;
+  fakeTargetPos: Vec2 | null;
 
   sourceNote: ComputedRef<PageNote>;
   targetNote: ComputedRef<PageNote>;
@@ -58,8 +57,7 @@ export class PageArrow extends PageElem {
     this.collab = collab;
 
     const react: Omit<IArrowReact, keyof IElemReact> = {
-      fake,
-      _targetPos: new Vec2(),
+      fakeTargetPos: fake ? new Vec2() : null,
 
       sourceNote: computed(
         () => this.page.notes.react.map[this.collab.sourceId]
@@ -69,8 +67,8 @@ export class PageArrow extends PageElem {
       ),
 
       targetCenter: computed(() => {
-        if (this.react.fake) {
-          return this.react._targetPos;
+        if (this.react.fakeTargetPos != null) {
+          return this.react.fakeTargetPos;
         } else {
           return this.react.targetNote.react.worldCenter;
         }
@@ -87,18 +85,18 @@ export class PageArrow extends PageElem {
           ) ?? this.react.sourceNote.react.worldCenter
       ),
       targetPos: computed(() => {
-        if (this.react.fake) {
-          return this.react._targetPos;
+        if (this.react.fakeTargetPos != null) {
+          return this.react.fakeTargetPos;
         }
 
         return (
           getLineRectIntersection(
             new Line(
               this.react.sourceNote.react.worldCenter,
-              this.react.targetNote.react.worldCenter
+              this.react.targetCenter
             ),
             this.react.targetNote.react.worldRect.grow(12)
-          ) ?? this.react.targetNote.react.worldCenter
+          ) ?? this.react.targetCenter
         );
       }),
     };

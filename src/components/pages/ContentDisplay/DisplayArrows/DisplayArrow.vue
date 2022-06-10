@@ -2,12 +2,12 @@
   <line
     v-if="
       arrow.react.sourceNote != null &&
-      (arrow.react.fake || arrow.react.targetNote != null)
+      (arrow.react.targetNote != null || arrow.react.fakeTargetPos != null)
     "
     :id="`arrow-${arrow.id}`"
     class="arrow"
     :style="{
-      'pointer-events': arrow.react.fake ? 'none' : 'auto',
+      'pointer-events': arrow.react.fakeTargetPos != null ? 'none' : 'auto',
       stroke: arrow.react.active
         ? 'rgb(3, 155, 229)'
         : arrow.react.selected

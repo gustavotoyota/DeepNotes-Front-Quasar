@@ -31,7 +31,7 @@ export class PageSelection {
       arrowSet: {},
 
       noteIds: computed(() => Object.keys(this.react.noteSet)),
-      arrowIds: computed(() => Object.keys(this.react.noteSet)),
+      arrowIds: computed(() => Object.keys(this.react.arrowSet)),
 
       notes: computed(() => this.page.notes.fromIds(this.react.noteIds)),
       arrows: computed(() => this.page.arrows.fromIds(this.react.arrowIds)),

@@ -36,7 +36,7 @@ export class PageArrowCreation {
     this.fakeArrow.collab.sourceId = sourceNote.id;
 
     this.fakeArrow.collab.targetId = null as any;
-    this.fakeArrow.react._targetPos = this.page.pos.eventToWorld(event);
+    this.fakeArrow.react.fakeTargetPos = this.page.pos.eventToWorld(event);
 
     listenPointerEvents(event, {
       move: this._update,
@@ -47,7 +47,7 @@ export class PageArrowCreation {
   }
 
   private _update = (event: PointerEvent) => {
-    this.fakeArrow.react._targetPos = this.page.pos.eventToWorld(event);
+    this.fakeArrow.react.fakeTargetPos = this.page.pos.eventToWorld(event);
   };
 
   finish(targetNote: PageNote) {

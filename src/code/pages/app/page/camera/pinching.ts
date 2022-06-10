@@ -74,13 +74,9 @@ export class PagePinching {
   }
 
   private _update = (event: PointerEvent) => {
-    if (!(event.pointerId in this.react.pointers)) return;
-
-    // Update pointer position
-
-    const displayPos = this.page.pos.eventToDisplay(event);
-
-    this.react.pointers[event.pointerId] = displayPos;
+    if (!(event.pointerId in this.react.pointers)) {
+      return;
+    }
 
     // Compute center and distance
 

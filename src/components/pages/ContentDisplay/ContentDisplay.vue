@@ -89,6 +89,7 @@
 >
 import { Notify } from 'quasar';
 import { AppPage } from 'src/code/pages/app/page/page';
+import { isMouseOverScrollbar } from 'src/code/pages/static/dom';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { provide } from 'vue';
@@ -110,6 +111,10 @@ function onWheel(event: WheelEvent) {
 }
 
 function onLeftPointerDown(event: PointerEvent) {
+  if (isMouseOverScrollbar(event)) {
+    return;
+  }
+
   props.page.pinching.addPointer(event);
 
   if (props.page.pinching.react.active) {

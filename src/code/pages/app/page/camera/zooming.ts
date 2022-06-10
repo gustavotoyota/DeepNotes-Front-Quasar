@@ -12,8 +12,9 @@ export class PageZooming {
   perform(event: WheelEvent) {
     // Skip if already handled by a scrollbar
 
-    if (event.altKey) event.preventDefault();
-    else {
+    if (event.altKey) {
+      event.preventDefault();
+    } else {
       let node = event.target as Node | null;
 
       while (node != null) {

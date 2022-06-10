@@ -45,6 +45,10 @@ export class PageDragging {
       !(this.page.activeElem.react.elem instanceof PageNote) ||
       !this.page.activeElem.react.elem.collab.movable
     ) {
+      if (event.pointerType !== 'mouse') {
+        this.page.panning.start(event);
+      }
+
       return;
     }
 

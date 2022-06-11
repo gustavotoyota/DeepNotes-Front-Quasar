@@ -9,6 +9,7 @@ import { darkenByAmount, lightenByAmount } from 'src/code/utils';
 import { computed, ComputedRef, UnwrapRef, WritableComputedRef } from 'vue';
 import { z } from 'zod';
 
+import { PageArrow } from '../arrows/arrow';
 import { ElemType, IElemReact } from '../elems/elem';
 import { AppPage } from '../page';
 import { IRegionCollab, IRegionReact, PageRegion } from '../regions/region';
@@ -157,8 +158,6 @@ export interface INoteReact extends IRegionReact {
   bottomSection: ComputedRef<NoteSection>;
   numEnabledSections: ComputedRef<number>;
 
-  index: number;
-
   worldSize: Vec2;
   worldRect: ComputedRef<Rect>;
   worldCenter: ComputedRef<Vec2>;
@@ -186,6 +185,9 @@ export class PageNote extends PageRegion {
   declare react: UnwrapRef<INoteReact>;
 
   private _parent: PageNote | null = null;
+
+  incomingArrows: PageArrow[] = [];
+  outgoingArrows: PageArrow[] = [];
 
   constructor(
     page: AppPage,
@@ -221,13 +223,6 @@ export class PageNote extends PageRegion {
         set: (val) => {
           this._parent = val;
         },
-      }),
-      region: computed(() => {
-        if (this.react.parent == null) {
-          return page;
-        } else {
-          return this.react.parent;
-        }
       }),
 
       editing: false,
@@ -393,8 +388,6 @@ export class PageNote extends PageRegion {
 
         return numSections;
       }),
-
-      index: -1,
 
       worldSize: new Vec2(),
       worldRect: computed(

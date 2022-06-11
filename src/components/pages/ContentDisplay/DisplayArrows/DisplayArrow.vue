@@ -28,10 +28,11 @@
 >
 import { PageArrow } from 'src/code/pages/app/page/arrows/arrow';
 import { AppPage } from 'src/code/pages/app/page/page';
-import { inject } from 'vue';
+import { inject, watchEffect } from 'vue';
 
 const props = defineProps<{
   arrow: PageArrow;
+  index?: number;
 }>();
 
 const page = inject<AppPage>('page')!;
@@ -39,6 +40,11 @@ const page = inject<AppPage>('page')!;
 function onLeftPointerDown(event: PointerEvent) {
   page.clickSelection.perform(props.arrow, event);
 }
+
+watchEffect(() => {
+  // eslint-disable-next-line vue/no-mutating-props
+  props.arrow.react.index = props.index ?? 0;
+});
 </script>
 
 <style scoped>

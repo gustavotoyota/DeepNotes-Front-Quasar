@@ -1,7 +1,7 @@
-import { refProp } from 'src/code/pages/static/vue';
-import { UnwrapRef } from 'vue';
+import { computed, ComputedRef, reactive, UnwrapRef } from 'vue';
 
 import { AppPage } from '../page';
+import { PageRegion } from '../regions/region';
 
 export enum ElemType {
   PAGE = 'page',
@@ -11,9 +11,12 @@ export enum ElemType {
 
 export interface IElemReact {
   parentId: string | null;
+  region: ComputedRef<PageRegion>;
 
   active: boolean;
   selected: boolean;
+
+  index: number;
 }
 
 export class PageElem {
@@ -22,7 +25,7 @@ export class PageElem {
   readonly id: string;
   readonly type: ElemType;
 
-  react: UnwrapRef<IElemReact>;
+  readonly react: UnwrapRef<IElemReact>;
 
   constructor(
     page: AppPage,
@@ -35,11 +38,20 @@ export class PageElem {
     this.id = id;
     this.type = type;
 
-    this.react = refProp<IElemReact>(this, 'react', {
+    this.react = reactive({
       parentId: parentId,
+      region: computed(() => {
+        if (this.react.parentId == null) {
+          return this.page;
+        } else {
+          return this.page.notes.fromId(this.react.parentId)!;
+        }
+      }),
 
       active: this.page && this.page.activeElem.is(this.id),
       selected: this.page && this.page.selection.has(this),
+
+      index: -1,
     });
   }
 }

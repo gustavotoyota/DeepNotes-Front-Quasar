@@ -3,7 +3,7 @@ import { getLineRectIntersection } from 'src/code/pages/static/geometry';
 import { Line } from 'src/code/pages/static/line';
 import { createSyncedText } from 'src/code/pages/static/synced-store';
 import { Vec2 } from 'src/code/pages/static/vec2';
-import { computed, ComputedRef, UnwrapRef } from 'vue';
+import { computed, ComputedRef, nextTick, UnwrapRef } from 'vue';
 import { z } from 'zod';
 
 import { ElemType, IElemReact, PageElem } from '../elems/elem';
@@ -102,5 +102,22 @@ export class PageArrow extends PageElem {
     };
 
     Object.assign(this.react, react);
+
+    if (!fake) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      nextTick(() => {
+        if (this.react.sourceNote != null) {
+          this.react.sourceNote.outgoingArrows.push(this);
+        }
+
+        if (this.react.targetNote != null) {
+          this.react.targetNote.incomingArrows.push(this);
+        }
+      });
+    }
+  }
+
+  removeFromRegion() {
+    this.react.region.react.arrowIds.splice(this.react.index, 1);
   }
 }

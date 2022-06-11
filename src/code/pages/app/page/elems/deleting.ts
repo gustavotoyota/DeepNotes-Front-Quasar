@@ -1,3 +1,4 @@
+import { PageArrow } from '../arrows/arrow';
 import { PageNote } from '../notes/note';
 import { AppPage } from '../page';
 
@@ -15,34 +16,39 @@ export class PageDeleting {
 
     this.page.collab.doc.transact(() => {
       this._performAux(
-        this.page.selection.react.notes
-        //this.page.selection.react.arrows
+        this.page.selection.react.notes,
+        this.page.selection.react.arrows
       );
     });
 
     this.page.selection.clear();
   }
-  private _performAux(notes: PageNote[]) {
+  private _performAux(notes: PageNote[], arrows: PageArrow[] = []) {
     // Delete arrows
 
-    // const arrowSet = new Set<PageArrow>(arrows)
+    const arrowSet = new Set<PageArrow>(arrows);
 
-    // for (const note of notes) {
-    //   for (const arrow of note.incomingArrows)
-    //     arrowSet.add(arrow)
-    //   for (const arrow of note.outgoingArrows)
-    //     arrowSet.add(arrow)
-    //   for (const arrow of note.arrows)
-    //     arrowSet.add(arrow)
-    // }
+    for (const note of notes) {
+      for (const arrow of note.incomingArrows) {
+        arrowSet.add(arrow);
+      }
+      for (const arrow of note.outgoingArrows) {
+        arrowSet.add(arrow);
+      }
+      for (const arrow of note.react.arrows) {
+        arrowSet.add(arrow);
+      }
+    }
 
-    // const sortedArrows = Array.from(arrowSet).sort(
-    //   (a: PageArrow, b: PageArrow) => b.index - a.index)
+    const sortedArrows = Array.from(arrowSet).sort(
+      (a: PageArrow, b: PageArrow) => b.react.index - a.react.index
+    );
 
-    // for (const arrow of sortedArrows) {
-    //   arrow.removeFromRegion()
-    //   Vue.delete(this.page.collab.store.arrows, arrow.id)
-    // }
+    for (const arrow of sortedArrows) {
+      arrow.removeFromRegion();
+
+      delete this.page.collab.store.arrows[arrow.id];
+    }
 
     // Delete notes
 

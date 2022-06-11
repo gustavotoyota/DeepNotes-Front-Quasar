@@ -4,7 +4,6 @@ import {
   SymmetricKey,
   wrapSymmetricKey as wrapSymmetricKey,
 } from 'src/code/crypto/symmetric-key';
-import { refProp } from 'src/code/pages/static/vue';
 import { computed, ComputedRef, UnwrapRef, watch } from 'vue';
 import { z } from 'zod';
 
@@ -20,7 +19,7 @@ import { PageZooming } from './camera/zooming';
 import { PageCollab } from './collab';
 import { PageClipboard } from './elems/clipboard';
 import { PageDeleting } from './elems/deleting';
-import { ElemType } from './elems/elem';
+import { ElemType, IElemReact } from './elems/elem';
 import { PageElems } from './elems/elems';
 import { PageCloning } from './notes/cloning';
 import { PageDragging } from './notes/dragging';
@@ -79,7 +78,7 @@ export class AppPage extends PageRegion {
 
   readonly id: string;
 
-  react: UnwrapRef<IAppPageReact>;
+  declare readonly react: UnwrapRef<IAppPageReact>;
 
   readonly collab: PageCollab;
   readonly undoRedo: PageUndoRedo;
@@ -122,7 +121,7 @@ export class AppPage extends PageRegion {
 
     this.id = id;
 
-    this.react = refProp<IAppPageReact>(this, 'react', {
+    const react: Omit<IAppPageReact, keyof IElemReact> = {
       // Page
 
       collab: computed(() => this.collab.store.page),
@@ -147,13 +146,6 @@ export class AppPage extends PageRegion {
         () => !rolesMap[this.react.roleId!]?.permissions.editPages ?? true
       ),
 
-      // Elem
-
-      parentId: null,
-
-      active: false,
-      selected: false,
-
       // Region
 
       noteIds: computed(() => this.react.collab.noteIds),
@@ -161,7 +153,9 @@ export class AppPage extends PageRegion {
 
       notes: computed(() => this.notes.fromIds(this.react.noteIds)),
       arrows: computed(() => this.arrows.fromIds(this.react.arrowIds)),
-    });
+    };
+
+    Object.assign(this.react, react);
 
     this.collab = factory.makeCollab(this);
     this.undoRedo = factory.makeUndoRedo(this);

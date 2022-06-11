@@ -1,4 +1,5 @@
 import { getYjsValue, SyncedArray, SyncedMap } from '@syncedstore/core';
+import { pull } from 'lodash';
 import { Factory } from 'src/code/pages/static/composition-root';
 import { refProp } from 'src/code/pages/static/vue';
 import {
@@ -59,13 +60,19 @@ export class PageArrows {
     this.page.arrows.react.map[arrow.id] = arrow;
   }
   createAndObserveIds(arrowIds: string[], parentId: string | null) {
-    for (const arrowId of arrowIds) this.create(arrowId, parentId);
+    for (const arrowId of arrowIds) {
+      this.create(arrowId, parentId);
+    }
 
     (getYjsValue(arrowIds) as SyncedArray<string>).observe((event) => {
       for (const delta of event.changes.delta) {
-        if (delta.insert == null) continue;
+        if (delta.insert == null) {
+          continue;
+        }
 
-        for (const arrowId of delta.insert) this.create(arrowId, parentId);
+        for (const arrowId of delta.insert) {
+          this.create(arrowId, parentId);
+        }
       }
     });
   }
@@ -78,29 +85,26 @@ export class PageArrows {
             continue;
           }
 
-          //const arrow = this.react.map[arrowId];
+          const arrow = this.react.map[arrowId];
 
-          const startNoteId = change.oldValue._map
-            .get('start')
-            .content.type._map.get('noteId').content.arr[0];
+          const startNoteId =
+            change.oldValue._map.get('sourceId').content.arr[0];
 
           if (startNoteId != null) {
             const note = this.page.notes.fromId(startNoteId);
 
             if (note != null) {
-              //pull(note.outgoingArrows, arrow);
+              pull(note.outgoingArrows, arrow);
             }
           }
 
-          const endNoteId = change.oldValue._map
-            .get('end')
-            .content.type._map.get('noteId').content.arr[0];
+          const endNoteId = change.oldValue._map.get('targetId').content.arr[0];
 
           if (endNoteId != null) {
             const note = this.page.notes.fromId(endNoteId);
 
             if (note != null) {
-              // pull(note.incomingArrows, arrow);
+              pull(note.incomingArrows, arrow);
             }
           }
 

@@ -24,12 +24,13 @@
         "
       >
         <template
-          v-for="arrowId in page.react.collab.arrowIds"
+          v-for="(arrowId, index) in page.react.collab.arrowIds"
           :key="arrowId"
         >
           <DisplayArrow
             v-if="page.arrows.fromId(arrowId) != null"
             :arrow="page.arrows.fromId(arrowId)!"
+            :index="index"
           />
         </template>
 

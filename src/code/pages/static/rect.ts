@@ -49,4 +49,21 @@ export class Rect {
       this.bottomRight.y <= rect.bottomRight.y
     );
   }
+
+  containsRect(rect: Rect) {
+    return (
+      rect.topLeft.x >= this.topLeft.x &&
+      rect.topLeft.y >= this.topLeft.y &&
+      rect.bottomRight.x <= this.bottomRight.x &&
+      rect.bottomRight.y <= this.bottomRight.y
+    );
+  }
+  containsVec2(pos: Vec2) {
+    return (
+      pos.x >= this.topLeft.x &&
+      pos.y >= this.topLeft.y &&
+      pos.x <= this.bottomRight.x &&
+      pos.y <= this.bottomRight.y
+    );
+  }
 }

@@ -34,10 +34,10 @@ export interface IArrowReact extends IElemReact {
   sourceNote: ComputedRef<PageNote>;
   targetNote: ComputedRef<PageNote>;
 
-  targetCenter: ComputedRef<Vec2>;
-
   sourcePos: ComputedRef<Vec2>;
   targetPos: ComputedRef<Vec2>;
+
+  centerPos: ComputedRef<Vec2>;
 }
 
 export class PageArrow extends PageElem {
@@ -66,19 +66,11 @@ export class PageArrow extends PageElem {
         () => this.page.notes.react.map[this.collab.targetId]
       ),
 
-      targetCenter: computed(() => {
-        if (this.react.fakeTargetPos != null) {
-          return this.react.fakeTargetPos;
-        } else {
-          return this.react.targetNote.react.worldCenter;
-        }
-      }),
-
       sourcePos: computed(
         () =>
           getLineRectIntersection(
             new Line(
-              this.react.targetCenter,
+              this.react.targetPos,
               this.react.sourceNote.react.worldCenter
             ),
             this.react.sourceNote.react.worldRect.grow(12)
@@ -93,12 +85,16 @@ export class PageArrow extends PageElem {
           getLineRectIntersection(
             new Line(
               this.react.sourceNote.react.worldCenter,
-              this.react.targetCenter
+              this.react.targetNote.react.worldCenter
             ),
             this.react.targetNote.react.worldRect.grow(12)
-          ) ?? this.react.targetCenter
+          ) ?? this.react.targetNote.react.worldCenter
         );
       }),
+
+      centerPos: computed(() =>
+        this.react.sourcePos.lerp(this.react.targetPos, 0.5)
+      ),
     };
 
     Object.assign(this.react, react);

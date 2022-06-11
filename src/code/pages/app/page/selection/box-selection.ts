@@ -110,7 +110,7 @@ export class PageBoxSelection {
     const clientRect = new Rect(clientTopLeft, clientBottomRight);
 
     for (const note of this.page.react.notes) {
-      if (!note.react.clientRect.inside(clientRect)) {
+      if (!clientRect.containsRect(note.react.clientRect)) {
         continue;
       }
 
@@ -121,18 +121,19 @@ export class PageBoxSelection {
       }
     }
 
-    // for (const arrow of this.page.react.arrows) {
-    //   const clientRect = arrow.getClientRect()
+    for (const arrow of this.page.react.arrows) {
+      const clientCenter = this.page.pos.worldToClient(arrow.react.centerPos);
 
-    //   if (clientRect.topLeft.x < topLeft.x || clientRect.topLeft.y < topLeft.y
-    //   || clientRect.bottomRight.x > bottomRight.x || clientRect.bottomRight.y > bottomRight.y)
-    //     continue
+      if (!clientRect.containsVec2(clientCenter)) {
+        continue;
+      }
 
-    //   if (arrow.selected && !event.shiftKey)
-    //     this.page.selection.remove(arrow)
-    //   else
-    //     this.page.selection.add(arrow)
-    // }
+      if (arrow.react.selected && !event.shiftKey) {
+        this.page.selection.remove(arrow);
+      } else {
+        this.page.selection.add(arrow);
+      }
+    }
   };
 
   private _timerPointerMove = (event: PointerEvent) => {

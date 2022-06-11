@@ -30,7 +30,8 @@ export class PageCloning {
     const { noteIds, arrowIds } = this.page.app.serialization.deserialize(
       serialRegion,
       this.page.activeRegion.react,
-      destIndex
+      destIndex,
+      false
     );
 
     // Select and reposition clones

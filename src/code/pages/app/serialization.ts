@@ -12,8 +12,14 @@ import { IRegionCollab } from './page/regions/region';
 // Arrow
 
 export const ISerialArrow = IArrowCollab.omit({
+  sourceId: true,
+  targetId: true,
+
   label: true,
 }).extend({
+  sourceIndex: z.number(),
+  targetIndex: z.number(),
+
   label: Op.array().default([{ insert: '\n' }]),
 });
 
@@ -92,8 +98,11 @@ export class AppSerialization {
     this.app = app;
   }
 
-  serialize(container: z.output<typeof IRegionCollab>): ISerialRegionOutput {
-    const serialRegion: ISerialRegionOutput = {
+  serialize(
+    container: z.output<typeof IRegionCollab>,
+    parse = true
+  ): ISerialRegionOutput {
+    let serialRegion: ISerialRegionOutput = {
       notes: [],
       arrows: [],
     };
@@ -145,13 +154,27 @@ export class AppSerialization {
     // Serialize arrows
 
     for (const arrow of page.arrows.fromIds(container.arrowIds)) {
+      if (
+        !noteMap.has(arrow.collab.sourceId) ||
+        !noteMap.has(arrow.collab.targetId)
+      ) {
+        continue;
+      }
+
       const serialArrow: z.output<typeof ISerialArrow> = {
         ...arrow.collab,
+
+        sourceIndex: noteMap.get(arrow.collab.sourceId)!,
+        targetIndex: noteMap.get(arrow.collab.targetId)!,
 
         label: arrow.collab.label.toDelta(),
       };
 
       serialRegion.arrows.push(serialArrow);
+    }
+
+    if (parse) {
+      serialRegion = ISerialRegion.parse(serialRegion);
     }
 
     return serialRegion;
@@ -232,6 +255,9 @@ export class AppSerialization {
         const arrowCollab: IArrowCollab = {
           ...serialArrow,
 
+          sourceId: noteMap.get(serialArrow.sourceIndex)!,
+          targetId: noteMap.get(serialArrow.targetIndex)!,
+
           label: createSyncedText(serialArrow.label),
         };
 
@@ -248,14 +274,17 @@ export class AppSerialization {
   deserialize(
     serialRegion: ISerialRegionInput,
     destRegion: z.output<typeof IRegionCollab>,
-    destIndex?: number | null
+    destIndex?: number | null,
+    parse = true
   ): z.output<typeof IRegionCollab> {
     let result: z.output<typeof IRegionCollab> = { noteIds: [], arrowIds: [] };
 
-    const parsedSerialRegion = ISerialRegion.parse(serialRegion);
+    if (parse) {
+      serialRegion = ISerialRegion.parse(serialRegion);
+    }
 
     $pages.react.page.collab.doc.transact(() => {
-      result = this._deserializeAux(parsedSerialRegion);
+      result = this._deserializeAux(serialRegion as ISerialRegionOutput);
 
       destIndex = destIndex ?? destRegion.noteIds.length;
       destRegion.noteIds.splice(destIndex, 0, ...result.noteIds);

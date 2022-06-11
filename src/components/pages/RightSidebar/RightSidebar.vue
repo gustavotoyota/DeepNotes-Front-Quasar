@@ -12,7 +12,7 @@
   >
     <q-toolbar style="flex: none">
       <q-avatar
-        icon="mdi-animation"
+        icon="mdi-chart-box"
         size="50px"
         style="margin-left: -9px"
       />

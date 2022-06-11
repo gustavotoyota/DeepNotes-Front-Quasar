@@ -1,69 +1,65 @@
 <template>
-  <line
+  <template
     v-if="
       arrow.react.sourceNote != null &&
       (arrow.react.targetNote != null || arrow.react.fakeTargetPos != null)
     "
-    :id="`arrow-${arrow.id}`"
-    class="arrow"
-    :style="{
-      'pointer-events': arrow.react.fakeTargetPos != null ? 'none' : 'auto',
-      stroke: arrow.react.active
-        ? arrow.react.color.highlight
-        : arrow.react.selected
-        ? arrow.react.color.light
-        : arrow.collab.color,
-    }"
-    :x1="arrow.react.sourcePos.x"
-    :y1="arrow.react.sourcePos.y"
-    :x2="arrow.react.targetPos.x"
-    :y2="arrow.react.targetPos.y"
-    @pointerdown.left="onLeftPointerDown"
-  />
+  >
+    <line
+      :id="`arrow-${arrow.id}`"
+      :style="{
+        'pointer-events': arrow.react.fakeTargetPos != null ? 'none' : 'auto',
+      }"
+      stroke="black"
+      stroke-width="16"
+      stroke-opacity="0"
+      stroke-linecap="round"
+      :x1="arrow.react.sourcePos.x"
+      :y1="arrow.react.sourcePos.y"
+      :x2="arrow.react.targetPos.x"
+      :y2="arrow.react.targetPos.y"
+      @pointerdown.left="onLeftPointerDown"
+    />
 
-  <polyline
-    v-if="arrow.collab.tail"
-    :style="{
-      'pointer-events': arrow.react.fakeTargetPos != null ? 'none' : 'auto',
-      stroke: arrow.react.active
-        ? arrow.react.color.highlight
-        : arrow.react.selected
-        ? arrow.react.color.light
-        : arrow.collab.color,
-    }"
-    :points="`${arrow.react.sourcePos.x + PageArrow.ARROW_SIZE},${
-      arrow.react.sourcePos.y - PageArrow.ARROW_SIZE
-    } ${arrow.react.sourcePos.x},${arrow.react.sourcePos.y} ${
-      arrow.react.sourcePos.x + PageArrow.ARROW_SIZE
-    },${arrow.react.sourcePos.y + PageArrow.ARROW_SIZE}`"
-    :transform="`rotate(${(arrow.react.angle / Math.PI) * 180},${
-      arrow.react.sourcePos.x
-    },${arrow.react.sourcePos.y})`"
-    class="arrow"
-    @pointerdown.left="onLeftPointerDown"
-  />
+    <line
+      class="arrow"
+      :id="`arrow-${arrow.id}`"
+      :stroke="arrow.react.color.final"
+      :x1="arrow.react.sourcePos.x"
+      :y1="arrow.react.sourcePos.y"
+      :x2="arrow.react.targetPos.x"
+      :y2="arrow.react.targetPos.y"
+      :stroke-dasharray="arrow.collab.dashed ? '6,6' : undefined"
+    />
 
-  <polyline
-    v-if="arrow.collab.head"
-    :style="{
-      'pointer-events': arrow.react.fakeTargetPos != null ? 'none' : 'auto',
-      stroke: arrow.react.active
-        ? arrow.react.color.highlight
-        : arrow.react.selected
-        ? arrow.react.color.light
-        : arrow.collab.color,
-    }"
-    :points="`${arrow.react.targetPos.x - PageArrow.ARROW_SIZE},${
-      arrow.react.targetPos.y - PageArrow.ARROW_SIZE
-    } ${arrow.react.targetPos.x},${arrow.react.targetPos.y} ${
-      arrow.react.targetPos.x - PageArrow.ARROW_SIZE
-    },${arrow.react.targetPos.y + PageArrow.ARROW_SIZE}`"
-    :transform="`rotate(${(arrow.react.angle / Math.PI) * 180},${
-      arrow.react.targetPos.x
-    },${arrow.react.targetPos.y})`"
-    class="arrow"
-    @pointerdown.left="onLeftPointerDown"
-  />
+    <polyline
+      v-if="arrow.collab.backward"
+      :stroke="arrow.react.color.final"
+      :points="`${arrow.react.sourcePos.x + PageArrow.ARROW_SIZE},${
+        arrow.react.sourcePos.y - PageArrow.ARROW_SIZE
+      } ${arrow.react.sourcePos.x},${arrow.react.sourcePos.y} ${
+        arrow.react.sourcePos.x + PageArrow.ARROW_SIZE
+      },${arrow.react.sourcePos.y + PageArrow.ARROW_SIZE}`"
+      :transform="`rotate(${(arrow.react.angle / Math.PI) * 180},${
+        arrow.react.sourcePos.x
+      },${arrow.react.sourcePos.y})`"
+      class="arrow"
+    />
+
+    <polyline
+      v-if="arrow.collab.forward"
+      :stroke="arrow.react.color.final"
+      :points="`${arrow.react.targetPos.x - PageArrow.ARROW_SIZE},${
+        arrow.react.targetPos.y - PageArrow.ARROW_SIZE
+      } ${arrow.react.targetPos.x},${arrow.react.targetPos.y} ${
+        arrow.react.targetPos.x - PageArrow.ARROW_SIZE
+      },${arrow.react.targetPos.y + PageArrow.ARROW_SIZE}`"
+      :transform="`rotate(${(arrow.react.angle / Math.PI) * 180},${
+        arrow.react.targetPos.x
+      },${arrow.react.targetPos.y})`"
+      class="arrow"
+    />
+  </template>
 </template>
 
 <script
@@ -96,6 +92,5 @@ watchEffect(() => {
   fill: none;
 
   stroke-width: 5;
-  stroke-linecap: round;
 }
 </style>

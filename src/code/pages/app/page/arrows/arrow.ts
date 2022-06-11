@@ -22,9 +22,10 @@ export const IArrowCollab = z.object({
       createSyncedText([{ insert: '\n' }])
     ) as z.ZodType<SyncedText>,
 
-  head: z.boolean().default(true),
-  pattern: z.string().default('solid'),
-  tail: z.boolean().default(false),
+  backward: z.boolean().default(false),
+  forward: z.boolean().default(true),
+
+  dashed: z.boolean().default(false),
 
   color: z.string().default('#b0b0b0'),
 });
@@ -49,11 +50,12 @@ export interface IArrowReact extends IElemReact {
   color: {
     highlight: ComputedRef<string>;
     light: ComputedRef<string>;
+    final: ComputedRef<string>;
   };
 }
 
 export class PageArrow extends PageElem {
-  static readonly ARROW_SIZE = 8;
+  static readonly ARROW_SIZE = 10;
 
   readonly collab: IArrowCollab;
 
@@ -124,6 +126,15 @@ export class PageArrow extends PageElem {
         light: computed(() =>
           lightenByRatio(new Color(this.collab.color), 0.3).hex()
         ),
+        final: computed(() => {
+          if (this.react.active) {
+            return this.react.color.highlight;
+          } else if (this.react.selected) {
+            return this.react.color.light;
+          } else {
+            return this.collab.color;
+          }
+        }),
       },
     };
 

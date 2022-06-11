@@ -67,11 +67,12 @@ export class PagePinching {
 
     listenPointerEvents(downEvent, {
       move: updateFunc,
-      up: (upEvent) => {
-        delete this.react.pointers[upEvent.pointerId];
-      },
+      up: this.removePointer,
     });
   }
+  removePointer = (upEvent: PointerEvent) => {
+    delete this.react.pointers[upEvent.pointerId];
+  };
 
   private _update = (event: PointerEvent) => {
     if (!(event.pointerId in this.react.pointers)) {

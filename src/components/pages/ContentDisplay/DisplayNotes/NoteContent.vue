@@ -77,13 +77,9 @@ function onLeftPointerDown(event: PointerEvent) {
   }
 }
 
-function onLeftPointerUp(event: PointerEvent) {
+function onLeftPointerUp() {
   if (page.arrowCreation.react.active) {
-    event.stopPropagation();
-
     page.arrowCreation.finish(note);
-
-    return;
   }
 }
 </script>

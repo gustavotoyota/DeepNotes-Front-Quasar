@@ -69,7 +69,10 @@ export class Vec2 {
     return this.sub(vec).length();
   }
 
-  angle(vec: Vec2): number {
+  angle(): number {
+    return Math.atan2(this.y, this.x);
+  }
+  angleTo(vec: Vec2): number {
     return Math.atan2(this.cross(vec), this.dot(vec));
   }
   rotate(angle: number): Vec2 {

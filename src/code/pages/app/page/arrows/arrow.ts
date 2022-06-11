@@ -1,8 +1,10 @@
 import { SyncedText } from '@syncedstore/core';
+import Color from 'color';
 import { getLineRectIntersection } from 'src/code/pages/static/geometry';
 import { Line } from 'src/code/pages/static/line';
 import { createSyncedText } from 'src/code/pages/static/synced-store';
 import { Vec2 } from 'src/code/pages/static/vec2';
+import { lightenByRatio } from 'src/code/utils';
 import { computed, ComputedRef, nextTick, UnwrapRef } from 'vue';
 import { z } from 'zod';
 
@@ -34,13 +36,25 @@ export interface IArrowReact extends IElemReact {
   sourceNote: ComputedRef<PageNote>;
   targetNote: ComputedRef<PageNote>;
 
+  sourceCenter: ComputedRef<Vec2>;
+  targetCenter: ComputedRef<Vec2>;
+
   sourcePos: ComputedRef<Vec2>;
   targetPos: ComputedRef<Vec2>;
 
   centerPos: ComputedRef<Vec2>;
+
+  angle: ComputedRef<number>;
+
+  color: {
+    highlight: ComputedRef<string>;
+    light: ComputedRef<string>;
+  };
 }
 
 export class PageArrow extends PageElem {
+  static readonly ARROW_SIZE = 8;
+
   readonly collab: IArrowCollab;
 
   declare readonly react: UnwrapRef<IArrowReact>;
@@ -66,15 +80,21 @@ export class PageArrow extends PageElem {
         () => this.page.notes.react.map[this.collab.targetId]
       ),
 
+      sourceCenter: computed(() => this.react.sourceNote.react.worldCenter),
+      targetCenter: computed(() => {
+        if (this.react.fakeTargetPos != null) {
+          return this.react.fakeTargetPos;
+        } else {
+          return this.react.targetNote.react.worldCenter;
+        }
+      }),
+
       sourcePos: computed(
         () =>
           getLineRectIntersection(
-            new Line(
-              this.react.targetPos,
-              this.react.sourceNote.react.worldCenter
-            ),
+            new Line(this.react.targetCenter, this.react.sourceCenter),
             this.react.sourceNote.react.worldRect.grow(12)
-          ) ?? this.react.sourceNote.react.worldCenter
+          ) ?? this.react.sourceCenter
       ),
       targetPos: computed(() => {
         if (this.react.fakeTargetPos != null) {
@@ -83,18 +103,28 @@ export class PageArrow extends PageElem {
 
         return (
           getLineRectIntersection(
-            new Line(
-              this.react.sourceNote.react.worldCenter,
-              this.react.targetNote.react.worldCenter
-            ),
+            new Line(this.react.sourceCenter, this.react.targetCenter),
             this.react.targetNote.react.worldRect.grow(12)
-          ) ?? this.react.targetNote.react.worldCenter
+          ) ?? this.react.targetCenter
         );
       }),
 
       centerPos: computed(() =>
         this.react.sourcePos.lerp(this.react.targetPos, 0.5)
       ),
+
+      angle: computed(() =>
+        this.react.targetCenter.sub(this.react.sourceCenter).angle()
+      ),
+
+      color: {
+        highlight: computed(() =>
+          lightenByRatio(new Color(this.collab.color), 0.6).hex()
+        ),
+        light: computed(() =>
+          lightenByRatio(new Color(this.collab.color), 0.3).hex()
+        ),
+      },
     };
 
     Object.assign(this.react, react);

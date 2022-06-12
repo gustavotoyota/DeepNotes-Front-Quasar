@@ -53,7 +53,11 @@ export class PageArrowCreation {
   finish(targetNote: PageNote) {
     this.react.active = false;
 
-    if (targetNote.id === this.fakeArrow.collab.sourceId) {
+    if (
+      targetNote.id === this.fakeArrow.collab.sourceId ||
+      targetNote.react.parentId !==
+        this.fakeArrow.react.sourceNote.react.parentId
+    ) {
       return;
     }
 

@@ -1,10 +1,5 @@
 <template>
-  <template
-    v-if="
-      arrow.react.sourceNote != null &&
-      (arrow.react.targetNote != null || arrow.react.fakeTargetPos != null)
-    "
-  >
+  <template v-if="arrow.react.valid">
     <line
       :id="`arrow-${arrow.id}`"
       :style="{

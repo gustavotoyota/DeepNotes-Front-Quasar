@@ -34,6 +34,8 @@ export type IArrowCollab = z.output<typeof IArrowCollab>;
 export interface IArrowReact extends IElemReact {
   fakeTargetPos: Vec2 | null;
 
+  valid: ComputedRef<boolean>;
+
   sourceNote: ComputedRef<PageNote>;
   targetNote: ComputedRef<PageNote>;
 
@@ -74,6 +76,25 @@ export class PageArrow extends PageElem {
 
     const react: Omit<IArrowReact, keyof IElemReact> = {
       fakeTargetPos: fake ? new Vec2() : null,
+
+      valid: computed(() => {
+        if (this.react.sourceNote == null) {
+          return false;
+        }
+
+        if (this.react.fakeTargetPos != null) {
+          return true;
+        }
+
+        if (this.react.targetNote == null) {
+          return false;
+        }
+
+        return (
+          this.react.sourceNote.react.parentId == null &&
+          this.react.targetNote.react.parentId == null
+        );
+      }),
 
       sourceNote: computed(
         () => this.page.notes.react.map[this.collab.sourceId]

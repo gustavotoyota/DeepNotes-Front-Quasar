@@ -199,7 +199,7 @@ async function rejectInvitation() {
 .display :deep(a[target='_blank']) {
   text-decoration: none !important;
 
-  color: #64b5f6;
+  color: #81d4fa;
 }
 
 .display :deep(*) {

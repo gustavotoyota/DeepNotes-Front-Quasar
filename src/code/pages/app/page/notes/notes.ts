@@ -106,8 +106,14 @@ export class PageNotes {
 
     const note = this.page.notes.react.map[noteId];
 
-    note.collab.pos = this.page.pos.clientToWorld(clientPos);
-
     this.page.editing.start(note);
+
+    note.collab.pos = new Vec2(Number.MAX_VALUE, Number.MAX_VALUE);
+
+    setTimeout(() => {
+      note.collab.pos = note.react.worldSize
+        .mul(new Vec2(note.collab.anchor).subScalar(0.5))
+        .add(this.page.pos.clientToWorld(clientPos));
+    });
   }
 }

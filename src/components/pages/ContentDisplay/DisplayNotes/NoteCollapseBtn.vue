@@ -9,7 +9,7 @@
       :style="{
         height: note.react.numEnabledSections === 1 ? '36.45px' : '100%',
       }"
-      @click.left.stop="negateProp(note.react.collapsing, 'collapsed')"
+      @click.left.stop.prevent="negateProp(note.react.collapsing, 'collapsed')"
       @pointerdown.left.stop
       @dblclick.left.stop
     >
@@ -41,6 +41,8 @@ const note = inject<PageNote>('note')!;
 
 <style scoped>
 .note-collapse-button {
+  color: white; /* Fix color on note links */
+
   min-width: 0 !important;
   width: 32px;
 

@@ -5,7 +5,7 @@ import { hasVertScrollbar } from 'src/code/pages/static/dom';
 import { Rect } from 'src/code/pages/static/rect';
 import { createSyncedText } from 'src/code/pages/static/synced-store';
 import { IVec2, Vec2 } from 'src/code/pages/static/vec2';
-import { darkenByAmount, lightenByAmount } from 'src/code/utils';
+import { darkenByRatio, lightenByRatio } from 'src/code/utils';
 import { computed, ComputedRef, UnwrapRef, WritableComputedRef } from 'vue';
 import { z } from 'zod';
 
@@ -433,10 +433,10 @@ export class PageNote extends PageRegion {
 
       color: {
         highlight: computed(() =>
-          lightenByAmount(Color(this.react.color.base), 25).hex()
+          lightenByRatio(Color(this.react.color.base), 0.5).hex()
         ),
         light: computed(() =>
-          lightenByAmount(Color(this.react.color.base), 12.5).hex()
+          lightenByRatio(Color(this.react.color.base), 0.25).hex()
         ),
         base: computed(() =>
           this.collab.color.inherit && this.react.parent != null
@@ -444,7 +444,7 @@ export class PageNote extends PageRegion {
             : this.collab.color.value
         ),
         shadow: computed(() =>
-          darkenByAmount(Color(this.react.color.base), 12.5).hex()
+          darkenByRatio(Color(this.react.color.base), 0.5).hex()
         ),
         background: computed(() => {
           if (this.react.active) {

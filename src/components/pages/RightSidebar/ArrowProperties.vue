@@ -94,7 +94,6 @@
         no-header
         no-header-tabs
         no-footer
-        default-value="#424242"
         :palette="[
           '#9E9E9E', // grey
           '#607D8B', // blue-grey

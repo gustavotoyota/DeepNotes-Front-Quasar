@@ -348,25 +348,25 @@
         no-header-tabs
         no-footer
         :palette="[
-          '#424242', // grey-9
-          '#b71c1c', // red-9
-          '#ad1457', // pink-9
-          '#6a1b9a', // purple-9
-          '#4527a0', // deep-purple-9
-          '#283593', // indigo-9
-          '#1565c0', // blue-9
-          '#0277BD', // light-blue-9
-          '#00838F', // cyan-9
-          '#00695C', // teal-9
-          '#2E7D32', // green-9
-          '#558B2F', // light-green-9
-          '#9E9D24', // lime-9
-          '#f57f17', // yellow-9
-          '#FF6F00', // amber-9
-          '#E65100', // orange-9
-          '#BF360C', // deep-orange-9
-          '#4E342E', // brown-9
-          '#37474F', // blue-grey-9
+          '#424242', // grey
+          '#37474F', // blue-grey
+          '#4E342E', // brown
+          '#BF360C', // deep-orange
+          '#E65100', // orange
+          '#FF6F00', // amber
+          '#f57f17', // yellow
+          '#9E9D24', // lime
+          '#558B2F', // light-green
+          '#2E7D32', // green
+          '#00695C', // teal
+          '#00838F', // cyan
+          '#0277BD', // light-blue
+          '#1565c0', // blue
+          '#283593', // indigo
+          '#4527a0', // deep-purple
+          '#6a1b9a', // purple
+          '#ad1457', // pink
+          '#b71c1c', // red
         ]"
       />
     </div>

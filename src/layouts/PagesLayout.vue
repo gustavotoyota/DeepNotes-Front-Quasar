@@ -77,7 +77,7 @@ useMeta(() => {
   const pageTitle = $pages.react.pageTitles[pageId];
 
   const groupId = $pages.react.dict[`pageGroupId.${pageId}`];
-  const groupName = $pages.react.groupNames[groupId];
+  const groupName = $pages.realtime.get('groupName', groupId);
 
   if (groupName) {
     title = `${groupName} - ${title}`;

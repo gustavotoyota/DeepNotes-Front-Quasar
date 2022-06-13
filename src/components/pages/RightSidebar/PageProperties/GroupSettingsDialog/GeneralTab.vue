@@ -3,11 +3,11 @@
     label="Group name"
     :model-value="
       userGroup
-        ? $pages.react.groupNames[page.react.groupId]
+        ? $pages.realtime.get('groupName', page.react.groupId)
         : settings.general.groupName
     "
     @update:model-value="settings.general.groupName = $event as string;
-      $pages.react.groupNames[page.react.groupId] = $event as string"
+      $pages.realtime.set('groupName', page.react.groupId, $event as string)"
     filled
     style="max-width: 300px"
     :disable="userGroup"

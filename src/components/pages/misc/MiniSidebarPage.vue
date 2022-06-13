@@ -43,8 +43,10 @@ const props = defineProps<{
 
 const ui = useUI();
 
-const groupName = computed(
-  () =>
-    $pages.react.groupNames[$pages.react.dict[`pageGroupId.${props.pageId}`]]
+const groupName = computed(() =>
+  $pages.realtime.get(
+    'groupName',
+    $pages.react.dict[`pageGroupId.${props.pageId}`]
+  )
 );
 </script>

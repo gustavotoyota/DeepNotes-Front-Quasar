@@ -65,7 +65,6 @@ export interface IAppReact {
   dict: Record<string, any>;
 
   pageTitles: Record<string, string>;
-  groupNames: Record<string, string>;
 }
 
 export class PagesApp {
@@ -134,33 +133,6 @@ export class PagesApp {
           );
 
           this.realtime.set('pageTitle', pageId, encryptedPageTitle);
-        },
-      }),
-      groupNames: createComputedDict({
-        get: (groupId: string) => {
-          if (groupId == null) {
-            return '';
-          }
-
-          const groupOwnerId = $pages.react.dict[`groupOwnerId.${groupId}`];
-
-          if (groupOwnerId == null) {
-            return $pages.realtime.get('groupName', groupId) ?? '';
-          }
-
-          const groupOwnerName = $pages.realtime.get(
-            'userDisplayName',
-            groupOwnerId
-          );
-
-          if (groupOwnerName == null) {
-            return '';
-          }
-
-          return `${groupOwnerName}'s Group`;
-        },
-        set: (groupId: string, value: string) => {
-          $pages.realtime.set('groupName', groupId, value);
         },
       }),
     });

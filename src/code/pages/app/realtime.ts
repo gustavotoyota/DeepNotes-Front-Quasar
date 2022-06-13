@@ -1,8 +1,11 @@
 import * as decoding from 'lib0/decoding';
 import * as encoding from 'lib0/encoding';
 import { throttle } from 'lodash';
+import { Notify } from 'quasar';
 import { Resolvable } from 'src/code/utils';
 import { nextTick, reactive } from 'vue';
+
+import { rolesMap } from '../static/roles';
 
 export const MSGTOSV_SUBSCRIBE = 0;
 export const MSGTOSV_UNSUBSCRIBE = 1;
@@ -103,6 +106,12 @@ export class AppRealtime {
     for (const channel of channels) {
       this._subscribeBuffer.add(channel);
       this._subscriptions.add(channel);
+
+      const type = channel.split('.')[0];
+
+      if (!type.endsWith('Notification')) {
+        this._notificationPromises.set(channel, new Resolvable());
+      }
     }
   }
   private _subscribeFlush = async () => {
@@ -117,12 +126,6 @@ export class AppRealtime {
     encoding.writeVarUint(encoder, this._subscribeBuffer.size);
     for (const channel of this._subscribeBuffer) {
       encoding.writeVarString(encoder, channel);
-
-      const [type] = channel.split('.');
-
-      if (!type.endsWith('Notification')) {
-        this._notificationPromises.set(channel, new Resolvable());
-      }
     }
 
     this._socket.send(encoding.toUint8Array(encoder));
@@ -237,6 +240,50 @@ export class AppRealtime {
       const [type] = channel.split('.');
 
       if (type.endsWith('Notification')) {
+        const notifObj = JSON.parse(value);
+
+        if (notifObj.type.startsWith('group')) {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          Promise.all([
+            $pages.realtime.getAsync('userDisplayName', notifObj.data.agentId),
+            $pages.realtime.getAsync('groupName', notifObj.data.groupId),
+          ]).then(([agentDisplayName, groupName]) => {
+            if (notifObj.type === 'groupRequestAccepted') {
+              Notify.create({
+                message: `${agentDisplayName} has accepted your access request to the group "${groupName}"`,
+                type: 'positive',
+              });
+            } else if (notifObj.type === 'groupRequestRejected') {
+              Notify.create({
+                message: `${agentDisplayName} has rejected your access request to the group "${groupName}"`,
+                type: 'negative',
+              });
+            } else if (notifObj.type === 'groupInvitationSent') {
+              Notify.create({
+                message: `${agentDisplayName} has invited you to access the group "${groupName}"`,
+                type: 'info',
+              });
+            } else if (notifObj.type === 'groupInvitationCancelled') {
+              Notify.create({
+                message: `${agentDisplayName} has cancelled your access invitation to the group "${groupName}"`,
+                type: 'negative',
+              });
+            } else if (notifObj.type === 'groupUserRoleChanged') {
+              Notify.create({
+                message: `${agentDisplayName} has changed your role in the group "${groupName}" to ${
+                  rolesMap[notifObj.data.roleId].name
+                }`,
+                type: 'info',
+              });
+            } else if (notifObj.type === 'groupUserRemoved') {
+              Notify.create({
+                message: `${agentDisplayName} has removed you from the group "${groupName}"`,
+                type: 'negative',
+              });
+            }
+          });
+        }
+
         continue;
       }
 

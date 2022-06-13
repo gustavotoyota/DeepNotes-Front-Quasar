@@ -35,7 +35,7 @@
         >
           <q-item-section>
             <q-item-label>
-              {{ $pages.react.groupNames[group.groupId] }}
+              {{ $pages.realtime.get('groupName', group.groupId) }}
             </q-item-label>
             <q-item-label caption>
               {{ rolesMap[group.roleId].name }}

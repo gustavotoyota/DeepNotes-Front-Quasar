@@ -81,7 +81,7 @@ async function acceptRequests() {
         return $api.post('/api/groups/access-requests/accept', {
           groupId: page.value.react.groupId,
           userId: user.userId,
-          reencryptedSymmetricKey: to_base64(reencryptedSymmetricKey),
+          encryptedSymmetricKey: to_base64(reencryptedSymmetricKey),
         });
       })
     );

@@ -249,26 +249,60 @@ export class AppRealtime {
             $pages.realtime.getAsync('groupName', notifObj.data.groupId),
           ]).then(([agentDisplayName, groupName]) => {
             if (notifObj.type === 'groupRequestAccepted') {
+              for (const page of $pages.pageCache.react.cache) {
+                if (page.react.groupId === notifObj.data.groupId) {
+                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                  page.setup();
+                }
+              }
+
               Notify.create({
                 message: `${agentDisplayName} has accepted your access request to the group "${groupName}"`,
                 type: 'positive',
               });
             } else if (notifObj.type === 'groupRequestRejected') {
+              for (const page of $pages.pageCache.react.cache) {
+                if (page.react.groupId === notifObj.data.groupId) {
+                  page.react.status = 'unauthorized';
+                  page.react.userStatus = 'rejected';
+                }
+              }
+
               Notify.create({
                 message: `${agentDisplayName} has rejected your access request to the group "${groupName}"`,
                 type: 'negative',
               });
             } else if (notifObj.type === 'groupInvitationSent') {
+              for (const page of $pages.pageCache.react.cache) {
+                if (page.react.groupId === notifObj.data.groupId) {
+                  page.react.status = 'unauthorized';
+                  page.react.userStatus = 'invite';
+                }
+              }
+
               Notify.create({
                 message: `${agentDisplayName} has invited you to access the group "${groupName}"`,
                 type: 'info',
               });
             } else if (notifObj.type === 'groupInvitationCancelled') {
+              for (const page of $pages.pageCache.react.cache) {
+                if (page.react.groupId === notifObj.data.groupId) {
+                  page.react.status = 'unauthorized';
+                  page.react.userStatus = null;
+                }
+              }
+
               Notify.create({
                 message: `${agentDisplayName} has cancelled your access invitation to the group "${groupName}"`,
                 type: 'negative',
               });
             } else if (notifObj.type === 'groupUserRoleChanged') {
+              for (const page of $pages.pageCache.react.cache) {
+                if (page.react.groupId === notifObj.data.groupId) {
+                  page.react.roleId = notifObj.data.roleId;
+                }
+              }
+
               Notify.create({
                 message: `${agentDisplayName} has changed your role in the group "${groupName}" to ${
                   rolesMap[notifObj.data.roleId].name
@@ -276,6 +310,13 @@ export class AppRealtime {
                 type: 'info',
               });
             } else if (notifObj.type === 'groupUserRemoved') {
+              for (const page of $pages.pageCache.react.cache) {
+                if (page.react.groupId === notifObj.data.groupId) {
+                  page.react.status = 'unauthorized';
+                  page.react.userStatus = null;
+                }
+              }
+
               Notify.create({
                 message: `${agentDisplayName} has removed you from the group "${groupName}"`,
                 type: 'negative',

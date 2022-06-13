@@ -5,6 +5,56 @@
     @pointerdown.left.capture="onLeftPointerDown"
     @pointerdown.middle.prevent="onMiddlePointerDown"
   >
+    <LoadingOverlay v-if="page.react.status === 'loading'" />
+
+    <template v-if="page.react.status === 'error'">
+      {{ page.react.errorMessage }}
+    </template>
+
+    <template v-if="page.react.status === 'unauthorized'">
+      <template v-if="page.react.userStatus === 'invite'">
+        <div>You were invited to access this group.</div>
+
+        <Gap style="height: 12px" />
+
+        <q-btn
+          label="Accept invitation"
+          color="positive"
+          @click="acceptInvitation()"
+        />
+
+        <Gap style="height: 16px" />
+
+        <q-btn
+          label="Reject invitation"
+          color="negative"
+          @click="rejectInvitation()"
+        />
+      </template>
+
+      <template v-else>
+        <div>You do not have permission to access this page.</div>
+
+        <Gap style="height: 12px" />
+
+        <RequestAccessDialog v-if="page.react.userStatus == null" />
+
+        <q-btn
+          v-if="page.react.userStatus === 'request'"
+          label="Cancel request"
+          color="negative"
+          @click="cancelRequest()"
+        />
+
+        <div
+          v-if="page.react.userStatus === 'rejected'"
+          style="color: red"
+        >
+          Your access request has been rejected.
+        </div>
+      </template>
+    </template>
+
     <template v-if="page.react.status === 'success'">
       <DisplayBackground />
 
@@ -15,75 +65,6 @@
 
       <DisplayBtns />
     </template>
-
-    <LoadingOverlay v-if="page.react.status == null" />
-
-    <div
-      v-if="![undefined, 'success'].includes(page.react.status)"
-      style="
-        position: absolute;
-
-        left: 0;
-        top: 0;
-        right: 0;
-        bottom: 0;
-
-        background-color: #181818;
-
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-      "
-    >
-      <template v-if="page.react.status === 'unauthorized'">
-        <template v-if="page.react.userStatus === 'invite'">
-          <div>You were invited to access this group.</div>
-
-          <Gap style="height: 12px" />
-
-          <q-btn
-            label="Accept invitation"
-            color="positive"
-            @click="acceptInvitation()"
-          />
-
-          <Gap style="height: 16px" />
-
-          <q-btn
-            label="Reject invitation"
-            color="negative"
-            @click="rejectInvitation()"
-          />
-        </template>
-
-        <template v-else>
-          <div>You do not have permission to access this page.</div>
-
-          <Gap style="height: 12px" />
-
-          <RequestAccessDialog v-if="page.react.userStatus == null" />
-
-          <q-btn
-            v-if="page.react.userStatus === 'request'"
-            label="Cancel request"
-            color="negative"
-            @click="cancelRequest()"
-          />
-
-          <div
-            v-if="page.react.userStatus === 'rejected'"
-            style="color: red"
-          >
-            Your access request has been rejected.
-          </div>
-        </template>
-      </template>
-
-      <template v-if="page.react.status === 'error'">
-        {{ page.react.errorMessage }}
-      </template>
-    </div>
   </div>
 </template>
 
@@ -168,7 +149,7 @@ async function acceptInvitation() {
 async function rejectInvitation() {
   try {
     await $api.post('/api/groups/access-invitations/reject', {
-      groupIds: [props.page.react.groupId],
+      groupId: props.page.react.groupId,
     });
 
     // eslint-disable-next-line vue/no-mutating-props
@@ -194,6 +175,13 @@ async function rejectInvitation() {
   bottom: 0;
 
   overflow: hidden;
+
+  background-color: #181818;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .display :deep(a[target='_blank']) {

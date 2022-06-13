@@ -9,6 +9,7 @@ import {
   ComputedRef,
   UnwrapRef,
   watch,
+  WatchStopHandle,
   WritableComputedRef,
 } from 'vue';
 import { z } from 'zod';
@@ -55,15 +56,15 @@ export interface IAppPageReact extends IRegionReact {
   collab: ComputedRef<IPageCollab>;
   size: number;
 
+  status: string;
+  userStatus: string | null;
   errorMessage: string;
 
   title: WritableComputedRef<string>;
-  status: WritableComputedRef<string | undefined>;
 
   groupId: WritableComputedRef<string>;
   groupName: WritableComputedRef<string>;
   ownerId: WritableComputedRef<string | null>;
-  userStatus: WritableComputedRef<string | null>;
   roleId: WritableComputedRef<string | null>;
   symmetricKey: WritableComputedRef<SymmetricKey>;
 
@@ -123,6 +124,8 @@ export class AppPage extends PageRegion {
   readonly arrows: PageArrows;
   readonly arrowCreation: PageArrowCreation;
 
+  unwatchUserDisplayName?: WatchStopHandle;
+
   constructor(factory: Factory, app: PagesApp, id: string) {
     super(null as any, id, ElemType.PAGE, null);
 
@@ -136,18 +139,14 @@ export class AppPage extends PageRegion {
       collab: computed(() => this.collab.store.page),
       size: 0,
 
+      status: 'loading',
+      userStatus: null,
       errorMessage: '',
 
       title: computed({
         get: () => this.app.react.pageTitles[this.id],
         set: (value) => {
           this.app.react.pageTitles[this.id] = value;
-        },
-      }),
-      status: computed({
-        get: () => this.app.react.dict[`pageStatus.${this.id}`],
-        set: (value) => {
-          this.app.react.dict[`pageStatus.${this.id}`] = value;
         },
       }),
 
@@ -167,12 +166,6 @@ export class AppPage extends PageRegion {
         get: () => this.app.react.dict[`groupOwnerId.${this.react.groupId}`],
         set: (value) => {
           this.app.react.dict[`groupOwnerId.${this.react.groupId}`] = value;
-        },
-      }),
-      userStatus: computed({
-        get: () => this.app.react.dict[`groupUserStatus.${this.react.groupId}`],
-        set: (value) => {
-          this.app.react.dict[`groupUserStatus.${this.react.groupId}`] = value;
         },
       }),
       roleId: computed({
@@ -240,7 +233,9 @@ export class AppPage extends PageRegion {
     this.arrowCreation = factory.makeArrowCreation(this);
   }
 
-  async preSync() {
+  async setup() {
+    this.react.status = 'loading';
+
     // Request page data
 
     const response = await $api.post<IPageData>('/api/pages/data', {
@@ -297,7 +292,9 @@ export class AppPage extends PageRegion {
       this.collab.websocketProvider.synced,
     ]);
 
-    watch(
+    // Post-sync setup
+
+    this.unwatchUserDisplayName = watch(
       () => this.app.realtime.get('userDisplayName', this.app.react.userId),
       (value) => {
         this.collab.websocketProvider.awareness.setLocalStateField('user', {
@@ -307,30 +304,18 @@ export class AppPage extends PageRegion {
       { immediate: true }
     );
 
-    return response.data;
-  }
-
-  postSync(pageData: IPageData) {
     if (this.collab.store.page.nextZIndex == null) {
       this.collab.reset();
     }
 
     this.elems.setup();
 
-    this.camera.setup(pageData.camera);
+    this.camera.setup(response.data.camera);
 
     this.undoRedo.setup();
 
     this.react.size = this.collab.websocketProvider.size;
 
     this.react.status = 'success';
-  }
-
-  async setup() {
-    const pageData = await this.preSync();
-
-    if (pageData != null) {
-      this.postSync(pageData);
-    }
   }
 }

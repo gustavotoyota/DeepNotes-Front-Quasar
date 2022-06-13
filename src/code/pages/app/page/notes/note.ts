@@ -6,7 +6,14 @@ import { Rect } from 'src/code/pages/static/rect';
 import { createSyncedText } from 'src/code/pages/static/synced-store';
 import { IVec2, Vec2 } from 'src/code/pages/static/vec2';
 import { darkenByRatio, lightenByRatio } from 'src/code/utils';
-import { computed, ComputedRef, UnwrapRef, WritableComputedRef } from 'vue';
+import {
+  computed,
+  ComputedRef,
+  ShallowRef,
+  shallowRef,
+  UnwrapRef,
+  WritableComputedRef,
+} from 'vue';
 import { z } from 'zod';
 
 import { PageArrow } from '../arrows/arrow';
@@ -121,12 +128,12 @@ export interface INoteReact extends IRegionReact {
   ghost: boolean;
 
   head: {
-    quill: Quill | null;
+    quill: ShallowRef<Quill | null>;
     visible: ComputedRef<boolean>;
     height: ComputedRef<string | undefined>;
   };
   body: {
-    quill: Quill | null;
+    quill: ShallowRef<Quill | null>;
     visible: ComputedRef<boolean>;
     height: ComputedRef<string | undefined>;
   };
@@ -231,12 +238,12 @@ export class PageNote extends PageRegion {
       ghost: false,
 
       head: {
-        quill: null,
+        quill: shallowRef(null),
         visible: computed(() => this.collab.head.enabled),
         height: makeSectionHeight('head'),
       },
       body: {
-        quill: null,
+        quill: shallowRef(null),
         visible: computed(
           () =>
             this.collab.body.enabled &&

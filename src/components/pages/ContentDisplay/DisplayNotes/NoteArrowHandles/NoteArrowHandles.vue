@@ -1,7 +1,10 @@
 <template>
   <div
     v-if="
-      note.react.parentId == null && note.react.active && !note.react.dragging
+      !page.react.readonly &&
+      note.react.parentId == null &&
+      note.react.active &&
+      !note.react.dragging
     "
     class="note-arrow-handles"
   >
@@ -48,9 +51,11 @@
   lang="ts"
 >
 import { PageNote } from 'src/code/pages/app/page/notes/note';
+import { AppPage } from 'src/code/pages/app/page/page';
 import { inject } from 'vue';
 
 import NoteArrowHandle from './NoteArrowHandle.vue';
 
+const page = inject<AppPage>('page')!;
 const note = inject<PageNote>('note')!;
 </script>

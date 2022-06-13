@@ -96,6 +96,10 @@ export class PageNotes {
   }
 
   createFromTemplate(template: ITemplate, clientPos: Vec2) {
+    if (this.page.react.readonly) {
+      return;
+    }
+
     const noteId = this.page.app.serialization.deserialize(
       {
         notes: [template.data],

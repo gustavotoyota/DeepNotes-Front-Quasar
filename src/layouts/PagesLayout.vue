@@ -69,22 +69,12 @@ if (process.env.CLIENT) {
 useMeta(() => {
   let title = 'DeepNotes';
 
-  if (page == null || page.value == null) {
-    return { title };
+  if (page?.value?.react.groupName) {
+    title = `${page.value.react.groupName} - ${title}`;
   }
 
-  const pageId = page.value.id;
-  const pageTitle = $pages.react.pageTitles[pageId];
-
-  const groupId = $pages.react.dict[`pageGroupId.${pageId}`];
-  const groupName = $pages.realtime.get('groupName', groupId);
-
-  if (groupName) {
-    title = `${groupName} - ${title}`;
-  }
-
-  if (pageTitle) {
-    title = `${pageTitle} - ${title}`;
+  if (page?.value?.react.title) {
+    title = `${page.value.react.title} - ${title}`;
   }
 
   return { title };

@@ -4,7 +4,13 @@ import {
   SymmetricKey,
   wrapSymmetricKey as wrapSymmetricKey,
 } from 'src/code/crypto/symmetric-key';
-import { computed, ComputedRef, UnwrapRef, watch } from 'vue';
+import {
+  computed,
+  ComputedRef,
+  UnwrapRef,
+  watch,
+  WritableComputedRef,
+} from 'vue';
 import { z } from 'zod';
 
 import { Factory } from '../../static/composition-root';
@@ -49,14 +55,17 @@ export interface IAppPageReact extends IRegionReact {
   collab: ComputedRef<IPageCollab>;
   size: number;
 
-  status: string;
-  userStatus: string | null;
   errorMessage: string;
 
-  groupId: ComputedRef<string>;
-  ownerId: ComputedRef<string | null>;
-  roleId: ComputedRef<string | null>;
-  symmetricKey: ComputedRef<SymmetricKey>;
+  title: WritableComputedRef<string>;
+  status: WritableComputedRef<string | undefined>;
+
+  groupId: WritableComputedRef<string>;
+  groupName: WritableComputedRef<string>;
+  ownerId: WritableComputedRef<string | null>;
+  userStatus: WritableComputedRef<string | null>;
+  roleId: WritableComputedRef<string | null>;
+  symmetricKey: WritableComputedRef<SymmetricKey>;
 
   readonly: ComputedRef<boolean>;
 }
@@ -127,20 +136,59 @@ export class AppPage extends PageRegion {
       collab: computed(() => this.collab.store.page),
       size: 0,
 
-      status: 'loading',
-      userStatus: null,
       errorMessage: '',
 
-      groupId: computed(() => this.app.react.dict[`pageGroupId.${this.id}`]),
-      ownerId: computed(
-        () => this.app.react.dict[`groupOwnerId.${this.react.groupId}`]
-      ),
-      roleId: computed(
-        () => this.app.react.dict[`groupRoleId.${this.react.groupId}`]
-      ),
-      symmetricKey: computed(
-        () => this.app.react.dict[`groupSymmetricKey.${this.react.groupId}`]
-      ),
+      title: computed({
+        get: () => this.app.react.pageTitles[this.id],
+        set: (value) => {
+          this.app.react.pageTitles[this.id] = value;
+        },
+      }),
+      status: computed({
+        get: () => this.app.react.dict[`pageStatus.${this.id}`],
+        set: (value) => {
+          this.app.react.dict[`pageStatus.${this.id}`] = value;
+        },
+      }),
+
+      groupId: computed({
+        get: () => this.app.react.dict[`pageGroupId.${this.id}`],
+        set: (value) => {
+          this.app.react.dict[`pageGroupId.${this.id}`] = value;
+        },
+      }),
+      groupName: computed({
+        get: () => this.app.realtime.get('groupName', this.react.groupId) ?? '',
+        set: (value) => {
+          this.app.realtime.set('groupName', this.react.groupId, value);
+        },
+      }),
+      ownerId: computed({
+        get: () => this.app.react.dict[`groupOwnerId.${this.react.groupId}`],
+        set: (value) => {
+          this.app.react.dict[`groupOwnerId.${this.react.groupId}`] = value;
+        },
+      }),
+      userStatus: computed({
+        get: () => this.app.react.dict[`groupUserStatus.${this.react.groupId}`],
+        set: (value) => {
+          this.app.react.dict[`groupUserStatus.${this.react.groupId}`] = value;
+        },
+      }),
+      roleId: computed({
+        get: () => this.app.react.dict[`groupRoleId.${this.react.groupId}`],
+        set: (value) => {
+          this.app.react.dict[`groupRoleId.${this.react.groupId}`] = value;
+        },
+      }),
+      symmetricKey: computed({
+        get: () =>
+          this.app.react.dict[`groupSymmetricKey.${this.react.groupId}`],
+        set: (value) => {
+          this.app.react.dict[`groupSymmetricKey.${this.react.groupId}`] =
+            value;
+        },
+      }),
 
       readonly: computed(
         () => !rolesMap[this.react.roleId!]?.permissions.editPages ?? true
@@ -204,12 +252,9 @@ export class AppPage extends PageRegion {
 
     // Save reactive data
 
-    this.app.react.dict[`pageGroupId.${this.id}`] = response.data.groupId;
-    this.app.react.dict[`groupOwnerId.${response.data.groupId}`] =
-      response.data.ownerId;
-    this.app.react.dict[`groupRoleId.${response.data.groupId}`] =
-      response.data.roleId;
-
+    this.react.groupId = response.data.groupId;
+    this.react.ownerId = response.data.ownerId;
+    this.react.roleId = response.data.roleId;
     this.react.userStatus = response.data.userStatus;
 
     // Check if has permission
@@ -231,8 +276,7 @@ export class AppPage extends PageRegion {
       )
     );
 
-    this.app.react.dict[`groupSymmetricKey.${response.data.groupId}`] =
-      symmetricKey;
+    this.react.symmetricKey = symmetricKey;
 
     // Setup websocket
 

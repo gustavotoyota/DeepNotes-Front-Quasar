@@ -16,10 +16,10 @@
       <DisplayBtns />
     </template>
 
-    <LoadingOverlay v-if="page.react.status === 'loading'" />
+    <LoadingOverlay v-if="page.react.status == null" />
 
     <div
-      v-if="!['loading', 'success'].includes(page.react.status)"
+      v-if="![undefined, 'success'].includes(page.react.status)"
       style="
         position: absolute;
 

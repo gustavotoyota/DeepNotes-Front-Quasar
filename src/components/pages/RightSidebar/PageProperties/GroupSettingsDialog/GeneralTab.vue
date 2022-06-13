@@ -1,16 +1,12 @@
 <template>
   <q-input
     label="Group name"
-    :model-value="
-      userGroup
-        ? $pages.realtime.get('groupName', page.react.groupId)
-        : settings.general.groupName
-    "
+    :model-value="settings.general.groupName"
     @update:model-value="settings.general.groupName = $event as string;
-      $pages.realtime.set('groupName', page.react.groupId, $event as string)"
+      page.react.groupName = $event as string"
     filled
     style="max-width: 300px"
-    :disable="userGroup"
+    :disable="page.react.ownerId != null"
   />
 </template>
 
@@ -26,7 +22,4 @@ import { initialSettings } from './GroupSettingsDialog.vue';
 const settings = inject<Ref<ReturnType<typeof initialSettings>>>('settings')!;
 
 const page = inject<Ref<AppPage>>('page')!;
-
-const userGroup =
-  $pages.react.dict[`groupOwnerId.${page.value.react.groupId}`] != null;
 </script>

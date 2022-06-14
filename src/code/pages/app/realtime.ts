@@ -7,11 +7,24 @@ import { nextTick, reactive } from 'vue';
 
 import { rolesMap } from '../static/roles';
 
-export const MSGTOSV_SUBSCRIBE = 0;
-export const MSGTOSV_UNSUBSCRIBE = 1;
-export const MSGTOSV_PUBLISH = 2;
+export const REALTIME_USER_NOTIFICATION = 'user-notification';
+export const REALTIME_GROUP_NAME = 'group-name';
+export const REALTIME_ENCRYPTED_PAGE_TITLE = 'encrypted-page-title';
+export const REALTIME_USER_DISPLAY_NAME = 'user-display-name';
 
-export const MSGTOCL_NOTIFY = 0;
+export const NOTIFICATION_GROUP_REQUEST_ACCEPTED = 'group-request-accepted';
+export const NOTIFICATION_GROUP_REQUEST_REJECTED = 'group-request-rejected';
+export const NOTIFICATION_GROUP_INVITATION_SENT = 'group-invitation-sent';
+export const NOTIFICATION_GROUP_INVITATION_CANCELLED =
+  'group-invitation-cancelled';
+export const NOTIFICATION_GROUP_USER_ROLE_CHANGED = 'group-user-role-changed';
+export const NOTIFICATION_GROUP_USER_REMOVED = 'group-user-removed';
+
+const MSGTOSV_SUBSCRIBE = 0;
+const MSGTOSV_UNSUBSCRIBE = 1;
+const MSGTOSV_PUBLISH = 2;
+
+const MSGTOCL_NOTIFY = 0;
 
 export class AppRealtime {
   private _socket!: WebSocket;
@@ -38,14 +51,14 @@ export class AppRealtime {
   }
 
   get(type: string, key: string) {
-    const channel = `${type}.${key}`;
+    const channel = `${type}:${key}`;
 
     this.subscribe(channel);
 
     return this._values[channel];
   }
   async getAsync(type: string, key: string) {
-    const channel = `${type}.${key}`;
+    const channel = `${type}:${key}`;
 
     if (this._values[channel] == null) {
       this.subscribe(channel);
@@ -57,7 +70,7 @@ export class AppRealtime {
   }
 
   set(type: string, key: string, value: string) {
-    const channel = `${type}.${key}`;
+    const channel = `${type}:${key}`;
 
     if (this._publishMode) {
       this.publish({ [channel]: value });
@@ -107,9 +120,9 @@ export class AppRealtime {
       this._subscribeBuffer.add(channel);
       this._subscriptions.add(channel);
 
-      const type = channel.split('.')[0];
+      const type = channel.split(':')[0];
 
-      if (!type.endsWith('Notification')) {
+      if (!type.endsWith('-notification')) {
         this._notificationPromises.set(channel, new Resolvable());
       }
     }
@@ -237,18 +250,24 @@ export class AppRealtime {
 
       console.log(`[${channel}] Notify: ${value}`);
 
-      const [type] = channel.split('.');
+      const type = channel.split(':')[0];
 
-      if (type.endsWith('Notification')) {
+      if (type.endsWith('-notification')) {
         const notifObj = JSON.parse(value);
 
         if (notifObj.type.startsWith('group')) {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           Promise.all([
-            $pages.realtime.getAsync('userDisplayName', notifObj.data.agentId),
-            $pages.realtime.getAsync('groupName', notifObj.data.groupId),
+            $pages.realtime.getAsync(
+              REALTIME_USER_DISPLAY_NAME,
+              notifObj.data.agentId
+            ),
+            $pages.realtime.getAsync(
+              REALTIME_GROUP_NAME,
+              notifObj.data.groupId
+            ),
           ]).then(([agentDisplayName, groupName]) => {
-            if (notifObj.type === 'groupRequestAccepted') {
+            if (notifObj.type === NOTIFICATION_GROUP_REQUEST_ACCEPTED) {
               for (const page of $pages.pageCache.react.cache) {
                 if (page.react.groupId === notifObj.data.groupId) {
                   // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -260,7 +279,7 @@ export class AppRealtime {
                 message: `${agentDisplayName} has accepted your access request to the group "${groupName}".`,
                 type: 'positive',
               });
-            } else if (notifObj.type === 'groupRequestRejected') {
+            } else if (notifObj.type === NOTIFICATION_GROUP_REQUEST_REJECTED) {
               for (const page of $pages.pageCache.react.cache) {
                 if (page.react.groupId === notifObj.data.groupId) {
                   page.react.status = 'unauthorized';
@@ -272,7 +291,7 @@ export class AppRealtime {
                 message: `${agentDisplayName} has rejected your access request to the group "${groupName}".`,
                 type: 'negative',
               });
-            } else if (notifObj.type === 'groupInvitationSent') {
+            } else if (notifObj.type === NOTIFICATION_GROUP_INVITATION_SENT) {
               for (const page of $pages.pageCache.react.cache) {
                 if (page.react.groupId === notifObj.data.groupId) {
                   page.react.status = 'unauthorized';
@@ -284,7 +303,9 @@ export class AppRealtime {
                 message: `${agentDisplayName} has invited you to access the group "${groupName}".`,
                 type: 'info',
               });
-            } else if (notifObj.type === 'groupInvitationCancelled') {
+            } else if (
+              notifObj.type === NOTIFICATION_GROUP_INVITATION_CANCELLED
+            ) {
               for (const page of $pages.pageCache.react.cache) {
                 if (page.react.groupId === notifObj.data.groupId) {
                   page.react.status = 'unauthorized';
@@ -296,7 +317,7 @@ export class AppRealtime {
                 message: `${agentDisplayName} has cancelled your access invitation to the group "${groupName}".`,
                 type: 'negative',
               });
-            } else if (notifObj.type === 'groupUserRoleChanged') {
+            } else if (notifObj.type === NOTIFICATION_GROUP_USER_ROLE_CHANGED) {
               for (const page of $pages.pageCache.react.cache) {
                 if (page.react.groupId === notifObj.data.groupId) {
                   page.react.roleId = notifObj.data.roleId;
@@ -309,7 +330,7 @@ export class AppRealtime {
                 }.`,
                 type: 'info',
               });
-            } else if (notifObj.type === 'groupUserRemoved') {
+            } else if (notifObj.type === NOTIFICATION_GROUP_USER_REMOVED) {
               for (const page of $pages.pageCache.react.cache) {
                 if (page.react.groupId === notifObj.data.groupId) {
                   page.react.status = 'unauthorized';

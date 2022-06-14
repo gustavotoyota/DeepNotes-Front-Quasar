@@ -16,9 +16,18 @@ import { createComputedDict } from '../static/computed-dict';
 import { refProp } from '../static/vue';
 import { AppPage } from './page/page';
 import { AppPageCache } from './page-cache';
-import { AppRealtime } from './realtime';
+import {
+  AppRealtime,
+  REALTIME_ENCRYPTED_PAGE_TITLE,
+  REALTIME_USER_NOTIFICATION,
+} from './realtime';
 import { AppSerialization } from './serialization';
 import { AppTemplates, ITemplate } from './templates';
+
+export const DICT_PAGE_GROUP_ID = 'page-group-id';
+export const DICT_GROUP_SYMMETRIC_KEY = 'group-symmetric-key';
+export const DICT_GROUP_OWNER_ID = 'group-owner-id';
+export const DICT_GROUP_ROLE_ID = 'group-role-id';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -101,15 +110,19 @@ export class PagesApp {
 
       pageTitles: createComputedDict({
         get: (pageId: string) => {
-          const groupId: string = this.react.dict[`pageGroupId.${pageId}`];
+          const groupId: string =
+            this.react.dict[`${DICT_PAGE_GROUP_ID}:${pageId}`];
           const symmetricKey: SymmetricKey =
-            this.react.dict[`groupSymmetricKey.${groupId}`];
+            this.react.dict[`${DICT_GROUP_SYMMETRIC_KEY}:${groupId}`];
 
           if (symmetricKey == null) {
             return '[Encrypted page title]';
           }
 
-          const encryptedPageTitle = this.realtime.get('pageTitle', pageId);
+          const encryptedPageTitle = this.realtime.get(
+            REALTIME_ENCRYPTED_PAGE_TITLE,
+            pageId
+          );
 
           if (encryptedPageTitle == null) {
             return '';
@@ -120,9 +133,10 @@ export class PagesApp {
           );
         },
         set: (pageId: string, value: string) => {
-          const groupId: string = this.react.dict[`pageGroupId.${pageId}`];
+          const groupId: string =
+            this.react.dict[`${DICT_PAGE_GROUP_ID}:${pageId}`];
           const symmetricKey: SymmetricKey =
-            this.react.dict[`groupSymmetricKey.${groupId}`];
+            this.react.dict[`${DICT_GROUP_SYMMETRIC_KEY}:${groupId}`];
 
           if (symmetricKey == null) {
             return;
@@ -132,7 +146,11 @@ export class PagesApp {
             symmetricKey.encrypt(new TextEncoder().encode(value))
           );
 
-          this.realtime.set('pageTitle', pageId, encryptedPageTitle);
+          this.realtime.set(
+            REALTIME_ENCRYPTED_PAGE_TITLE,
+            pageId,
+            encryptedPageTitle
+          );
         },
       }),
     });
@@ -162,7 +180,9 @@ export class PagesApp {
     this.react.userId = response.data.userId;
     this.react.publicKey = from_base64(response.data.publicKey);
 
-    this.realtime.subscribe(`userNotification.${this.react.userId}`);
+    this.realtime.subscribe(
+      `${REALTIME_USER_NOTIFICATION}:${this.react.userId}`
+    );
 
     // Load templates
 
@@ -194,17 +214,18 @@ export class PagesApp {
     response.data.pathPages
       .concat(response.data.recentPages)
       .forEach((page) => {
-        this.react.dict[`pageGroupId.${page.pageId}`] = page.groupId;
+        this.react.dict[`${DICT_PAGE_GROUP_ID}:${page.pageId}`] = page.groupId;
       });
 
     response.data.groups.forEach((group) => {
-      this.react.dict[`groupOwnerId.${group.groupId}`] = group.ownerId;
+      this.react.dict[`${DICT_GROUP_OWNER_ID}:${group.groupId}`] =
+        group.ownerId;
 
       if (
         group.encryptedSymmetricKey != null &&
         group.encryptersPublicKey != null
       ) {
-        this.react.dict[`groupSymmetricKey.${group.groupId}`] =
+        this.react.dict[`${DICT_GROUP_SYMMETRIC_KEY}:${group.groupId}`] =
           wrapSymmetricKey(
             privateKey.decrypt(
               from_base64(group.encryptedSymmetricKey),

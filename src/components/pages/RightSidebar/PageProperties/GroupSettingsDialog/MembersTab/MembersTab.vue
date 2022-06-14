@@ -42,7 +42,7 @@
         >
           <q-item-section>
             <q-item-label>
-              {{ $pages.realtime.get('userDisplayName', user.userId) }}
+              {{ $pages.realtime.get(REALTIME_USER_DISPLAY_NAME, user.userId) }}
             </q-item-label>
             <q-item-label caption>
               {{ rolesMap[user.roleId].name }}
@@ -77,6 +77,7 @@
 >
 import { Notify } from 'quasar';
 import { AppPage } from 'src/code/pages/app/page/page';
+import { REALTIME_USER_DISPLAY_NAME } from 'src/code/pages/app/realtime';
 import { rolesMap } from 'src/code/pages/static/roles';
 import Gap from 'src/components/misc/Gap.vue';
 import { computed, inject, Ref } from 'vue';

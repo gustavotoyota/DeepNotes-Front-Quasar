@@ -127,6 +127,8 @@ export function initialSettings() {
   lang="ts"
 >
 import { Notify } from 'quasar';
+import { DICT_GROUP_OWNER_ID } from 'src/code/pages/app/app';
+import { REALTIME_USER_DISPLAY_NAME } from 'src/code/pages/app/realtime';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import ToolbarBtn from 'src/components/pages/misc/ToolbarBtn.vue';
 import { provide, ref, watch } from 'vue';
@@ -158,7 +160,7 @@ watch(visible, async () => {
         requests: IGroupData[];
       }>('/api/users/load-settings'),
 
-      $pages.realtime.getAsync('userDisplayName', $pages.react.userId),
+      $pages.realtime.getAsync(REALTIME_USER_DISPLAY_NAME, $pages.react.userId),
     ]);
 
     settings.value.general.displayName = displayName!;
@@ -171,7 +173,8 @@ watch(visible, async () => {
       .concat(request.data.invitations)
       .concat(request.data.requests)
       .forEach((group) => {
-        $pages.react.dict[`groupOwnerId.${group.groupId}`] = group.ownerId;
+        $pages.react.dict[`${DICT_GROUP_OWNER_ID}:${group.groupId}`] =
+          group.ownerId;
       });
 
     settings.value.loaded = true;

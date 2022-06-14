@@ -16,7 +16,14 @@ import { z } from 'zod';
 
 import { Factory } from '../../static/composition-root';
 import { rolesMap } from '../../static/roles';
-import { PagesApp } from '../app';
+import {
+  DICT_GROUP_OWNER_ID,
+  DICT_GROUP_ROLE_ID,
+  DICT_GROUP_SYMMETRIC_KEY,
+  DICT_PAGE_GROUP_ID,
+  PagesApp,
+} from '../app';
+import { REALTIME_GROUP_NAME, REALTIME_USER_DISPLAY_NAME } from '../realtime';
 import { PageArrowCreation } from './arrows/arrow-creation';
 import { PageArrows } from './arrows/arrows';
 import { ICameraData, PageCamera } from './camera/camera';
@@ -151,35 +158,43 @@ export class AppPage extends PageRegion {
       }),
 
       groupId: computed({
-        get: () => this.app.react.dict[`pageGroupId.${this.id}`],
+        get: () => this.app.react.dict[`${DICT_PAGE_GROUP_ID}:${this.id}`],
         set: (value) => {
-          this.app.react.dict[`pageGroupId.${this.id}`] = value;
+          this.app.react.dict[`${DICT_PAGE_GROUP_ID}:${this.id}`] = value;
         },
       }),
       groupName: computed({
-        get: () => this.app.realtime.get('groupName', this.react.groupId) ?? '',
+        get: () =>
+          this.app.realtime.get(REALTIME_GROUP_NAME, this.react.groupId) ?? '',
         set: (value) => {
-          this.app.realtime.set('groupName', this.react.groupId, value);
+          this.app.realtime.set(REALTIME_GROUP_NAME, this.react.groupId, value);
         },
       }),
       ownerId: computed({
-        get: () => this.app.react.dict[`groupOwnerId.${this.react.groupId}`],
+        get: () =>
+          this.app.react.dict[`${DICT_GROUP_OWNER_ID}:${this.react.groupId}`],
         set: (value) => {
-          this.app.react.dict[`groupOwnerId.${this.react.groupId}`] = value;
+          this.app.react.dict[`${DICT_GROUP_OWNER_ID}:${this.react.groupId}`] =
+            value;
         },
       }),
       roleId: computed({
-        get: () => this.app.react.dict[`groupRoleId.${this.react.groupId}`],
+        get: () =>
+          this.app.react.dict[`${DICT_GROUP_ROLE_ID}:${this.react.groupId}`],
         set: (value) => {
-          this.app.react.dict[`groupRoleId.${this.react.groupId}`] = value;
+          this.app.react.dict[`${DICT_GROUP_ROLE_ID}:${this.react.groupId}`] =
+            value;
         },
       }),
       symmetricKey: computed({
         get: () =>
-          this.app.react.dict[`groupSymmetricKey.${this.react.groupId}`],
+          this.app.react.dict[
+            `${DICT_GROUP_SYMMETRIC_KEY}:${this.react.groupId}`
+          ],
         set: (value) => {
-          this.app.react.dict[`groupSymmetricKey.${this.react.groupId}`] =
-            value;
+          this.app.react.dict[
+            `${DICT_GROUP_SYMMETRIC_KEY}:${this.react.groupId}`
+          ] = value;
         },
       }),
 
@@ -275,7 +290,7 @@ export class AppPage extends PageRegion {
 
     // Setup websocket
 
-    const roomName = `page.${this.id}`;
+    const roomName = `page:${this.id}`;
 
     this.collab.websocketProvider = new WebsocketProvider(
       process.env.DEV
@@ -295,7 +310,11 @@ export class AppPage extends PageRegion {
     // Post-sync setup
 
     this.unwatchUserDisplayName = watch(
-      () => this.app.realtime.get('userDisplayName', this.app.react.userId),
+      () =>
+        this.app.realtime.get(
+          REALTIME_USER_DISPLAY_NAME,
+          this.app.react.userId
+        ),
       (value) => {
         this.collab.websocketProvider.awareness.setLocalStateField('user', {
           name: value,

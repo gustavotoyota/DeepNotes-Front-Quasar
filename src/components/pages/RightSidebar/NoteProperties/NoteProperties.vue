@@ -108,8 +108,8 @@
             <q-item-label>{{ scope.opt.label }}</q-item-label>
             <q-item-label caption>{{
               $pages.realtime.get(
-                'groupName',
-                $pages.react.dict[`pageGroupId.${scope.opt.value}`]
+                REALTIME_GROUP_NAME,
+                $pages.react.dict[`${DICT_PAGE_GROUP_ID}:${scope.opt.value}`]
               )
             }}</q-item-label>
           </q-item-section>
@@ -591,8 +591,10 @@
   setup
   lang="ts"
 >
+import { DICT_PAGE_GROUP_ID } from 'src/code/pages/app/app';
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
+import { REALTIME_GROUP_NAME } from 'src/code/pages/app/realtime';
 import { swapSyncedTexts } from 'src/code/pages/static/synced-store';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';

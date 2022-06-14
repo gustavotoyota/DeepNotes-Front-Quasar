@@ -12,6 +12,10 @@ export class ClientSocket {
   constructor(readonly url: string) {}
 
   connect() {
+    if (this.socket != null) {
+      return;
+    }
+
     this.connectedPromise = new Resolvable();
 
     this._keepConnected = true;

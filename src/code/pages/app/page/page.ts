@@ -304,7 +304,7 @@ export class AppPage extends PageRegion {
     await Promise.all([
       this.app.realtime.syncedPromise,
 
-      this.collab.websocketProvider.synced,
+      this.collab.websocketProvider.syncedPromise,
     ]);
 
     // Post-sync setup

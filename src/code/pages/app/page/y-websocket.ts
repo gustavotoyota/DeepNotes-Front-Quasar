@@ -1,12 +1,12 @@
 import * as decoding from 'lib0/decoding';
 import * as encoding from 'lib0/encoding';
-import * as math from 'lib0/math';
-import * as time from 'lib0/time';
 import { throttle } from 'lodash';
 import { SymmetricKey } from 'src/code/crypto/symmetric-key';
 import { Resolvable } from 'src/code/utils';
 import * as awarenessProtocol from 'y-protocols/awareness';
 import * as Y from 'yjs';
+
+import { ClientSocket } from '../../static/client-socket';
 
 export const MESSAGE_SYNC = 0;
 export const MESSAGE_AWARENESS = 1;
@@ -16,30 +16,16 @@ export const MESSAGE_SYNC_ALL_UPDATES_UNMERGED = 1;
 export const MESSAGE_SYNC_ALL_UPDATES_MERGED = 2;
 export const MESSAGE_SYNC_SINGLE_UPDATE = 3;
 
-const MESSAGE_RECONNECT_TIMEOUT = 30000;
-
 interface IAwarenessChanges {
   added: number[];
   updated: number[];
   removed: number[];
 }
 
-export class WebsocketProvider {
-  readonly url: string;
-
+export class WebsocketProvider extends ClientSocket {
   readonly awareness: awarenessProtocol.Awareness;
 
-  ws: WebSocket;
-
-  shouldConnect: boolean; // If false, the client will not try to reconnect.
-  wsconnected: boolean; //  True if this instance is currently connected to the server.
-  wsconnecting: boolean; // True if this instance is currently connecting to the server.
-  wsLastMessageReceived: number;
-  wsUnsuccessfulReconnects: number;
-  private readonly _checkInterval: NodeJS.Timer;
-  readonly maxBackoffTime: number;
-
-  readonly synced = new Resolvable();
+  readonly syncedPromise = new Resolvable();
 
   size = 0;
 
@@ -53,119 +39,29 @@ export class WebsocketProvider {
 
     readonly symmetricKey: SymmetricKey
   ) {
-    this.url = `${host}/${roomname}`;
+    super(`${host}/${roomname}`);
 
     this.awareness = new awarenessProtocol.Awareness(doc);
 
-    this.ws = null as any;
-
-    this.shouldConnect = true;
-    this.wsconnected = false;
-    this.wsconnecting = false;
-    this.wsLastMessageReceived = 0;
-    this.wsUnsuccessfulReconnects = 0;
-    this.maxBackoffTime = 2500;
-
-    // Setup reconnection timeout
-
-    this._checkInterval = setInterval(() => {
-      if (
-        this.wsconnected &&
-        MESSAGE_RECONNECT_TIMEOUT <
-          time.getUnixTime() - this.wsLastMessageReceived
-      ) {
-        // No message received in a long time - not even your own awareness
-        // updates (which are updated every 15 seconds)
-
-        this.ws.close();
-      }
-    }, MESSAGE_RECONNECT_TIMEOUT / 10);
-
     // Setup update-handling methods
 
-    this.doc.on('updateV2', this.handleDocumentUpdate);
-    this.awareness.on('update', this.handleAwarenessUpdate);
+    this.doc.on('updateV2', this._handleDocumentUpdate);
+    this.awareness.on('update', this._handleAwarenessUpdate);
 
     // Setup unload handling
 
     if (typeof window !== 'undefined') {
-      window.addEventListener('beforeunload', this.clearAwareness);
+      window.addEventListener('beforeunload', this._clearAwareness);
     } else if (typeof process !== 'undefined') {
-      process.on('exit', this.clearAwareness);
+      process.on('exit', this._clearAwareness);
     }
 
-    if (this.shouldConnect) {
-      this.connect();
-    }
+    this.connect();
   }
   connect() {
-    this.shouldConnect = true;
+    super.connect();
 
-    if (!this.wsconnected && this.ws === null) {
-      this.setupWebSocket();
-    }
-  }
-  setupWebSocket = () => {
-    if (!this.shouldConnect || this.ws !== null) {
-      return;
-    }
-
-    this.ws = new WebSocket(this.url);
-    this.ws.binaryType = 'arraybuffer';
-
-    this.wsconnecting = true;
-    this.wsconnected = false;
-
-    this.ws.onmessage = (event) => {
-      this.wsLastMessageReceived = time.getUnixTime();
-
-      this.handleMessage(new Uint8Array(event.data as any));
-    };
-
-    this.ws.onerror = (event) => {
-      console.error('Websocket error', event);
-    };
-
-    this.ws.onclose = (event) => {
-      console.log('Websocket closed', event);
-
-      this.ws = null as any;
-      this.wsconnecting = false;
-
-      if (this.wsconnected) {
-        this.wsconnected = false;
-
-        // Update awareness (all users except local left)
-
-        awarenessProtocol.removeAwarenessStates(
-          this.awareness,
-          Array.from(this.awareness.getStates().keys()).filter(
-            (client) => client !== this.doc.clientID
-          ),
-          this
-        );
-      } else {
-        this.wsUnsuccessfulReconnects++;
-      }
-
-      // Start with no reconnect timeout and increase timeout by
-      // using exponential backoff starting with 100ms
-
-      setTimeout(
-        this.setupWebSocket,
-        math.min(
-          math.pow(2, this.wsUnsuccessfulReconnects) * 100,
-          this.maxBackoffTime
-        )
-      );
-    };
-
-    this.ws.onopen = () => {
-      this.wsLastMessageReceived = time.getUnixTime();
-      this.wsconnecting = false;
-      this.wsconnected = true;
-      this.wsUnsuccessfulReconnects = 0;
-
+    this.socket.addEventListener('open', () => {
       // Broadcast local awareness state
 
       if (this.awareness.getLocalState() !== null) {
@@ -179,12 +75,16 @@ export class WebsocketProvider {
           ])
         );
 
-        this.ws.send(encoding.toUint8Array(encoderAwareness));
+        this.socket.send(encoding.toUint8Array(encoderAwareness));
       }
-    };
-  };
+    });
 
-  handleDocumentUpdate = (update: Uint8Array, origin: any) => {
+    this.socket.addEventListener('message', (event) => {
+      this._handleMessage(new Uint8Array(event.data as any));
+    });
+  }
+
+  private _handleDocumentUpdate = (update: Uint8Array, origin: any) => {
     if (origin === this) {
       return;
     }
@@ -195,9 +95,17 @@ export class WebsocketProvider {
       this._updateBuffer = Y.mergeUpdatesV2([this._updateBuffer, update]);
     }
 
-    this.sendSyncSingleUpdateMessage();
+    this._sendSyncSingleUpdateMessage();
   };
-  handleAwarenessUpdate = ({ added, updated, removed }: IAwarenessChanges) => {
+  private _handleAwarenessUpdate = ({
+    added,
+    updated,
+    removed,
+  }: IAwarenessChanges) => {
+    if (this.socket?.readyState !== WebSocket.OPEN) {
+      return;
+    }
+
     const changedClients = added.concat(updated).concat(removed);
 
     const encoder = encoding.createEncoder();
@@ -208,39 +116,39 @@ export class WebsocketProvider {
       awarenessProtocol.encodeAwarenessUpdate(this.awareness, changedClients)
     );
 
-    this.ws.send(encoding.toUint8Array(encoder));
+    this.socket.send(encoding.toUint8Array(encoder));
   };
 
-  handleMessage(message: Uint8Array) {
+  private _handleMessage(message: Uint8Array) {
     const decoder = decoding.createDecoder(message);
     const messageType = decoding.readVarUint(decoder);
 
     switch (messageType) {
       case MESSAGE_SYNC:
-        this.handleDocumentSyncMessage(decoder);
+        this._handleDocumentSyncMessage(decoder);
         break;
       case MESSAGE_AWARENESS:
-        this.handleAwarenessSyncMessage(decoder);
+        this._handleAwarenessSyncMessage(decoder);
         break;
       default:
         console.error('Unable to compute message');
     }
   }
-  handleDocumentSyncMessage(decoder: decoding.Decoder) {
+  private _handleDocumentSyncMessage(decoder: decoding.Decoder) {
     const syncMessageType = decoding.readVarUint(decoder);
 
     switch (syncMessageType) {
       case MESSAGE_SYNC_ALL_UPDATES_UNMERGED:
         console.log('Sync all updates unmerged message received');
-        this.handleSyncAllUpdatesUnmergedMessage(decoder);
+        this._handleSyncAllUpdatesUnmergedMessage(decoder);
         break;
       case MESSAGE_SYNC_SINGLE_UPDATE:
         console.log('Sync single update message received');
-        this.handleSyncSingleUpdateMessage(decoder);
+        this._handleSyncSingleUpdateMessage(decoder);
         break;
     }
   }
-  handleAwarenessSyncMessage(decoder: decoding.Decoder) {
+  private _handleAwarenessSyncMessage(decoder: decoding.Decoder) {
     console.log('Awareness message received');
 
     awarenessProtocol.applyAwarenessUpdate(
@@ -250,7 +158,11 @@ export class WebsocketProvider {
     );
   }
 
-  sendSyncRequestMessage() {
+  private _sendSyncRequestMessage() {
+    if (this.socket?.readyState !== WebSocket.OPEN) {
+      return;
+    }
+
     console.log('Sync request message sent');
 
     const encoder = encoding.createEncoder();
@@ -258,24 +170,32 @@ export class WebsocketProvider {
     encoding.writeVarUint(encoder, MESSAGE_SYNC);
     encoding.writeVarUint(encoder, MESSAGE_SYNC_REQUEST);
 
-    this.ws.send(encoding.toUint8Array(encoder));
+    this.socket.send(encoding.toUint8Array(encoder));
   }
 
-  handleSyncAllUpdatesUnmergedMessage(decoder: decoding.Decoder) {
+  private _handleSyncAllUpdatesUnmergedMessage(decoder: decoding.Decoder) {
     const updateEndIndex = decoding.readVarUint(decoder);
 
     const numUpdates = decoding.readVarUint(decoder);
 
     for (let i = 0; i < numUpdates; i++) {
-      this.handleSyncSingleUpdateMessage(decoder);
+      this._handleSyncSingleUpdateMessage(decoder);
     }
 
-    this.synced.resolve();
+    this.syncedPromise.resolve();
 
-    this.sendSyncAllUpdatesMergedMessage(updateEndIndex);
+    this._sendSyncAllUpdatesMergedMessage(updateEndIndex);
+
+    if (this._updateBuffer != null) {
+      this._sendSyncSingleUpdateMessage();
+    }
   }
 
-  sendSyncAllUpdatesMergedMessage(updateEndIndex: number) {
+  private _sendSyncAllUpdatesMergedMessage(updateEndIndex: number) {
+    if (this.socket?.readyState !== WebSocket.OPEN) {
+      return;
+    }
+
     console.log('Sync all updates merged message sent');
 
     const encoder = encoding.createEncoder();
@@ -290,13 +210,17 @@ export class WebsocketProvider {
     const encryptedUpdate = this.symmetricKey.encrypt(decryptedUpdate);
     encoding.writeVarUint8Array(encoder, encryptedUpdate);
 
-    this.ws.send(encoding.toUint8Array(encoder));
+    this.socket.send(encoding.toUint8Array(encoder));
 
     this.size = decryptedUpdate.length;
   }
 
-  sendSyncSingleUpdateMessage = throttle(
+  private _sendSyncSingleUpdateMessage = throttle(
     () => {
+      if (this.socket?.readyState !== WebSocket.OPEN) {
+        return;
+      }
+
       console.log('Sync single update message sent');
 
       const encoder = encoding.createEncoder();
@@ -310,20 +234,20 @@ export class WebsocketProvider {
 
       encoding.writeVarUint8Array(encoder, encryptedUpdate);
 
-      this.ws.send(encoding.toUint8Array(encoder));
+      this.socket.send(encoding.toUint8Array(encoder));
     },
     200,
     { leading: false }
   );
 
-  handleSyncSingleUpdateMessage(decoder: decoding.Decoder) {
+  private _handleSyncSingleUpdateMessage(decoder: decoding.Decoder) {
     // Apply decrypted update
     const encryptedUpdate = decoding.readVarUint8Array(decoder);
     const decryptedUpdate = this.symmetricKey.decrypt(encryptedUpdate);
     Y.applyUpdateV2(this.doc, decryptedUpdate, this);
   }
 
-  clearAwareness = () => {
+  private _clearAwareness = () => {
     awarenessProtocol.removeAwarenessStates(
       this.awareness,
       [this.doc.clientID],
@@ -331,26 +255,16 @@ export class WebsocketProvider {
     );
   };
 
-  disconnect() {
-    this.shouldConnect = false;
-
-    if (this.ws !== null) {
-      this.ws.close();
-    }
-  }
-
   destroy() {
-    clearInterval(this._checkInterval);
-
     this.disconnect();
 
     if (typeof window !== 'undefined') {
-      window.removeEventListener('beforeunload', this.clearAwareness);
+      window.removeEventListener('beforeunload', this._clearAwareness);
     } else if (typeof process !== 'undefined') {
-      process.off('exit', this.clearAwareness);
+      process.off('exit', this._clearAwareness);
     }
 
-    this.awareness.off('update', this.handleAwarenessUpdate);
-    this.doc.off('updateV2', this.handleDocumentUpdate);
+    this.awareness.off('update', this._handleAwarenessUpdate);
+    this.doc.off('updateV2', this._handleDocumentUpdate);
   }
 }

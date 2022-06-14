@@ -102,14 +102,14 @@ async function login() {
     auth.loggedIn = true;
 
     Notify.create({
+      message: 'Login successful.',
       color: 'positive',
-      message: 'Login successful',
     });
 
     await router.push('/pages');
   } catch (err: any) {
     Notify.create({
-      message: err.response?.data.message ?? 'An error has occurred',
+      message: err.response?.data.message ?? 'An error has occurred.',
       color: 'negative',
     });
 

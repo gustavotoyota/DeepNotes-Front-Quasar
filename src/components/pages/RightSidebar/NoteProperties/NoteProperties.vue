@@ -500,7 +500,7 @@
 
       <q-btn
         label="Reverse children"
-        :disable="page.react.readonly"
+        :disable="page.react.readonly || !note.collab.container.enabled"
         color="primary"
         @click="
           changeProp($event, (note, value) => {
@@ -533,6 +533,34 @@
         @update:model-value="
           changeProp($event, (note, value) => {
             note.collab.resizable = value;
+          })
+        "
+      />
+    </div>
+
+    <q-separator />
+
+    <div style="padding: 20px; display: flex">
+      <Checkbox
+        label="Wrap head"
+        :disable="page.react.readonly"
+        :model-value="note.collab.head.wrap"
+        @update:model-value="
+          changeProp($event, (note, value) => {
+            note.collab.head.wrap = value;
+          })
+        "
+      />
+
+      <Gap style="width: 16px" />
+
+      <Checkbox
+        label="Wrap body"
+        :disable="page.react.readonly"
+        :model-value="note.collab.body.wrap"
+        @update:model-value="
+          changeProp($event, (note, value) => {
+            note.collab.body.wrap = value;
           })
         "
       />

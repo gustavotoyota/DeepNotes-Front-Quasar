@@ -144,8 +144,8 @@ async function acceptSelectedInvitations() {
     selectedIds.value.clear();
   } catch (err: any) {
     Notify.create({
+      message: err.response?.data.message ?? 'An error has occurred.',
       color: 'negative',
-      message: err.response?.data.message ?? 'An error has occurred',
     });
   }
 }
@@ -165,7 +165,7 @@ async function rejectSelectedInvitations() {
     selectedIds.value.clear();
   } catch (err: any) {
     Notify.create({
-      message: err.response?.data.message ?? 'An error has occurred',
+      message: err.response?.data.message ?? 'An error has occurred.',
       color: 'negative',
     });
 

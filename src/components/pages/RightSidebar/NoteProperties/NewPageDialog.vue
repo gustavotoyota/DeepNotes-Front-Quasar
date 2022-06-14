@@ -131,7 +131,7 @@ watch(createGroup, async (value) => {
 async function createPage() {
   if (createGroup.value && groupName.value === '') {
     Notify.create({
-      message: 'Please enter a group name',
+      message: 'Please enter a group name.',
       color: 'negative',
     });
 
@@ -187,12 +187,12 @@ async function createPage() {
     visible.value = false;
 
     Notify.create({
-      message: 'Page created successfully',
+      message: 'Page created successfully.',
       color: 'positive',
     });
   } catch (err: any) {
     Notify.create({
-      message: err.response?.data.message ?? 'An error has occurred',
+      message: err.response?.data.message ?? 'An error has occurred.',
       color: 'negative',
     });
 

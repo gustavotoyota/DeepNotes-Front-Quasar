@@ -91,7 +91,7 @@ watch(visible, async (value) => {
 async function requestAccess(message: string) {
   if (roleId.value == null) {
     Notify.create({
-      message: 'Please select a role',
+      message: 'Please select a role.',
       color: 'negative',
     });
 
@@ -109,12 +109,12 @@ async function requestAccess(message: string) {
     page.react.userStatus = 'request';
 
     Notify.create({
-      message: 'Access request sent',
+      message: 'Access request sent.',
       color: 'positive',
     });
   } catch (err: any) {
     Notify.create({
-      message: err.response?.data.message ?? 'An error has occurred',
+      message: err.response?.data.message ?? 'An error has occurred.',
       color: 'negative',
     });
 

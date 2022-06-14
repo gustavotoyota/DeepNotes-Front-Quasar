@@ -102,8 +102,8 @@ async function register() {
 
   if (data.password !== data.repeatPassword) {
     Notify.create({
+      message: 'Passwords do not match.',
       color: 'negative',
-      message: 'Passwords do not match',
     });
 
     return;
@@ -138,14 +138,14 @@ async function register() {
     });
 
     Notify.create({
-      message: 'Account created successfully!',
+      message: 'Account created successfully.',
       color: 'positive',
     });
 
     await router.push('/login');
   } catch (err: any) {
     Notify.create({
-      message: err.response?.data.message ?? 'An error has occurred',
+      message: err.response?.data.message ?? 'An error has occurred.',
       color: 'negative',
     });
 

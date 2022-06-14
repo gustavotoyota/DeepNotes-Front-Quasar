@@ -98,7 +98,7 @@ async function inviteUser() {
     !z.string().uuid().or(z.string().email()).safeParse(identity.value).success
   ) {
     Notify.create({
-      message: 'Invalid user ID',
+      message: 'Invalid user ID.',
       color: 'negative',
     });
 
@@ -107,7 +107,7 @@ async function inviteUser() {
 
   if (roleId.value == null) {
     Notify.create({
-      message: 'Please select a role',
+      message: 'Please select a role.',
       color: 'negative',
     });
 
@@ -155,7 +155,7 @@ async function inviteUser() {
     });
   } catch (err: any) {
     Notify.create({
-      message: err.response?.data.message ?? 'An error has occurred',
+      message: err.response?.data.message ?? 'An error has occurred.',
       color: 'negative',
     });
 

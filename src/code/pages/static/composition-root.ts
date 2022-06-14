@@ -29,7 +29,7 @@ import { PageSelection } from '../app/page/selection/selection';
 import { PagePos } from '../app/page/space/pos';
 import { PageRects } from '../app/page/space/rects';
 import { PageSizes } from '../app/page/space/sizes';
-import { PageUndoRedo } from '../app/page/undoRedo';
+import { PageUndoRedo } from '../app/page/undo-redo';
 import { AppPageCache } from '../app/page-cache';
 import { AppRealtime } from '../app/realtime';
 import { AppSerialization } from '../app/serialization';

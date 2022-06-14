@@ -59,12 +59,12 @@ async function save() {
     });
 
     Notify.create({
-      message: 'Saved',
+      message: 'User settings saved.',
       color: 'positive',
     });
   } catch (err: any) {
     Notify.create({
-      message: err.response?.data.message ?? 'An error has occurred',
+      message: err.response?.data.message ?? 'An error has occurred.',
       color: 'negative',
     });
 

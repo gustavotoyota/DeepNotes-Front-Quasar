@@ -201,7 +201,7 @@ function deleteSelection() {
     if ($pages.templates.react.defaultId !== template.id) continue;
 
     Notify.create({
-      message: 'Default template cannot be deleted',
+      message: 'Default template cannot be deleted.',
       color: 'negative',
     });
 

@@ -141,20 +141,20 @@ watch(visible, async (value) => {
 
   settings.value = initialSettings();
 
-  const response = await $api.post<{
-    requests: IGroupUser[];
-    invitations: IGroupUser[];
-    members: IGroupUser[];
-    banned: IGroupUser[];
-  }>('/api/groups/load-settings', {
-    groupId: page.value.react.groupId,
-  });
+  const [response, groupName] = await Promise.all([
+    $api.post<{
+      requests: IGroupUser[];
+      invitations: IGroupUser[];
+      members: IGroupUser[];
+      banned: IGroupUser[];
+    }>('/api/groups/load-settings', {
+      groupId: page.value.react.groupId,
+    }),
 
-  if (page.value.react.ownerId == null) {
-    settings.value.general.groupName =
-      (await $pages.realtime.getAsync('groupName', page.value.react.groupId)) ??
-      '';
-  }
+    $pages.realtime.getAsync('groupName', page.value.react.groupId),
+  ]);
+
+  settings.value.general.groupName = groupName ?? '';
 
   settings.value.requests.list = response.data.requests;
   settings.value.invitations.list = response.data.invitations;

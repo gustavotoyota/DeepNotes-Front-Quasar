@@ -257,7 +257,7 @@ export class AppRealtime {
               }
 
               Notify.create({
-                message: `${agentDisplayName} has accepted your access request to the group "${groupName}"`,
+                message: `${agentDisplayName} has accepted your access request to the group "${groupName}".`,
                 type: 'positive',
               });
             } else if (notifObj.type === 'groupRequestRejected') {
@@ -269,7 +269,7 @@ export class AppRealtime {
               }
 
               Notify.create({
-                message: `${agentDisplayName} has rejected your access request to the group "${groupName}"`,
+                message: `${agentDisplayName} has rejected your access request to the group "${groupName}".`,
                 type: 'negative',
               });
             } else if (notifObj.type === 'groupInvitationSent') {
@@ -281,7 +281,7 @@ export class AppRealtime {
               }
 
               Notify.create({
-                message: `${agentDisplayName} has invited you to access the group "${groupName}"`,
+                message: `${agentDisplayName} has invited you to access the group "${groupName}".`,
                 type: 'info',
               });
             } else if (notifObj.type === 'groupInvitationCancelled') {
@@ -293,7 +293,7 @@ export class AppRealtime {
               }
 
               Notify.create({
-                message: `${agentDisplayName} has cancelled your access invitation to the group "${groupName}"`,
+                message: `${agentDisplayName} has cancelled your access invitation to the group "${groupName}".`,
                 type: 'negative',
               });
             } else if (notifObj.type === 'groupUserRoleChanged') {
@@ -306,7 +306,7 @@ export class AppRealtime {
               Notify.create({
                 message: `${agentDisplayName} has changed your role in the group "${groupName}" to ${
                   rolesMap[notifObj.data.roleId].name
-                }`,
+                }.`,
                 type: 'info',
               });
             } else if (notifObj.type === 'groupUserRemoved') {
@@ -318,7 +318,7 @@ export class AppRealtime {
               }
 
               Notify.create({
-                message: `${agentDisplayName} has removed you from the group "${groupName}"`,
+                message: `${agentDisplayName} has removed you from the group "${groupName}".`,
                 type: 'negative',
               });
             }

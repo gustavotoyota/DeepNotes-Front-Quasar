@@ -180,8 +180,8 @@ onMounted(async () => {
 async function changePassword() {
   if (data.newPassword !== data.confirmNewPassword) {
     Notify.create({
+      message: 'New passwords do not match.',
       color: 'negative',
-      message: 'New passwords do not match',
     });
 
     return;
@@ -229,14 +229,14 @@ async function changePassword() {
     });
 
     Notify.create({
+      message: 'Password changed successfully.',
       color: 'positive',
-      message: 'Password changed successfully',
     });
 
     passwordChangeForm.value.reset();
   } catch (err: any) {
     Notify.create({
-      message: err.response?.data.message ?? 'An error has occurred',
+      message: err.response?.data.message ?? 'An error has occurred.',
       color: 'negative',
     });
 

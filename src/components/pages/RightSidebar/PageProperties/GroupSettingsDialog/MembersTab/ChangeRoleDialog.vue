@@ -84,7 +84,7 @@ watch(visible, async (value) => {
 async function changeRole() {
   if (roleId.value == null) {
     Notify.create({
-      message: 'Please select a role',
+      message: 'Please select a role.',
       color: 'negative',
     });
     return;
@@ -108,7 +108,7 @@ async function changeRole() {
     }
   } catch (err: any) {
     Notify.create({
-      message: err.response?.data.message ?? 'An error has occurred',
+      message: err.response?.data.message ?? 'An error has occurred.',
       color: 'negative',
     });
 

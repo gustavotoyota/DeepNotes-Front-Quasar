@@ -44,7 +44,7 @@ import { PageSelection } from './selection/selection';
 import { PagePos } from './space/pos';
 import { PageRects } from './space/rects';
 import { PageSizes } from './space/sizes';
-import { PageUndoRedo } from './undoRedo';
+import { PageUndoRedo } from './undo-redo';
 import { WebsocketProvider } from './y-websocket';
 
 export const IPageCollab = IRegionCollab.extend({

@@ -42,7 +42,7 @@ export const container = new Container({
   serialization: () => (app: PagesApp) => new AppSerialization(app),
   templates: () => (app: PagesApp) => new AppTemplates(app),
   pageCache: () => (app: PagesApp) => new AppPageCache(app),
-  realtime: () => () => new AppRealtime(),
+  realtime: () => (url: string) => new AppRealtime(url),
 
   page: (factory: any) => (app: PagesApp, id: string) =>
     new AppPage(factory, app, id),

@@ -5,6 +5,7 @@ import { Notify } from 'quasar';
 import { Resolvable } from 'src/code/utils';
 import { nextTick, reactive } from 'vue';
 
+import { ClientSocket } from '../static/client-socket';
 import { rolesMap } from '../static/roles';
 
 export const REALTIME_USER_NOTIFICATION = 'user-notification';
@@ -26,28 +27,47 @@ const MSGTOSV_PUBLISH = 2;
 
 const MSGTOCL_NOTIFY = 0;
 
-export class AppRealtime {
-  private _socket!: WebSocket;
+export class AppRealtime extends ClientSocket {
+  private readonly _values: Record<string, string | undefined> = reactive({});
 
-  private readonly _values: Record<string, string | undefined>;
-
-  connected!: Resolvable;
-  synced!: Resolvable;
+  syncedPromise!: Resolvable;
 
   private readonly _subscriptions = new Set<string>();
 
   private readonly _subscribeBuffer = new Set<string>();
   private readonly _unsubscribeBuffer = new Set<string>();
 
-  private _publishMode = true;
+  private _autoPublish = true;
   private readonly _publishBuffer = new Map<string, string>();
 
   private readonly _notificationPromises = new Map<string, Resolvable>();
 
-  constructor() {
-    this._values = reactive({});
+  constructor(url: string) {
+    super(url);
 
     this.connect();
+  }
+
+  connect() {
+    super.connect();
+
+    this.syncedPromise = new Resolvable();
+
+    this.socket.addEventListener('open', async () => {
+      for (const subscription of this._subscriptions) {
+        this._subscribeBuffer.add(subscription);
+      }
+
+      await Promise.all([
+        this._subscribeFlush(),
+        this._publishFlush(),
+        this._unsubscribeFlush(),
+      ]);
+    });
+
+    this.socket.addEventListener('message', (event) => {
+      this._handleMessage(new Uint8Array(event.data as any));
+    });
   }
 
   get(type: string, key: string) {
@@ -72,36 +92,11 @@ export class AppRealtime {
   set(type: string, key: string, value: string) {
     const channel = `${type}:${key}`;
 
-    if (this._publishMode) {
+    if (this._autoPublish) {
       this.publish({ [channel]: value });
     } else {
       this._values[channel] = value;
     }
-  }
-
-  connect() {
-    this.connected = new Resolvable();
-    this.synced = new Resolvable();
-
-    this._socket = new WebSocket(
-      process.env.DEV
-        ? 'ws://192.168.1.2:31074/'
-        : 'wss://realtime-server.deepnotes.app/'
-    );
-
-    this._socket.binaryType = 'arraybuffer';
-
-    this._socket.onopen = () => {
-      console.log('Connected to server');
-
-      this.connected.resolve();
-    };
-    this._socket.onmessage = (event) => {
-      this._handleMessage(new Uint8Array(event.data as any));
-    };
-    this._socket.onclose = () => {
-      console.log('Disconnected from server');
-    };
   }
 
   subscribe(...channels: string[]) {
@@ -128,8 +123,12 @@ export class AppRealtime {
     }
   }
   private _subscribeFlush = async () => {
-    await this.connected;
+    await this.connectedPromise;
     await $pages.loadedPromise;
+
+    if (this._subscribeBuffer.size === 0) {
+      return;
+    }
 
     console.log('Subscribing to', this._subscribeBuffer.values());
 
@@ -141,7 +140,7 @@ export class AppRealtime {
       encoding.writeVarString(encoder, channel);
     }
 
-    this._socket.send(encoding.toUint8Array(encoder));
+    this.socket.send(encoding.toUint8Array(encoder));
 
     this._subscribeBuffer.clear();
   };
@@ -163,8 +162,12 @@ export class AppRealtime {
     }
   }
   private _unsubscribeFlush = async () => {
-    await this.connected;
+    await this.connectedPromise;
     await $pages.loadedPromise;
+
+    if (this._unsubscribeBuffer.size === 0) {
+      return;
+    }
 
     console.log('Unsubscribing', this._unsubscribeBuffer.entries());
 
@@ -180,7 +183,9 @@ export class AppRealtime {
       delete this._values[channel];
     }
 
-    this._socket.send(encoding.toUint8Array(encoder));
+    this.socket.send(encoding.toUint8Array(encoder));
+
+    this._unsubscribeBuffer.clear();
   };
 
   publish(values: Record<string, string>) {
@@ -203,8 +208,12 @@ export class AppRealtime {
   }
   private _publishFlush = throttle(
     async () => {
-      await this.connected;
+      await this.connectedPromise;
       await $pages.loadedPromise;
+
+      if (this._publishBuffer.size === 0) {
+        return;
+      }
 
       console.log('Publishing', this._publishBuffer.entries());
 
@@ -219,7 +228,7 @@ export class AppRealtime {
         encoding.writeVarString(encoder, value);
       }
 
-      this._socket.send(encoding.toUint8Array(encoder));
+      this.socket.send(encoding.toUint8Array(encoder));
 
       this._publishBuffer.clear();
     },
@@ -242,7 +251,7 @@ export class AppRealtime {
   private _handleNotify(decoder: decoding.Decoder) {
     const numChannels = decoding.readVarUint(decoder);
 
-    this._publishMode = false;
+    this._autoPublish = false;
 
     for (let i = 0; i < numChannels; i++) {
       const channel = decoding.readVarString(decoder);
@@ -357,8 +366,8 @@ export class AppRealtime {
       }
     }
 
-    this._publishMode = true;
+    this._autoPublish = true;
 
-    this.synced.resolve();
+    this.syncedPromise.resolve();
   }
 }

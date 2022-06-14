@@ -92,7 +92,11 @@ export class PagesApp {
     this.serialization = factory.makeSerialization(this);
     this.templates = factory.makeTemplates(this);
     this.pageCache = factory.makePageCache(this);
-    this.realtime = factory.makeRealtime();
+    this.realtime = factory.makeRealtime(
+      process.env.DEV
+        ? 'ws://192.168.1.2:31074/'
+        : 'wss://realtime-server.deepnotes.app/'
+    );
 
     this.react = refProp<IAppReact>(this, 'react', {
       pathPageIds: [],

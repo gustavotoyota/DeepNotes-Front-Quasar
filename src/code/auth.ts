@@ -51,11 +51,14 @@ export async function tryRefreshTokens(): Promise<void> {
   try {
     if (
       !isTokenValid('refresh-token') ||
-      areTokensExpiring() ||
       localStorage.getItem('encrypted-private-key') == null
     ) {
       logout();
       enforceRouteRules();
+      return;
+    }
+
+    if (privateKey.exists() && !areTokensExpiring()) {
       return;
     }
 

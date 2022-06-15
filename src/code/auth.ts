@@ -8,7 +8,7 @@ import { privateKey } from './crypto/private-key';
 import { addDays } from './utils';
 
 export const apiBaseURL = process.env.DEV
-  ? 'http://192.168.1.2:21733'
+  ? 'http://192.168.1.4:21733'
   : 'https://app-server.deepnotes.app/';
 
 export const authEndpoints = {
@@ -125,7 +125,7 @@ function storeToken(tokenName: string, token: string) {
     expires: addDays(new Date(), 7),
     secure: !!process.env.PROD,
     sameSite: 'Strict',
-    domain: process.env.PROD ? 'deepnotes.app' : '192.168.1.2',
+    domain: process.env.PROD ? 'deepnotes.app' : '192.168.1.4',
   });
 
   const decodedToken = jwtDecode<{ exp: number; iat: number }>(token);

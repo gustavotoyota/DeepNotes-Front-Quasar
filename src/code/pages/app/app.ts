@@ -94,7 +94,7 @@ export class PagesApp {
     this.pageCache = factory.makePageCache(this);
     this.realtime = factory.makeRealtime(
       process.env.DEV
-        ? 'ws://192.168.1.2:31074/'
+        ? 'ws://192.168.1.4:31074/'
         : 'wss://realtime-server.deepnotes.app/'
     );
 

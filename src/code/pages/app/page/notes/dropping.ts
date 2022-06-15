@@ -19,11 +19,7 @@ export class PageDropping {
 
     this.page.collab.doc.transact(() => {
       for (const selectedNote of selectedNotes) {
-        selectedNote.removeFromRegion();
-
-        regionNote.collab.noteIds.splice(dropIndex++, 0, selectedNote.id);
-
-        selectedNote.react.parentId = regionNote.id;
+        selectedNote.moveToRegion(regionNote, dropIndex);
       }
     });
 

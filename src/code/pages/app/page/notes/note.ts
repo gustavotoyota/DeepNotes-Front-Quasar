@@ -549,6 +549,17 @@ export class PageNote extends PageRegion {
   removeFromRegion() {
     this.react.region.react.noteIds.splice(this.react.index, 1);
   }
+  moveToRegion(region: PageRegion, insertIndex?: number) {
+    this.removeFromRegion();
+
+    region.react.noteIds.splice(
+      insertIndex ?? region.react.noteIds.length,
+      0,
+      this.id
+    );
+
+    this.react.parentId = region.id;
+  }
 
   reverseChildren() {
     this.page.collab.doc.transact(() => {

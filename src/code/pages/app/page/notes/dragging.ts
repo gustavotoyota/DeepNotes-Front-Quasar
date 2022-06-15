@@ -143,17 +143,15 @@ export class PageDragging {
       (a: PageNote, b: PageNote) => b.react.index - a.react.index
     );
 
+    const insertIndex = this.page.react.noteIds.length;
+
     this.page.collab.doc.transact(() => {
       for (const selectedNote of selectedNotes) {
         if (!selectedNote.react.dragging) {
           continue;
         }
 
-        selectedNote.removeFromRegion();
-
-        this.page.react.collab.noteIds.push(selectedNote.id);
-
-        selectedNote.react.parentId = null;
+        selectedNote.moveToRegion(this.page, insertIndex);
       }
     });
 

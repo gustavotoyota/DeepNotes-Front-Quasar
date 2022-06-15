@@ -192,35 +192,37 @@ export class PageResizing {
   }.bind(this);
 
   private _finish = function (this: PageResizing) {
-    for (const ghost of this.react.ghosts) {
-      const note = this.page.notes.fromId(ghost.id);
+    this.page.collab.doc.transact(() => {
+      for (const ghost of this.react.ghosts) {
+        const note = this.page.notes.fromId(ghost.id);
 
-      if (note == null) {
-        continue;
+        if (note == null) {
+          continue;
+        }
+
+        if (this.side.includes('w') || this.side.includes('e')) {
+          note.collab.width[note.react.sizeProp] =
+            ghost.collab.width[ghost.react.sizeProp];
+        }
+
+        if (
+          this.section != null &&
+          (this.side.includes('n') || this.side.includes('s'))
+        ) {
+          note.collab[this.section].height[note.react.sizeProp] =
+            ghost.collab[this.section].height[ghost.react.sizeProp];
+        }
+
+        const worldRect = ghost.react.worldRect;
+
+        note.collab.pos = worldRect.topLeft.vecLerp(
+          worldRect.bottomRight,
+          new Vec2(note.collab.anchor)
+        );
+
+        note.react.resizing = false;
       }
-
-      if (this.side.includes('w') || this.side.includes('e')) {
-        note.collab.width[note.react.sizeProp] =
-          ghost.collab.width[ghost.react.sizeProp];
-      }
-
-      if (
-        this.section != null &&
-        (this.side.includes('n') || this.side.includes('s'))
-      ) {
-        note.collab[this.section].height[note.react.sizeProp] =
-          ghost.collab[this.section].height[ghost.react.sizeProp];
-      }
-
-      const worldRect = ghost.react.worldRect;
-
-      note.collab.pos = worldRect.topLeft.vecLerp(
-        worldRect.bottomRight,
-        new Vec2(note.collab.anchor)
-      );
-
-      note.react.resizing = false;
-    }
+    });
 
     this.react.active = false;
   }.bind(this);

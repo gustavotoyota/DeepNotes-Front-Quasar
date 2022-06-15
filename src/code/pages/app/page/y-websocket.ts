@@ -178,9 +178,11 @@ export class WebsocketProvider extends ClientSocket {
 
     const numUpdates = decoding.readVarUint(decoder);
 
-    for (let i = 0; i < numUpdates; i++) {
-      this._handleSyncSingleUpdateMessage(decoder);
-    }
+    this.doc.transact(() => {
+      for (let i = 0; i < numUpdates; i++) {
+        this._handleSyncSingleUpdateMessage(decoder);
+      }
+    });
 
     this.syncedPromise.resolve();
 

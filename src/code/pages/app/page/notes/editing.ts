@@ -9,6 +9,8 @@ export interface IEditingReact {
 
   note: ComputedRef<PageNote | null>;
   section?: NoteTextSection;
+
+  active: ComputedRef<boolean>;
 }
 
 export class PageEditing {
@@ -23,6 +25,8 @@ export class PageEditing {
       noteId: null,
 
       note: computed(() => this.page.notes.fromId(this.react.noteId)),
+
+      active: computed(() => this.react.note != null),
     });
   }
 
@@ -31,7 +35,7 @@ export class PageEditing {
       return;
     }
 
-    if (this.react.note != null) {
+    if (this.react.active) {
       this.stop();
     }
 

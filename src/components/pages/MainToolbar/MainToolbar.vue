@@ -274,9 +274,9 @@ function format(funcName: 'formatLine' | 'removeFormat', ...args: any[]) {
           continue;
         }
 
-        const selection = quill.getSelection();
-
         if (quill.isEnabled()) {
+          const selection = quill.getSelection();
+
           if (selection != null) {
             quill[funcName](selection.index, selection.length, ...args);
           }

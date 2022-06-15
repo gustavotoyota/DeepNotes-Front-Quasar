@@ -112,7 +112,7 @@ export class PageNotes {
 
     this.page.editing.start(note);
 
-    note.collab.pos = new Vec2(Number.MAX_VALUE, Number.MAX_VALUE);
+    note.collab.pos = new Vec2(-Number.MAX_VALUE, -Number.MAX_VALUE);
 
     setTimeout(() => {
       note.collab.pos = note.react.worldSize

@@ -4,7 +4,7 @@
     :mini="ui.leftSidebarMini"
     side="left"
     bordered
-    no-swipe-Mini
+    no-swipe-open
     no-swipe-close
     no-swipe-backdrop
     behavior="desktop"

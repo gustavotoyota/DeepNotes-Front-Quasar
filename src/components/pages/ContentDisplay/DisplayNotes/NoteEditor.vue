@@ -288,6 +288,8 @@ $note-padding: 9px;
 /* Tooltip */
 
 .ql-tooltip {
+  position: fixed !important;
+
   z-index: 2147483647;
 
   background-color: #303030 !important;

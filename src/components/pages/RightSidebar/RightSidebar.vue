@@ -4,7 +4,7 @@
     show-if-above
     side="right"
     bordered
-    no-swipe-Mini
+    no-swipe-open
     no-swipe-close
     no-swipe-backdrop
     behavior="desktop"

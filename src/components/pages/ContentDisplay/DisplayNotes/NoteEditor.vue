@@ -164,6 +164,14 @@ div :deep(.ProseMirror) {
     font-size: 1.5em;
   }
 
+  hr {
+    margin-top: 7px;
+
+    border: none;
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.28);
+  }
+
   .collaboration-cursor__caret {
     position: relative;
 

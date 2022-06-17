@@ -276,6 +276,23 @@
           />
 
           <ToolbarBtn
+            tooltip="Rule"
+            icon="mdi-minus"
+            icon-size="23px"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="
+              format((chain) => {
+                chain.setHorizontalRule().run();
+              })
+            "
+          />
+
+          <q-separator
+            vertical
+            style="margin: 0 7px"
+          />
+
+          <ToolbarBtn
             tooltip="Clear formatting"
             icon="mdi-format-clear"
             icon-size="24px"

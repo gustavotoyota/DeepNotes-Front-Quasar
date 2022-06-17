@@ -101,28 +101,98 @@
           />
 
           <ToolbarBtn
+            tooltip="Bold"
+            icon="mdi-format-bold"
+            icon-size="25px"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="
+              format((chain) => {
+                chain.toggleBold().run();
+              })
+            "
+          />
+          <ToolbarBtn
+            tooltip="Italic"
+            icon="mdi-format-italic"
+            icon-size="25px"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="
+              format((chain) => {
+                chain.toggleItalic().run();
+              })
+            "
+          />
+          <ToolbarBtn
+            tooltip="Strike"
+            icon="mdi-format-strikethrough"
+            icon-size="25px"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="
+              format((chain) => {
+                chain.toggleStrike().run();
+              })
+            "
+          />
+          <ToolbarBtn
+            tooltip="Strike"
+            icon="mdi-format-underline"
+            icon-size="25px"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="
+              format((chain) => {
+                chain.toggleUnderline().run();
+              })
+            "
+          />
+
+          <q-separator
+            vertical
+            style="margin: 0 7px"
+          />
+
+          <ToolbarBtn
             tooltip="Align left"
             icon="mdi-format-align-left"
             icon-size="21px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="
+              format((chain) => {
+                chain.setTextAlign('left').run();
+              })
+            "
           />
           <ToolbarBtn
             tooltip="Align center"
             icon="mdi-format-align-center"
             icon-size="21px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="
+              format((chain) => {
+                chain.setTextAlign('center').run();
+              })
+            "
           />
           <ToolbarBtn
             tooltip="Align right"
             icon="mdi-format-align-right"
             icon-size="21px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="
+              format((chain) => {
+                chain.setTextAlign('right').run();
+              })
+            "
           />
           <ToolbarBtn
             tooltip="Justify"
             icon="mdi-format-align-justify"
             icon-size="21px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="
+              format((chain) => {
+                chain.setTextAlign('justify').run();
+              })
+            "
           />
 
           <q-separator
@@ -135,12 +205,69 @@
             icon="mdi-format-header-1"
             icon-size="24px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="
+              format((chain) => {
+                chain.setHeading({ level: 1 }).run();
+              })
+            "
           />
           <ToolbarBtn
             tooltip="Header 2"
             icon="mdi-format-header-2"
             icon-size="24px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="
+              format((chain) => {
+                chain.setHeading({ level: 2 }).run();
+              })
+            "
+          />
+
+          <q-separator
+            vertical
+            style="margin: 0 7px"
+          />
+
+          <ToolbarBtn
+            tooltip="Bullet list"
+            icon="mdi-format-list-bulleted"
+            icon-size="24px"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="
+              format((chain) => {
+                chain.toggleBulletList().run();
+              })
+            "
+          />
+          <ToolbarBtn
+            tooltip="Ordered list"
+            icon="mdi-format-list-numbered"
+            icon-size="24px"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="
+              format((chain) => {
+                chain.toggleOrderedList().run();
+              })
+            "
+          />
+
+          <q-separator
+            vertical
+            style="margin: 0 7px"
+          />
+
+          <ToolbarBtn
+            tooltip="Table"
+            icon="mdi-table-large"
+            icon-size="23px"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="
+              format((chain) => {
+                chain
+                  .insertTable({ rows: 3, cols: 3, withHeaderRow: false })
+                  .run();
+              })
+            "
           />
 
           <q-separator
@@ -153,6 +280,11 @@
             icon="mdi-format-clear"
             icon-size="24px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="
+              format((chain) => {
+                chain.clearNodes().unsetAllMarks().run();
+              })
+            "
           />
         </div>
 
@@ -244,7 +376,9 @@
   setup
   lang="ts"
 >
+import { ChainedCommands } from '@tiptap/vue-3';
 import { logout } from 'src/code/auth';
+import { NoteTextSection } from 'src/code/pages/app/page/notes/note';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
 import { toRef } from 'vue';
@@ -255,6 +389,27 @@ import UserSettingsDialog from './UserSettingsDialog/UserSettingsDialog.vue';
 const ui = useUI();
 
 const page = toRef($pages.react, 'page');
+
+function format(func: (chain: ChainedCommands) => void) {
+  if (page.value.editing.react.active) {
+    const note = page.value.editing.react.note!;
+    const section = page.value.editing.react.section!;
+
+    const editor = note.react[section].editor;
+
+    func(editor!.chain().focus());
+  } else {
+    for (const selectionNote of page.value.selection.react.notes) {
+      for (const section of ['head', 'body'] as NoteTextSection[]) {
+        const editor = selectionNote.react[section].editor;
+
+        if (editor != null) {
+          func(editor.chain().selectAll());
+        }
+      }
+    }
+  }
+}
 </script>
 
 <style scoped>

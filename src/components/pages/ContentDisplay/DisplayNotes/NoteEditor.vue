@@ -58,6 +58,10 @@ const editor = useEditor({
         ]
       : []),
   ],
+
+  onFocus() {
+    page.editing.react.section = props.section;
+  },
 });
 
 let unwatch: () => void;
@@ -105,51 +109,93 @@ div :deep(.ProseMirror) {
   overflow: auto;
 
   touch-action: pan-x pan-y !important;
+
+  p {
+    margin-bottom: 0;
+  }
+
+  table {
+    border-collapse: collapse;
+
+    td,
+    th {
+      border: 1px solid #ccc;
+
+      padding: 2px 5px;
+
+      vertical-align: top;
+
+      position: relative;
+    }
+    th {
+      font-weight: unset;
+      text-align: unset;
+    }
+  }
+
+  ul,
+  ol {
+    margin: 0;
+  }
+  ul {
+    padding-inline-start: 22px;
+
+    & > li > * {
+      margin-left: -4px;
+    }
+  }
+  ol {
+    padding-inline-start: 18px;
+  }
+
+  h1,
+  h2 {
+    font-weight: 700;
+
+    line-height: unset;
+    margin-block: 0;
+
+    letter-spacing: unset;
+  }
+  h1 {
+    font-size: 2em;
+  }
+  h2 {
+    font-size: 1.5em;
+  }
+
+  .collaboration-cursor__caret {
+    position: relative;
+
+    border-left: 1px solid #ffa500;
+    border-right: 1px solid #ffa500;
+
+    margin-left: -1px;
+    margin-right: -1px;
+
+    pointer-events: none;
+  }
+  .collaboration-cursor__label {
+    position: absolute;
+    white-space: nowrap;
+
+    border-radius: 3px;
+    border-bottom-left-radius: 0px;
+
+    padding: 0px 3px;
+
+    left: -1px;
+    top: 0px;
+
+    transform: translateY(-100%);
+
+    font-size: 12px;
+  }
 }
 div.padding-fix :deep(.ProseMirror) {
   padding-right: 0;
 }
 div.no-wrap :deep(.ProseMirror) {
   white-space: nowrap;
-}
-
-div :deep(.ProseMirror p) {
-  margin-bottom: 0;
-}
-
-div :deep(.ProseMirror ul) {
-  margin: 0;
-  padding-inline-start: 22px;
-}
-div :deep(.ProseMirror li > *) {
-  margin-left: -4px;
-}
-
-div :deep(.ProseMirror .collaboration-cursor__caret) {
-  position: relative;
-
-  border-left: 1px solid #ffa500;
-  border-right: 1px solid #ffa500;
-
-  margin-left: -1px;
-  margin-right: -1px;
-
-  pointer-events: none;
-}
-div :deep(.ProseMirror .collaboration-cursor__label) {
-  position: absolute;
-  white-space: nowrap;
-
-  border-radius: 3px;
-  border-bottom-left-radius: 0px;
-
-  padding: 0px 3px;
-
-  left: -1px;
-  top: 0px;
-
-  transform: translateY(-100%);
-
-  font-size: 12px;
 }
 </style>

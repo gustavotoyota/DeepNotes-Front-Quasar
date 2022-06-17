@@ -5,10 +5,7 @@
       :style="{ width: note.react.width.target }"
       @dblclick.left="page.editing.start(note, section)"
     >
-      <NoteEditor
-        :section="section"
-        :wrap="note.collab[section].wrap"
-      />
+      <NoteEditor :section="section" />
     </div>
   </NoteSection>
 </template>

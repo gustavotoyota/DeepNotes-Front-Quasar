@@ -32,8 +32,6 @@ module.exports = configure(function (/* ctx */) {
       { path: 'external/i18n' },
       { path: 'external/axios' },
       { path: 'external/syncedstore' },
-      { path: 'external/highlight', server: false },
-      { path: 'external/quill', server: false },
       { path: 'internal/global-vue-props' },
     ],
 

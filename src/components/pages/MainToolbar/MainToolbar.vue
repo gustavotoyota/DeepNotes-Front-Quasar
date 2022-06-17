@@ -105,28 +105,24 @@
             icon="mdi-format-align-left"
             icon-size="21px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format('formatLine', 'align', '')"
           />
           <ToolbarBtn
             tooltip="Align center"
             icon="mdi-format-align-center"
             icon-size="21px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format('formatLine', 'align', 'center')"
           />
           <ToolbarBtn
             tooltip="Align right"
             icon="mdi-format-align-right"
             icon-size="21px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format('formatLine', 'align', 'right')"
           />
           <ToolbarBtn
             tooltip="Justify"
             icon="mdi-format-align-justify"
             icon-size="21px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format('formatLine', 'align', 'justify')"
           />
 
           <q-separator
@@ -139,14 +135,12 @@
             icon="mdi-format-header-1"
             icon-size="24px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format('formatLine', 'header', 1)"
           />
           <ToolbarBtn
             tooltip="Header 2"
             icon="mdi-format-header-2"
             icon-size="24px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format('formatLine', 'header', 2)"
           />
 
           <q-separator
@@ -159,7 +153,6 @@
             icon="mdi-format-clear"
             icon-size="24px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format('removeFormat')"
           />
         </div>
 
@@ -252,7 +245,6 @@
   lang="ts"
 >
 import { logout } from 'src/code/auth';
-import { NoteTextSection } from 'src/code/pages/app/page/notes/note';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
 import { toRef } from 'vue';
@@ -263,30 +255,6 @@ import UserSettingsDialog from './UserSettingsDialog/UserSettingsDialog.vue';
 const ui = useUI();
 
 const page = toRef($pages.react, 'page');
-
-function format(funcName: 'formatLine' | 'removeFormat', ...args: any[]) {
-  page.value.collab.doc.transact(() => {
-    for (const selectedNote of page.value.selection.react.notes) {
-      for (const section of ['head', 'body'] as NoteTextSection[]) {
-        const quill = selectedNote.react[section].quill;
-
-        if (quill == null) {
-          continue;
-        }
-
-        if (quill.isEnabled()) {
-          const selection = quill.getSelection();
-
-          if (selection != null) {
-            quill[funcName](selection.index, selection.length, ...args);
-          }
-        } else {
-          quill[funcName](0, Infinity, ...args);
-        }
-      }
-    }
-  });
-}
 </script>
 
 <style scoped>

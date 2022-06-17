@@ -1,94 +1,77 @@
 <template>
-  <div
-    class="note-editor"
+  <editor-content
+    :editor="editor"
     :class="{
       'padding-fix': paddingFix,
-      wrap: wrap,
+      'no-wrap': !note.collab[props.section].wrap,
     }"
-  >
-    <div ref="editor" />
-  </div>
+  />
 </template>
-
-<script lang="ts">
-let QuillImport: Promise<any>;
-
-if (process.env.CLIENT) {
-  QuillImport = import('quill');
-}
-</script>
 
 <script
   setup
   lang="ts"
 >
-import { SyncedText } from '@syncedstore/core';
-import Quill from 'quill';
-import Delta from 'quill-delta';
+import { Y } from '@syncedstore/core';
+import Collaboration from '@tiptap/extension-collaboration';
+import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
+import { EditorContent, useEditor } from '@tiptap/vue-3';
+import { computed } from '@vue/reactivity';
 import { NoteTextSection, PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
-import { getQuillOptions } from 'src/code/pages/static/quill';
-import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { QuillBinding } from 'y-quill';
+import { TiptapExtensions } from 'src/code/pages/static/tiptap';
+import { inject, onBeforeUnmount, onMounted, watch } from 'vue';
 
 const props = defineProps<{
   section: NoteTextSection;
-  wrap: boolean;
 }>();
 
 const page = inject<AppPage>('page')!;
 const note = inject<PageNote>('note')!;
 
-// Quill setup
+// Collapsed padding fix
 
-const editor = ref<Element>();
+const paddingFix = computed(
+  () =>
+    note.collab.collapsing.enabled && props.section === note.react.topSection
+);
 
-let quill: Quill;
-let quillBinding: QuillBinding | null = null;
+const value = note.collab[props.section].value;
+
+const editor = useEditor({
+  content: value instanceof Y.XmlFragment ? undefined : value,
+  editable: false,
+  extensions: [
+    ...TiptapExtensions,
+    ...(value instanceof Y.XmlFragment
+      ? [
+          Collaboration.configure({
+            fragment: value,
+          }),
+          CollaborationCursor.configure({
+            provider: page.collab.websocketProvider,
+            user: {
+              name: 'Cyndi Lauper',
+              color: '#f783ac',
+            },
+          }),
+        ]
+      : []),
+  ],
+});
 
 let unwatch: () => void;
 
-onMounted(async () => {
-  quill = new (await QuillImport).default(
-    editor.value!,
-    getQuillOptions(page.id)
-  );
-
-  note.react[props.section].quill = quill;
-
-  quill.enable(note.react.editing);
-
-  if (!(note.collab[props.section].value instanceof SyncedText)) {
-    quill.setContents(
-      new Delta(note.collab[props.section].value as any) as any
-    );
-    return;
-  }
-
-  quillBinding = new QuillBinding(
-    note.collab[props.section].value,
-    quill,
-    page.collab.websocketProvider.awareness
-  );
+onMounted(() => {
+  note.react[props.section].editor = editor.value!;
 
   unwatch = watch(
     () => note.react.editing,
     () => {
-      quill.enable(note.react.editing);
+      editor.value?.setEditable(note.react.editing);
 
-      if (note.react.editing) {
-        // @ts-ignore
-        quill.history.clear();
-
-        if (page.editing.react.section === props.section) {
-          quill.focus();
-          quill.setSelection(0, 0);
-          quill.setSelection(0, Infinity, 'user');
-        }
-      } else {
-        quill.setSelection(null as any);
-        // @ts-ignore
-        quill.theme.tooltip.hide();
+      if (note.react.editing && props.section === page.editing.react.section) {
+        editor.value?.commands.focus('all');
       }
     },
     { immediate: true }
@@ -96,216 +79,77 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
-  if (unwatch != null) {
-    unwatch();
-  }
+  unwatch();
 
-  if (quillBinding != null) {
-    quillBinding.destroy();
-  }
-
-  note.react[props.section].quill = null;
-
-  if (quill != null) {
-    // @ts-ignore
-    document.body.removeChild(quill.theme.tooltip.root.parentNode);
-  }
+  note.react[props.section].editor = null;
 });
-
-// Padding fix
-
-const paddingFix = computed(
-  () =>
-    note.collab.collapsing.enabled && props.section === note.react.topSection
-);
 </script>
 
 <style
   scoped
   lang="scss"
 >
-.note-editor {
+div {
   height: 100%;
-
-  position: relative;
 }
 
-.note-editor :deep(.ql-container) {
-  position: static;
-}
+div :deep(.ProseMirror) {
+  padding: 9px;
 
-$note-padding: 9px;
+  outline: none;
 
-.note-editor :deep(.ql-editor) {
-  padding: $note-padding !important;
+  font-size: 13px;
 
-  min-width: MAX(1px + $note-padding * 2, 100%);
-  max-width: 100%;
-
-  min-height: 100%;
-  max-height: 100%;
-
-  width: max-content;
-  height: max-content;
-
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  height: 100%;
 
   overflow: auto;
 
-  white-space: nowrap;
-
   touch-action: pan-x pan-y !important;
 }
-
-.note-editor :deep(.ql-editor > *) {
-  cursor: inherit;
+div.padding-fix :deep(.ProseMirror) {
+  padding-right: 0;
+}
+div.no-wrap :deep(.ProseMirror) {
+  white-space: nowrap;
 }
 
-.note-editor :deep(h1) {
-  font-weight: bold;
-  line-height: unset;
-  letter-spacing: unset;
-}
-.note-editor :deep(h2) {
-  font-weight: bold;
-  line-height: unset;
-  letter-spacing: unset;
+div :deep(.ProseMirror p) {
+  margin-bottom: 0;
 }
 
-.note-editor.padding-fix :deep(.ql-editor) {
-  padding-right: 0 !important;
+div :deep(.ProseMirror ul) {
+  margin: 0;
+  padding-inline-start: 22px;
+}
+div :deep(.ProseMirror li > *) {
+  margin-left: -4px;
 }
 
-.note-editor.wrap :deep(.ql-editor) {
-  white-space: normal;
-}
+div :deep(.ProseMirror .collaboration-cursor__caret) {
+  position: relative;
 
-/* Lists */
+  border-left: 1px solid #ffa500;
+  border-right: 1px solid #ffa500;
 
-.note-editor :deep(ul) {
-  padding-left: 0 !important;
-}
-.note-editor :deep(li) {
-  padding-left: 1em !important;
-}
-.note-editor :deep(li.ql-indent-1) {
-  padding-left: 2em !important;
-}
-.note-editor :deep(li.ql-indent-2) {
-  padding-left: 3em !important;
-}
-.note-editor :deep(li.ql-indent-3) {
-  padding-left: 4em !important;
-}
-.note-editor :deep(li.ql-indent-4) {
-  padding-left: 5em !important;
-}
-.note-editor :deep(li.ql-indent-5) {
-  padding-left: 6em !important;
-}
-.note-editor :deep(li.ql-indent-6) {
-  padding-left: 7em !important;
-}
-.note-editor :deep(li.ql-indent-7) {
-  padding-left: 8em !important;
-}
-.note-editor :deep(li.ql-indent-8) {
-  padding-left: 9em !important;
-}
-.note-editor :deep(li.ql-indent-9) {
-  padding-left: 10em !important;
-}
+  margin-left: -1px;
+  margin-right: -1px;
 
-/* Indentation */
-
-.note-editor :deep(p.ql-indent-1) {
-  padding-left: 1em !important;
+  pointer-events: none;
 }
-.note-editor :deep(p.ql-indent-2) {
-  padding-left: 2em !important;
-}
-.note-editor :deep(p.ql-indent-3) {
-  padding-left: 3em !important;
-}
-.note-editor :deep(p.ql-indent-4) {
-  padding-left: 4em !important;
-}
-.note-editor :deep(p.ql-indent-5) {
-  padding-left: 5em !important;
-}
-.note-editor :deep(p.ql-indent-6) {
-  padding-left: 6em !important;
-}
-.note-editor :deep(p.ql-indent-7) {
-  padding-left: 7em !important;
-}
-.note-editor :deep(p.ql-indent-8) {
-  padding-left: 8em !important;
-}
-.note-editor :deep(p.ql-indent-9) {
-  padding-left: 9em !important;
-}
+div :deep(.ProseMirror .collaboration-cursor__label) {
+  position: absolute;
+  white-space: nowrap;
 
-/* Anchor links */
+  border-radius: 3px;
+  border-bottom-left-radius: 0px;
 
-.note-editor :deep(a::before) {
-  display: none;
-}
-.note-editor :deep(a::after) {
-  display: none;
-}
+  padding: 0px 3px;
 
-/* Code blocks */
+  left: -1px;
+  top: 0px;
 
-.note-editor :deep(pre.ql-syntax) {
-  min-width: 100%;
-  width: fit-content;
+  transform: translateY(-100%);
 
-  white-space: pre;
-
-  tab-size: 2;
-}
-
-.note-editor.wrap :deep(pre.ql-syntax) {
-  white-space: pre-wrap;
-  max-width: 100%;
-}
-
-.note-editor :deep(pre.ql-syntax:empty) {
-  display: none;
-}
-
-/* Inline codes */
-
-.note-editor :deep(code) {
-  background-color: #202020 !important;
-}
-</style>
-
-<style>
-/* Tooltip */
-
-.ql-tooltip {
-  position: fixed !important;
-
-  z-index: 2147483647;
-
-  background-color: #303030 !important;
-  border-radius: 12px !important;
-}
-
-.ql-toolbar {
-  display: flex;
-
-  flex-direction: column;
-}
-
-.ql-formats {
-  margin: 8px !important;
-}
-.ql-formats:not(:first-child) {
-  margin-top: 0 !important;
+  font-size: 12px;
 }
 </style>

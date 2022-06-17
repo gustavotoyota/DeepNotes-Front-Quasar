@@ -1,9 +1,9 @@
-import { SyncedText } from '@syncedstore/core';
+import { Y } from '@syncedstore/core';
+import { Editor } from '@tiptap/vue-3';
 import Color from 'color';
-import Quill from 'quill';
 import { hasVertScrollbar } from 'src/code/pages/static/dom';
 import { Rect } from 'src/code/pages/static/rect';
-import { createSyncedText } from 'src/code/pages/static/synced-store';
+import { createSyncedXml } from 'src/code/pages/static/synced-store';
 import { IVec2, Vec2 } from 'src/code/pages/static/vec2';
 import { darkenByRatio, lightenByRatio } from 'src/code/utils';
 import {
@@ -38,11 +38,7 @@ export type INoteCollabSection = z.output<typeof INoteCollabSection>;
 
 export const INoteCollabTextSection = INoteCollabSection.extend({
   enabled: z.boolean(),
-  value: z
-    .any()
-    .default(() =>
-      createSyncedText([{ insert: '\n' }])
-    ) as z.ZodType<SyncedText>,
+  value: z.any().default(() => createSyncedXml()) as z.ZodType<Y.XmlFragment>,
   wrap: z.boolean().default(true),
 });
 export type INoteCollabTextSection = z.output<typeof INoteCollabTextSection>;
@@ -115,7 +111,7 @@ export interface INoteSectionReact {
 
 export interface INoteTextSectionReact extends INoteSectionReact {
   wrap: WritableComputedRef<boolean>;
-  quill: Quill | null;
+  editor: Editor | null;
 }
 
 export interface INoteReact extends IRegionReact {
@@ -128,12 +124,12 @@ export interface INoteReact extends IRegionReact {
   ghost: boolean;
 
   head: {
-    quill: ShallowRef<Quill | null>;
+    editor: ShallowRef<Editor | null>;
     visible: ComputedRef<boolean>;
     height: ComputedRef<string | undefined>;
   };
   body: {
-    quill: ShallowRef<Quill | null>;
+    editor: ShallowRef<Editor | null>;
     visible: ComputedRef<boolean>;
     height: ComputedRef<string | undefined>;
   };
@@ -238,12 +234,12 @@ export class PageNote extends PageRegion {
       ghost: false,
 
       head: {
-        quill: shallowRef(null),
+        editor: shallowRef(null),
         visible: computed(() => this.collab.head.enabled),
         height: makeSectionHeight('head'),
       },
       body: {
-        quill: shallowRef(null),
+        editor: shallowRef(null),
         visible: computed(
           () =>
             this.collab.body.enabled &&

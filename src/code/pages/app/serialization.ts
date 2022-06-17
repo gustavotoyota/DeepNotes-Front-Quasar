@@ -1,9 +1,13 @@
+import { getSchema } from '@tiptap/vue-3';
 import { cloneDeep, pull } from 'lodash';
 import { v4 } from 'uuid';
+import {
+  prosemirrorJSONToYXmlFragment,
+  yXmlFragmentToProsemirrorJSON,
+} from 'y-prosemirror';
 import { z } from 'zod';
 
-import { Op } from '../static/quill';
-import { createSyncedText } from '../static/synced-store';
+import { TiptapExtensions } from '../static/tiptap';
 import { PagesApp } from './app';
 import { IArrowCollab } from './page/arrows/arrow';
 import { INoteCollab } from './page/notes/note';
@@ -20,14 +24,20 @@ export const ISerialArrow = IArrowCollab.omit({
   sourceIndex: z.number(),
   targetIndex: z.number(),
 
-  label: Op.array().default([{ insert: '\n' }]),
+  label: z.any().default({
+    type: 'doc',
+    content: [],
+  }),
 });
 
 // Note
 
 export const ISerialTextSection = z.object({
   enabled: z.boolean(),
-  value: Op.array().default([{ insert: '\n' }]),
+  value: z.any().default({
+    type: 'doc',
+    content: [],
+  }),
   wrap: z.boolean().default(true),
   height: z
     .object({
@@ -124,13 +134,13 @@ export class AppSerialization {
 
       serialNote.head = {
         enabled: note.collab.head.enabled,
-        value: note.collab.head.value.toDelta(),
+        value: yXmlFragmentToProsemirrorJSON(note.collab.head.value),
         wrap: note.collab.head.wrap,
         height: cloneDeep(note.collab.head.height),
       };
       serialNote.body = {
         enabled: note.collab.body.enabled,
-        value: note.collab.body.value.toDelta(),
+        value: yXmlFragmentToProsemirrorJSON(note.collab.body.value),
         wrap: note.collab.body.wrap,
         height: cloneDeep(note.collab.body.height),
       };
@@ -167,7 +177,7 @@ export class AppSerialization {
         sourceIndex: noteMap.get(arrow.collab.sourceId)!,
         targetIndex: noteMap.get(arrow.collab.targetId)!,
 
-        label: arrow.collab.label.toDelta(),
+        label: yXmlFragmentToProsemirrorJSON(arrow.collab.label),
       };
 
       serialRegion.arrows.push(serialArrow);
@@ -201,13 +211,19 @@ export class AppSerialization {
 
         noteCollab.head = {
           enabled: serialNote.head.enabled,
-          value: createSyncedText(serialNote.head.value),
+          value: prosemirrorJSONToYXmlFragment(
+            getSchema(TiptapExtensions),
+            serialNote.head.value
+          ),
           wrap: serialNote.head.wrap,
           height: cloneDeep(serialNote.head.height),
         };
         noteCollab.body = {
           enabled: serialNote.body.enabled,
-          value: createSyncedText(serialNote.body.value),
+          value: prosemirrorJSONToYXmlFragment(
+            getSchema(TiptapExtensions),
+            serialNote.body.value
+          ),
           wrap: serialNote.body.wrap,
           height: cloneDeep(serialNote.body.height),
         };
@@ -258,7 +274,10 @@ export class AppSerialization {
           sourceId: noteMap.get(serialArrow.sourceIndex)!,
           targetId: noteMap.get(serialArrow.targetIndex)!,
 
-          label: createSyncedText(serialArrow.label),
+          label: prosemirrorJSONToYXmlFragment(
+            getSchema(TiptapExtensions),
+            serialArrow.label
+          ),
         };
 
         const arrowId = v4();

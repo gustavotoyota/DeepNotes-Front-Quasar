@@ -11,6 +11,7 @@ import {
   shallowReactive,
   UnwrapRef,
 } from 'vue';
+import { yXmlFragmentToProsemirrorJSON } from 'y-prosemirror';
 import { z } from 'zod';
 
 import { AppPage } from '../page';
@@ -74,8 +75,12 @@ export class PageResizing {
         getYjsValue(note.collab) as Y.Map<any>
       ).toJSON() as z.output<typeof INoteCollab>;
 
-      collab.head.value = note.collab.head.value.toDelta();
-      collab.body.value = note.collab.body.value.toDelta();
+      collab.head.value = yXmlFragmentToProsemirrorJSON(
+        note.collab.head.value
+      ) as any;
+      collab.body.value = yXmlFragmentToProsemirrorJSON(
+        note.collab.body.value
+      ) as any;
 
       collab.anchor = new Vec2();
 

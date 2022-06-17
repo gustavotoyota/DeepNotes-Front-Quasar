@@ -19,7 +19,7 @@
       :disable="page.react.readonly"
       @click="
         changeProp(true, (note, value) => {
-          swapSyncedTexts(note.collab.head.value, note.collab.body.value);
+          //
         })
       "
     />
@@ -165,7 +165,7 @@
           style="flex: 1"
           @click="
             changeProp(note, (note, value) => {
-              swapSyncedTexts(note.collab.head.value, note.collab.body.value);
+              //
             })
           "
         />
@@ -181,7 +181,7 @@
           @click="
             changeProp(note, (note, value) => {
               if (note.collab.head.value.length <= 1) {
-                swapSyncedTexts(note.collab.head.value, note.collab.body.value);
+                //
               }
             })
           "
@@ -595,7 +595,6 @@ import { DICT_PAGE_GROUP_ID } from 'src/code/pages/app/app';
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { REALTIME_GROUP_NAME } from 'src/code/pages/app/realtime';
-import { swapSyncedTexts } from 'src/code/pages/static/synced-store';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
 import { inject, Ref, toRef } from 'vue';

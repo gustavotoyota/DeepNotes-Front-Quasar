@@ -258,15 +258,114 @@
           />
 
           <ToolbarBtn
-            tooltip="Table"
-            icon="mdi-table-large"
+            tooltip="Insert table"
+            icon="mdi-table-large-plus"
             icon-size="23px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
+            :disable="page.react.readonly || !page.editing.react.active"
             @click="
               format((chain) => {
                 chain
                   .insertTable({ rows: 3, cols: 3, withHeaderRow: false })
                   .run();
+              })
+            "
+          />
+          <ToolbarBtn
+            tooltip="Remove table"
+            icon="mdi-table-large-remove"
+            icon-size="23px"
+            :disable="page.react.readonly || !page.editing.react.active"
+            @click="
+              format((chain) => {
+                chain.deleteTable().run();
+              })
+            "
+          />
+          <ToolbarBtn
+            tooltip="Insert column before"
+            icon="mdi-table-column-plus-before"
+            icon-size="23px"
+            :disable="page.react.readonly || !page.editing.react.active"
+            @click="
+              format((chain) => {
+                chain.addColumnBefore().run();
+              })
+            "
+          />
+          <ToolbarBtn
+            tooltip="Insert column after"
+            icon="mdi-table-column-plus-after"
+            icon-size="23px"
+            :disable="page.react.readonly || !page.editing.react.active"
+            @click="
+              format((chain) => {
+                chain.addColumnAfter().run();
+              })
+            "
+          />
+          <ToolbarBtn
+            tooltip="Remove column"
+            icon="mdi-table-column-remove"
+            icon-size="23px"
+            :disable="page.react.readonly || !page.editing.react.active"
+            @click="
+              format((chain) => {
+                chain.deleteColumn().run();
+              })
+            "
+          />
+          <ToolbarBtn
+            tooltip="Insert row before"
+            icon="mdi-table-row-plus-before"
+            icon-size="23px"
+            :disable="page.react.readonly || !page.editing.react.active"
+            @click="
+              format((chain) => {
+                chain.addRowBefore().run();
+              })
+            "
+          />
+          <ToolbarBtn
+            tooltip="Insert row after"
+            icon="mdi-table-row-plus-after"
+            icon-size="23px"
+            :disable="page.react.readonly || !page.editing.react.active"
+            @click="
+              format((chain) => {
+                chain.addRowAfter().run();
+              })
+            "
+          />
+          <ToolbarBtn
+            tooltip="Remove row"
+            icon="mdi-table-row-remove"
+            icon-size="23px"
+            :disable="page.react.readonly || !page.editing.react.active"
+            @click="
+              format((chain) => {
+                chain.deleteRow().run();
+              })
+            "
+          />
+          <ToolbarBtn
+            tooltip="Merge cells"
+            icon="mdi-table-merge-cells"
+            icon-size="23px"
+            :disable="page.react.readonly || !page.editing.react.active"
+            @click="
+              format((chain) => {
+                chain.mergeCells().run();
+              })
+            "
+          />
+          <ToolbarBtn
+            tooltip="Split cell"
+            icon="mdi-table-split-cell"
+            icon-size="23px"
+            :disable="page.react.readonly || !page.editing.react.active"
+            @click="
+              format((chain) => {
+                chain.splitCell().run();
               })
             "
           />
@@ -280,7 +379,7 @@
             tooltip="Rule"
             icon="mdi-minus"
             icon-size="23px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
+            :disable="page.react.readonly || !page.editing.react.active"
             @click="
               format((chain) => {
                 chain.setHorizontalRule().run();

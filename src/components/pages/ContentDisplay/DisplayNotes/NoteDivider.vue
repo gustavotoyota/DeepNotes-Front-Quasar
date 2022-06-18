@@ -7,7 +7,7 @@
     "
     style="position: relative"
   >
-    <q-separator />
+    <q-separator style="background: rgba(255, 255, 255, 0.35)" />
 
     <NoteResizeHandle
       side="s"

@@ -131,6 +131,28 @@ div :deep(.ProseMirror) {
       font-weight: unset;
       text-align: unset;
     }
+
+    .selectedCell:after {
+      background: rgba(200, 200, 255, 0.4);
+      content: '';
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      pointer-events: none;
+      position: absolute;
+      z-index: 2;
+    }
+
+    .column-resize-handle {
+      background-color: #adf;
+      bottom: -2px;
+      position: absolute;
+      right: -2px;
+      pointer-events: none;
+      top: 0;
+      width: 4px;
+    }
   }
 
   ul,
@@ -169,7 +191,7 @@ div :deep(.ProseMirror) {
 
     border: none;
     height: 1px;
-    background-color: rgba(255, 255, 255, 0.28);
+    background-color: rgba(255, 255, 255, 0.35);
   }
 
   .collaboration-cursor__caret {
@@ -205,5 +227,10 @@ div.padding-fix :deep(.ProseMirror) {
 }
 div.no-wrap :deep(.ProseMirror) {
   white-space: nowrap;
+}
+
+.resize-cursor {
+  cursor: ew-resize;
+  cursor: col-resize;
 }
 </style>

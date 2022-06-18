@@ -171,7 +171,8 @@ div :deep(.ProseMirror) {
   }
 
   h1,
-  h2 {
+  h2,
+  h3 {
     font-weight: 700;
 
     line-height: unset;
@@ -184,6 +185,9 @@ div :deep(.ProseMirror) {
   }
   h2 {
     font-size: 1.5em;
+  }
+  h3 {
+    font-size: 1.25em;
   }
 
   hr {

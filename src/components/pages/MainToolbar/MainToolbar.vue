@@ -223,6 +223,17 @@
               })
             "
           />
+          <ToolbarBtn
+            tooltip="Header 3"
+            icon="mdi-format-header-3"
+            icon-size="24px"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="
+              format((chain) => {
+                chain.setHeading({ level: 3 }).run();
+              })
+            "
+          />
 
           <q-separator
             vertical
@@ -248,6 +259,96 @@
             @click="
               format((chain) => {
                 chain.toggleOrderedList().run();
+              })
+            "
+          />
+
+          <q-separator
+            vertical
+            style="margin: 6px 7px"
+          />
+
+          <ToolbarBtn
+            tooltip="Blockquote"
+            icon="mdi-format-quote-close"
+            icon-size="23px"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="
+              format((chain) => {
+                chain.toggleBlockquote().run();
+              })
+            "
+          />
+
+          <q-separator
+            vertical
+            style="margin: 6px 7px"
+          />
+
+          <ToolbarBtn
+            tooltip="Subscript"
+            icon="mdi-format-subscript"
+            icon-size="23px"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="
+              format((chain) => {
+                chain.toggleSubscript().run();
+              })
+            "
+          />
+          <ToolbarBtn
+            tooltip="Superscript"
+            icon="mdi-format-superscript"
+            icon-size="23px"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="
+              format((chain) => {
+                chain.toggleSuperscript().run();
+              })
+            "
+          />
+
+          <q-separator
+            vertical
+            style="margin: 6px 7px"
+          />
+
+          <ToolbarBtn
+            tooltip="Code"
+            icon="mdi-code-tags"
+            icon-size="23px"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="
+              format((chain) => {
+                chain.toggleCode().run();
+              })
+            "
+          />
+          <ToolbarBtn
+            tooltip="Codeblock"
+            icon="mdi-code-braces"
+            icon-size="23px"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="
+              format((chain) => {
+                chain.toggleCodeBlock().run();
+              })
+            "
+          />
+
+          <q-separator
+            vertical
+            style="margin: 6px 7px"
+          />
+
+          <ToolbarBtn
+            tooltip="Task list"
+            icon="mdi-checkbox-marked-outline"
+            icon-size="22px"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="
+              format((chain) => {
+                chain.toggleTaskList().run();
               })
             "
           />

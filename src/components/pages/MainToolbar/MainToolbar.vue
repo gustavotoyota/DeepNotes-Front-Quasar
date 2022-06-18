@@ -21,7 +21,9 @@
         />
       </q-btn>
 
-      <div style="flex: 1; width: 0; display: flex">
+      <div style="flex: 1; width: 0; display: flex; margin: 5px 0">
+        <Gap style="width: 8px" />
+
         <div
           style="
             flex: 1;
@@ -29,10 +31,9 @@
             display: flex;
             overflow: hidden;
             align-items: center;
+            flex-wrap: wrap;
           "
         >
-          <Gap style="width: 8px" />
-
           <ToolbarBtn
             tooltip="Cut"
             icon="mdi-content-cut"
@@ -60,7 +61,7 @@
 
           <q-separator
             vertical
-            style="margin: 0 7px"
+            style="margin: 6px 7px"
           />
 
           <ToolbarBtn
@@ -78,7 +79,7 @@
 
           <q-separator
             vertical
-            style="margin: 0 7px"
+            style="margin: 6px 7px"
           />
 
           <ToolbarBtn
@@ -97,7 +98,7 @@
 
           <q-separator
             vertical
-            style="margin: 0 7px"
+            style="margin: 6px 7px"
           />
 
           <ToolbarBtn
@@ -147,7 +148,7 @@
 
           <q-separator
             vertical
-            style="margin: 0 7px"
+            style="margin: 6px 7px"
           />
 
           <ToolbarBtn
@@ -197,7 +198,7 @@
 
           <q-separator
             vertical
-            style="margin: 0 7px"
+            style="margin: 6px 7px"
           />
 
           <ToolbarBtn
@@ -225,7 +226,7 @@
 
           <q-separator
             vertical
-            style="margin: 0 7px"
+            style="margin: 6px 7px"
           />
 
           <ToolbarBtn
@@ -253,7 +254,7 @@
 
           <q-separator
             vertical
-            style="margin: 0 7px"
+            style="margin: 6px 7px"
           />
 
           <ToolbarBtn
@@ -272,7 +273,7 @@
 
           <q-separator
             vertical
-            style="margin: 0 7px"
+            style="margin: 6px 7px"
           />
 
           <ToolbarBtn
@@ -289,7 +290,7 @@
 
           <q-separator
             vertical
-            style="margin: 0 7px"
+            style="margin: 6px 7px"
           />
 
           <ToolbarBtn

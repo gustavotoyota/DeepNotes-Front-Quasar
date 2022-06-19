@@ -1,5 +1,5 @@
-import { getYjsValue, Y } from '@syncedstore/core';
 import { computed, reactive } from 'vue';
+import * as Y from 'yjs';
 
 import { AppPage } from './page';
 
@@ -25,9 +25,15 @@ export class PageUndoRedo {
 
   setup() {
     this.undoManager = new Y.UndoManager([
-      getYjsValue(this.page.collab.store.page) as Y.AbstractType<any>,
-      getYjsValue(this.page.collab.store.notes) as Y.AbstractType<any>,
-      getYjsValue(this.page.collab.store.arrows) as Y.AbstractType<any>,
+      syncedstore.getYjsValue(
+        this.page.collab.store.page
+      ) as Y.AbstractType<any>,
+      syncedstore.getYjsValue(
+        this.page.collab.store.notes
+      ) as Y.AbstractType<any>,
+      syncedstore.getYjsValue(
+        this.page.collab.store.arrows
+      ) as Y.AbstractType<any>,
     ]);
 
     this.undoManager.on('stack-cleared', this.updateReactiveData);

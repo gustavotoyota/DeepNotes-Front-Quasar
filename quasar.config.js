@@ -31,7 +31,9 @@ module.exports = configure(function (/* ctx */) {
     boot: [
       { path: 'external/i18n' },
       { path: 'external/axios' },
-      { path: 'external/syncedstore' },
+      { path: 'external/syncedstore', server: false },
+      { path: 'external/lowlight', server: false },
+      { path: 'external/tiptap', server: false },
       { path: 'internal/global-vue-props' },
     ],
 

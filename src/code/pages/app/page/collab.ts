@@ -1,4 +1,4 @@
-import syncedStore, { getYjsValue, Y } from '@syncedstore/core';
+import type { Y } from '@syncedstore/core';
 import { WebsocketProvider } from 'src/code/pages/app/page/y-websocket';
 import { z } from 'zod';
 
@@ -23,13 +23,13 @@ export class PageCollab {
   constructor(page: AppPage) {
     this.page = page;
 
-    this.store = syncedStore({
+    this.store = syncedstore.SyncedStore({
       page: {},
       notes: {},
       arrows: {},
     }) as IAppCollabStore;
 
-    this.doc = getYjsValue(this.store) as Y.Doc;
+    this.doc = syncedstore.getYjsValue(this.store) as Y.Doc;
   }
 
   reset() {

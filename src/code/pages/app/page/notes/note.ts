@@ -1,9 +1,7 @@
-import { Y } from '@syncedstore/core';
-import { Editor } from '@tiptap/vue-3';
+import type { Editor } from '@tiptap/vue-3';
 import Color from 'color';
 import { hasVertScrollbar } from 'src/code/pages/static/dom';
 import { Rect } from 'src/code/pages/static/rect';
-import { createSyncedXml } from 'src/code/pages/static/synced-store';
 import { IVec2, Vec2 } from 'src/code/pages/static/vec2';
 import { darkenByRatio, lightenByRatio } from 'src/code/utils';
 import {
@@ -14,6 +12,7 @@ import {
   UnwrapRef,
   WritableComputedRef,
 } from 'vue';
+import * as Y from 'yjs';
 import { z } from 'zod';
 
 import { PageArrow } from '../arrows/arrow';
@@ -38,7 +37,7 @@ export type INoteCollabSection = z.output<typeof INoteCollabSection>;
 
 export const INoteCollabTextSection = INoteCollabSection.extend({
   enabled: z.boolean(),
-  value: z.any().default(() => createSyncedXml()) as z.ZodType<Y.XmlFragment>,
+  value: z.any().default(() => new Y.XmlFragment()) as z.ZodType<Y.XmlFragment>,
   wrap: z.boolean().default(true),
 });
 export type INoteCollabTextSection = z.output<typeof INoteCollabTextSection>;

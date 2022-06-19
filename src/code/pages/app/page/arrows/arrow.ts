@@ -1,11 +1,10 @@
-import { Y } from '@syncedstore/core';
 import Color from 'color';
 import { getLineRectIntersection } from 'src/code/pages/static/geometry';
 import { Line } from 'src/code/pages/static/line';
-import { createSyncedXml } from 'src/code/pages/static/synced-store';
 import { Vec2 } from 'src/code/pages/static/vec2';
 import { lightenByRatio } from 'src/code/utils';
 import { computed, ComputedRef, nextTick, UnwrapRef } from 'vue';
+import * as Y from 'yjs';
 import { z } from 'zod';
 
 import { ElemType, IElemReact, PageElem } from '../elems/elem';
@@ -16,7 +15,7 @@ export const IArrowCollab = z.object({
   sourceId: z.string().uuid(),
   targetId: z.string().uuid(),
 
-  label: z.any().default(() => createSyncedXml()) as z.ZodType<Y.XmlFragment>,
+  label: z.any().default(() => new Y.XmlFragment()) as z.ZodType<Y.XmlFragment>,
 
   backward: z.boolean().default(false),
   forward: z.boolean().default(true),

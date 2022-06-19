@@ -1,4 +1,4 @@
-import { getYjsValue, SyncedArray, SyncedMap } from '@syncedstore/core';
+import type { Y } from '@syncedstore/core';
 import { pull } from 'lodash';
 import { Factory } from 'src/code/pages/static/composition-root';
 import { refProp } from 'src/code/pages/static/vue';
@@ -64,7 +64,7 @@ export class PageArrows {
       this.create(arrowId, parentId);
     }
 
-    (getYjsValue(arrowIds) as SyncedArray<string>).observe((event) => {
+    (syncedstore.getYjsValue(arrowIds) as Y.Array<string>).observe((event) => {
       for (const delta of event.changes.delta) {
         if (delta.insert == null) {
           continue;
@@ -78,7 +78,7 @@ export class PageArrows {
   }
 
   observeMap() {
-    (getYjsValue(this.react.collab) as SyncedMap<IArrowCollab>).observe(
+    (syncedstore.getYjsValue(this.react.collab) as Y.Map<IArrowCollab>).observe(
       (event) => {
         for (const [arrowId, change] of event.changes.keys) {
           if (change.action !== 'delete') {

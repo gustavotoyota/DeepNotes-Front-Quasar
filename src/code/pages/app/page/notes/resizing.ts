@@ -1,4 +1,4 @@
-import { getYjsValue, Y } from '@syncedstore/core';
+import type { Y } from '@syncedstore/core';
 import { Factory } from 'src/code/pages/static/composition-root';
 import { listenPointerEvents } from 'src/code/pages/static/dom';
 import { Rect } from 'src/code/pages/static/rect';
@@ -72,7 +72,7 @@ export class PageResizing {
       note.react.resizing = true;
 
       const collab = (
-        getYjsValue(note.collab) as Y.Map<any>
+        syncedstore.getYjsValue(note.collab) as Y.Map<any>
       ).toJSON() as z.output<typeof INoteCollab>;
 
       collab.head.value = yXmlFragmentToProsemirrorJSON(

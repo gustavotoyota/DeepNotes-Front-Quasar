@@ -1,4 +1,3 @@
-import { getSchema } from '@tiptap/vue-3';
 import { cloneDeep, pull } from 'lodash';
 import { v4 } from 'uuid';
 import {
@@ -7,7 +6,6 @@ import {
 } from 'y-prosemirror';
 import { z } from 'zod';
 
-import { TiptapExtensions } from '../static/tiptap';
 import { PagesApp } from './app';
 import { IArrowCollab } from './page/arrows/arrow';
 import { INoteCollab } from './page/notes/note';
@@ -212,7 +210,7 @@ export class AppSerialization {
         noteCollab.head = {
           enabled: serialNote.head.enabled,
           value: prosemirrorJSONToYXmlFragment(
-            getSchema(TiptapExtensions),
+            tiptap.getSchema(tiptap.extensions),
             serialNote.head.value
           ),
           wrap: serialNote.head.wrap,
@@ -221,7 +219,7 @@ export class AppSerialization {
         noteCollab.body = {
           enabled: serialNote.body.enabled,
           value: prosemirrorJSONToYXmlFragment(
-            getSchema(TiptapExtensions),
+            tiptap.getSchema(tiptap.extensions),
             serialNote.body.value
           ),
           wrap: serialNote.body.wrap,
@@ -275,7 +273,7 @@ export class AppSerialization {
           targetId: noteMap.get(serialArrow.targetIndex)!,
 
           label: prosemirrorJSONToYXmlFragment(
-            getSchema(TiptapExtensions),
+            tiptap.getSchema(tiptap.extensions),
             serialArrow.label
           ),
         };

@@ -594,7 +594,7 @@
   setup
   lang="ts"
 >
-import { ChainedCommands } from '@tiptap/vue-3';
+import type { ChainedCommands } from '@tiptap/vue-3';
 import { logout } from 'src/code/auth';
 import { NoteTextSection } from 'src/code/pages/app/page/notes/note';
 import Gap from 'src/components/misc/Gap.vue';

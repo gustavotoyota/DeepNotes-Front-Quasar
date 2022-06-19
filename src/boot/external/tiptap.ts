@@ -1,3 +1,6 @@
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+import Collaboration from '@tiptap/extension-collaboration';
+import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
 import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import Subscript from '@tiptap/extension-subscript';
@@ -11,10 +14,10 @@ import TaskList from '@tiptap/extension-task-list';
 import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
 import StarterKit from '@tiptap/starter-kit';
-import { Extension } from '@tiptap/vue-3';
+import { EditorContent, Extension, getSchema, useEditor } from '@tiptap/vue-3';
 import { columnResizing } from 'prosemirror-tables';
 
-export const TiptapExtensions = [
+const extensions = [
   StarterKit.configure({
     history: false,
     codeBlock: false,
@@ -43,9 +46,34 @@ export const TiptapExtensions = [
   TableHeader,
   TableCell,
 
+  CodeBlockLowlight.configure({
+    lowlight: lowlight,
+  }),
+
   Extension.create({
     addProseMirrorPlugins() {
       return [columnResizing({})];
     },
   }),
 ];
+
+declare global {
+  /* eslint-disable no-var */
+  var tiptap: {
+    extensions: typeof extensions;
+    Collaboration: typeof Collaboration;
+    CollaborationCursor: typeof CollaborationCursor;
+    EditorContent: typeof EditorContent;
+    useEditor: typeof useEditor;
+    getSchema: typeof getSchema;
+  };
+}
+
+globalThis.tiptap = {
+  extensions,
+  Collaboration,
+  CollaborationCursor,
+  EditorContent,
+  useEditor,
+  getSchema,
+};

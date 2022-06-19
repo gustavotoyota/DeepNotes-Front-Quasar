@@ -1,4 +1,4 @@
-import { getYjsValue, SyncedArray, SyncedMap } from '@syncedstore/core';
+import type { Y } from '@syncedstore/core';
 import { Factory } from 'src/code/pages/static/composition-root';
 import { Vec2 } from 'src/code/pages/static/vec2';
 import { refProp } from 'src/code/pages/static/vue';
@@ -72,7 +72,7 @@ export class PageNotes {
     for (const noteId of noteIds)
       this.createAndObserveChildren(noteId, parentId);
 
-    (getYjsValue(noteIds) as SyncedArray<string>).observe((event) => {
+    (syncedstore.getYjsValue(noteIds) as Y.Map<string>).observe((event) => {
       for (const delta of event.changes.delta) {
         if (delta.insert != null) {
           for (const noteId of delta.insert) {
@@ -85,7 +85,9 @@ export class PageNotes {
 
   observeMap() {
     (
-      getYjsValue(this.react.collab) as SyncedMap<z.output<typeof INoteCollab>>
+      syncedstore.getYjsValue(this.react.collab) as Y.Map<
+        z.output<typeof INoteCollab>
+      >
     ).observe((event) => {
       for (const [noteId, change] of event.changes.keys) {
         if (change.action === 'delete') {

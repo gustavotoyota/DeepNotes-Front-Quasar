@@ -40,7 +40,7 @@ export function isUuid4(text: string) {
 }
 
 export class Resolvable<T = void> implements Promise<T> {
-  [Symbol.toStringTag]: string;
+  [Symbol.toStringTag]!: string;
 
   resolve!: (value: T) => void;
   reject!: (reason?: any) => void;

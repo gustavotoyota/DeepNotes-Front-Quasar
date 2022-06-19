@@ -1,8 +1,8 @@
 import { cloneDeep } from 'lodash';
 import { listenPointerEvents } from 'src/code/pages/static/dom';
-import { createSyncedXml } from 'src/code/pages/static/synced-store';
 import { v4 } from 'uuid';
 import { reactive } from 'vue';
+import * as Y from 'yjs';
 
 import { PageNote } from '../notes/note';
 import { AppPage } from '../page';
@@ -70,7 +70,7 @@ export class PageArrowCreation {
     this.fakeArrow.collab.targetId = targetNote.id;
 
     const newCollab = cloneDeep(this.fakeArrow.collab);
-    newCollab.label = createSyncedXml();
+    newCollab.label = new Y.XmlFragment();
 
     this.page.collab.doc.transact(() => {
       this.page.arrows.react.collab[arrowId] = newCollab;

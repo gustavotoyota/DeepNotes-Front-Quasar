@@ -12,15 +12,13 @@
   setup
   lang="ts"
 >
-import { Y } from '@syncedstore/core';
-import Collaboration from '@tiptap/extension-collaboration';
-import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
-import { EditorContent, useEditor } from '@tiptap/vue-3';
 import { computed } from '@vue/reactivity';
 import { NoteTextSection, PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
-import { TiptapExtensions } from 'src/code/pages/static/tiptap';
 import { inject, onBeforeUnmount, onMounted, watch } from 'vue';
+import * as Y from 'yjs';
+
+const EditorContent = tiptap.EditorContent;
 
 const props = defineProps<{
   section: NoteTextSection;
@@ -38,17 +36,17 @@ const paddingFix = computed(
 
 const value = note.collab[props.section].value;
 
-const editor = useEditor({
+const editor = tiptap.useEditor({
   content: value instanceof Y.XmlFragment ? undefined : value,
   editable: false,
   extensions: [
-    ...TiptapExtensions,
+    ...tiptap.extensions,
     ...(value instanceof Y.XmlFragment
       ? [
-          Collaboration.configure({
+          tiptap.Collaboration.configure({
             fragment: value,
           }),
-          CollaborationCursor.configure({
+          tiptap.CollaborationCursor.configure({
             provider: page.collab.websocketProvider,
             user: {
               name: 'Cyndi Lauper',

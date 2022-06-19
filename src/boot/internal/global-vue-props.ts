@@ -1,4 +1,3 @@
-import Color from 'color';
 import process from 'process';
 import { boot } from 'quasar/wrappers';
 
@@ -7,7 +6,6 @@ declare module '@vue/runtime-core' {
     globalThis: typeof globalThis;
     console: Console;
     process: NodeJS.Process;
-    Color: typeof Color;
   }
 }
 
@@ -15,5 +13,4 @@ export default boot((params) => {
   params.app.config.globalProperties.globalThis = globalThis;
   params.app.config.globalProperties.console = console;
   params.app.config.globalProperties.process = process;
-  params.app.config.globalProperties.Color = Color;
 });

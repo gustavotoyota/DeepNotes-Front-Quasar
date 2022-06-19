@@ -97,12 +97,3 @@ export function darkenByAmount(color: Color, amount: number) {
   const lightness = color.lightness();
   return color.lightness(lightness - amount);
 }
-
-// @ts-ignore
-globalThis.lightenByRatio = lightenByRatio;
-// @ts-ignore
-globalThis.darkenByRatio = darkenByRatio;
-// @ts-ignore
-globalThis.lightenByAmount = lightenByAmount;
-// @ts-ignore
-globalThis.darkenByAmount = darkenByAmount;

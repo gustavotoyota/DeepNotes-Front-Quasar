@@ -11,6 +11,8 @@ import TaskList from '@tiptap/extension-task-list';
 import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
 import StarterKit from '@tiptap/starter-kit';
+import { Extension } from '@tiptap/vue-3';
+import { columnResizing } from 'prosemirror-tables';
 
 export const TiptapExtensions = [
   StarterKit.configure({
@@ -40,4 +42,10 @@ export const TiptapExtensions = [
   TableRow,
   TableHeader,
   TableCell,
+
+  Extension.create({
+    addProseMirrorPlugins() {
+      return [columnResizing({})];
+    },
+  }),
 ];

@@ -155,6 +155,11 @@ div :deep(.ProseMirror) {
     }
   }
 
+  &.resize-cursor {
+    cursor: ew-resize;
+    cursor: col-resize;
+  }
+
   ul,
   ol {
     margin: 0;
@@ -231,10 +236,5 @@ div.padding-fix :deep(.ProseMirror) {
 }
 div.no-wrap :deep(.ProseMirror) {
   white-space: nowrap;
-}
-
-.resize-cursor {
-  cursor: ew-resize;
-  cursor: col-resize;
 }
 </style>

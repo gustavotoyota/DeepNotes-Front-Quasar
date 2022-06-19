@@ -205,11 +205,15 @@ div :deep(.ProseMirror) {
   }
 
   code:not(pre > code) {
-    background: #181818;
     border-radius: 0.3em;
+
     box-decoration-break: clone;
-    color: #fff;
+
     padding: 0.25em;
+
+    color: #fff;
+
+    background: #181818;
   }
 
   pre {
@@ -251,11 +255,11 @@ div :deep(.ProseMirror) {
   }
 
   blockquote {
-    margin: 6px 0;
+    margin: 4px 0;
 
     border-left: 5px solid rgba(#fff, 0.5);
 
-    padding-left: 1rem;
+    padding-left: 1.3rem;
   }
 
   .collaboration-cursor__caret {

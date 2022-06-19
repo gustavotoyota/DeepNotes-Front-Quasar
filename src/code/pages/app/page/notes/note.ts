@@ -307,7 +307,9 @@ export class PageNote extends PageRegion {
           );
         }),
         selfPinned: computed(() => {
-          return this.react.width.self.endsWith('px');
+          return (
+            this.react.parent == null && this.react.width.self.endsWith('px')
+          );
         }),
         pinned: computed(() => {
           return this.react.width.parentPinned || this.react.width.selfPinned;

@@ -95,8 +95,12 @@ div {
   height: 100%;
 }
 
+$note-padding: 9px;
+
 div :deep(.ProseMirror) {
-  padding: 9px;
+  padding: $note-padding;
+
+  min-width: 1px + $note-padding * 2;
 
   outline: none;
 
@@ -113,6 +117,8 @@ div :deep(.ProseMirror) {
   }
 
   table {
+    margin: 7px 0;
+
     border-collapse: collapse;
 
     td,
@@ -162,15 +168,56 @@ div :deep(.ProseMirror) {
   ol {
     margin: 0;
   }
-  ul {
-    padding-inline-start: 22px;
+  ul:not([data-type]) {
+    padding-inline-start: 21px;
 
-    & > li > * {
-      margin-left: -4px;
+    > li > * {
+      margin-left: -3px;
     }
   }
   ol {
     padding-inline-start: 18px;
+  }
+
+  ul[data-type='taskList'] {
+    padding-inline-start: 22px;
+
+    padding: 0;
+
+    li {
+      display: flex;
+
+      > label {
+        flex: 0 0 auto;
+        margin-right: 5px;
+        user-select: none;
+
+        > input {
+          position: relative;
+          top: 2px;
+        }
+      }
+
+      > div {
+        flex: 1 1 auto;
+      }
+    }
+  }
+
+  code:not(pre > code) {
+    background: #181818;
+    border-radius: 0.3em;
+    box-decoration-break: clone;
+    color: #fff;
+    padding: 0.25em;
+  }
+
+  pre {
+    margin: 5px 0;
+    border-radius: 0.4rem;
+    padding: 0.4rem 0.5rem;
+
+    background: #181818;
   }
 
   h1,
@@ -179,7 +226,9 @@ div :deep(.ProseMirror) {
     font-weight: 700;
 
     line-height: unset;
-    margin-block: 0;
+
+    margin-block-start: 0;
+    margin-block-end: -3px;
 
     letter-spacing: unset;
   }
@@ -190,15 +239,23 @@ div :deep(.ProseMirror) {
     font-size: 1.5em;
   }
   h3 {
-    font-size: 1.25em;
+    font-size: 1.17em;
   }
 
   hr {
-    margin-top: 7px;
+    margin: 9px 0;
 
     border: none;
     height: 1px;
     background-color: rgba(255, 255, 255, 0.35);
+  }
+
+  blockquote {
+    margin: 6px 0;
+
+    border-left: 5px solid rgba(#fff, 0.5);
+
+    padding-left: 1rem;
   }
 
   .collaboration-cursor__caret {

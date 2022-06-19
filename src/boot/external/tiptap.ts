@@ -32,12 +32,17 @@ const extensions = [
   Subscript,
   Superscript,
 
-  Link,
+  Link.configure({
+    openOnClick: false,
+  }),
 
   Image,
 
   TaskList,
-  TaskItem,
+  TaskItem.configure({
+    nested: true,
+    onReadOnlyChecked: () => true,
+  }),
 
   Table.configure({
     resizable: true,

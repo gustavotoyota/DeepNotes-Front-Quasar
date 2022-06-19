@@ -1,3 +1,5 @@
+import 'highlight.js/styles/atom-one-dark.css';
+
 import { lowlight as _lowlight } from 'lowlight';
 
 declare global {

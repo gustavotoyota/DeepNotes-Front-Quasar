@@ -112,7 +112,7 @@ watch(visible, async () => {
     }
 
     const text = activeElem.collab[activeElem.react.topSection].value;
-    pageTitle.value = text.toJSON().split('\n')[0];
+    pageTitle.value = text.toDOM().textContent!.split('\n')[0];
 
     pageTitleElem.value?.focus();
   });

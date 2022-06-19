@@ -1,4 +1,5 @@
 import process from 'process';
+import { Dialog } from 'quasar';
 import { boot } from 'quasar/wrappers';
 
 declare module '@vue/runtime-core' {
@@ -6,6 +7,7 @@ declare module '@vue/runtime-core' {
     globalThis: typeof globalThis;
     console: Console;
     process: NodeJS.Process;
+    Dialog: Dialog;
   }
 }
 
@@ -13,4 +15,5 @@ export default boot((params) => {
   params.app.config.globalProperties.globalThis = globalThis;
   params.app.config.globalProperties.console = console;
   params.app.config.globalProperties.process = process;
+  params.app.config.globalProperties.Dialog = Dialog;
 });

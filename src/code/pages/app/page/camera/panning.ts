@@ -24,7 +24,7 @@ export class PagePanning {
     });
   }
 
-  private _update = function (this: PagePanning, event: PointerEvent) {
+  private _update = (event: PointerEvent) => {
     const clientPos = this.page.pos.eventToClient(event);
 
     this.page.camera.react.pos = this.page.camera.react.pos.sub(
@@ -32,9 +32,9 @@ export class PagePanning {
     );
 
     this.currentPos = clientPos;
-  }.bind(this);
+  };
 
-  cancel = function (this: PagePanning) {
+  cancel = () => {
     document.removeEventListener('pointermove', this._update);
-  }.bind(this);
+  };
 }

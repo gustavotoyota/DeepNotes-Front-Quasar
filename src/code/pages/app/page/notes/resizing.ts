@@ -127,7 +127,7 @@ export class PageResizing {
     });
   }
 
-  private _update = function (this: PageResizing, event: PointerEvent) {
+  private _update = (event: PointerEvent) => {
     if (!(this.page.activeElem.react.elem instanceof PageNote)) {
       return;
     }
@@ -194,9 +194,9 @@ export class PageResizing {
       ghost.collab.pos.x = frameRect.topLeft.x + posDelta.x;
       ghost.collab.pos.y = frameRect.topLeft.y + posDelta.y;
     }
-  }.bind(this);
+  };
 
-  private _finish = function (this: PageResizing) {
+  private _finish = () => {
     this.page.collab.doc.transact(() => {
       for (const ghost of this.react.ghosts) {
         const note = this.page.notes.fromId(ghost.id);
@@ -230,7 +230,7 @@ export class PageResizing {
     });
 
     this.react.active = false;
-  }.bind(this);
+  };
 
   private _getSectionRect(note: PageNote) {
     const frameRect = note.getWorldRect('note-frame');

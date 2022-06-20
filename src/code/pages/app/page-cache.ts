@@ -39,10 +39,12 @@ export class AppPageCache {
       () => this.react.totalSize,
       () => {
         while (
-          this.react.cache.length > 0 &&
-          this.react.totalSize > 512 * 1024
+          this.react.cache.length > 1 &&
+          this.react.totalSize > 256 * 1024
         ) {
-          this.react.cache.shift();
+          const page = this.react.cache.shift();
+
+          page?.destroy();
         }
       }
     );

@@ -299,17 +299,11 @@ export class AppPage extends PageRegion {
 
     this.react.symmetricKey = symmetricKey;
 
-    // Setup collaboration
+    // Setup collaboration and wait synchronization
 
     this.collab.setup();
 
-    // Wait for synchronization to complete
-
-    await Promise.all([
-      this.app.realtime.syncedPromise,
-
-      this.collab.websocketProvider.syncedPromise,
-    ]);
+    await this.collab.websocketProvider.syncedPromise;
 
     // Post-sync setup
 
@@ -349,5 +343,7 @@ export class AppPage extends PageRegion {
 
   destroy() {
     this.unwatchUserDisplayName?.();
+
+    this.collab.websocketProvider?.disconnect();
   }
 }

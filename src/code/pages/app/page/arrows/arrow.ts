@@ -111,7 +111,7 @@ export class PageArrow extends PageElem {
         () =>
           getLineRectIntersection(
             new Line(this.react.targetCenter, this.react.sourceCenter),
-            this.react.sourceNote.react.worldRect.grow(12)
+            this.react.sourceNote.react.worldRect.grow(16)
           ) ?? this.react.sourceCenter
       ),
       targetPos: computed(() => {
@@ -122,7 +122,7 @@ export class PageArrow extends PageElem {
         return (
           getLineRectIntersection(
             new Line(this.react.sourceCenter, this.react.targetCenter),
-            this.react.targetNote.react.worldRect.grow(12)
+            this.react.targetNote.react.worldRect.grow(16)
           ) ?? this.react.targetCenter
         );
       }),

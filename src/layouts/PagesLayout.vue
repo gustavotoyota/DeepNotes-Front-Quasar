@@ -192,8 +192,18 @@ async function onKeyPress(event: KeyboardEvent) {
     return;
   }
 
-  if (page.value.activeElem.react.elem instanceof PageNote) {
-    await page.value.editing.start(page.value.activeElem.react.elem);
+  const activeElem = page.value.activeElem.react.elem;
+
+  if (activeElem instanceof PageNote) {
+    if (page.value.editing.react.active) {
+      return;
+    }
+
+    await page.value.editing.start(activeElem);
+
+    const editor = activeElem.react[page.value.editing.react.section!].editor!;
+
+    editor.chain().clearContent().insertContent(event.key).run();
   }
 }
 

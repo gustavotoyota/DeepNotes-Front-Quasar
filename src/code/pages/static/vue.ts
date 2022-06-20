@@ -4,8 +4,7 @@ import {
   ref,
   shallowRef,
   UnwrapRef,
-  watch,
-  WatchOptions,
+  watchEffect,
   WatchStopHandle,
 } from 'vue';
 
@@ -45,33 +44,29 @@ export class RawObject {
   }
 }
 
-export function watchUntilTrue(
-  source: () => any,
-  callback: () => boolean,
-  options?: WatchOptions
-): Resolvable {
-  let unwatch: WatchStopHandle | null = null;
+export type OnCleanup = (cleanupFn: () => void) => void;
 
+export function watchUntilTrue(
+  effect: (onCleanup: OnCleanup) => boolean
+): Resolvable {
   const resolvable = new Resolvable();
+
+  let unwatch: WatchStopHandle | null = null;
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   resolvable.then(() => {
     unwatch?.();
   });
 
-  let result: boolean | undefined = undefined;
+  let result = false;
 
-  unwatch = watch(
-    source,
-    () => {
-      result = callback();
+  unwatch = watchEffect((onCleanup) => {
+    result = effect(onCleanup);
 
-      if (result) {
-        resolvable.resolve();
-      }
-    },
-    options
-  );
+    if (result) {
+      resolvable.resolve();
+    }
+  });
 
   if (result) {
     resolvable.resolve();

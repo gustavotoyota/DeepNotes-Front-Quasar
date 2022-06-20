@@ -32,6 +32,17 @@ export class PageCollab {
     this.doc = syncedstore.getYjsValue(this.store) as Y.Doc;
   }
 
+  setup() {
+    this.websocketProvider = new WebsocketProvider(
+      process.env.DEV
+        ? 'ws://192.168.1.4:33245'
+        : 'wss://yjs-server.deepnotes.app',
+      `page:${this.page.id}`,
+      this.doc,
+      this.page.react.symmetricKey
+    );
+  }
+
   reset() {
     this.doc.transact(() => {
       Object.assign(this.store.page, {

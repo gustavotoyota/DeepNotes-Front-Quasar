@@ -61,21 +61,10 @@ export class PageEditing {
     this.page.selection.set(note);
 
     await nextTick();
+    await watchUntilTrue(() => this.page.react.allEditorsLoaded);
 
-    await watchUntilTrue(
-      () => this.page.react.allEditorsLoaded,
-      () => {
-        if (!this.page.react.allEditorsLoaded) {
-          return false;
-        }
-
-        this.react.editor!.setEditable(note.react.editing);
-        this.react.editor!.commands.focus('all');
-
-        return true;
-      },
-      { immediate: true }
-    );
+    this.react.editor!.setEditable(note.react.editing);
+    this.react.editor!.commands.focus('all');
   }
 
   stop() {

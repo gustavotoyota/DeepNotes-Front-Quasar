@@ -5,7 +5,7 @@
     @pointerdown.left.capture="onLeftPointerDown"
     @pointerdown.middle.prevent="onMiddlePointerDown"
   >
-    <LoadingOverlay v-if="page.react.status === 'loading'" />
+    <LoadingOverlay v-if="page.react.status == null && !page.react.loaded" />
 
     <template v-if="page.react.status === 'error'">
       {{ page.react.errorMessage }}

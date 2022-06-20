@@ -7,6 +7,7 @@ import {
 import {
   computed,
   ComputedRef,
+  nextTick,
   UnwrapRef,
   watch,
   WatchStopHandle,
@@ -16,6 +17,7 @@ import { z } from 'zod';
 
 import { Factory } from '../../static/composition-root';
 import { rolesMap } from '../../static/roles';
+import { watchUntilTrue } from '../../static/vue';
 import {
   DICT_GROUP_OWNER_ID,
   DICT_GROUP_ROLE_ID,
@@ -52,7 +54,6 @@ import { PagePos } from './space/pos';
 import { PageRects } from './space/rects';
 import { PageSizes } from './space/sizes';
 import { PageUndoRedo } from './undo-redo';
-import { WebsocketProvider } from './y-websocket';
 
 export const IPageCollab = IRegionCollab.extend({
   nextZIndex: z.number(),
@@ -63,7 +64,7 @@ export interface IAppPageReact extends IRegionReact {
   collab: ComputedRef<IPageCollab>;
   size: number;
 
-  status: string;
+  status: string | null;
   userStatus: string | null;
   errorMessage: string;
 
@@ -79,6 +80,8 @@ export interface IAppPageReact extends IRegionReact {
 
   numPendingEditors: number;
   allEditorsLoaded: ComputedRef<boolean>;
+
+  loaded: boolean;
 }
 
 export interface IPageData {
@@ -149,7 +152,7 @@ export class AppPage extends PageRegion {
       collab: computed(() => this.collab.store.page),
       size: 0,
 
-      status: 'loading',
+      status: null,
       userStatus: null,
       errorMessage: '',
 
@@ -207,6 +210,8 @@ export class AppPage extends PageRegion {
 
       numPendingEditors: 0,
       allEditorsLoaded: computed(() => this.react.numPendingEditors === 0),
+
+      loaded: false,
 
       // Region
 
@@ -273,7 +278,7 @@ export class AppPage extends PageRegion {
     this.react.roleId = response.data.roleId;
     this.react.userStatus = response.data.userStatus;
 
-    // Check if has permission
+    // Check if user is authorized
 
     if (
       response.data.encryptedSymmetricKey == null ||
@@ -294,18 +299,11 @@ export class AppPage extends PageRegion {
 
     this.react.symmetricKey = symmetricKey;
 
-    // Setup websocket
+    // Setup collaboration
 
-    const roomName = `page:${this.id}`;
+    this.collab.setup();
 
-    this.collab.websocketProvider = new WebsocketProvider(
-      process.env.DEV
-        ? 'ws://192.168.1.4:33245'
-        : 'wss://yjs-server.deepnotes.app',
-      roomName,
-      this.collab.doc,
-      symmetricKey
-    );
+    // Wait for synchronization to complete
 
     await Promise.all([
       this.app.realtime.syncedPromise,
@@ -342,5 +340,14 @@ export class AppPage extends PageRegion {
     this.react.size = this.collab.websocketProvider.size;
 
     this.react.status = 'success';
+
+    await nextTick();
+    await watchUntilTrue(() => this.react.allEditorsLoaded);
+
+    this.react.loaded = true;
+  }
+
+  destroy() {
+    this.unwatchUserDisplayName?.();
   }
 }

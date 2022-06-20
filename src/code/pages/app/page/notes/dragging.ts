@@ -149,44 +149,33 @@ export class PageDragging {
     // With mouse in the center of the active element
 
     await nextTick();
+    await watchUntilTrue(() => this.page.react.allEditorsLoaded);
 
-    await watchUntilTrue(
-      () => this.page.react.allEditorsLoaded,
-      () => {
-        if (!this.page.react.allEditorsLoaded) {
-          return false;
-        }
+    const activeElem = this.page.activeElem.react.elem;
 
-        const activeElem = this.page.activeElem.react.elem;
+    if (!(activeElem instanceof PageNote)) {
+      return false;
+    }
 
-        if (!(activeElem instanceof PageNote)) {
-          return false;
-        }
+    const worldPos = this.page.pos.clientToWorld(this.react.currentPos);
+    const mouseOffset = worldPos.sub(prevCenters.get(activeElem.id)!);
 
-        const worldPos = this.page.pos.clientToWorld(this.react.currentPos);
-        const mouseOffset = worldPos.sub(prevCenters.get(activeElem.id)!);
+    this.page.collab.doc.transact(() => {
+      for (const selectedNote of this.page.selection.react.notes) {
+        const prevCenter = prevCenters.get(selectedNote.id)!;
 
-        this.page.collab.doc.transact(() => {
-          for (const selectedNote of this.page.selection.react.notes) {
-            const prevCenter = prevCenters.get(selectedNote.id)!;
+        const worldSize = selectedNote.getWorldRect('note-frame').size;
 
-            const worldSize = selectedNote.getWorldRect('note-frame').size;
-
-            selectedNote.collab.pos.x =
-              prevCenter.x +
-              mouseOffset.x +
-              worldSize.x * (selectedNote.collab.anchor.x - 0.5);
-            selectedNote.collab.pos.y =
-              prevCenter.y +
-              mouseOffset.y +
-              worldSize.y * (selectedNote.collab.anchor.y - 0.5);
-          }
-        });
-
-        return true;
-      },
-      { immediate: true }
-    );
+        selectedNote.collab.pos.x =
+          prevCenter.x +
+          mouseOffset.x +
+          worldSize.x * (selectedNote.collab.anchor.x - 0.5);
+        selectedNote.collab.pos.y =
+          prevCenter.y +
+          mouseOffset.y +
+          worldSize.y * (selectedNote.collab.anchor.y - 0.5);
+      }
+    });
   }
 
   private _finish = () => {

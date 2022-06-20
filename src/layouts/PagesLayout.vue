@@ -161,13 +161,6 @@ async function onKeyDown(event: KeyboardEvent) {
     page.value.undoRedo.redo();
   }
 
-  if (
-    event.code === 'F2' &&
-    page.value.activeElem.react.elem instanceof PageNote
-  ) {
-    await page.value.editing.start(page.value.activeElem.react.elem);
-  }
-
   if (event.code === 'ArrowLeft') {
     page.value.selection.shift(-1, 0);
   }
@@ -179,6 +172,23 @@ async function onKeyDown(event: KeyboardEvent) {
   }
   if (event.code === 'ArrowDown') {
     page.value.selection.shift(0, 1);
+  }
+
+  const activeElem = page.value.activeElem.react.elem;
+
+  if (activeElem instanceof PageNote) {
+    if (event.code === 'F2') {
+      await page.value.editing.start(activeElem);
+    }
+
+    if (event.code === 'Backspace') {
+      await page.value.editing.start(activeElem);
+
+      const editor =
+        activeElem.react[page.value.editing.react.section!].editor!;
+
+      editor.commands.clearContent();
+    }
   }
 }
 async function onKeyPress(event: KeyboardEvent) {
@@ -195,10 +205,6 @@ async function onKeyPress(event: KeyboardEvent) {
   const activeElem = page.value.activeElem.react.elem;
 
   if (activeElem instanceof PageNote) {
-    if (page.value.editing.react.active) {
-      return;
-    }
-
     await page.value.editing.start(activeElem);
 
     const editor = activeElem.react[page.value.editing.react.section!].editor!;

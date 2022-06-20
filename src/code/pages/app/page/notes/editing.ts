@@ -63,8 +63,8 @@ export class PageEditing {
     await nextTick();
     await watchUntilTrue(() => this.page.react.allEditorsLoaded);
 
-    this.react.editor!.setEditable(note.react.editing);
-    this.react.editor!.commands.focus('all');
+    this.react.editor?.setEditable(note.react.editing);
+    this.react.editor?.commands.focus('all');
   }
 
   stop() {
@@ -72,7 +72,7 @@ export class PageEditing {
       return;
     }
 
-    this.react.editor!.setEditable(false);
+    this.react.editor?.setEditable(false);
 
     this.react.note.react.editing = false;
 

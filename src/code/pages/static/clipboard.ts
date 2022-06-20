@@ -5,10 +5,13 @@ declare global {
 }
 
 export async function getClipboardText(): Promise<string> {
-  if (navigator.clipboard && navigator.clipboard.readText)
+  if (navigator.clipboard && navigator.clipboard.readText) {
     return await navigator.clipboard.readText();
+  }
 
-  if (window.clipboardData) return window.clipboardData.getData('Text');
+  if (window.clipboardData) {
+    return window.clipboardData.getData('Text');
+  }
 
   if (
     document.queryCommandSupported &&

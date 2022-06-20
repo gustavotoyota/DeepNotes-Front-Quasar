@@ -1,3 +1,4 @@
+import { Resolvable } from 'src/code/utils';
 import {
   markRaw,
   ref,
@@ -48,8 +49,15 @@ export function watchUntilTrue(
   source: () => any,
   callback: () => boolean,
   options?: WatchOptions
-): void {
+): Resolvable {
   let unwatch: WatchStopHandle | null = null;
+
+  const resolvable = new Resolvable();
+
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  resolvable.then(() => {
+    unwatch?.();
+  });
 
   let result: boolean | undefined = undefined;
 
@@ -59,13 +67,15 @@ export function watchUntilTrue(
       result = callback();
 
       if (result) {
-        unwatch?.();
+        resolvable.resolve();
       }
     },
     options
   );
 
   if (result) {
-    unwatch?.();
+    resolvable.resolve();
   }
+
+  return resolvable;
 }

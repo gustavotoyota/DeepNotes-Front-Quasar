@@ -62,7 +62,7 @@ export class PageEditing {
 
     await nextTick();
 
-    watchUntilTrue(
+    await watchUntilTrue(
       () => this.page.react.allEditorsLoaded,
       () => {
         if (!this.page.react.allEditorsLoaded) {

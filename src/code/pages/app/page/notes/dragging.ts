@@ -96,6 +96,7 @@ export class PageDragging {
 
       if (this.page.activeRegion.react.id != null) {
         await this._dragOut();
+        return;
       }
     }
 
@@ -121,8 +122,8 @@ export class PageDragging {
           selectedNote.getWorldRect('note-frame').center
         );
 
-        selectedNote.collab.pos.x = -Infinity;
-        selectedNote.collab.pos.y = -Infinity;
+        selectedNote.collab.pos.x = Number.MIN_SAFE_INTEGER;
+        selectedNote.collab.pos.y = Number.MIN_SAFE_INTEGER;
       }
     });
 
@@ -149,7 +150,7 @@ export class PageDragging {
 
     await nextTick();
 
-    watchUntilTrue(
+    await watchUntilTrue(
       () => this.page.react.allEditorsLoaded,
       () => {
         if (!this.page.react.allEditorsLoaded) {

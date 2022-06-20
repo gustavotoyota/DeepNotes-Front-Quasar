@@ -16,6 +16,23 @@ import Underline from '@tiptap/extension-underline';
 import StarterKit from '@tiptap/starter-kit';
 import { EditorContent, Extension, getSchema, useEditor } from '@tiptap/vue-3';
 import { columnResizing } from 'prosemirror-tables';
+import { EditorView } from 'prosemirror-view';
+
+// Prosemirror fix
+
+const oldUpdateState = EditorView.prototype.updateState;
+
+EditorView.prototype.updateState = function (state) {
+  // This prevents the matchesNode error on hot reloads
+  // @ts-ignore
+  if (!this.docView) {
+    return;
+  }
+
+  oldUpdateState.call(this, state);
+};
+
+// Tiptap stuff
 
 const extensions = [
   StarterKit.configure({

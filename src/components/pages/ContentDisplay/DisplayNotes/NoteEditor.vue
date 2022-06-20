@@ -37,8 +37,21 @@ const paddingFix = computed(
 
 // Setup Tiptap editor
 
+let loading = true;
+
 note.react.numEditorsLoading++;
 page.react.numEditorsLoading++;
+
+function finishLoading() {
+  if (!loading) {
+    return;
+  }
+
+  loading = false;
+
+  note.react.numEditorsLoading--;
+  page.react.numEditorsLoading--;
+}
 
 const value = note.collab[props.section].value;
 
@@ -73,11 +86,12 @@ const editor = tiptap.useEditor({
     // @ts-ignore
     note.react[props.section].editor = editor;
 
-    note.react.numEditorsLoading--;
-    page.react.numEditorsLoading--;
+    finishLoading();
   },
   onDestroy() {
     note.react[props.section].editor = null;
+
+    finishLoading();
   },
 
   onFocus() {

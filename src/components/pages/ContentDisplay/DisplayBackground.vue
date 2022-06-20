@@ -25,10 +25,13 @@ function onPointerDown(event: PointerEvent) {
   page.boxSelection.start(event);
 }
 
-function onDoubleClick(event: MouseEvent) {
+async function onDoubleClick(event: MouseEvent) {
   const clientPos = page.pos.eventToClient(event);
 
-  page.notes.createFromTemplate($pages.templates.react.default, clientPos);
+  await page.notes.createFromTemplate(
+    $pages.templates.react.default,
+    clientPos
+  );
 }
 </script>
 

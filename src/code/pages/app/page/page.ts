@@ -76,6 +76,9 @@ export interface IAppPageReact extends IRegionReact {
   symmetricKey: WritableComputedRef<SymmetricKey>;
 
   readonly: ComputedRef<boolean>;
+
+  numPendingEditors: number;
+  allEditorsLoaded: ComputedRef<boolean>;
 }
 
 export interface IPageData {
@@ -201,6 +204,9 @@ export class AppPage extends PageRegion {
       readonly: computed(
         () => !rolesMap[this.react.roleId!]?.permissions.editPages ?? true
       ),
+
+      numPendingEditors: 0,
+      allEditorsLoaded: computed(() => this.react.numPendingEditors === 0),
 
       // Region
 

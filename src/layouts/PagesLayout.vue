@@ -165,7 +165,7 @@ async function onKeyDown(event: KeyboardEvent) {
     event.code === 'F2' &&
     page.value.activeElem.react.elem instanceof PageNote
   ) {
-    page.value.editing.start(page.value.activeElem.react.elem);
+    await page.value.editing.start(page.value.activeElem.react.elem);
   }
 
   if (event.code === 'ArrowLeft') {
@@ -181,7 +181,7 @@ async function onKeyDown(event: KeyboardEvent) {
     page.value.selection.shift(0, 1);
   }
 }
-function onKeyPress(event: KeyboardEvent) {
+async function onKeyPress(event: KeyboardEvent) {
   const target = event.target as HTMLElement;
 
   if (
@@ -193,7 +193,7 @@ function onKeyPress(event: KeyboardEvent) {
   }
 
   if (page.value.activeElem.react.elem instanceof PageNote) {
-    page.value.editing.start(page.value.activeElem.react.elem);
+    await page.value.editing.start(page.value.activeElem.react.elem);
   }
 }
 

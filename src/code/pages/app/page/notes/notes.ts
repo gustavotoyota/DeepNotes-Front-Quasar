@@ -97,7 +97,7 @@ export class PageNotes {
     });
   }
 
-  createFromTemplate(template: ITemplate, clientPos: Vec2) {
+  async createFromTemplate(template: ITemplate, clientPos: Vec2) {
     if (this.page.react.readonly) {
       return;
     }
@@ -112,14 +112,12 @@ export class PageNotes {
 
     const note = this.page.notes.react.map[noteId];
 
-    this.page.editing.start(note);
-
     note.collab.pos = new Vec2(-Number.MAX_VALUE, -Number.MAX_VALUE);
 
-    setTimeout(() => {
-      note.collab.pos = note.react.worldSize
-        .mul(new Vec2(note.collab.anchor).subScalar(0.5))
-        .add(this.page.pos.clientToWorld(clientPos));
-    });
+    await this.page.editing.start(note);
+
+    note.collab.pos = note.react.worldSize
+      .mul(new Vec2(note.collab.anchor).subScalar(0.5))
+      .add(this.page.pos.clientToWorld(clientPos));
   }
 }

@@ -15,7 +15,8 @@
 import { computed } from '@vue/reactivity';
 import { NoteTextSection, PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
-import { inject, onBeforeUnmount, onMounted, watch } from 'vue';
+import { REALTIME_USER_DISPLAY_NAME } from 'src/code/pages/app/realtime';
+import { inject } from 'vue';
 import * as Y from 'yjs';
 
 const EditorContent = tiptap.EditorContent;
@@ -34,13 +35,20 @@ const paddingFix = computed(
     note.collab.collapsing.enabled && props.section === note.react.topSection
 );
 
+// Setup Tiptap editor
+
 const value = note.collab[props.section].value;
+
+page.react.numPendingEditors++;
 
 const editor = tiptap.useEditor({
   content: value instanceof Y.XmlFragment ? undefined : value,
+
   editable: false,
+
   extensions: [
     ...tiptap.extensions,
+
     ...(value instanceof Y.XmlFragment
       ? [
           tiptap.Collaboration.configure({
@@ -49,7 +57,10 @@ const editor = tiptap.useEditor({
           tiptap.CollaborationCursor.configure({
             provider: page.collab.websocketProvider,
             user: {
-              name: 'Cyndi Lauper',
+              name: $pages.realtime.get(
+                REALTIME_USER_DISPLAY_NAME,
+                $pages.react.userId
+              ),
               color: '#f783ac',
             },
           }),
@@ -57,33 +68,19 @@ const editor = tiptap.useEditor({
       : []),
   ],
 
+  onCreate({ editor }) {
+    // @ts-ignore
+    note.react[props.section].editor = editor;
+
+    page.react.numPendingEditors--;
+  },
+  onDestroy() {
+    note.react[props.section].editor = null;
+  },
+
   onFocus() {
     page.editing.react.section = props.section;
   },
-});
-
-let unwatch: () => void;
-
-onMounted(() => {
-  note.react[props.section].editor = editor.value!;
-
-  unwatch = watch(
-    () => note.react.editing,
-    () => {
-      editor.value?.setEditable(note.react.editing);
-
-      if (note.react.editing && props.section === page.editing.react.section) {
-        editor.value?.commands.focus('all');
-      }
-    },
-    { immediate: true }
-  );
-});
-
-onBeforeUnmount(() => {
-  unwatch();
-
-  note.react[props.section].editor = null;
 });
 </script>
 

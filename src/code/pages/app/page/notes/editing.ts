@@ -1,5 +1,6 @@
-import { refProp } from 'src/code/pages/static/vue';
-import { computed, ComputedRef, UnwrapRef } from 'vue';
+import { Editor } from '@tiptap/vue-3';
+import { refProp, watchUntilTrue } from 'src/code/pages/static/vue';
+import { computed, ComputedRef, nextTick, UnwrapRef } from 'vue';
 
 import { AppPage } from '../page';
 import { NoteTextSection, PageNote } from './note';
@@ -9,6 +10,7 @@ export interface IEditingReact {
 
   note: ComputedRef<PageNote | null>;
   section?: NoteTextSection;
+  editor: ComputedRef<Editor | null>;
 
   active: ComputedRef<boolean>;
 }
@@ -25,12 +27,15 @@ export class PageEditing {
       noteId: null,
 
       note: computed(() => this.page.notes.fromId(this.react.noteId)),
+      editor: computed(
+        () => this.react.note?.react[this.react.section!].editor ?? null
+      ),
 
       active: computed(() => this.react.note != null),
     });
   }
 
-  start(note: PageNote, section?: NoteTextSection) {
+  async start(note: PageNote, section?: NoteTextSection) {
     if (this.react.noteId === note.id) {
       return;
     }
@@ -54,12 +59,31 @@ export class PageEditing {
     }
 
     this.page.selection.set(note);
+
+    await nextTick();
+
+    watchUntilTrue(
+      () => this.page.react.allEditorsLoaded,
+      () => {
+        if (!this.page.react.allEditorsLoaded) {
+          return false;
+        }
+
+        this.react.editor!.setEditable(note.react.editing);
+        this.react.editor!.commands.focus('all');
+
+        return true;
+      },
+      { immediate: true }
+    );
   }
 
   stop() {
     if (this.react.note == null) {
       return;
     }
+
+    this.react.editor!.setEditable(false);
 
     this.react.note.react.editing = false;
 

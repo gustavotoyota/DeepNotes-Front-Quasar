@@ -197,26 +197,6 @@
           />
 
           <ToolbarBtn
-            tooltip="Bullet list"
-            icon="mdi-format-list-bulleted"
-            icon-size="24px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.toggleBulletList().run())"
-          />
-          <ToolbarBtn
-            tooltip="Ordered list"
-            icon="mdi-format-list-numbered"
-            icon-size="24px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.toggleOrderedList().run())"
-          />
-
-          <q-separator
-            vertical
-            style="margin: 6px 7px"
-          />
-
-          <ToolbarBtn
             tooltip="Subscript"
             icon="mdi-format-subscript"
             icon-size="23px"
@@ -237,11 +217,25 @@
           />
 
           <ToolbarBtn
-            tooltip="Blockquote"
-            icon="mdi-format-quote-close"
-            icon-size="23px"
+            tooltip="Bullet list"
+            icon="mdi-format-list-bulleted"
+            icon-size="24px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.toggleBlockquote().run())"
+            @click="format((chain) => chain.toggleBulletList().run())"
+          />
+          <ToolbarBtn
+            tooltip="Ordered list"
+            icon="mdi-format-list-numbered"
+            icon-size="24px"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="format((chain) => chain.toggleOrderedList().run())"
+          />
+          <ToolbarBtn
+            tooltip="Task list"
+            icon="mdi-checkbox-marked-outline"
+            icon-size="22px"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="format((chain) => chain.toggleTaskList().run())"
           />
 
           <q-separator
@@ -249,6 +243,13 @@
             style="margin: 6px 7px"
           />
 
+          <ToolbarBtn
+            tooltip="Blockquote"
+            icon="mdi-format-quote-close"
+            icon-size="23px"
+            :disable="page.react.readonly || !page.activeElem.react.exists"
+            @click="format((chain) => chain.toggleBlockquote().run())"
+          />
           <ToolbarBtn
             tooltip="Code"
             icon="mdi-code-tags"
@@ -262,19 +263,6 @@
             icon-size="23px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
             @click="format((chain) => chain.toggleCodeBlock().run())"
-          />
-
-          <q-separator
-            vertical
-            style="margin: 6px 7px"
-          />
-
-          <ToolbarBtn
-            tooltip="Task list"
-            icon="mdi-checkbox-marked-outline"
-            icon-size="22px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.toggleTaskList().run())"
           />
 
           <q-separator

@@ -179,6 +179,9 @@ export interface INoteReact extends IRegionReact {
   link: {
     external: ComputedRef<boolean>;
   };
+
+  numEditorsLoading: number;
+  allEditorsLoaded: ComputedRef<boolean>;
 }
 
 export class PageNote extends PageRegion {
@@ -481,6 +484,9 @@ export class PageNote extends PageRegion {
           return true;
         }),
       },
+
+      numEditorsLoading: 0,
+      allEditorsLoaded: computed(() => this.react.numEditorsLoading === 0),
     };
 
     Object.assign(this.react, react);

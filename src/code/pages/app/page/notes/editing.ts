@@ -61,7 +61,7 @@ export class PageEditing {
     this.page.selection.set(note);
 
     await nextTick();
-    await watchUntilTrue(() => this.page.react.allEditorsLoaded);
+    await watchUntilTrue(() => note.react.allEditorsLoaded);
 
     this.react.editor?.setEditable(note.react.editing);
     this.react.editor?.commands.focus('all');

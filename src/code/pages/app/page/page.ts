@@ -78,7 +78,7 @@ export interface IAppPageReact extends IRegionReact {
 
   readonly: ComputedRef<boolean>;
 
-  numPendingEditors: number;
+  numEditorsLoading: number;
   allEditorsLoaded: ComputedRef<boolean>;
 
   loaded: boolean;
@@ -208,8 +208,8 @@ export class AppPage extends PageRegion {
         () => !rolesMap[this.react.roleId!]?.permissions.editPages ?? true
       ),
 
-      numPendingEditors: 0,
-      allEditorsLoaded: computed(() => this.react.numPendingEditors === 0),
+      numEditorsLoading: 0,
+      allEditorsLoaded: computed(() => this.react.numEditorsLoading === 0),
 
       loaded: false,
 

@@ -112,11 +112,6 @@ export class PageNotes {
 
     const note = this.page.notes.react.map[noteId];
 
-    note.collab.pos = new Vec2(
-      Number.MIN_SAFE_INTEGER,
-      Number.MIN_SAFE_INTEGER
-    );
-
     await this.page.editing.start(note);
 
     const worldSize = note.getWorldRect('note-frame').size;

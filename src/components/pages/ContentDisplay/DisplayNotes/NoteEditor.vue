@@ -37,9 +37,10 @@ const paddingFix = computed(
 
 // Setup Tiptap editor
 
-const value = note.collab[props.section].value;
+note.react.numEditorsLoading++;
+page.react.numEditorsLoading++;
 
-page.react.numPendingEditors++;
+const value = note.collab[props.section].value;
 
 const editor = tiptap.useEditor({
   content: value instanceof Y.XmlFragment ? undefined : value,
@@ -72,7 +73,8 @@ const editor = tiptap.useEditor({
     // @ts-ignore
     note.react[props.section].editor = editor;
 
-    page.react.numPendingEditors--;
+    note.react.numEditorsLoading--;
+    page.react.numEditorsLoading--;
   },
   onDestroy() {
     note.react[props.section].editor = null;

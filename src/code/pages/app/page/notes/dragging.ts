@@ -115,17 +115,12 @@ export class PageDragging {
 
     const prevCenters = new Map<string, Vec2>();
 
-    this.page.collab.doc.transact(() => {
-      for (const selectedNote of this.page.selection.react.notes) {
-        prevCenters.set(
-          selectedNote.id,
-          selectedNote.getWorldRect('note-frame').center
-        );
-
-        selectedNote.collab.pos.x = Number.MIN_SAFE_INTEGER;
-        selectedNote.collab.pos.y = Number.MIN_SAFE_INTEGER;
-      }
-    });
+    for (const selectedNote of this.page.selection.react.notes) {
+      prevCenters.set(
+        selectedNote.id,
+        selectedNote.getWorldRect('note-frame').center
+      );
+    }
 
     // Move notes to page region
 

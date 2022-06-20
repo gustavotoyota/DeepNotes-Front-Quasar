@@ -5,7 +5,7 @@
     @pointerdown.left.capture="onLeftPointerDown"
     @pointerdown.middle.prevent="onMiddlePointerDown"
   >
-    <LoadingOverlay v-if="page.react.status == null && !page.react.loaded" />
+    <LoadingOverlay v-if="page.react.loading" />
 
     <template v-if="page.react.status === 'error'">
       {{ page.react.errorMessage }}
@@ -119,7 +119,7 @@ async function cancelRequest() {
     });
 
     // eslint-disable-next-line vue/no-mutating-props
-    props.page.react.userStatus = null;
+    props.page.react.userStatus = undefined;
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',
@@ -153,7 +153,7 @@ async function rejectInvitation() {
     });
 
     // eslint-disable-next-line vue/no-mutating-props
-    props.page.react.userStatus = null;
+    props.page.react.userStatus = undefined;
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',

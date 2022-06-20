@@ -64,9 +64,9 @@ export interface IAppPageReact extends IRegionReact {
   collab: ComputedRef<IPageCollab>;
   size: number;
 
-  status: string | null;
-  userStatus: string | null;
-  errorMessage: string;
+  status?: string;
+  userStatus?: string;
+  errorMessage?: string;
 
   title: WritableComputedRef<string>;
 
@@ -81,7 +81,7 @@ export interface IAppPageReact extends IRegionReact {
   numEditorsLoading: number;
   allEditorsLoaded: ComputedRef<boolean>;
 
-  loaded: boolean;
+  loading: boolean;
 }
 
 export interface IPageData {
@@ -152,10 +152,6 @@ export class AppPage extends PageRegion {
       collab: computed(() => this.collab.store.page),
       size: 0,
 
-      status: null,
-      userStatus: null,
-      errorMessage: '',
-
       title: computed({
         get: () => this.app.react.pageTitles[this.id],
         set: (value) => {
@@ -211,7 +207,7 @@ export class AppPage extends PageRegion {
       numEditorsLoading: 0,
       allEditorsLoaded: computed(() => this.react.numEditorsLoading === 0),
 
-      loaded: false,
+      loading: true,
 
       // Region
 
@@ -260,7 +256,8 @@ export class AppPage extends PageRegion {
   }
 
   async setup() {
-    this.react.status = 'loading';
+    this.react.status = undefined;
+    this.react.loading = true;
 
     // Request page data
 
@@ -285,6 +282,7 @@ export class AppPage extends PageRegion {
       this.react.userStatus === 'invite'
     ) {
       this.react.status = 'unauthorized';
+      this.react.loading = false;
       return;
     }
 
@@ -338,7 +336,7 @@ export class AppPage extends PageRegion {
     await nextTick();
     await watchUntilTrue(() => this.react.allEditorsLoaded);
 
-    this.react.loaded = true;
+    this.react.loading = false;
   }
 
   destroy() {

@@ -318,6 +318,7 @@ export class PagesApp {
         } else {
           $pages.react.page.react.status = 'error';
           $pages.react.page.react.errorMessage = err.response?.data.message;
+          $pages.react.page.react.loading = false;
         }
       } else {
         console.error(err);

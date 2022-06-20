@@ -318,7 +318,7 @@ export class AppRealtime extends ClientSocket {
               for (const page of $pages.pageCache.react.cache) {
                 if (page.react.groupId === notifObj.data.groupId) {
                   page.react.status = 'unauthorized';
-                  page.react.userStatus = null;
+                  page.react.userStatus = undefined;
                 }
               }
 
@@ -343,7 +343,7 @@ export class AppRealtime extends ClientSocket {
               for (const page of $pages.pageCache.react.cache) {
                 if (page.react.groupId === notifObj.data.groupId) {
                   page.react.status = 'unauthorized';
-                  page.react.userStatus = null;
+                  page.react.userStatus = undefined;
                 }
               }
 

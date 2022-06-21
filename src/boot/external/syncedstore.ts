@@ -3,15 +3,14 @@ import * as Vue from 'vue';
 
 enableVueBindings(Vue);
 
-declare global {
-  // eslint-disable-next-line no-var
-  var syncedstore: {
-    SyncedStore: typeof SyncedStore;
-    getYjsValue: typeof getYjsValue;
-  };
-}
-
-globalThis.syncedstore = {
+const _syncedstore = {
   SyncedStore,
   getYjsValue,
 };
+
+declare global {
+  // eslint-disable-next-line no-var
+  var syncedstore: typeof _syncedstore;
+}
+
+globalThis.syncedstore = _syncedstore;

@@ -79,23 +79,35 @@ const extensions = [
   }),
 ];
 
-declare global {
-  /* eslint-disable no-var */
-  var tiptap: {
-    extensions: typeof extensions;
-    Collaboration: typeof Collaboration;
-    CollaborationCursor: typeof CollaborationCursor;
-    EditorContent: typeof EditorContent;
-    useEditor: typeof useEditor;
-    getSchema: typeof getSchema;
-  };
+import { Y } from '@syncedstore/core';
+import {
+  prosemirrorJSONToYXmlFragment,
+  yXmlFragmentToProsemirrorJSON,
+} from 'y-prosemirror';
+
+export function swapXmlFragments(frag1: Y.XmlFragment, frag2: Y.XmlFragment) {
+  const json1 = yXmlFragmentToProsemirrorJSON(frag1);
+  const json2 = yXmlFragmentToProsemirrorJSON(frag2);
+
+  prosemirrorJSONToYXmlFragment(tiptap.schema, json2, frag1);
+  prosemirrorJSONToYXmlFragment(tiptap.schema, json1, frag2);
 }
 
-globalThis.tiptap = {
+const _tiptap = {
   extensions,
+  schema: getSchema(extensions),
+
   Collaboration,
   CollaborationCursor,
   EditorContent,
   useEditor,
-  getSchema,
+
+  swapXmlFragments,
 };
+
+declare global {
+  /* eslint-disable no-var */
+  var tiptap: typeof _tiptap;
+}
+
+globalThis.tiptap = _tiptap;

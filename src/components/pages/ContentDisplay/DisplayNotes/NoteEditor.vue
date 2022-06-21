@@ -86,6 +86,8 @@ const editor = tiptap.useEditor({
     // @ts-ignore
     note.react[props.section].editor = editor;
 
+    editor.setEditable(note.react.editing);
+
     finishLoading();
   },
   onDestroy() {

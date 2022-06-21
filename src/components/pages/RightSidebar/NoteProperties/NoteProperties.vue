@@ -18,8 +18,11 @@
       icon="mdi-swap-vertical"
       :disable="page.react.readonly"
       @click="
-        changeProp(true, (note, value) => {
-          //
+        changeProp(null, (note) => {
+          tiptap.swapXmlFragments(
+            note.collab.head.value,
+            note.collab.body.value
+          );
         })
       "
     />
@@ -164,8 +167,11 @@
           dense
           style="flex: 1"
           @click="
-            changeProp(note, (note, value) => {
-              //
+            changeProp(null, (note) => {
+              tiptap.swapXmlFragments(
+                note.collab.head.value,
+                note.collab.body.value
+              );
             })
           "
         />
@@ -179,9 +185,12 @@
           dense
           style="flex: 1"
           @click="
-            changeProp(note, (note, value) => {
+            changeProp(note, (note) => {
               if (note.collab.head.value.length <= 1) {
-                //
+                tiptap.swapXmlFragments(
+                  note.collab.head.value,
+                  note.collab.body.value
+                );
               }
             })
           "

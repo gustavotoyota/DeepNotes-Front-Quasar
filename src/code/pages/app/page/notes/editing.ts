@@ -11,6 +11,7 @@ export interface IEditingReact {
   note: ComputedRef<PageNote | null>;
   section?: NoteTextSection;
   editor: ComputedRef<Editor | null>;
+  editors: ComputedRef<Editor[]>;
 
   active: ComputedRef<boolean>;
 }
@@ -30,6 +31,19 @@ export class PageEditing {
       editor: computed(
         () => this.react.note?.react[this.react.section!].editor ?? null
       ),
+      editors: computed(() => {
+        const result = [];
+
+        for (const section of ['head', 'body'] as NoteTextSection[]) {
+          const editor = this.react.note?.react[section].editor;
+
+          if (editor != null) {
+            result.push(editor);
+          }
+        }
+
+        return result;
+      }),
 
       active: computed(() => this.react.note != null),
     });
@@ -63,7 +77,10 @@ export class PageEditing {
     await nextTick();
     await watchUntilTrue(() => note.react.loaded);
 
-    this.react.editor?.setEditable(note.react.editing);
+    for (const editor of this.react.editors) {
+      editor.setEditable(true);
+    }
+
     this.react.editor?.commands.focus('all');
   }
 
@@ -72,7 +89,9 @@ export class PageEditing {
       return;
     }
 
-    this.react.editor?.setEditable(false);
+    for (const editor of this.react.editors) {
+      editor.setEditable(false);
+    }
 
     this.react.note.react.editing = false;
 

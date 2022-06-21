@@ -210,7 +210,7 @@ export class AppSerialization {
         noteCollab.head = {
           enabled: serialNote.head.enabled,
           value: prosemirrorJSONToYXmlFragment(
-            tiptap.getSchema(tiptap.extensions),
+            tiptap.schema,
             serialNote.head.value
           ),
           wrap: serialNote.head.wrap,
@@ -219,7 +219,7 @@ export class AppSerialization {
         noteCollab.body = {
           enabled: serialNote.body.enabled,
           value: prosemirrorJSONToYXmlFragment(
-            tiptap.getSchema(tiptap.extensions),
+            tiptap.schema,
             serialNote.body.value
           ),
           wrap: serialNote.body.wrap,
@@ -273,7 +273,7 @@ export class AppSerialization {
           targetId: noteMap.get(serialArrow.targetIndex)!,
 
           label: prosemirrorJSONToYXmlFragment(
-            tiptap.getSchema(tiptap.extensions),
+            tiptap.schema,
             serialArrow.label
           ),
         };

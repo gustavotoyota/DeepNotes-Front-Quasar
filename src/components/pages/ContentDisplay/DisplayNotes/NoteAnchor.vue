@@ -9,9 +9,7 @@
       top: note.react.parentId == null ? `${note.collab.pos.y}px` : undefined,
       'z-index': note.react.parentId == null ? note.collab.zIndex : undefined,
       visibility:
-        note.react.resizing || !note.react.allEditorsLoaded
-          ? 'hidden'
-          : undefined,
+        note.react.resizing || !note.react.loaded ? 'hidden' : undefined,
     }"
   >
     <slot />

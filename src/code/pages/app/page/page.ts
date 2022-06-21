@@ -9,7 +9,6 @@ import {
   ComputedRef,
   nextTick,
   UnwrapRef,
-  watch,
   WatchStopHandle,
   WritableComputedRef,
 } from 'vue';
@@ -25,7 +24,7 @@ import {
   DICT_PAGE_GROUP_ID,
   PagesApp,
 } from '../app';
-import { REALTIME_GROUP_NAME, REALTIME_USER_DISPLAY_NAME } from '../realtime';
+import { REALTIME_GROUP_NAME } from '../realtime';
 import { PageArrowCreation } from './arrows/arrow-creation';
 import { PageArrows } from './arrows/arrows';
 import { ICameraData, PageCamera } from './camera/camera';
@@ -297,27 +296,27 @@ export class AppPage extends PageRegion {
 
     this.react.symmetricKey = symmetricKey;
 
-    // Setup collaboration and wait synchronization
+    // Synchronize collaboration
 
-    this.collab.setup();
-
-    await this.collab.websocketProvider.syncedPromise;
+    // await this.collab.synchronize();
 
     // Post-sync setup
 
-    this.unwatchUserDisplayName = watch(
-      () =>
-        this.app.realtime.get(
-          REALTIME_USER_DISPLAY_NAME,
-          this.app.react.userId
-        ),
-      (value) => {
-        this.collab.websocketProvider.awareness.setLocalStateField('user', {
-          name: value,
-        });
-      },
-      { immediate: true }
-    );
+    // this.react.size = this.collab.websocketProvider.size;
+
+    // this.unwatchUserDisplayName = watch(
+    //   () =>
+    //     this.app.realtime.get(
+    //       REALTIME_USER_DISPLAY_NAME,
+    //       this.app.react.userId
+    //     ),
+    //   (value) => {
+    //     this.collab.websocketProvider.awareness.setLocalStateField('user', {
+    //       name: value,
+    //     });
+    //   },
+    //   { immediate: true }
+    // );
 
     if (this.collab.store.page.nextZIndex == null) {
       this.collab.reset();
@@ -328,8 +327,6 @@ export class AppPage extends PageRegion {
     this.camera.setup(response.data.camera);
 
     this.undoRedo.setup();
-
-    this.react.size = this.collab.websocketProvider.size;
 
     this.react.status = 'success';
 

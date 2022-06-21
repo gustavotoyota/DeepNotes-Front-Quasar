@@ -184,10 +184,9 @@ async function onKeyDown(event: KeyboardEvent) {
     if (event.code === 'Backspace') {
       await page.value.editing.start(activeElem);
 
-      const editor =
-        activeElem.react[page.value.editing.react.section!].editor!;
+      const editor = activeElem.react[page.value.editing.react.section!].editor;
 
-      editor.commands.clearContent();
+      editor?.commands.clearContent();
     }
   }
 }
@@ -207,9 +206,9 @@ async function onKeyPress(event: KeyboardEvent) {
   if (activeElem instanceof PageNote) {
     await page.value.editing.start(activeElem);
 
-    const editor = activeElem.react[page.value.editing.react.section!].editor!;
+    const editor = activeElem.react[page.value.editing.react.section!].editor;
 
-    editor.chain().clearContent().insertContent(event.key).run();
+    editor?.chain().clearContent().insertContent(event.key).run();
   }
 }
 

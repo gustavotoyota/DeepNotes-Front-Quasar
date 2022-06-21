@@ -32,7 +32,7 @@ export class PageCollab {
     this.doc = syncedstore.getYjsValue(this.store) as Y.Doc;
   }
 
-  setup() {
+  async synchronize() {
     this.websocketProvider = new WebsocketProvider(
       process.env.DEV
         ? 'ws://192.168.1.4:33245'
@@ -41,6 +41,8 @@ export class PageCollab {
       this.doc,
       this.page.react.symmetricKey
     );
+
+    await this.websocketProvider.syncedPromise;
   }
 
   reset() {

@@ -186,7 +186,7 @@
           style="flex: 1"
           @click="
             changeProp(note, (note) => {
-              if (note.collab.head.value.length <= 1) {
+              if (note.collab.head.value.toDOM().textContent!.length === 0) {
                 tiptap.swapXmlFragments(
                   note.collab.head.value,
                   note.collab.body.value

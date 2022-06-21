@@ -1,4 +1,4 @@
-import { Editor } from '@tiptap/vue-3';
+import type { Editor } from '@tiptap/vue-3';
 import { refProp, watchUntilTrue } from 'src/code/pages/static/vue';
 import { computed, ComputedRef, nextTick, UnwrapRef } from 'vue';
 

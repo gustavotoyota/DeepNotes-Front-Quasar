@@ -1,9 +1,9 @@
 import { debounce } from 'lodash';
 import { Vec2 } from 'src/code/pages/static/vec2';
-import { refProp } from 'src/code/pages/static/vue';
 import {
   computed,
-  UnwrapRef,
+  reactive,
+  UnwrapNestedRefs,
   watch,
   watchEffect,
   WritableComputedRef,
@@ -32,14 +32,10 @@ export interface ICameraData {
 }
 
 export class PageCamera {
-  readonly page: AppPage;
+  readonly react: UnwrapNestedRefs<ICameraReact>;
 
-  react: UnwrapRef<ICameraReact>;
-
-  constructor(page: AppPage) {
-    this.page = page;
-
-    this.react = refProp<ICameraReact>(this, 'react', {
+  constructor(readonly page: AppPage) {
+    this.react = reactive({
       pos: new Vec2(),
 
       _zoom: 1,
@@ -106,7 +102,7 @@ export class PageCamera {
     if (this.page.selection.react.notes.length > 0) {
       regionCollab = this.page.selection.react;
     } else {
-      regionCollab = this.page.react;
+      regionCollab = this.page.react.currentLayer.collab;
     }
 
     if (regionCollab.noteIds.length === 0) {

@@ -4,11 +4,7 @@ import { AppPage } from '../page';
 import { PageNote } from './note';
 
 export class PageDropping {
-  readonly page: AppPage;
-
-  constructor(page: AppPage) {
-    this.page = page;
-  }
+  constructor(readonly page: AppPage) {}
 
   async perform(regionNote: PageNote, dropIndex: number) {
     const selectedNotes = this.page.selection.react.notes.slice();

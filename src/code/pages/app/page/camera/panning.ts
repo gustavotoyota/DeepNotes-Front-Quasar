@@ -4,13 +4,9 @@ import { Vec2 } from 'src/code/pages/static/vec2';
 import { AppPage } from '../page';
 
 export class PagePanning {
-  readonly page: AppPage;
-
   currentPos: Vec2 = new Vec2();
 
-  constructor(page: AppPage) {
-    this.page = page;
-  }
+  constructor(readonly page: AppPage) {}
 
   start(event: PointerEvent) {
     if (this.page.camera.react.lockPos) {

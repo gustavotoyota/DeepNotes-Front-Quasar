@@ -3,11 +3,7 @@ import { hasVertScrollbar } from 'src/code/pages/static/dom';
 import { AppPage } from '../page';
 
 export class PageZooming {
-  readonly page: AppPage;
-
-  constructor(page: AppPage) {
-    this.page = page;
-  }
+  constructor(readonly page: AppPage) {}
 
   perform(event: WheelEvent) {
     // Skip if already handled by a scrollbar

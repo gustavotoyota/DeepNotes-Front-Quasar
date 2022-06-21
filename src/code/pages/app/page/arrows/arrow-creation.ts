@@ -19,6 +19,7 @@ export class PageArrowCreation {
     this.fakeArrow = new PageArrow(
       this.page,
       null as any,
+      null as any,
       null,
       reactive(
         IArrowCollab.parse({
@@ -75,7 +76,10 @@ export class PageArrowCreation {
     this.page.collab.doc.transact(() => {
       this.page.arrows.react.collab[arrowId] = newCollab;
 
-      this.page.react.collab.arrowIds.push(arrowId);
+      const sourceNote = this.fakeArrow.react.sourceNote;
+      const sourceLayer = sourceNote.react.layer;
+
+      sourceLayer.collab.arrowIds.push(arrowId);
     });
 
     this.page.selection.set(this.page.arrows.fromId(arrowId)!);

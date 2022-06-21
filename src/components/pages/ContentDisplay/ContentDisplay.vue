@@ -58,8 +58,20 @@
     <template v-if="page.react.status === 'success'">
       <DisplayBackground />
 
-      <DisplayArrows />
-      <DisplayNotes />
+      <DisplayLayers />
+
+      <SVGDisplay v-if="page.arrowCreation.react.active">
+        <DisplayArrow :arrow="page.arrowCreation.fakeArrow" />
+      </SVGDisplay>
+
+      <DOMDisplay v-if="page.resizing.react.active">
+        <DisplayNote
+          v-for="ghost in page.resizing.react.ghosts"
+          :key="ghost.id"
+          :note="ghost"
+          style="opacity: 0.7"
+        />
+      </DOMDisplay>
 
       <DisplayBoxSelection />
 
@@ -79,12 +91,15 @@ import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { provide } from 'vue';
 
-import DisplayArrows from './DisplayArrows/DisplayArrows.vue';
+import DisplayArrow from './DisplayArrows/DisplayArrow.vue';
 import DisplayBackground from './DisplayBackground.vue';
 import DisplayBoxSelection from './DisplayBoxSelection.vue';
 import DisplayBtns from './DisplayBtns.vue';
-import DisplayNotes from './DisplayNotes/DisplayNotes.vue';
+import DisplayLayers from './DisplayLayers/DisplayLayers.vue';
+import DisplayNote from './DisplayNotes/DisplayNote.vue';
+import DOMDisplay from './DOMDisplay.vue';
 import RequestAccessDialog from './RequestAccessDialog.vue';
+import SVGDisplay from './SVGDisplay.vue';
 
 const props = defineProps<{
   page: AppPage;
@@ -169,10 +184,7 @@ async function rejectInvitation() {
 .display {
   position: absolute;
 
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
 
   overflow: hidden;
 

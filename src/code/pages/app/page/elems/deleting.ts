@@ -3,11 +3,7 @@ import { PageNote } from '../notes/note';
 import { AppPage } from '../page';
 
 export class PageDeleting {
-  readonly page: AppPage;
-
-  constructor(page: AppPage) {
-    this.page = page;
-  }
+  constructor(readonly page: AppPage) {}
 
   perform() {
     if (this.page.react.readonly) {

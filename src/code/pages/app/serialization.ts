@@ -100,11 +100,7 @@ export const ISerialRegion = z.lazy(() =>
 ) as z.ZodType<ISerialRegionOutput, z.ZodTypeDef, ISerialRegionInput>;
 
 export class AppSerialization {
-  readonly app: PagesApp;
-
-  constructor(app: PagesApp) {
-    this.app = app;
-  }
+  constructor(readonly app: PagesApp) {}
 
   serialize(
     container: z.output<typeof IRegionCollab>,
@@ -237,7 +233,7 @@ export class AppSerialization {
           noteCollab[collabKey] = cloneDeep(serialNote[collabKey]);
         }
 
-        noteCollab.zIndex = page.react.collab.nextZIndex++;
+        noteCollab.zIndex = page.react.currentLayer.collab.nextZIndex++;
 
         // Children
 

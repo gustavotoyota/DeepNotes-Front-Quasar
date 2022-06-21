@@ -9,16 +9,16 @@ import {
   ComputedRef,
   ShallowRef,
   shallowRef,
-  UnwrapRef,
+  UnwrapNestedRefs,
   WritableComputedRef,
 } from 'vue';
 import * as Y from 'yjs';
 import { z } from 'zod';
 
 import { PageArrow } from '../arrows/arrow';
-import { ElemType, IElemReact } from '../elems/elem';
+import { ElemType, IElemReact, PageElem } from '../elems/elem';
 import { AppPage } from '../page';
-import { IRegionCollab, IRegionReact, PageRegion } from '../regions/region';
+import { IPageRegion, IRegionCollab, IRegionReact } from '../regions/region';
 
 export type NoteSide = 'nw' | 'n' | 'ne' | 'w' | 'e' | 'sw' | 's' | 'se';
 
@@ -113,10 +113,7 @@ export interface INoteTextSectionReact extends INoteSectionReact {
   editor: Editor | null;
 }
 
-export interface INoteReact extends IRegionReact {
-  parent: WritableComputedRef<PageNote | null>;
-  region: ComputedRef<PageRegion>;
-
+export interface INoteReact extends IRegionReact, IElemReact {
   editing: boolean;
   dragging: boolean;
   resizing: boolean;
@@ -184,12 +181,8 @@ export interface INoteReact extends IRegionReact {
   loaded: ComputedRef<boolean>;
 }
 
-export class PageNote extends PageRegion {
-  readonly collab: z.output<typeof INoteCollab>;
-
-  declare react: UnwrapRef<INoteReact>;
-
-  private _parent: PageNote | null = null;
+export class PageNote extends PageElem implements IPageRegion {
+  declare readonly react: UnwrapNestedRefs<INoteReact>;
 
   incomingArrows: PageArrow[] = [];
   outgoingArrows: PageArrow[] = [];
@@ -197,12 +190,11 @@ export class PageNote extends PageRegion {
   constructor(
     page: AppPage,
     id: string,
+    layerId: string,
     parentId: string | null,
-    collab: z.output<typeof INoteCollab>
+    readonly collab: z.output<typeof INoteCollab>
   ) {
-    super(page, id, ElemType.NOTE, parentId);
-
-    this.collab = collab;
+    super(page, id, ElemType.NOTE, layerId, parentId);
 
     const makeSectionHeight = (section: NoteSection) =>
       computed(() => {
@@ -221,15 +213,6 @@ export class PageNote extends PageRegion {
       });
 
     const react: Omit<INoteReact, keyof IElemReact> = {
-      parent: computed({
-        get: () => {
-          return page?.notes.fromId(this.react.parentId) ?? this._parent;
-        },
-        set: (val) => {
-          this._parent = val;
-        },
-      }),
-
       editing: false,
       dragging: false,
       resizing: false,
@@ -416,11 +399,8 @@ export class PageNote extends PageRegion {
         page.rects.worldToClient(this.react.worldRect)
       ),
 
-      noteIds: computed(() => this.collab.noteIds),
-      arrowIds: computed(() => this.collab.arrowIds),
-
-      notes: computed(() => page.notes.fromIds(this.react.noteIds)),
-      arrows: computed(() => page.arrows.fromIds(this.react.arrowIds)),
+      notes: computed(() => page.notes.fromIds(this.collab.noteIds)),
+      arrows: computed(() => page.arrows.fromIds(this.collab.arrowIds)),
 
       cursor: computed(() => {
         if (this.react.editing) {
@@ -493,11 +473,11 @@ export class PageNote extends PageRegion {
   }
 
   bringToTop() {
-    if (this.collab.zIndex === this.page.react.collab.nextZIndex - 1) {
+    if (this.collab.zIndex === this.react.layer.collab.nextZIndex - 1) {
       return;
     }
 
-    this.collab.zIndex = this.page.react.collab.nextZIndex++;
+    this.collab.zIndex = this.react.layer.collab.nextZIndex++;
   }
 
   getNode(part: string | null): Element {
@@ -509,7 +489,7 @@ export class PageNote extends PageRegion {
   }
 
   scrollIntoView() {
-    if (this.react.parentId == null) {
+    if (this.react.parent == null) {
       return;
     }
 
@@ -550,18 +530,22 @@ export class PageNote extends PageRegion {
   }
 
   removeFromRegion() {
-    this.react.region.react.noteIds.splice(this.react.index, 1);
+    this.react.region.collab.noteIds.splice(this.react.index, 1);
   }
-  moveToRegion(region: PageRegion, insertIndex?: number) {
+  moveToRegion(region: IPageRegion, insertIndex?: number) {
     this.removeFromRegion();
 
-    region.react.noteIds.splice(
-      insertIndex ?? region.react.noteIds.length,
+    region.collab.noteIds.splice(
+      insertIndex ?? region.collab.noteIds.length,
       0,
       this.id
     );
 
-    this.react.parentId = region.id;
+    if (region instanceof PageNote) {
+      this.react.parentId = region.id;
+    } else {
+      this.react.parentId = null;
+    }
   }
 
   reverseChildren() {

@@ -3,17 +3,13 @@ import { PageNote } from '../notes/note';
 import { AppPage } from '../page';
 
 export class PageClickSelection {
-  readonly page: AppPage;
-
-  constructor(page: AppPage) {
-    this.page = page;
-  }
+  constructor(readonly page: AppPage) {}
 
   perform(elem: PageElem, event: PointerEvent) {
     // Container shift-selection
 
     if (
-      elem.react.parentId != null &&
+      elem.react.parent != null &&
       event.shiftKey &&
       this.page.activeElem.react.elem instanceof PageNote &&
       elem instanceof PageNote

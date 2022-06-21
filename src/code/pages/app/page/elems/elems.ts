@@ -1,17 +1,21 @@
 import { AppPage } from '../page';
 
 export class PageElems {
-  readonly page: AppPage;
-
-  constructor(page: AppPage) {
-    this.page = page;
-  }
+  constructor(readonly page: AppPage) {}
 
   setup() {
-    this.page.notes.createAndObserveIds(this.page.react.collab.noteIds, null);
-    this.page.notes.observeMap();
+    this.page.layers.createAndObserveIds(this.page.react.collab.layerIds);
 
-    this.page.arrows.createAndObserveIds(this.page.react.collab.arrowIds, null);
-    this.page.arrows.observeMap();
+    for (const layer of this.page.react.layers) {
+      this.page.notes.createAndObserveIds(layer.collab.noteIds, layer.id, null);
+      this.page.notes.observeMap();
+
+      this.page.arrows.createAndObserveIds(
+        layer.collab.arrowIds,
+        layer.id,
+        null
+      );
+      this.page.arrows.observeMap();
+    }
   }
 }

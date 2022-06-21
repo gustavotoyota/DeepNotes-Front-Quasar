@@ -1,13 +1,12 @@
-import { refProp } from 'src/code/pages/static/vue';
-import { computed, ComputedRef, UnwrapRef } from 'vue';
+import { computed, ComputedRef, reactive, UnwrapNestedRefs } from 'vue';
 
 import { ElemType, PageElem } from '../elems/elem';
 import { PageNote } from '../notes/note';
 import { AppPage } from '../page';
 
 export interface IActiveElemReact {
-  id: string | null;
-  type: ElemType;
+  id?: string;
+  type?: ElemType;
 
   elem: ComputedRef<PageElem | null>;
 
@@ -15,19 +14,12 @@ export interface IActiveElemReact {
 }
 
 export class PageActiveElem {
-  readonly page: AppPage;
+  readonly react: UnwrapNestedRefs<IActiveElemReact>;
 
-  react: UnwrapRef<IActiveElemReact>;
-
-  constructor(page: AppPage) {
-    this.page = page;
-
-    this.react = refProp<IActiveElemReact>(this, 'react', {
-      id: null,
-      type: ElemType.PAGE,
-
+  constructor(readonly page: AppPage) {
+    this.react = reactive({
       elem: computed((): PageElem | null => {
-        if (this.react.id == null || this.react.type === ElemType.PAGE) {
+        if (this.react.id == null || this.react.type == null) {
           return null;
         }
 
@@ -60,7 +52,7 @@ export class PageActiveElem {
       this.react.elem.react.active = false;
     }
 
-    this.react.id = elem?.id ?? null;
+    this.react.id = elem?.id ?? undefined;
     this.react.type = elem?.type ?? ElemType.NOTE;
 
     if (elem == null) {

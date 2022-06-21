@@ -1,40 +1,19 @@
 import type { Y } from '@syncedstore/core';
 import { pull } from 'lodash';
 import { Factory } from 'src/code/pages/static/composition-root';
-import { refProp } from 'src/code/pages/static/vue';
-import {
-  computed,
-  ComputedRef,
-  ShallowReactive,
-  shallowReactive,
-  UnwrapRef,
-} from 'vue';
+import { computed, reactive, shallowReactive } from 'vue';
 
 import { AppPage } from '../page';
 import { IArrowCollab, PageArrow } from './arrow';
 
-export interface IArrowsReact {
-  map: ShallowReactive<Record<string, PageArrow>>;
-
-  collab: ComputedRef<Record<string, IArrowCollab>>;
-}
-
 export class PageArrows {
-  readonly factory: Factory;
-  readonly page: AppPage;
+  readonly react = reactive({
+    map: shallowReactive({} as Record<string, PageArrow>),
 
-  react: UnwrapRef<IArrowsReact>;
+    collab: computed(() => this.page.collab.store.arrows),
+  });
 
-  constructor(factory: Factory, page: AppPage) {
-    this.factory = factory;
-    this.page = page;
-
-    this.react = refProp<IArrowsReact>(this, 'react', {
-      map: shallowReactive({}),
-
-      collab: computed(() => this.page.collab.store.arrows),
-    });
-  }
+  constructor(readonly factory: Factory, readonly page: AppPage) {}
 
   fromId(arrowId: string): PageArrow | null {
     return this.react.map[arrowId] ?? null;
@@ -52,16 +31,26 @@ export class PageArrows {
     return arrows.map((arrow) => arrow.id);
   }
 
-  create(arrowId: string, parentId: string | null) {
+  create(arrowId: string, layerId: string, parentId: string | null) {
     const collab = this.react.collab[arrowId];
 
-    const arrow = this.factory.makeArrow(this.page, arrowId, parentId, collab);
+    const arrow = this.factory.makeArrow(
+      this.page,
+      arrowId,
+      layerId,
+      parentId,
+      collab
+    );
 
-    this.page.arrows.react.map[arrow.id] = arrow;
+    this.react.map[arrow.id] = arrow;
   }
-  createAndObserveIds(arrowIds: string[], parentId: string | null) {
+  createAndObserveIds(
+    arrowIds: string[],
+    layerId: string,
+    parentId: string | null
+  ) {
     for (const arrowId of arrowIds) {
-      this.create(arrowId, parentId);
+      this.create(arrowId, layerId, parentId);
     }
 
     (syncedstore.getYjsValue(arrowIds) as Y.Array<string>).observe((event) => {
@@ -71,7 +60,7 @@ export class PageArrows {
         }
 
         for (const arrowId of delta.insert) {
-          this.create(arrowId, parentId);
+          this.create(arrowId, layerId, parentId);
         }
       }
     });

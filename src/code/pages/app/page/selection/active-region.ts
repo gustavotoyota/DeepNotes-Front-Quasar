@@ -1,16 +1,15 @@
-import { refProp } from 'src/code/pages/static/vue';
-import { computed, ComputedRef, UnwrapRef } from 'vue';
+import { computed, ComputedRef, reactive, UnwrapNestedRefs } from 'vue';
 
 import { PageArrow } from '../arrows/arrow';
 import { PageElem } from '../elems/elem';
 import { PageNote } from '../notes/note';
 import { AppPage } from '../page';
-import { PageRegion } from '../regions/region';
+import { IPageRegion } from '../regions/region';
 
 export interface IActiveRegionReact {
   id: string | null;
 
-  region: ComputedRef<PageRegion>;
+  region: ComputedRef<IPageRegion>;
 
   noteIds: ComputedRef<string[]>;
   arrowIds: ComputedRef<string[]>;
@@ -21,29 +20,26 @@ export interface IActiveRegionReact {
 }
 
 export class PageActiveRegion {
-  readonly page: AppPage;
+  readonly react: UnwrapNestedRefs<IActiveRegionReact>;
 
-  react: UnwrapRef<IActiveRegionReact>;
-
-  constructor(page: AppPage) {
-    this.page = page;
-
-    this.react = refProp<IActiveRegionReact>(this, 'react', {
+  constructor(readonly page: AppPage) {
+    this.react = reactive({
       id: null,
 
       region: computed(() => {
         if (this.react.id == null) {
-          return this.page;
+          return this.page.react.currentLayer;
         } else {
           return this.page.notes.react.map[this.react.id];
         }
       }),
 
-      noteIds: computed(() => this.react.region.react.noteIds),
-      arrowIds: computed(() => this.react.region.react.arrowIds),
+      noteIds: computed(() => this.react.region.collab.noteIds),
+      arrowIds: computed(() => this.react.region.collab.arrowIds),
 
       notes: computed(() => this.react.region.react.notes),
       arrows: computed(() => this.react.region.react.arrows),
+
       elems: computed(() =>
         (this.react.notes as PageElem[]).concat(this.react.arrows)
       ),

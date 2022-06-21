@@ -4,14 +4,10 @@ import { Vec2 } from 'src/code/pages/static/vec2';
 import { AppPage } from '../page';
 
 export class PageRects {
-  readonly page: AppPage;
+  constructor(readonly page: AppPage) {}
 
   get pos() {
     return this.page.pos;
-  }
-
-  constructor(page: AppPage) {
-    this.page = page;
   }
 
   fromDisplay() {

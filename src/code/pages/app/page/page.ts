@@ -8,7 +8,9 @@ import {
   computed,
   ComputedRef,
   nextTick,
-  UnwrapRef,
+  reactive,
+  UnwrapNestedRefs,
+  watch,
   WatchStopHandle,
   WritableComputedRef,
 } from 'vue';
@@ -24,7 +26,8 @@ import {
   DICT_PAGE_GROUP_ID,
   PagesApp,
 } from '../app';
-import { REALTIME_GROUP_NAME } from '../realtime';
+import { REALTIME_GROUP_NAME, REALTIME_USER_DISPLAY_NAME } from '../realtime';
+import { PageArrow } from './arrows/arrow';
 import { PageArrowCreation } from './arrows/arrow-creation';
 import { PageArrows } from './arrows/arrows';
 import { ICameraData, PageCamera } from './camera/camera';
@@ -34,15 +37,16 @@ import { PageZooming } from './camera/zooming';
 import { PageCollab } from './collab';
 import { PageClipboard } from './elems/clipboard';
 import { PageDeleting } from './elems/deleting';
-import { ElemType, IElemReact } from './elems/elem';
 import { PageElems } from './elems/elems';
+import { PageLayer } from './layers/layer';
+import { PageLayers } from './layers/layers';
 import { PageCloning } from './notes/cloning';
 import { PageDragging } from './notes/dragging';
 import { PageDropping } from './notes/dropping';
 import { PageEditing } from './notes/editing';
+import { PageNote } from './notes/note';
 import { PageNotes } from './notes/notes';
 import { PageResizing } from './notes/resizing';
-import { IRegionCollab, IRegionReact, PageRegion } from './regions/region';
 import { PageRegions } from './regions/regions';
 import { PageActiveElem } from './selection/active-elem';
 import { PageActiveRegion } from './selection/active-region';
@@ -54,13 +58,25 @@ import { PageRects } from './space/rects';
 import { PageSizes } from './space/sizes';
 import { PageUndoRedo } from './undo-redo';
 
-export const IPageCollab = IRegionCollab.extend({
-  nextZIndex: z.number(),
+export const IPageCollab = z.object({
+  layerIds: z.string().array(),
 });
 export type IPageCollab = z.output<typeof IPageCollab>;
 
-export interface IAppPageReact extends IRegionReact {
+export interface IAppPageReact {
   collab: ComputedRef<IPageCollab>;
+
+  layers: ComputedRef<PageLayer[]>;
+
+  currentLayerId?: string;
+  currentLayer: ComputedRef<PageLayer>;
+
+  noteIds: ComputedRef<string[]>;
+  arrowIds: ComputedRef<string[]>;
+
+  notes: ComputedRef<PageNote[]>;
+  arrows: ComputedRef<PageArrow[]>;
+
   size: number;
 
   status?: string;
@@ -95,12 +111,8 @@ export interface IPageData {
   encryptersPublicKey: string;
 }
 
-export class AppPage extends PageRegion {
-  readonly app: PagesApp;
-
-  readonly id: string;
-
-  declare readonly react: UnwrapRef<IAppPageReact>;
+export class AppPage {
+  readonly react: UnwrapNestedRefs<IAppPageReact>;
 
   readonly collab: PageCollab;
   readonly undoRedo: PageUndoRedo;
@@ -120,6 +132,8 @@ export class AppPage extends PageRegion {
   readonly clickSelection: PageClickSelection;
   readonly boxSelection: PageBoxSelection;
 
+  readonly layers: PageLayers;
+
   readonly regions: PageRegions;
 
   readonly elems: PageElems;
@@ -138,17 +152,42 @@ export class AppPage extends PageRegion {
 
   unwatchUserDisplayName?: WatchStopHandle;
 
-  constructor(factory: Factory, app: PagesApp, id: string) {
-    super(null as any, id, ElemType.PAGE, null);
-
-    this.app = app;
-
-    this.id = id;
-
-    const react: Omit<IAppPageReact, keyof IElemReact> = {
+  constructor(factory: Factory, readonly app: PagesApp, readonly id: string) {
+    this.react = reactive({
       // Page
 
       collab: computed(() => this.collab.store.page),
+
+      currentLayer: computed(
+        () =>
+          this.layers.fromId(this.react.currentLayerId ?? null) ??
+          Object.values(this.layers.react.map)[0]
+      ),
+
+      layers: computed(() => this.layers.fromIds(this.react.collab.layerIds)),
+
+      noteIds: computed(() => {
+        const result = [];
+
+        for (const layer of this.react.layers) {
+          result.push(...layer.collab.noteIds);
+        }
+
+        return result;
+      }),
+      arrowIds: computed(() => {
+        const result = [];
+
+        for (const layer of this.react.layers) {
+          result.push(...layer.collab.arrowIds);
+        }
+
+        return result;
+      }),
+
+      notes: computed(() => this.notes.fromIds(this.react.noteIds)),
+      arrows: computed(() => this.arrows.fromIds(this.react.arrowIds)),
+
       size: 0,
 
       title: computed({
@@ -207,17 +246,7 @@ export class AppPage extends PageRegion {
       allEditorsLoaded: computed(() => this.react.numEditorsLoading === 0),
 
       loading: true,
-
-      // Region
-
-      noteIds: computed(() => this.react.collab.noteIds),
-      arrowIds: computed(() => this.react.collab.arrowIds),
-
-      notes: computed(() => this.notes.fromIds(this.react.noteIds)),
-      arrows: computed(() => this.arrows.fromIds(this.react.arrowIds)),
-    };
-
-    Object.assign(this.react, react);
+    });
 
     this.collab = factory.makeCollab(this);
     this.undoRedo = factory.makeUndoRedo(this);
@@ -236,6 +265,8 @@ export class AppPage extends PageRegion {
     this.activeRegion = factory.makeActiveRegion(this);
     this.clickSelection = factory.makeClickSelection(this);
     this.boxSelection = factory.makeBoxSelection(this);
+
+    this.layers = factory.makeLayers(this);
 
     this.regions = factory.makeRegions(this);
 
@@ -298,27 +329,27 @@ export class AppPage extends PageRegion {
 
     // Synchronize collaboration
 
-    // await this.collab.synchronize();
+    await this.collab.synchronize();
 
     // Post-sync setup
 
-    // this.react.size = this.collab.websocketProvider.size;
+    this.react.size = this.collab.websocketProvider.size;
 
-    // this.unwatchUserDisplayName = watch(
-    //   () =>
-    //     this.app.realtime.get(
-    //       REALTIME_USER_DISPLAY_NAME,
-    //       this.app.react.userId
-    //     ),
-    //   (value) => {
-    //     this.collab.websocketProvider.awareness.setLocalStateField('user', {
-    //       name: value,
-    //     });
-    //   },
-    //   { immediate: true }
-    // );
+    this.unwatchUserDisplayName = watch(
+      () =>
+        this.app.realtime.get(
+          REALTIME_USER_DISPLAY_NAME,
+          this.app.react.userId
+        ),
+      (value) => {
+        this.collab.websocketProvider.awareness.setLocalStateField('user', {
+          name: value,
+        });
+      },
+      { immediate: true }
+    );
 
-    if (this.collab.store.page.nextZIndex == null) {
+    if (this.collab.store.page.layerIds == null) {
       this.collab.reset();
     }
 

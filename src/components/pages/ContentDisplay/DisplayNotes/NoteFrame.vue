@@ -6,9 +6,9 @@
       'min-width': note.react.width.min,
       width: note.react.width.final,
 
-      position: note.react.parentId == null ? 'absolute' : 'relative',
+      position: note.react.parent == null ? 'absolute' : 'relative',
       transform:
-        note.react.parentId == null
+        note.react.parent == null
           ? `translate(` +
             `${-note.collab.anchor.x * 100}%, ${-note.collab.anchor.y * 100}%)`
           : undefined,

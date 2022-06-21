@@ -8,12 +8,18 @@ import {
   wrapSymmetricKey as wrapSymmetricKey,
 } from 'src/code/crypto/symmetric-key';
 import { Resolvable } from 'src/code/utils';
-import { computed, ComputedRef, ShallowRef, shallowRef, UnwrapRef } from 'vue';
+import {
+  computed,
+  ComputedRef,
+  reactive,
+  ShallowRef,
+  shallowRef,
+  UnwrapNestedRefs,
+} from 'vue';
 import { Router } from 'vue-router';
 
 import { Factory, factory } from '../static/composition-root';
 import { createComputedDict } from '../static/computed-dict';
-import { refProp } from '../static/vue';
 import { AppPage } from './page/page';
 import { AppPageCache } from './page-cache';
 import {
@@ -82,7 +88,7 @@ export class PagesApp {
   readonly pageCache: AppPageCache;
   readonly realtime: AppRealtime;
 
-  react: UnwrapRef<IAppReact>;
+  readonly react: UnwrapNestedRefs<IAppReact>;
 
   parentPageId: string | null = null;
 
@@ -98,7 +104,7 @@ export class PagesApp {
         : 'wss://realtime-server.deepnotes.app/'
     );
 
-    this.react = refProp<IAppReact>(this, 'react', {
+    this.react = reactive({
       pathPageIds: [],
       recentPageIds: [],
 

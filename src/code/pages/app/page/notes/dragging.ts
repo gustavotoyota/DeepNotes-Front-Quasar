@@ -19,13 +19,9 @@ export interface IDraggingReact {
 export class PageDragging {
   static readonly MIN_DISTANCE = 5;
 
-  readonly page: AppPage;
-
   react: UnwrapRef<IDraggingReact>;
 
-  constructor(page: AppPage) {
-    this.page = page;
-
+  constructor(readonly page: AppPage) {
     this.react = refProp<IDraggingReact>(this, 'react', {
       active: false,
 
@@ -130,11 +126,11 @@ export class PageDragging {
       (a: PageNote, b: PageNote) => b.react.index - a.react.index
     );
 
-    const insertIndex = this.page.react.noteIds.length;
+    const insertIndex = this.page.react.currentLayer.collab.noteIds.length;
 
     this.page.collab.doc.transact(() => {
       for (const selectedNote of selectedNotes) {
-        selectedNote.moveToRegion(this.page, insertIndex);
+        selectedNote.moveToRegion(this.page.react.currentLayer, insertIndex);
       }
     });
 

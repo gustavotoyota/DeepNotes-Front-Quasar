@@ -1,7 +1,6 @@
-import { computed, ComputedRef, UnwrapRef } from 'vue';
+import { computed, ComputedRef, reactive, UnwrapNestedRefs } from 'vue';
 
 import { IVec2, Vec2 } from '../static/vec2';
-import { refProp } from '../static/vue';
 import { PagesApp } from './app';
 import { ISerialNoteInput } from './serialization';
 
@@ -25,14 +24,10 @@ export interface ITemplatesReact {
 }
 
 export class AppTemplates {
-  readonly app: PagesApp;
+  readonly react: UnwrapNestedRefs<ITemplatesReact>;
 
-  react: UnwrapRef<ITemplatesReact>;
-
-  constructor(app: PagesApp) {
-    this.app = app;
-
-    this.react = refProp<ITemplatesReact>(this, 'react', {
+  constructor(readonly app: PagesApp) {
+    this.react = reactive({
       list: [] as ITemplate[],
 
       defaultId: null as any,

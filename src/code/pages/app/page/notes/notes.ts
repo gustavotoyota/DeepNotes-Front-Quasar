@@ -1,13 +1,13 @@
 import type { Y } from '@syncedstore/core';
 import { Factory } from 'src/code/pages/static/composition-root';
 import { Vec2 } from 'src/code/pages/static/vec2';
-import { refProp } from 'src/code/pages/static/vue';
 import {
   computed,
   ComputedRef,
+  reactive,
   ShallowReactive,
   shallowReactive,
-  UnwrapRef,
+  UnwrapNestedRefs,
 } from 'vue';
 import { z } from 'zod';
 
@@ -22,17 +22,10 @@ export interface INotesReact {
 }
 
 export class PageNotes {
-  readonly factory: Factory;
-  readonly page: AppPage;
+  readonly react: UnwrapNestedRefs<INotesReact>;
 
-  react: UnwrapRef<INotesReact>;
-
-  constructor(factory: Factory, page: AppPage) {
-    this.factory = factory;
-
-    this.page = page;
-
-    this.react = refProp<INotesReact>(this, 'react', {
+  constructor(readonly factory: Factory, readonly page: AppPage) {
+    this.react = reactive({
       map: shallowReactive({}),
 
       collab: computed(() => this.page.collab.store.notes),
@@ -42,41 +35,52 @@ export class PageNotes {
   fromId(noteId: string | null): PageNote | null {
     return this.react.map[noteId ?? ''] ?? null;
   }
-  toId(note: PageNote): string {
-    return note.id;
-  }
-
   fromIds(noteIds: string[]): PageNote[] {
     return noteIds
       .map((noteId) => this.react.map[noteId])
       .filter((note) => note != null);
   }
-  toIds(notes: PageNote[]): string[] {
-    return notes.map((note) => note.id);
-  }
 
-  createAndObserveChildren(noteId: string, parentId: string | null): void {
+  createAndObserveChildren(
+    noteId: string,
+    layerId: string,
+    parentId: string | null
+  ): void {
     if (noteId in this.react.map) {
       this.react.map[noteId].react.parentId = parentId;
       return;
     }
 
     const collab = this.react.collab[noteId];
-    const note = this.factory.makeNote(this.page, noteId, parentId, collab);
+    const note = this.factory.makeNote(
+      this.page,
+      noteId,
+      layerId,
+      parentId,
+      collab
+    );
     this.react.map[note.id] = note;
 
-    this.createAndObserveIds(note.collab.noteIds, note.id);
-    this.page.arrows.createAndObserveIds(note.collab.arrowIds, parentId);
+    this.createAndObserveIds(note.collab.noteIds, layerId, note.id);
+    this.page.arrows.createAndObserveIds(
+      note.collab.arrowIds,
+      layerId,
+      parentId
+    );
   }
-  createAndObserveIds(noteIds: string[], parentId: string | null) {
+  createAndObserveIds(
+    noteIds: string[],
+    layerId: string,
+    parentId: string | null
+  ) {
     for (const noteId of noteIds)
-      this.createAndObserveChildren(noteId, parentId);
+      this.createAndObserveChildren(noteId, layerId, parentId);
 
     (syncedstore.getYjsValue(noteIds) as Y.Map<string>).observe((event) => {
       for (const delta of event.changes.delta) {
         if (delta.insert != null) {
           for (const noteId of delta.insert) {
-            this.createAndObserveChildren(noteId, parentId);
+            this.createAndObserveChildren(noteId, layerId, parentId);
           }
         }
       }
@@ -107,7 +111,7 @@ export class PageNotes {
         notes: [template.data],
         arrows: [],
       },
-      this.page.react.collab
+      this.page.react.currentLayer.collab
     ).noteIds[0];
 
     const note = this.page.notes.react.map[noteId];

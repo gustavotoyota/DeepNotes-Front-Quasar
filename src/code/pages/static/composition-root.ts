@@ -12,6 +12,8 @@ import { PageCollab } from '../app/page/collab';
 import { PageClipboard } from '../app/page/elems/clipboard';
 import { PageDeleting } from '../app/page/elems/deleting';
 import { PageElems } from '../app/page/elems/elems';
+import { ILayerCollab, PageLayer } from '../app/page/layers/layer';
+import { PageLayers } from '../app/page/layers/layers';
 import { PageCloning } from '../app/page/notes/cloning';
 import { PageDragging } from '../app/page/notes/dragging';
 import { PageDropping } from '../app/page/notes/dropping';
@@ -65,6 +67,10 @@ export const container = new Container({
   clickSelection: () => (page: AppPage) => new PageClickSelection(page),
   boxSelection: () => (page: AppPage) => new PageBoxSelection(page),
 
+  layers: (factory: any) => (page: AppPage) => new PageLayers(factory, page),
+  layer: () => (page: AppPage, id: string, collab: ILayerCollab) =>
+    new PageLayer(page, id, collab),
+
   regions: () => (page: AppPage) => new PageRegions(page),
 
   elems: () => (page: AppPage) => new PageElems(page),
@@ -77,10 +83,11 @@ export const container = new Container({
     (
       page: AppPage,
       id: string,
+      layerId: string,
       parentId: string | null,
       collab: z.output<typeof INoteCollab>
     ) =>
-      new PageNote(page, id, parentId, collab),
+      new PageNote(page, id, layerId, parentId, collab),
   editing: () => (page: AppPage) => new PageEditing(page),
   dragging: () => (page: AppPage) => new PageDragging(page),
   dropping: () => (page: AppPage) => new PageDropping(page),
@@ -94,10 +101,11 @@ export const container = new Container({
     (
       page: AppPage,
       id: string,
+      layerId: string,
       parentId: string | null,
       collab: IArrowCollab
     ) =>
-      new PageArrow(page, id, parentId, collab),
+      new PageArrow(page, id, layerId, parentId, collab),
   arrowCreation: () => (page: AppPage) => new PageArrowCreation(page),
 });
 

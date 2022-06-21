@@ -1,13 +1,13 @@
 import {
   computed,
   ComputedRef,
+  reactive,
   ShallowReactive,
   shallowReactive,
-  UnwrapRef,
+  UnwrapNestedRefs,
   watch,
 } from 'vue';
 
-import { refProp } from '../static/vue';
 import { PagesApp } from './app';
 import { AppPage } from './page/page';
 
@@ -18,14 +18,12 @@ export interface IPageCacheReact {
 }
 
 export class AppPageCache {
-  readonly app: PagesApp;
+  readonly react: UnwrapNestedRefs<IPageCacheReact>;
 
-  react: UnwrapRef<IPageCacheReact>;
-
-  constructor(app: PagesApp) {
+  constructor(readonly app: PagesApp) {
     this.app = app;
 
-    this.react = refProp<IPageCacheReact>(this, 'react', {
+    this.react = reactive({
       cache: shallowReactive([]),
 
       totalSize: computed(() => {

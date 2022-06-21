@@ -3,14 +3,10 @@ import { Vec2 } from 'src/code/pages/static/vec2';
 import { AppPage } from '../page';
 
 export class PageSizes {
-  readonly page: AppPage;
+  constructor(readonly page: AppPage) {}
 
   get camera() {
     return this.page.camera;
-  }
-
-  constructor(page: AppPage) {
-    this.page = page;
   }
 
   screenToWorld1D(screenSize: number): number {

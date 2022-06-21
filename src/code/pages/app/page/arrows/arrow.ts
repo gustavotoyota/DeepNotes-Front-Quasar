@@ -3,7 +3,7 @@ import { getLineRectIntersection } from 'src/code/pages/static/geometry';
 import { Line } from 'src/code/pages/static/line';
 import { Vec2 } from 'src/code/pages/static/vec2';
 import { lightenByRatio } from 'src/code/utils';
-import { computed, ComputedRef, nextTick, UnwrapRef } from 'vue';
+import { computed, ComputedRef, nextTick, UnwrapNestedRefs } from 'vue';
 import * as Y from 'yjs';
 import { z } from 'zod';
 
@@ -56,16 +56,17 @@ export class PageArrow extends PageElem {
 
   readonly collab: IArrowCollab;
 
-  declare readonly react: UnwrapRef<IArrowReact>;
+  declare readonly react: UnwrapNestedRefs<IArrowReact>;
 
   constructor(
     page: AppPage,
     id: string,
+    layerId: string,
     parentId: string | null,
     collab: IArrowCollab,
     fake = false
   ) {
-    super(page, id, ElemType.ARROW, parentId);
+    super(page, id, ElemType.ARROW, layerId, parentId);
 
     this.collab = collab;
 
@@ -86,8 +87,8 @@ export class PageArrow extends PageElem {
         }
 
         return (
-          this.react.sourceNote.react.parentId == null &&
-          this.react.targetNote.react.parentId == null
+          this.react.sourceNote.react.parent == null &&
+          this.react.targetNote.react.parent == null
         );
       }),
 
@@ -171,6 +172,6 @@ export class PageArrow extends PageElem {
   }
 
   removeFromRegion() {
-    this.react.region.react.arrowIds.splice(this.react.index, 1);
+    this.react.region.collab.arrowIds.splice(this.react.index, 1);
   }
 }

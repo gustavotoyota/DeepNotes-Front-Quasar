@@ -1,30 +1,30 @@
 import type { Y } from '@syncedstore/core';
 import { WebsocketProvider } from 'src/code/pages/app/page/y-websocket';
+import { v4 } from 'uuid';
 import { z } from 'zod';
 
 import { IArrowCollab } from './arrows/arrow';
+import { ILayerCollab } from './layers/layer';
 import { INoteCollab } from './notes/note';
 import { AppPage, IPageCollab } from './page';
 
 export interface IAppCollabStore {
   page: IPageCollab;
-  notes: { [key: string]: z.output<typeof INoteCollab> };
-  arrows: { [key: string]: IArrowCollab };
+  layers: Record<string, ILayerCollab>;
+  notes: Record<string, z.output<typeof INoteCollab>>;
+  arrows: Record<string, IArrowCollab>;
 }
 
 export class PageCollab {
-  readonly page: AppPage;
-
   readonly store: IAppCollabStore;
   readonly doc: Y.Doc;
 
   websocketProvider!: WebsocketProvider;
 
-  constructor(page: AppPage) {
-    this.page = page;
-
+  constructor(readonly page: AppPage) {
     this.store = syncedstore.SyncedStore({
       page: {},
+      layers: {},
       notes: {},
       arrows: {},
     }) as IAppCollabStore;
@@ -46,13 +46,25 @@ export class PageCollab {
   }
 
   reset() {
-    this.doc.transact(() => {
-      Object.assign(this.store.page, {
-        noteIds: [],
-        arrowIds: [],
+    const initialLayerId = v4();
 
-        nextZIndex: 0,
-      } as IPageCollab);
+    this.page.react.currentLayerId = initialLayerId;
+
+    this.doc.transact(() => {
+      // Object.assign because cannot assign root elements
+
+      Object.assign(this.store.page, {
+        layerIds: [initialLayerId],
+      });
+
+      Object.assign(this.store.layers, {
+        [initialLayerId]: {
+          noteIds: [],
+          arrowIds: [],
+
+          nextZIndex: 0,
+        },
+      });
     });
   }
 }

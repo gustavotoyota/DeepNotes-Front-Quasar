@@ -3,17 +3,13 @@ import { Vec2 } from 'src/code/pages/static/vec2';
 import { AppPage } from '../page';
 
 export class PagePos {
-  readonly page: AppPage;
+  constructor(readonly page: AppPage) {}
 
   get rects() {
     return this.page.rects;
   }
   get camera() {
     return this.page.camera;
-  }
-
-  constructor(page: AppPage) {
-    this.page = page;
   }
 
   eventToClient(event: MouseEvent): Vec2 {

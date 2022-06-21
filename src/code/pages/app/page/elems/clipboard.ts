@@ -9,11 +9,7 @@ import { AppPage } from '../page';
 import { PageElem } from './elem';
 
 export class PageClipboard {
-  readonly page: AppPage;
-
-  constructor(page: AppPage) {
-    this.page = page;
-  }
+  constructor(readonly page: AppPage) {}
 
   async copy() {
     // Serialize selection

@@ -4,11 +4,7 @@ import { PageElem } from '../elems/elem';
 import { AppPage } from '../page';
 
 export class PageCloning {
-  readonly page: AppPage;
-
-  constructor(page: AppPage) {
-    this.page = page;
-  }
+  constructor(readonly page: AppPage) {}
 
   async perform() {
     if (this.page.react.readonly) {

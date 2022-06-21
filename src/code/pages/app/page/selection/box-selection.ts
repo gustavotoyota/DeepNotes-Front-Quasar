@@ -16,16 +16,12 @@ export interface IBoxSelectionReact {
 export class PageBoxSelection {
   static readonly MIN_DISTANCE = 5;
 
-  readonly page: AppPage;
-
   react: UnwrapRef<IBoxSelectionReact>;
 
   downEvent!: PointerEvent;
   touchTimer: NodeJS.Timeout | null = null;
 
-  constructor(page: AppPage) {
-    this.page = page;
-
+  constructor(readonly page: AppPage) {
     this.react = refProp<IBoxSelectionReact>(this, 'react', {
       active: false,
 

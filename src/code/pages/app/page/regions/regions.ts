@@ -6,11 +6,7 @@ import { AppPage } from '../page';
 import { IRegionCollab } from './region';
 
 export class PageRegions {
-  readonly page: AppPage;
-
-  constructor(page: AppPage) {
-    this.page = page;
-  }
+  constructor(readonly page: AppPage) {}
 
   getWorldRect(collab: z.output<typeof IRegionCollab>) {
     const worldRect = new Rect(

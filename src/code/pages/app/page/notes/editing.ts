@@ -1,6 +1,12 @@
 import type { Editor } from '@tiptap/vue-3';
-import { refProp, watchUntilTrue } from 'src/code/pages/static/vue';
-import { computed, ComputedRef, nextTick, UnwrapRef } from 'vue';
+import { watchUntilTrue } from 'src/code/pages/static/vue';
+import {
+  computed,
+  ComputedRef,
+  nextTick,
+  reactive,
+  UnwrapNestedRefs,
+} from 'vue';
 
 import { AppPage } from '../page';
 import { NoteTextSection, PageNote } from './note';
@@ -17,14 +23,10 @@ export interface IEditingReact {
 }
 
 export class PageEditing {
-  readonly page: AppPage;
+  readonly react: UnwrapNestedRefs<IEditingReact>;
 
-  react: UnwrapRef<IEditingReact>;
-
-  constructor(page: AppPage) {
-    this.page = page;
-
-    this.react = refProp<IEditingReact>(this, 'react', {
+  constructor(readonly page: AppPage) {
+    this.react = reactive({
       noteId: null,
 
       note: computed(() => this.page.notes.fromId(this.react.noteId)),

@@ -15,6 +15,7 @@
 import { computed } from '@vue/reactivity';
 import { NoteTextSection, PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
+import { REALTIME_USER_DISPLAY_NAME } from 'src/code/pages/app/realtime';
 import { inject } from 'vue';
 import * as Y from 'yjs';
 
@@ -64,19 +65,19 @@ const editor = tiptap.useEditor({
 
     ...(value instanceof Y.XmlFragment
       ? [
-          // tiptap.Collaboration.configure({
-          //   fragment: value,
-          // }),
-          // tiptap.CollaborationCursor.configure({
-          //   provider: page.collab.websocketProvider,
-          //   user: {
-          //     name: $pages.realtime.get(
-          //       REALTIME_USER_DISPLAY_NAME,
-          //       $pages.react.userId
-          //     ),
-          //     color: '#f783ac',
-          //   },
-          // }),
+          tiptap.Collaboration.configure({
+            fragment: value,
+          }),
+          tiptap.CollaborationCursor.configure({
+            provider: page.collab.websocketProvider,
+            user: {
+              name: $pages.realtime.get(
+                REALTIME_USER_DISPLAY_NAME,
+                $pages.react.userId
+              ),
+              color: '#f783ac',
+            },
+          }),
         ]
       : []),
   ],

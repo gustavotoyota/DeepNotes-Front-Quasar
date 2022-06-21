@@ -1,17 +1,22 @@
-import { computed, ComputedRef, reactive, UnwrapRef } from 'vue';
+import { computed, ComputedRef, reactive, UnwrapNestedRefs } from 'vue';
 
+import { PageLayer } from '../layers/layer';
+import { PageNote } from '../notes/note';
 import { AppPage } from '../page';
-import { PageRegion } from '../regions/region';
+import { IPageRegion } from '../regions/region';
 
 export enum ElemType {
-  PAGE = 'page',
   NOTE = 'note',
   ARROW = 'arrow',
 }
 
 export interface IElemReact {
+  layerId: string;
+  layer: ComputedRef<PageLayer>;
+
   parentId: string | null;
-  region: ComputedRef<PageRegion>;
+  parent: ComputedRef<PageNote | null>;
+  region: ComputedRef<IPageRegion>;
 
   active: boolean;
   selected: boolean;
@@ -20,31 +25,26 @@ export interface IElemReact {
 }
 
 export class PageElem {
-  readonly page: AppPage;
-
-  readonly id: string;
-  readonly type: ElemType;
-
-  readonly react: UnwrapRef<IElemReact>;
+  readonly react: UnwrapNestedRefs<IElemReact>;
 
   constructor(
-    page: AppPage,
-    id: string,
-    type: ElemType,
-    parentId: string | null
+    readonly page: AppPage,
+    readonly id: string,
+    readonly type: ElemType,
+    layerId: string,
+    parentId: string | null = null
   ) {
-    this.page = page;
-
-    this.id = id;
-    this.type = type;
-
     this.react = reactive({
-      parentId: parentId,
+      layerId,
+      layer: computed(() => this.page.layers.fromId(this.react.layerId)!),
+
+      parentId,
+      parent: computed(() => this.page.notes.fromId(this.react.parentId)!),
       region: computed(() => {
-        if (this.react.parentId == null) {
-          return this.page;
+        if (this.react.parent == null) {
+          return this.react.layer;
         } else {
-          return this.page.notes.fromId(this.react.parentId)!;
+          return this.react.parent!;
         }
       }),
 

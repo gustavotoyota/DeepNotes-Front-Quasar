@@ -2,7 +2,7 @@
   <div
     v-if="
       !page.react.readonly &&
-      note.react.parentId == null &&
+      note.react.parent == null &&
       note.react.active &&
       !note.react.dragging
     "

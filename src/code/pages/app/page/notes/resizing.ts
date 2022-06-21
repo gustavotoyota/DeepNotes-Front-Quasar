@@ -24,20 +24,13 @@ export interface IResizingReact {
 }
 
 export class PageResizing {
-  readonly factory: Factory;
-  readonly page: AppPage;
-
   react: UnwrapRef<IResizingReact>;
 
   side!: NoteSide;
   section!: NoteSection | null;
   activeGhost!: PageNote;
 
-  constructor(factory: Factory, page: AppPage) {
-    this.factory = factory;
-
-    this.page = page;
-
+  constructor(readonly factory: Factory, readonly page: AppPage) {
     this.react = refProp<IResizingReact>(this, 'react', {
       active: false,
 
@@ -66,7 +59,7 @@ export class PageResizing {
     this.side = side;
     this.section = section ?? null;
 
-    let nextZIndex = this.page.react.collab.nextZIndex;
+    let nextZIndex = 0;
 
     for (const note of this.page.selection.react.notes) {
       note.react.resizing = true;
@@ -101,6 +94,7 @@ export class PageResizing {
       const ghost = this.factory.makeNote(
         this.page,
         note.id,
+        null as any,
         null,
         reactive(collab)
       );

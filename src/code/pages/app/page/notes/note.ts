@@ -142,6 +142,8 @@ export interface INoteReact extends IRegionReact, IElemReact {
 
   sizeProp: ComputedRef<NoteSizeProp>;
 
+  spatial: ComputedRef<boolean>;
+
   width: {
     stretched: ComputedRef<boolean>;
     parentPinned: ComputedRef<boolean>;
@@ -279,10 +281,17 @@ export class PageNote extends PageElem implements IPageRegion {
         this.react.collapsing.collapsed ? 'collapsed' : 'expanded'
       ),
 
+      spatial: computed(
+        () =>
+          this.react.parent == null ||
+          this.react.parent.collab.container.spatial
+      ),
+
       width: {
         stretched: computed(() => {
           return (
             this.react.parent != null &&
+            !this.react.parent.collab.container.spatial &&
             !this.react.parent.collab.container.horizontal &&
             this.react.parent.collab.container.stretchChildren
           );
@@ -296,9 +305,7 @@ export class PageNote extends PageElem implements IPageRegion {
           );
         }),
         selfPinned: computed(() => {
-          return (
-            this.react.parent == null && this.react.width.self.endsWith('px')
-          );
+          return this.react.spatial && this.react.width.self.endsWith('px');
         }),
         pinned: computed(() => {
           return this.react.width.parentPinned || this.react.width.selfPinned;
@@ -306,7 +313,7 @@ export class PageNote extends PageElem implements IPageRegion {
 
         min: computed(() => {
           if (
-            // is empty container with unpinned width:
+            // Is empty container with unpinned width:
             !this.react.width.pinned &&
             this.collab.container.enabled &&
             this.react.notes.length === 0

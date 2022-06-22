@@ -2,13 +2,13 @@
   <div
     :id="`note-${note.id}`"
     class="note-anchor"
-    :class="{ absolute: spatial }"
+    :class="{ absolute: note.react.spatial }"
     :style="{
-      position: spatial ? 'absolute' : 'relative',
-      left: spatial ? `${note.collab.pos.x}px` : undefined,
-      top: spatial ? `${note.collab.pos.y}px` : undefined,
-      width: spatial ? undefined : '100%',
-      'z-index': spatial ? note.collab.zIndex : undefined,
+      position: note.react.spatial ? 'absolute' : 'relative',
+      left: note.react.spatial ? `${note.collab.pos.x}px` : undefined,
+      top: note.react.spatial ? `${note.collab.pos.y}px` : undefined,
+      width: note.react.spatial ? undefined : '100%',
+      'z-index': note.react.spatial ? note.collab.zIndex : undefined,
       visibility:
         note.react.resizing || !note.react.loaded ? 'hidden' : undefined,
     }"
@@ -21,15 +21,10 @@
   setup
   lang="ts"
 >
-import { computed } from '@vue/reactivity';
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { inject } from 'vue';
 
 const note = inject<PageNote>('note')!;
-
-const spatial = computed(
-  () => note.react.parent == null || note.react.parent.collab.container.spatial
-);
 </script>
 
 <style scoped>

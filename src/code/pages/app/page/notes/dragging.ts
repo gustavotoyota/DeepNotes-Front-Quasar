@@ -156,9 +156,9 @@ export class PageDragging {
       const containerClientRect = this.page.rects.fromDOM(
         region.react.container.elem.getBoundingClientRect()
       );
-      const containerWorldTopLeft = this.page.pos
-        .clientToWorld(containerClientRect.topLeft)
-        .add(new Vec2(9, 9));
+      const containerWorldTopLeft = this.page.pos.clientToWorld(
+        containerClientRect.topLeft
+      );
 
       this.page.collab.doc.transact(() => {
         for (const selectedNote of this.page.selection.react.notes) {

@@ -1,5 +1,6 @@
 <template>
   <div
+    ref="containerElem"
     class="note-spatial-container"
     :style="{
       'background-color': note.react.color.shadow,
@@ -36,12 +37,18 @@
 >
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
-import { inject, ref } from 'vue';
+import { inject, onMounted, ref } from 'vue';
 
 import DisplayNote from '../../DisplayNote.vue';
 
 const page = inject<AppPage>('page')!;
 const note = inject<PageNote>('note')!;
+
+const containerElem = ref<Element>();
+
+onMounted(() => {
+  note.react.container.elem = containerElem.value!;
+});
 
 const pointerOver = ref(false);
 

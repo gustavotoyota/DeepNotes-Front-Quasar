@@ -223,9 +223,9 @@ export class PageResizing {
           const containerClientRect = this.page.rects.fromDOM(
             note.react.parent.react.container.elem.getBoundingClientRect()
           );
-          const containerWorldTopLeft = this.page.pos
-            .clientToWorld(containerClientRect.topLeft)
-            .add(new Vec2(9, 9));
+          const containerWorldTopLeft = this.page.pos.clientToWorld(
+            containerClientRect.topLeft
+          );
 
           note.collab.pos.x -= containerWorldTopLeft.x;
           note.collab.pos.y -= containerWorldTopLeft.y;

@@ -1,4 +1,3 @@
-import { Vec2 } from 'src/code/pages/static/vec2';
 import { nextTick } from 'vue';
 
 import { AppPage } from '../page';
@@ -11,9 +10,9 @@ export class PageDropping {
     const containerClientRect = this.page.rects.fromDOM(
       parentNote.react.container.elem.getBoundingClientRect()
     );
-    const containerWorldTopLeft = this.page.pos
-      .clientToWorld(containerClientRect.topLeft)
-      .add(new Vec2(9, 9));
+    const containerWorldTopLeft = this.page.pos.clientToWorld(
+      containerClientRect.topLeft
+    );
 
     const selectedNotes = this.page.selection.react.notes.slice();
 

@@ -1,5 +1,10 @@
 <template>
   <div
+    ref="containerElem"
+    style="position: absolute; inset: 9px"
+  ></div>
+
+  <div
     class="note-container-content"
     :style="{
       width: note.react.width.target,
@@ -73,21 +78,21 @@
   lang="ts"
 >
 import { PageNote } from 'src/code/pages/app/page/notes/note';
-import { inject } from 'vue';
+import { inject, onMounted, ref } from 'vue';
 
 import DisplayNote from '../../DisplayNote.vue';
 import NoteDropZone from '../../NoteDropZones/NoteDropZone.vue';
 
 const note = inject<PageNote>('note')!;
+
+const containerElem = ref<Element>();
+
+onMounted(() => {
+  note.react.container.elem = containerElem.value!;
+});
 </script>
 
 <style scoped>
-.note-container-section {
-  display: flex;
-
-  min-height: 52.45px;
-}
-
 .note-container-content {
   flex: 1;
 

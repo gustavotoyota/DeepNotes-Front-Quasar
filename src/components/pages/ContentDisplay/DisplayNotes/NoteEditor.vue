@@ -113,17 +113,19 @@ div {
 $note-padding: 9px;
 
 div :deep(.ProseMirror) {
-  padding: $note-padding;
-
-  min-width: 1px + $note-padding * 2;
-
   outline: none;
 
-  font-size: 13px;
+  overflow: auto;
+
+  padding: $note-padding;
+
+  width: max-content;
+  min-width: MAX(100%, 1px + $note-padding * 2);
+  max-width: 100%;
 
   height: 100%;
 
-  overflow: auto;
+  font-size: 13px;
 
   touch-action: pan-x pan-y !important;
 

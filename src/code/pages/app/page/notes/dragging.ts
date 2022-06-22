@@ -153,17 +153,17 @@ export class PageDragging {
     // With mouse in the center of the active element
 
     if (region instanceof PageNote && region.collab.container.spatial) {
-      const clientRect = this.page.rects.fromDOM(
+      const containerClientRect = this.page.rects.fromDOM(
         region.react.container.elem.getBoundingClientRect()
       );
-      const worldTopLeft = this.page.pos
-        .clientToWorld(clientRect.topLeft)
+      const containerWorldTopLeft = this.page.pos
+        .clientToWorld(containerClientRect.topLeft)
         .add(new Vec2(9, 9));
 
       this.page.collab.doc.transact(() => {
         for (const selectedNote of this.page.selection.react.notes) {
-          selectedNote.collab.pos.x += worldTopLeft.x;
-          selectedNote.collab.pos.y += worldTopLeft.y;
+          selectedNote.collab.pos.x += containerWorldTopLeft.x;
+          selectedNote.collab.pos.y += containerWorldTopLeft.y;
         }
       });
 

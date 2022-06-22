@@ -219,6 +219,18 @@ export class PageResizing {
           new Vec2(note.collab.anchor)
         );
 
+        if (note.react.parent != null) {
+          const containerClientRect = this.page.rects.fromDOM(
+            note.react.parent.react.container.elem.getBoundingClientRect()
+          );
+          const containerWorldTopLeft = this.page.pos
+            .clientToWorld(containerClientRect.topLeft)
+            .add(new Vec2(9, 9));
+
+          note.collab.pos.x -= containerWorldTopLeft.x;
+          note.collab.pos.y -= containerWorldTopLeft.y;
+        }
+
         note.react.resizing = false;
       }
     });

@@ -8,11 +8,11 @@ export class PageDropping {
   constructor(readonly page: AppPage) {}
 
   async perform(parentNote: PageNote, dropIndex?: number) {
-    const clientRect = this.page.rects.fromDOM(
+    const containerClientRect = this.page.rects.fromDOM(
       parentNote.react.container.elem.getBoundingClientRect()
     );
-    const worldTopLeft = this.page.pos
-      .clientToWorld(clientRect.topLeft)
+    const containerWorldTopLeft = this.page.pos
+      .clientToWorld(containerClientRect.topLeft)
       .add(new Vec2(9, 9));
 
     const selectedNotes = this.page.selection.react.notes.slice();
@@ -23,8 +23,8 @@ export class PageDropping {
 
     this.page.collab.doc.transact(() => {
       for (const selectedNote of selectedNotes) {
-        selectedNote.collab.pos.x -= worldTopLeft.x;
-        selectedNote.collab.pos.y -= worldTopLeft.y;
+        selectedNote.collab.pos.x -= containerWorldTopLeft.x;
+        selectedNote.collab.pos.y -= containerWorldTopLeft.y;
 
         selectedNote.moveToRegion(parentNote, dropIndex);
       }

@@ -1,10 +1,11 @@
 <template>
   <div
-    ref="containerElem"
     class="note-spatial-container"
     :style="{
       'background-color': note.react.color.shadow,
     }"
+    @pointerover.stop="onPointerOver"
+    @pointerout.stop="onPointerOut"
     @pointerup.left="onLeftPointerUp"
   >
     <template
@@ -17,6 +18,15 @@
         :index="index"
       />
     </template>
+
+    <div
+      v-if="
+        page.dragging.react.active &&
+        page.dragging.react.dropRegionId == null &&
+        pointerOver
+      "
+      class="note-spatial-drop-zone"
+    ></div>
   </div>
 </template>
 
@@ -33,7 +43,14 @@ import DisplayNote from '../../DisplayNote.vue';
 const page = inject<AppPage>('page')!;
 const note = inject<PageNote>('note')!;
 
-const containerElem = ref<Element>();
+const pointerOver = ref(false);
+
+function onPointerOver() {
+  pointerOver.value = true;
+}
+function onPointerOut() {
+  pointerOver.value = false;
+}
 
 async function onLeftPointerUp() {
   if (!page.dragging.react.active) {
@@ -57,5 +74,18 @@ async function onLeftPointerUp() {
   overflow: hidden;
 
   position: relative;
+}
+
+.note-spatial-drop-zone {
+  position: absolute;
+
+  inset: 0;
+
+  background-color: #42a5f5;
+  opacity: 0.25;
+
+  pointer-events: none;
+
+  z-index: 2147483647;
 }
 </style>

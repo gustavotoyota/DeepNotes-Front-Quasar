@@ -71,9 +71,11 @@ export class PageDragging {
     this.react.currentPos = clientPos;
 
     if (!this.react.active) {
-      const dist = clientPos.sub(this.react.startPos).length();
+      const gapClientDelta = clientPos.sub(this.react.startPos);
 
-      this.react.active = dist >= PageDragging.MIN_DISTANCE;
+      const gapDist = gapClientDelta.length();
+
+      this.react.active = gapDist >= PageDragging.MIN_DISTANCE;
 
       if (!this.react.active) {
         return;
@@ -86,14 +88,23 @@ export class PageDragging {
 
         if (!selectedNote.react.dragging) {
           this.page.selection.remove(selectedNote);
-          continue;
         }
       }
 
+      const gapWorldDelta = this.page.sizes.screenToWorld2D(gapClientDelta);
+
+      this.page.collab.doc.transact(() => {
+        for (const selectedNote of this.page.selection.react.notes) {
+          selectedNote.collab.pos.x += gapWorldDelta.x;
+          selectedNote.collab.pos.y += gapWorldDelta.y;
+        }
+      });
+
       if (this.page.activeRegion.react.id != null) {
         await this._dragOut();
-        return;
       }
+
+      return;
     }
 
     // Move selected notes
@@ -134,10 +145,30 @@ export class PageDragging {
       }
     });
 
+    const region = this.page.activeRegion.react.region;
+
     this.page.activeRegion.react.id = null;
 
     // Adjust note positions and sizes
     // With mouse in the center of the active element
+
+    if (region instanceof PageNote && region.collab.container.spatial) {
+      const clientRect = this.page.rects.fromDOM(
+        region.react.container.elem.getBoundingClientRect()
+      );
+      const worldTopLeft = this.page.pos
+        .clientToWorld(clientRect.topLeft)
+        .add(new Vec2(9, 9));
+
+      this.page.collab.doc.transact(() => {
+        for (const selectedNote of this.page.selection.react.notes) {
+          selectedNote.collab.pos.x += worldTopLeft.x;
+          selectedNote.collab.pos.y += worldTopLeft.y;
+        }
+      });
+
+      return;
+    }
 
     await nextTick();
 

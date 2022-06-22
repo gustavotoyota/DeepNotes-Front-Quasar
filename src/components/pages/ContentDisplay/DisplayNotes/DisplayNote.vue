@@ -39,7 +39,7 @@ import NoteDropZones from './NoteDropZones/NoteDropZones.vue';
 import NoteFrame from './NoteFrame.vue';
 import NoteLinkIcon from './NoteLinkIcon.vue';
 import NoteResizeHandles from './NoteResizeHandles/NoteResizeHandles.vue';
-import NoteContainerSection from './NoteSection/NoteContainerSection.vue';
+import NoteContainerSection from './NoteSection/NoteContainerSection/NoteContainerSection.vue';
 import NoteTextSection from './NoteSection/NoteTextSection.vue';
 
 const props = defineProps<{

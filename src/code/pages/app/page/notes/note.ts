@@ -132,6 +132,7 @@ export interface INoteReact extends IRegionReact, IElemReact {
   container: {
     visible: ComputedRef<boolean>;
     height: ComputedRef<string | undefined>;
+    elem: ShallowRef<Element>;
   };
 
   collapsing: {
@@ -241,6 +242,7 @@ export class PageNote extends PageElem implements IPageRegion {
               this.react.topSection === 'container')
         ),
         height: makeSectionHeight('container'),
+        elem: shallowRef() as any,
       },
 
       collapsing: {
@@ -288,6 +290,7 @@ export class PageNote extends PageElem implements IPageRegion {
         parentPinned: computed(() => {
           return (
             this.react.parent != null &&
+            !this.react.parent.collab.container.spatial &&
             this.react.parent.react.width.pinned &&
             this.react.width.stretched
           );

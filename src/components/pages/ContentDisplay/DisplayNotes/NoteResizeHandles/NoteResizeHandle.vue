@@ -14,7 +14,7 @@
       'pointer-events': page.dragging.react.active ? 'none' : 'auto',
       opacity: page.dragging.react.active ? '0.7' : undefined,
     }"
-    @pointerdown.left.stop="onPointerDown"
+    @pointerdown.left.stop="onLeftPointerDown"
   />
 </template>
 
@@ -50,7 +50,7 @@ const top = computed(() => {
   else return '50%';
 });
 
-async function onPointerDown(event: PointerEvent) {
+async function onLeftPointerDown(event: PointerEvent) {
   await page.resizing.start(event, note, props.side, props.section);
 }
 </script>

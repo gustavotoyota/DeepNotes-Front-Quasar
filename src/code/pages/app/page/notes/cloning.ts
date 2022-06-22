@@ -37,14 +37,12 @@ export class PageCloning {
 
     this.page.selection.set(...(notes as PageElem[]).concat(arrows));
 
-    if (this.page.activeRegion.react.id == null) {
-      this.page.collab.doc.transact(() => {
-        for (const note of notes) {
-          note.collab.pos.x += 8;
-          note.collab.pos.y += 8;
-        }
-      });
-    }
+    this.page.collab.doc.transact(() => {
+      for (const note of notes) {
+        note.collab.pos.x += 8;
+        note.collab.pos.y += 8;
+      }
+    });
 
     // Scroll into view
 

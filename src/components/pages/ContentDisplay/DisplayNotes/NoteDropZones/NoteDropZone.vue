@@ -10,7 +10,7 @@
     }"
     @pointerenter="onPointerEnter"
     @pointerleave="onPointerLeave"
-    @pointerup.left="onPointerUp"
+    @pointerup.left="onLeftPointerUp"
   />
 </template>
 
@@ -48,7 +48,7 @@ function onPointerLeave() {
   page.dragging.react.dropIndex = null;
 }
 
-async function onPointerUp() {
+async function onLeftPointerUp() {
   if (!page.dragging.react.active) {
     return;
   }

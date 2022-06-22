@@ -6,12 +6,11 @@
       'min-width': note.react.width.min,
       width: note.react.width.final,
 
-      position: note.react.parent == null ? 'absolute' : 'relative',
-      transform:
-        note.react.parent == null
-          ? `translate(` +
-            `${-note.collab.anchor.x * 100}%, ${-note.collab.anchor.y * 100}%)`
-          : undefined,
+      position: spatial ? 'absolute' : 'relative',
+      transform: spatial
+        ? `translate(` +
+          `${-note.collab.anchor.x * 100}%, ${-note.collab.anchor.y * 100}%)`
+        : undefined,
 
       opacity: note.react.dragging ? '0.7' : undefined,
       'pointer-events': note.react.dragging ? 'none' : undefined,
@@ -25,11 +24,16 @@
   setup
   lang="ts"
 >
+import { computed } from '@vue/reactivity';
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { Vec2 } from 'src/code/pages/static/vec2';
 import { inject, onBeforeUnmount, onMounted, ref } from 'vue';
 
 const note = inject<PageNote>('note')!;
+
+const spatial = computed(
+  () => note.react.parent == null || note.react.parent.collab.container.spatial
+);
 
 const frameElem = ref<Element>();
 

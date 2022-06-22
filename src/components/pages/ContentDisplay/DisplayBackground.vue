@@ -1,8 +1,8 @@
 <template>
   <div
     class="display-background"
-    @pointerdown.left="onPointerDown"
-    @dblclick.left="onDoubleClick"
+    @pointerdown.left="onLeftPointerDown"
+    @dblclick.left="onLeftDoubleClick"
   ></div>
 </template>
 
@@ -15,7 +15,7 @@ import { inject } from 'vue';
 
 const page = inject<AppPage>('page')!;
 
-function onPointerDown(event: PointerEvent) {
+function onLeftPointerDown(event: PointerEvent) {
   page.editing.stop();
 
   if (!event.ctrlKey && !event.shiftKey) {
@@ -25,7 +25,7 @@ function onPointerDown(event: PointerEvent) {
   page.boxSelection.start(event);
 }
 
-async function onDoubleClick(event: MouseEvent) {
+async function onLeftDoubleClick(event: MouseEvent) {
   const clientPos = page.pos.eventToClient(event);
 
   await page.notes.createFromTemplate(

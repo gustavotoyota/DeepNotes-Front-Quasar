@@ -466,11 +466,11 @@
         <Gap style="width: 16px" />
 
         <Checkbox
-          label="Horizontal"
-          :model-value="note.collab.container.horizontal"
+          label="Spatial"
+          :model-value="note.collab.container.spatial"
           @update:model-value="
             changeProp($event, (note, value) => {
-              note.collab.container.horizontal = value;
+              note.collab.container.spatial = value;
             })
           "
           :disable="page.react.readonly || !note.collab.container.enabled"
@@ -481,6 +481,23 @@
 
       <div style="display: flex">
         <Checkbox
+          label="Horizontal"
+          :model-value="note.collab.container.horizontal"
+          @update:model-value="
+            changeProp($event, (note, value) => {
+              note.collab.container.horizontal = value;
+            })
+          "
+          :disable="
+            page.react.readonly ||
+            !note.collab.container.enabled ||
+            note.collab.container.spatial
+          "
+        />
+
+        <Gap style="width: 16px" />
+
+        <Checkbox
           label="Stretch children"
           :model-value="note.collab.container.stretchChildren"
           @update:model-value="
@@ -488,22 +505,30 @@
               note.collab.container.stretchChildren = value;
             })
           "
-          :disable="page.react.readonly || !note.collab.container.enabled"
-        />
-
-        <Gap style="width: 16px" />
-
-        <Checkbox
-          label="Wrap children"
-          :model-value="note.collab.container.wrapChildren"
-          @update:model-value="
-            changeProp($event, (note, value) => {
-              note.collab.container.wrapChildren = value;
-            })
+          :disable="
+            page.react.readonly ||
+            !note.collab.container.enabled ||
+            note.collab.container.spatial
           "
-          :disable="page.react.readonly || !note.collab.container.enabled"
         />
       </div>
+
+      <Gap style="height: 16px" />
+
+      <Checkbox
+        label="Wrap children"
+        :model-value="note.collab.container.wrapChildren"
+        @update:model-value="
+          changeProp($event, (note, value) => {
+            note.collab.container.wrapChildren = value;
+          })
+        "
+        :disable="
+          page.react.readonly ||
+          !note.collab.container.enabled ||
+          note.collab.container.spatial
+        "
+      />
 
       <Gap style="height: 24px" />
 

@@ -8,14 +8,16 @@ export class PageElems {
 
     for (const layer of this.page.react.layers) {
       this.page.notes.createAndObserveIds(layer.collab.noteIds, layer.id, null);
-      this.page.notes.observeMap();
 
       this.page.arrows.createAndObserveIds(
         layer.collab.arrowIds,
         layer.id,
         null
       );
-      this.page.arrows.observeMap();
     }
+
+    this.page.layers.observeMap();
+    this.page.notes.observeMap();
+    this.page.arrows.observeMap();
   }
 }

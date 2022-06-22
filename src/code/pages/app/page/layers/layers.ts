@@ -1,9 +1,10 @@
 import { Y } from '@syncedstore/core';
 import { Factory } from 'src/code/pages/static/composition-root';
 import { computed, reactive, shallowReactive } from 'vue';
+import { z } from 'zod';
 
 import { AppPage } from '../page';
-import { PageLayer } from './layer';
+import { ILayerCollab, PageLayer } from './layer';
 
 export class PageLayers {
   readonly react = reactive({
@@ -45,6 +46,20 @@ export class PageLayers {
 
         for (const id of delta.insert) {
           this.create(id);
+        }
+      }
+    });
+  }
+
+  observeMap() {
+    (
+      syncedstore.getYjsValue(this.react.collab) as Y.Map<
+        z.output<typeof ILayerCollab>
+      >
+    ).observe((event) => {
+      for (const [noteId, change] of event.changes.keys) {
+        if (change.action === 'delete') {
+          delete this.react.map[noteId];
         }
       }
     });

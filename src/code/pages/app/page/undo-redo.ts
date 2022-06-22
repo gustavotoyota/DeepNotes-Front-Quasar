@@ -29,6 +29,9 @@ export class PageUndoRedo {
         this.page.collab.store.page
       ) as Y.AbstractType<any>,
       syncedstore.getYjsValue(
+        this.page.collab.store.layers
+      ) as Y.AbstractType<any>,
+      syncedstore.getYjsValue(
         this.page.collab.store.notes
       ) as Y.AbstractType<any>,
       syncedstore.getYjsValue(

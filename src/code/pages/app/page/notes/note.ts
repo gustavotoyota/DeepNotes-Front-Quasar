@@ -539,11 +539,19 @@ export class PageNote extends PageElem implements IPageRegion {
     return this.page.rects.clientToWorld(this.getClientRect(part));
   }
 
-  removeFromRegion() {
+  removeFromRegion(): boolean {
+    if (this.react.region.collab.noteIds[this.react.index] !== this.id) {
+      return false;
+    }
+
     this.react.region.collab.noteIds.splice(this.react.index, 1);
+
+    return true;
   }
-  moveToRegion(region: IPageRegion, insertIndex?: number) {
-    this.removeFromRegion();
+  moveToRegion(region: IPageRegion, insertIndex?: number): boolean {
+    if (!this.removeFromRegion()) {
+      return false;
+    }
 
     region.collab.noteIds.splice(
       insertIndex ?? region.collab.noteIds.length,
@@ -556,6 +564,8 @@ export class PageNote extends PageElem implements IPageRegion {
     } else {
       this.react.parentId = null;
     }
+
+    return true;
   }
 
   reverseChildren() {

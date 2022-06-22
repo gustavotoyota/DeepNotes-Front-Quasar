@@ -44,7 +44,7 @@ export class PageElem {
         if (this.react.parent == null) {
           return this.react.layer;
         } else {
-          return this.react.parent!;
+          return this.react.parent;
         }
       }),
 

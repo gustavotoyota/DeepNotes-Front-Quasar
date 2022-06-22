@@ -31,19 +31,16 @@ export class PageNotes {
     layerId: string,
     parentId: string | null
   ): void {
-    if (noteId in this.react.map) {
-      this.react.map[noteId].react.parentId = parentId;
+    let note = this.fromId(noteId);
+
+    if (note != null) {
+      note.react.parentId = parentId;
+
       return;
     }
 
     const collab = this.react.collab[noteId];
-    const note = this.factory.makeNote(
-      this.page,
-      noteId,
-      layerId,
-      parentId,
-      collab
-    );
+    note = this.factory.makeNote(this.page, noteId, layerId, parentId, collab);
     this.react.map[note.id] = note;
 
     this.createAndObserveIds(note.collab.noteIds, layerId, note.id);

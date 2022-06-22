@@ -1,36 +1,21 @@
 import type { Y } from '@syncedstore/core';
 import { Factory } from 'src/code/pages/static/composition-root';
 import { Vec2 } from 'src/code/pages/static/vec2';
-import {
-  computed,
-  ComputedRef,
-  reactive,
-  ShallowReactive,
-  shallowReactive,
-  UnwrapNestedRefs,
-} from 'vue';
+import { computed, reactive, shallowReactive } from 'vue';
 import { z } from 'zod';
 
 import { ITemplate } from '../../templates';
 import { AppPage } from '../page';
 import { INoteCollab, PageNote } from './note';
 
-export interface INotesReact {
-  map: ShallowReactive<Record<string, PageNote>>;
-
-  collab: ComputedRef<Record<string, z.output<typeof INoteCollab>>>;
-}
-
 export class PageNotes {
-  readonly react: UnwrapNestedRefs<INotesReact>;
+  readonly react = reactive({
+    map: shallowReactive({} as Record<string, PageNote>),
 
-  constructor(readonly factory: Factory, readonly page: AppPage) {
-    this.react = reactive({
-      map: shallowReactive({}),
+    collab: computed(() => this.page.collab.store.notes),
+  });
 
-      collab: computed(() => this.page.collab.store.notes),
-    });
-  }
+  constructor(readonly factory: Factory, readonly page: AppPage) {}
 
   fromId(noteId: string | null): PageNote | null {
     return this.react.map[noteId ?? ''] ?? null;

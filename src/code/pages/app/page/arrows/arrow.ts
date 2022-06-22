@@ -87,8 +87,8 @@ export class PageArrow extends PageElem {
         }
 
         return (
-          this.react.sourceNote.react.parent ===
-          this.react.targetNote.react.parent
+          this.react.sourceNote.react.parent === this.react.parent &&
+          this.react.targetNote.react.parent === this.react.parent
         );
       }),
 

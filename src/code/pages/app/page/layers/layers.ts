@@ -1,26 +1,18 @@
 import { Y } from '@syncedstore/core';
 import { Factory } from 'src/code/pages/static/composition-root';
-import { ComputedRef, reactive, ShallowReactive, UnwrapNestedRefs } from 'vue';
+import { computed, reactive, shallowReactive } from 'vue';
 
 import { AppPage } from '../page';
-import { ILayerCollab, PageLayer } from './layer';
-
-export interface ILayersReact {
-  map: ShallowReactive<Record<string, PageLayer>>;
-
-  collab: ComputedRef<Record<string, ILayerCollab>>;
-}
+import { PageLayer } from './layer';
 
 export class PageLayers {
-  readonly react: UnwrapNestedRefs<ILayersReact>;
+  readonly react = reactive({
+    map: shallowReactive({} as Record<string, PageLayer>),
 
-  constructor(readonly factory: Factory, readonly page: AppPage) {
-    this.react = reactive({
-      map: {},
+    collab: computed(() => this.page.collab.store.layers),
+  });
 
-      collab: this.page.collab.store.layers,
-    });
-  }
+  constructor(readonly factory: Factory, readonly page: AppPage) {}
 
   fromId(id: string | null): PageLayer | null {
     if (id == null) {

@@ -38,7 +38,10 @@
         :key="childNote?.id ?? childNoteId"
       >
         <div
-          v-if="childNote?.react.parent === note"
+          v-if="
+            childNote != null &&
+            (childNote.react.parent === note || note.react.ghost)
+          "
           class="note-container-child"
           :style="{
             'flex-direction': note.collab.container.horizontal

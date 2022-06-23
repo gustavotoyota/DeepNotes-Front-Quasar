@@ -18,7 +18,10 @@
         :key="childNote?.id ?? childNoteId"
       >
         <DisplayNote
-          v-if="childNote?.react.parent === note"
+          v-if="
+            childNote != null &&
+            (childNote.react.parent === note || note.react.ghost)
+          "
           :note="childNote"
           :index="index"
       /></template>

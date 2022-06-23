@@ -76,26 +76,33 @@ export class PageArrows {
 
           const arrow = this.react.map[arrowId];
 
-          const startNoteId =
+          // Remove arrow from outgoing arrows
+
+          const sourceNoteId =
             change.oldValue._map.get('sourceId').content.arr[0];
 
-          if (startNoteId != null) {
-            const note = this.page.notes.fromId(startNoteId);
+          if (sourceNoteId != null) {
+            const note = this.page.notes.fromId(sourceNoteId);
 
             if (note != null) {
               pull(note.outgoingArrows, arrow);
             }
           }
 
-          const endNoteId = change.oldValue._map.get('targetId').content.arr[0];
+          // Remove arrow from incoming arrows
 
-          if (endNoteId != null) {
-            const note = this.page.notes.fromId(endNoteId);
+          const targetNoteId =
+            change.oldValue._map.get('targetId').content.arr[0];
+
+          if (targetNoteId != null) {
+            const note = this.page.notes.fromId(targetNoteId);
 
             if (note != null) {
               pull(note.incomingArrows, arrow);
             }
           }
+
+          // Remove arrow from map
 
           delete this.react.map[arrowId];
         }

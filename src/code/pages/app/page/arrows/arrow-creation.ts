@@ -39,8 +39,9 @@ export class PageArrowCreation {
     this.react.active = true;
 
     this.fakeArrow.collab.sourceId = sourceNote.id;
-
     this.fakeArrow.collab.targetId = null as any;
+
+    this.fakeArrow.react.parentId = sourceNote.react.parentId;
     this.fakeArrow.react.fakeTargetPos = this.page.pos.eventToWorld(event);
 
     listenPointerEvents(event, {
@@ -58,30 +59,33 @@ export class PageArrowCreation {
   finish(targetNote: PageNote) {
     this.react.active = false;
 
-    if (
-      targetNote.id === this.fakeArrow.collab.sourceId ||
-      targetNote.react.parentId !==
-        this.fakeArrow.react.sourceNote.react.parentId
-    ) {
+    this.fakeArrow.react.fakeTargetPos = null;
+    this.fakeArrow.collab.targetId = targetNote.id;
+
+    if (!this.fakeArrow.react.valid) {
       return;
     }
 
-    const arrowId = v4();
-
-    this.fakeArrow.collab.targetId = targetNote.id;
+    // Create arrow collab
 
     const newCollab = cloneDeep(this.fakeArrow.collab);
-    newCollab.label = new Y.XmlFragment();
+
+    newCollab.label.value = new Y.XmlFragment();
+
+    // Insert arrow into document
+
+    const arrowId = v4();
 
     this.page.collab.doc.transact(() => {
       this.page.arrows.react.collab[arrowId] = newCollab;
 
-      const sourceNote = this.fakeArrow.react.sourceNote;
-      const sourceLayer = sourceNote.react.layer;
-
-      sourceLayer.collab.arrowIds.push(arrowId);
+      targetNote.react.region.collab.arrowIds.push(arrowId);
     });
 
-    this.page.selection.set(this.page.arrows.fromId(arrowId)!);
+    // Select arrow
+
+    const arrow = this.page.arrows.fromId(arrowId)!;
+
+    this.page.selection.set(arrow);
   }
 }

@@ -22,9 +22,12 @@ export const ISerialArrow = IArrowCollab.omit({
   sourceIndex: z.number(),
   targetIndex: z.number(),
 
-  label: z.any().default({
-    type: 'doc',
-    content: [],
+  label: z.object({
+    enabled: z.boolean().default(false),
+    value: z.any().default({
+      type: 'doc',
+      content: [],
+    }),
   }),
 });
 
@@ -171,7 +174,10 @@ export class AppSerialization {
         sourceIndex: noteMap.get(arrow.collab.sourceId)!,
         targetIndex: noteMap.get(arrow.collab.targetId)!,
 
-        label: yXmlFragmentToProsemirrorJSON(arrow.collab.label),
+        label: {
+          enabled: arrow.collab.label.enabled,
+          value: yXmlFragmentToProsemirrorJSON(arrow.collab.label.value),
+        },
       };
 
       serialRegion.arrows.push(serialArrow);
@@ -268,10 +274,13 @@ export class AppSerialization {
           sourceId: noteMap.get(serialArrow.sourceIndex)!,
           targetId: noteMap.get(serialArrow.targetIndex)!,
 
-          label: prosemirrorJSONToYXmlFragment(
-            tiptap.schema,
-            serialArrow.label
-          ),
+          label: {
+            enabled: serialArrow.label.enabled,
+            value: prosemirrorJSONToYXmlFragment(
+              tiptap.schema,
+              serialArrow.label.value
+            ),
+          },
         };
 
         const arrowId = v4();

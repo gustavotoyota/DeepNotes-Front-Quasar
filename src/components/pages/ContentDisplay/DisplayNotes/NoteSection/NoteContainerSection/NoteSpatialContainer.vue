@@ -10,14 +10,18 @@
     @pointerup.left="onLeftPointerUp"
   >
     <template
-      v-for="(noteId, index) in note.collab.noteIds"
-      :key="noteId"
+      v-for="(childNoteId, index) in note.collab.noteIds"
+      :key="childNoteId"
     >
-      <DisplayNote
-        v-if="page.notes.fromId(noteId) != null"
-        :note="page.notes.fromId(noteId)!"
-        :index="index"
-      />
+      <template
+        v-for="childNote in [page.notes.fromId(childNoteId)]"
+        :key="childNote?.id ?? childNoteId"
+      >
+        <DisplayNote
+          v-if="childNote?.react.parent === note"
+          :note="childNote"
+          :index="index"
+      /></template>
     </template>
 
     <div

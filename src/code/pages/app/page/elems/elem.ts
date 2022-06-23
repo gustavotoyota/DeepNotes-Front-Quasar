@@ -41,15 +41,15 @@ export class PageElem {
       parentId,
       parent: computed(() => this.page.notes.fromId(this.react.parentId)!),
       region: computed(() => {
-        if (this.react.parent == null) {
-          return this.react.layer;
-        } else {
+        if (this.react.parent != null) {
           return this.react.parent;
+        } else {
+          return this.react.layer;
         }
       }),
 
-      active: this.page && this.page.activeElem.is(this.id),
-      selected: this.page && this.page.selection.has(this),
+      active: this.page.activeElem.is(this.id),
+      selected: this.page.selection.has(this),
 
       index: -1,
     });

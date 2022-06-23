@@ -106,14 +106,17 @@ onBeforeUnmount(() => {
   document.removeEventListener('pointerdown', onPointerDownCapture, true);
 });
 
-// Shortcuts
+// KeyDown shortcuts
 
 onMounted(() => {
   document.addEventListener('keydown', onKeyDown);
-  document.addEventListener('keypress', onKeyPress);
 });
 
 async function onKeyDown(event: KeyboardEvent) {
+  if (page.value == null) {
+    return;
+  }
+
   const target = event.target as HTMLElement;
 
   if (target.isContentEditable && event.code === 'Escape') {
@@ -190,7 +193,22 @@ async function onKeyDown(event: KeyboardEvent) {
     }
   }
 }
+
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', onKeyDown);
+});
+
+// KeyPress shortcut
+
+onMounted(() => {
+  document.addEventListener('keypress', onKeyPress);
+});
+
 async function onKeyPress(event: KeyboardEvent) {
+  if (page.value == null) {
+    return;
+  }
+
   const target = event.target as HTMLElement;
 
   if (
@@ -214,7 +232,6 @@ async function onKeyPress(event: KeyboardEvent) {
 
 onBeforeUnmount(() => {
   document.removeEventListener('keypress', onKeyPress);
-  document.removeEventListener('keydown', onKeyDown);
 });
 
 // Clipboard pasting

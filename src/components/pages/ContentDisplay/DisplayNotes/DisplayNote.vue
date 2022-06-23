@@ -28,8 +28,10 @@
   setup
   lang="ts"
 >
+/* eslint-disable vue/no-mutating-props */
+
 import { PageNote } from 'src/code/pages/app/page/notes/note';
-import { provide, watchEffect } from 'vue';
+import { onUnmounted, provide, watchEffect } from 'vue';
 
 import NoteAnchor from './NoteAnchor.vue';
 import NoteArrowHandles from './NoteArrowHandles/NoteArrowHandles.vue';
@@ -49,8 +51,23 @@ const props = defineProps<{
 
 provide('note', props.note);
 
-watchEffect(() => {
-  // eslint-disable-next-line vue/no-mutating-props
-  props.note.react.index = props.index ?? 0;
+const unwatch = watchEffect(() => {
+  const index = props.index ?? 0;
+
+  props.note.react.index = index;
+
+  let parentOccurrences = props.note.occurrences[props.note.react.parentId!];
+
+  if (parentOccurrences == null) {
+    parentOccurrences = {};
+
+    props.note.occurrences[props.note.react.parentId!] = parentOccurrences;
+  }
+
+  parentOccurrences[index] = true;
+});
+
+onUnmounted(() => {
+  unwatch();
 });
 </script>

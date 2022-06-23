@@ -187,8 +187,10 @@ export interface INoteReact extends IRegionReact, IElemReact {
 export class PageNote extends PageElem implements IPageRegion {
   declare readonly react: UnwrapNestedRefs<INoteReact>;
 
-  incomingArrows: PageArrow[] = [];
-  outgoingArrows: PageArrow[] = [];
+  readonly incomingArrows: PageArrow[] = [];
+  readonly outgoingArrows: PageArrow[] = [];
+
+  readonly occurrences: Record<string, Record<string, boolean>> = {};
 
   constructor(
     page: AppPage,
@@ -539,33 +541,23 @@ export class PageNote extends PageElem implements IPageRegion {
     return this.page.rects.clientToWorld(this.getClientRect(part));
   }
 
-  removeFromRegion(): boolean {
+  removeFromRegion() {
     if (this.react.region.collab.noteIds[this.react.index] !== this.id) {
-      return false;
+      return;
     }
 
     this.react.region.collab.noteIds.splice(this.react.index, 1);
 
     return true;
   }
-  moveToRegion(region: IPageRegion, insertIndex?: number): boolean {
-    if (!this.removeFromRegion()) {
-      return false;
-    }
+  moveToRegion(region: IPageRegion, insertIndex?: number) {
+    this.removeFromRegion();
 
     region.collab.noteIds.splice(
       insertIndex ?? region.collab.noteIds.length,
       0,
       this.id
     );
-
-    if (region instanceof PageNote) {
-      this.react.parentId = region.id;
-    } else {
-      this.react.parentId = null;
-    }
-
-    return true;
   }
 
   reverseChildren() {

@@ -5,7 +5,6 @@ import {
   reactive,
   UnwrapNestedRefs,
   watch,
-  watchEffect,
   WritableComputedRef,
 } from 'vue';
 import { z } from 'zod';
@@ -53,14 +52,6 @@ export class PageCamera {
       lockPos: false,
       lockZoom: false,
     });
-
-    watchEffect(() => {
-      if (!(this.page.id in __DEEP_NOTES__.pages)) {
-        __DEEP_NOTES__.pages[this.page.id] = {};
-      }
-
-      __DEEP_NOTES__.pages[this.page.id].zoom = this.react.zoom;
-    });
   }
 
   setup(cameraData: ICameraData) {
@@ -102,7 +93,7 @@ export class PageCamera {
     if (this.page.selection.react.notes.length > 0) {
       regionCollab = this.page.selection.react;
     } else {
-      regionCollab = this.page.react.currentLayer.collab;
+      regionCollab = this.page.react;
     }
 
     if (regionCollab.noteIds.length === 0) {

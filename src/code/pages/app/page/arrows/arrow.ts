@@ -15,7 +15,14 @@ export const IArrowCollab = z.object({
   sourceId: z.string().uuid(),
   targetId: z.string().uuid(),
 
-  label: z.any().default(() => new Y.XmlFragment()) as z.ZodType<Y.XmlFragment>,
+  label: z
+    .object({
+      enabled: z.boolean().default(false),
+      value: z
+        .any()
+        .default(() => new Y.XmlFragment()) as z.ZodType<Y.XmlFragment>,
+    })
+    .default({ value: undefined as any }),
 
   backward: z.boolean().default(false),
   forward: z.boolean().default(true),
@@ -160,6 +167,8 @@ export class PageArrow extends PageElem {
     if (!fake) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       nextTick(() => {
+        // nextTick is necessary because the arrow may be created before the notes
+
         if (this.react.sourceNote != null) {
           this.react.sourceNote.outgoingArrows.push(this);
         }
@@ -172,6 +181,10 @@ export class PageArrow extends PageElem {
   }
 
   removeFromRegion() {
+    if (this.react.region.collab.arrowIds[this.react.index] !== this.id) {
+      return;
+    }
+
     this.react.region.collab.arrowIds.splice(this.react.index, 1);
   }
 }

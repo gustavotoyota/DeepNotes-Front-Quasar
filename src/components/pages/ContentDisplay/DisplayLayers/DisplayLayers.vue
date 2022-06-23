@@ -3,13 +3,17 @@
     v-for="(layerId, index) of page.react.collab.layerIds"
     :key="layerId"
   >
-    <DisplayLayer
-      v-if="page.layers.fromId(layerId) != null"
-      :layer="page.layers.fromId(layerId)!"
-      :style="{
-        'z-index': index,
-      }"
-    />
+    <template
+      v-for="layer in [page.layers.fromId(layerId)]"
+      :key="layer?.id ?? layerId"
+    >
+      <DisplayLayer
+        v-if="layer != null"
+        :layer="layer"
+        :style="{
+          'z-index': index,
+        }"
+    /></template>
   </template>
 </template>
 

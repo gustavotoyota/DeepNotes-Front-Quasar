@@ -10,7 +10,7 @@
       width: note.react.spatial ? undefined : '100%',
       'z-index': note.react.spatial ? note.collab.zIndex : undefined,
       visibility:
-        note.react.resizing || !note.react.loaded ? 'hidden' : undefined,
+        !note.react.loaded || note.react.resizing ? 'hidden' : undefined,
     }"
   >
     <slot />

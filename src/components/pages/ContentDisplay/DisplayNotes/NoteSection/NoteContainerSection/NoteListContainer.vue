@@ -29,40 +29,51 @@
 
     <!-- Children -->
 
-    <div
-      v-for="(child, index) in note.react.notes"
-      :key="child.id"
-      class="note-container-child"
-      :style="{
-        'flex-direction': note.collab.container.horizontal ? 'row' : 'column',
-        width:
-          !note.collab.container.horizontal &&
-          note.collab.container.stretchChildren
-            ? 'calc(100% - 6px)'
-            : undefined,
-      }"
+    <template
+      v-for="(childNoteId, index) in note.collab.noteIds"
+      :key="childNoteId"
     >
-      <DisplayNote
-        :note="child"
-        :index="index"
-      />
+      <template
+        v-for="childNote in [page.notes.fromId(childNoteId)]"
+        :key="childNote?.id ?? childNoteId"
+      >
+        <div
+          v-if="childNote?.react.parent === note"
+          class="note-container-child"
+          :style="{
+            'flex-direction': note.collab.container.horizontal
+              ? 'row'
+              : 'column',
+            width:
+              !note.collab.container.horizontal &&
+              note.collab.container.stretchChildren
+                ? 'calc(100% - 6px)'
+                : undefined,
+          }"
+        >
+          <DisplayNote
+            :note="childNote"
+            :index="index"
+          />
 
-      <div style="position: relative">
-        <NoteDropZone
-          v-if="index < note.react.notes.length - 1"
-          :parent-note="note"
-          :index="index + 1"
-          style="position: absolute; min-width: 6px; min-height: 6px"
-        />
-      </div>
-    </div>
+          <div style="position: relative">
+            <NoteDropZone
+              v-if="index < note.react.notes.length - 1"
+              :parent-note="note"
+              :index="index + 1"
+              style="position: absolute; min-width: 6px; min-height: 6px"
+            />
+          </div>
+        </div>
+      </template>
+    </template>
 
     <!-- Last drop zone -->
 
     <div style="flex: 1; position: relative">
       <NoteDropZone
         :parent-note="note"
-        :index="note.react.notes.length"
+        :index="note.collab.noteIds.length"
         style="right: 3px; bottom: 3px"
         :style="{
           left: note.collab.container.horizontal ? '-3px' : '3px',
@@ -78,11 +89,13 @@
   lang="ts"
 >
 import { PageNote } from 'src/code/pages/app/page/notes/note';
+import { AppPage } from 'src/code/pages/app/page/page';
 import { inject, onMounted, ref } from 'vue';
 
 import DisplayNote from '../../DisplayNote.vue';
 import NoteDropZone from '../../NoteDropZones/NoteDropZone.vue';
 
+const page = inject<AppPage>('page')!;
 const note = inject<PageNote>('note')!;
 
 const containerElem = ref<Element>();

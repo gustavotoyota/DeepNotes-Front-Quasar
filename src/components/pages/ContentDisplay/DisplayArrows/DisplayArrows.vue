@@ -4,11 +4,16 @@
       v-for="(arrowId, index) in layer.collab.arrowIds"
       :key="arrowId"
     >
-      <DisplayArrow
-        v-if="page.arrows.fromId(arrowId) != null"
-        :arrow="page.arrows.fromId(arrowId)!"
-        :index="index"
-      />
+      <template
+        v-for="arrow in [page.arrows.fromId(arrowId)]"
+        :key="arrow?.id ?? arrowId"
+      >
+        <DisplayArrow
+          v-if="arrow != null"
+          :arrow="arrow"
+          :index="index"
+        />
+      </template>
     </template>
   </SVGDisplay>
 </template>

@@ -34,12 +34,21 @@ export class PageNotes {
     let note = this.fromId(noteId);
 
     if (note != null) {
-      note.react.parentId = parentId;
+      if (note.react.parentId !== parentId) {
+        note.removeFromRegion();
+
+        note.react.parentId = parentId;
+      }
 
       return;
     }
 
     const collab = this.react.collab[noteId];
+
+    if (collab == null) {
+      return;
+    }
+
     note = this.factory.makeNote(this.page, noteId, layerId, parentId, collab);
     this.react.map[note.id] = note;
 
@@ -55,8 +64,9 @@ export class PageNotes {
     layerId: string,
     parentId: string | null
   ) {
-    for (const noteId of noteIds)
+    for (const noteId of noteIds) {
       this.createAndObserveChildren(noteId, layerId, parentId);
+    }
 
     (syncedstore.getYjsValue(noteIds) as Y.Map<string>).observe((event) => {
       for (const delta of event.changes.delta) {

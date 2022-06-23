@@ -4,11 +4,16 @@
       v-for="(noteId, index) in layer.collab.noteIds"
       :key="noteId"
     >
-      <DisplayNote
-        v-if="page.notes.fromId(noteId) != null"
-        :note="page.notes.fromId(noteId)!"
-        :index="index"
-      />
+      <template
+        v-for="note in [page.notes.fromId(noteId)]"
+        :key="note?.id ?? noteId"
+      >
+        <DisplayNote
+          v-if="note != null && note.react.parent == null"
+          :note="note"
+          :index="index"
+        />
+      </template>
     </template>
   </DOMDisplay>
 </template>

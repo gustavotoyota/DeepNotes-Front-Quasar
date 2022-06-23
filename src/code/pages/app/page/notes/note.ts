@@ -190,7 +190,7 @@ export class PageNote extends PageElem implements IPageRegion {
   readonly incomingArrows: PageArrow[] = [];
   readonly outgoingArrows: PageArrow[] = [];
 
-  readonly occurrences: Record<string, Record<string, boolean>> = {};
+  occurrences: Record<string, Set<number>> = {};
 
   constructor(
     page: AppPage,
@@ -542,16 +542,39 @@ export class PageNote extends PageElem implements IPageRegion {
   }
 
   removeFromRegion() {
-    if (this.react.region.collab.noteIds[this.react.index] !== this.id) {
-      return;
-    }
+    this.occurrences[this.react.region.id] ??= new Set();
+    this.occurrences[this.react.region.id].add(this.react.index);
 
-    this.react.region.collab.noteIds.splice(this.react.index, 1);
+    this.page.collab.doc.transact(() => {
+      for (const [regionId, indexesSet] of Object.entries(this.occurrences)) {
+        const region = this.page.regions.fromId(regionId);
 
-    return true;
+        if (region == null) {
+          continue;
+        }
+
+        const sortedIndexes = Array.from(indexesSet).sort();
+
+        for (let i = sortedIndexes.length - 1; i >= 0; i--) {
+          const index = sortedIndexes[i];
+
+          if (region.collab.noteIds[index] === this.id) {
+            region.collab.noteIds.splice(index, 1);
+          }
+        }
+      }
+    });
+
+    this.occurrences = {};
   }
   moveToRegion(region: IPageRegion, insertIndex?: number) {
     this.removeFromRegion();
+
+    if (region instanceof PageNote) {
+      this.react.parentId = region.id;
+    } else {
+      this.react.parentId = null;
+    }
 
     region.collab.noteIds.splice(
       insertIndex ?? region.collab.noteIds.length,

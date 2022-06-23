@@ -3,10 +3,20 @@ import { Vec2 } from 'src/code/pages/static/vec2';
 import { z } from 'zod';
 
 import { AppPage } from '../page';
-import { IRegionCollab } from './region';
+import { IPageRegion, IRegionCollab } from './region';
 
 export class PageRegions {
   constructor(readonly page: AppPage) {}
+
+  fromId(id: string | null): IPageRegion | null {
+    const note = this.page.notes.fromId(id);
+
+    if (note != null) {
+      return note;
+    }
+
+    return this.page.layers.fromId(id);
+  }
 
   getWorldRect(collab: z.output<typeof IRegionCollab>) {
     const worldRect = new Rect(

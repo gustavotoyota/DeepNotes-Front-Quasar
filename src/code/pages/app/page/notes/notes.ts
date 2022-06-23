@@ -50,6 +50,7 @@ export class PageNotes {
     }
 
     note = this.factory.makeNote(this.page, noteId, layerId, parentId, collab);
+
     this.react.map[note.id] = note;
 
     this.createAndObserveIds(note.collab.noteIds, layerId, note.id);

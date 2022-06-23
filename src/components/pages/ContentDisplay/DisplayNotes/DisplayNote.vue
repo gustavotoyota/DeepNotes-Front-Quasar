@@ -56,15 +56,12 @@ const unwatch = watchEffect(() => {
 
   props.note.react.index = index;
 
-  let parentOccurrences = props.note.occurrences[props.note.react.parentId!];
-
-  if (parentOccurrences == null) {
-    parentOccurrences = {};
-
-    props.note.occurrences[props.note.react.parentId!] = parentOccurrences;
+  if (props.note.react.region == null) {
+    return;
   }
 
-  parentOccurrences[index] = true;
+  props.note.occurrences[props.note.react.region.id] ??= new Set();
+  props.note.occurrences[props.note.react.region.id].add(index);
 });
 
 onUnmounted(() => {

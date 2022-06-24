@@ -573,19 +573,21 @@ export class PageNote extends PageElem implements IPageRegion {
     this.occurrences = {};
   }
   moveToRegion(region: IPageRegion, insertIndex?: number) {
-    this.removeFromRegions();
+    this.page.collab.doc.transact(() => {
+      this.removeFromRegions();
 
-    if (region instanceof PageNote) {
-      this.react.parentId = region.id;
-    } else {
-      this.react.parentId = null;
-    }
+      if (region instanceof PageNote) {
+        this.react.parentId = region.id;
+      } else {
+        this.react.parentId = null;
+      }
 
-    region.collab.noteIds.splice(
-      insertIndex ?? region.collab.noteIds.length,
-      0,
-      this.id
-    );
+      region.collab.noteIds.splice(
+        insertIndex ?? region.collab.noteIds.length,
+        0,
+        this.id
+      );
+    });
   }
 
   reverseChildren() {

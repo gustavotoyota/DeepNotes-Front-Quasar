@@ -13,7 +13,7 @@
       :y1="arrow.react.sourcePos.y"
       :x2="arrow.react.targetPos.x"
       :y2="arrow.react.targetPos.y"
-      @pointerdown.left="onLeftPointerDown"
+      @pointerdown.left.stop="onLeftPointerDown"
     />
 
     <line

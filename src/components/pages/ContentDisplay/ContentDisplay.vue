@@ -60,7 +60,12 @@
 
       <DisplayLayers />
 
-      <SVGDisplay v-if="page.arrowCreation.react.active">
+      <SVGDisplay
+        v-if="
+          page.arrowCreation.react.active &&
+          page.arrowCreation.fakeArrow.react.parent == null
+        "
+      >
         <DisplayArrow :arrow="page.arrowCreation.fakeArrow" />
       </SVGDisplay>
 

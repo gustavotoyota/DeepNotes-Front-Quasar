@@ -9,6 +9,34 @@
     @pointerout.stop="onPointerOut"
     @pointerup.left="onLeftPointerUp"
   >
+    <!-- Arrows -->
+
+    <svg
+      style="position: absolute; pointer-events: none"
+      left="0"
+      top="0"
+      width="100%"
+      height="100%"
+    >
+      <template
+        v-for="(arrowId, index) in note.collab.arrowIds"
+        :key="arrowId"
+      >
+        <template
+          v-for="arrow in [page.arrows.fromId(arrowId)]"
+          :key="arrow?.id ?? arrowId"
+        >
+          <DisplayArrow
+            v-if="arrow != null"
+            :arrow="arrow"
+            :index="index"
+          />
+        </template>
+      </template>
+    </svg>
+
+    <!-- Notes -->
+
     <template
       v-for="(childNoteId, index) in note.collab.noteIds"
       :key="childNoteId"
@@ -26,6 +54,24 @@
           :index="index"
       /></template>
     </template>
+
+    <!-- Placeholder -->
+
+    <svg
+      v-if="
+        page.arrowCreation.react.active &&
+        page.arrowCreation.fakeArrow.react.parent == note
+      "
+      style="position: absolute; pointer-events: none"
+      left="0"
+      top="0"
+      width="100%"
+      height="100%"
+    >
+      <DisplayArrow :arrow="page.arrowCreation.fakeArrow" />
+    </svg>
+
+    <!-- Drop zone -->
 
     <div
       v-if="
@@ -46,6 +92,7 @@ import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { inject, onMounted, ref } from 'vue';
 
+import DisplayArrow from '../../../DisplayArrows/DisplayArrow.vue';
 import DisplayNote from '../../DisplayNote.vue';
 
 const page = inject<AppPage>('page')!;

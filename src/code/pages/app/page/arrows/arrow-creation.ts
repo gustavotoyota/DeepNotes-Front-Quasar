@@ -43,7 +43,6 @@ export class PageArrowCreation {
     this.fakeArrow.collab.targetId = null as any;
 
     this.fakeArrow.react.parentId = sourceNote.react.parentId;
-    this.fakeArrow.react.fakeTargetPos = this.page.pos.eventToWorld(event);
 
     listenPointerEvents(event, {
       move: this._update,
@@ -51,10 +50,23 @@ export class PageArrowCreation {
         this.react.active = false;
       },
     });
+
+    this._update(event);
   }
 
   private _update = (event: PointerEvent) => {
     this.fakeArrow.react.fakeTargetPos = this.page.pos.eventToWorld(event);
+
+    if (this.fakeArrow.react.parent?.react.container.elem != null) {
+      this.fakeArrow.react.fakeTargetPos =
+        this.fakeArrow.react.fakeTargetPos.sub(
+          this.page.pos.clientToWorld(
+            this.page.rects.fromDOM(
+              this.fakeArrow.react.parent.react.container.elem.getBoundingClientRect()
+            ).topLeft
+          )
+        );
+    }
   };
 
   finish(targetNote: PageNote) {

@@ -8,8 +8,8 @@
         page.dragging.react.dropRegionId == parentNote.id &&
         page.dragging.react.dropIndex === index,
     }"
-    @pointerenter="onPointerEnter"
-    @pointerleave="onPointerLeave"
+    @pointerover="onPointerOver"
+    @pointerout="onPointerOut"
     @pointerup.left="onLeftPointerUp"
   />
 </template>
@@ -30,7 +30,7 @@ const props = defineProps<{
 
 const page = inject<AppPage>('page')!;
 
-function onPointerEnter() {
+function onPointerOver() {
   if (!page.dragging.react.active) {
     return;
   }
@@ -39,7 +39,7 @@ function onPointerEnter() {
   page.dragging.react.dropIndex = props.index;
 }
 
-function onPointerLeave() {
+function onPointerOut() {
   if (!page.dragging.react.active) {
     return;
   }

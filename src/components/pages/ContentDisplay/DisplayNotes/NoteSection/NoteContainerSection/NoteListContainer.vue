@@ -76,7 +76,6 @@
     <div style="flex: 1; position: relative">
       <NoteDropZone
         :parent-note="note"
-        :index="note.collab.noteIds.length"
         style="right: 3px; bottom: 3px"
         :style="{
           left: note.collab.container.horizontal ? '-3px' : '3px',

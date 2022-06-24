@@ -6,7 +6,7 @@
       active:
         page.dragging.react.active &&
         page.dragging.react.dropRegionId == parentNote.id &&
-        page.dragging.react.dropIndex === index,
+        page.dragging.react.dropIndex === targetIndex,
     }"
     @pointerover="onPointerOver"
     @pointerout="onPointerOut"
@@ -18,6 +18,7 @@
   setup
   lang="ts"
 >
+import { computed } from '@vue/reactivity';
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { inject } from 'vue';
@@ -28,18 +29,26 @@ const props = defineProps<{
   alwaysVisible?: boolean;
 }>();
 
+const targetIndex = computed(
+  () => props.index ?? props.parentNote.collab.noteIds.length
+);
+
 const page = inject<AppPage>('page')!;
 
 function onPointerOver() {
+  console.log('onPointerOver');
+
   if (!page.dragging.react.active) {
     return;
   }
 
   page.dragging.react.dropRegionId = props.parentNote.id;
-  page.dragging.react.dropIndex = props.index;
+  page.dragging.react.dropIndex = targetIndex.value;
 }
 
 function onPointerOut() {
+  console.log('onPointerOut');
+
   if (!page.dragging.react.active) {
     return;
   }
@@ -53,7 +62,7 @@ async function onLeftPointerUp() {
     return;
   }
 
-  await page.dropping.perform(props.parentNote, props.index ?? 0);
+  await page.dropping.perform(props.parentNote, targetIndex.value);
 }
 </script>
 

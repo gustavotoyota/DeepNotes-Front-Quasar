@@ -1,7 +1,7 @@
 <template>
   <div
     ref="containerElem"
-    style="position: absolute; inset: 9px"
+    style="position: absolute; inset: 9px; pointer-events: none"
   ></div>
 
   <div

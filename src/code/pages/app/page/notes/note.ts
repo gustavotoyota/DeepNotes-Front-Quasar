@@ -197,9 +197,10 @@ export class PageNote extends PageElem implements IPageRegion {
     id: string,
     layerId: string,
     parentId: string | null,
+    index: number,
     readonly collab: z.output<typeof INoteCollab>
   ) {
-    super(page, id, ElemType.NOTE, layerId, parentId);
+    super(page, id, ElemType.NOTE, layerId, parentId, index);
 
     const makeSectionHeight = (section: NoteSection) =>
       computed(() => {
@@ -541,9 +542,13 @@ export class PageNote extends PageElem implements IPageRegion {
     return this.page.rects.clientToWorld(this.getClientRect(part));
   }
 
-  removeFromRegion() {
-    this.occurrences[this.react.region.id] ??= new Set();
-    this.occurrences[this.react.region.id].add(this.react.index);
+  removeFromRegions(exceptCurrent = false) {
+    if (exceptCurrent) {
+      this.occurrences[this.react.region.id]?.delete(this.react.index);
+    } else {
+      this.occurrences[this.react.region.id] ??= new Set();
+      this.occurrences[this.react.region.id].add(this.react.index);
+    }
 
     this.page.collab.doc.transact(() => {
       for (const [regionId, indexesSet] of Object.entries(this.occurrences)) {
@@ -568,7 +573,7 @@ export class PageNote extends PageElem implements IPageRegion {
     this.occurrences = {};
   }
   moveToRegion(region: IPageRegion, insertIndex?: number) {
-    this.removeFromRegion();
+    this.removeFromRegions();
 
     if (region instanceof PageNote) {
       this.react.parentId = region.id;

@@ -32,7 +32,8 @@ export class PageElem {
     readonly id: string,
     readonly type: ElemType,
     layerId: string,
-    parentId: string | null = null
+    parentId: string | null = null,
+    index: number
   ) {
     this.react = reactive({
       layerId,
@@ -48,10 +49,10 @@ export class PageElem {
         }
       }),
 
+      index,
+
       active: this.page.activeElem.is(this.id),
       selected: this.page.selection.has(this),
-
-      index: -1,
     });
   }
 }

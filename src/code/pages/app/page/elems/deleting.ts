@@ -53,7 +53,7 @@ export class PageDeleting {
     for (const note of notes) {
       this._performAux(note.react.notes);
 
-      note.removeFromRegion();
+      note.removeFromRegions();
 
       delete this.page.collab.store.notes[note.id];
     }

@@ -85,9 +85,10 @@ export const container = new Container({
       id: string,
       layerId: string,
       parentId: string | null,
+      index: number,
       collab: z.output<typeof INoteCollab>
     ) =>
-      new PageNote(page, id, layerId, parentId, collab),
+      new PageNote(page, id, layerId, parentId, index, collab),
   editing: () => (page: AppPage) => new PageEditing(page),
   dragging: () => (page: AppPage) => new PageDragging(page),
   dropping: () => (page: AppPage) => new PageDropping(page),
@@ -103,9 +104,10 @@ export const container = new Container({
       id: string,
       layerId: string,
       parentId: string | null,
+      index: number,
       collab: IArrowCollab
     ) =>
-      new PageArrow(page, id, layerId, parentId, collab),
+      new PageArrow(page, id, layerId, parentId, index, collab),
   arrowCreation: () => (page: AppPage) => new PageArrowCreation(page),
 });
 

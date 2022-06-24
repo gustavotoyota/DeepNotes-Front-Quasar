@@ -4,18 +4,18 @@ import * as Y from 'yjs';
 import { AppPage } from './page';
 
 export class PageUndoRedo {
-  undoManager: Y.UndoManager | null = null;
+  undoManager!: Y.UndoManager;
 
   readonly react = reactive({
     key: 0,
 
     canUndo: computed(() => {
       this.react.key;
-      return this.undoManager?.canUndo() ?? false;
+      return this.undoManager.canUndo() ?? false;
     }),
     canRedo: computed(() => {
       this.react.key;
-      return this.undoManager?.canRedo() ?? false;
+      return this.undoManager.canRedo() ?? false;
     }),
   });
 
@@ -46,20 +46,20 @@ export class PageUndoRedo {
   }
 
   resetCapturing() {
-    this.undoManager?.stopCapturing();
+    this.undoManager.stopCapturing();
   }
 
   undo() {
     this.page.selection.clear();
 
-    this.undoManager?.undo();
+    this.undoManager.undo();
 
     this.updateReactiveData();
   }
   redo() {
     this.page.selection.clear();
 
-    this.undoManager?.redo();
+    this.undoManager.redo();
 
     this.updateReactiveData();
   }
@@ -67,4 +67,14 @@ export class PageUndoRedo {
   updateReactiveData = () => {
     this.react.key++;
   };
+
+  skip(func: () => void) {
+    const oldTrackedOrigins = this.undoManager.trackedOrigins;
+
+    this.undoManager.trackedOrigins = new Set();
+
+    func();
+
+    this.undoManager.trackedOrigins = oldTrackedOrigins;
+  }
 }

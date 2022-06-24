@@ -31,7 +31,12 @@ export class PageArrows {
     return arrows.map((arrow) => arrow.id);
   }
 
-  create(arrowId: string, layerId: string, parentId: string | null) {
+  create(
+    arrowId: string,
+    layerId: string,
+    parentId: string | null,
+    index: number
+  ) {
     const collab = this.react.collab[arrowId];
 
     const arrow = this.factory.makeArrow(
@@ -39,6 +44,7 @@ export class PageArrows {
       arrowId,
       layerId,
       parentId,
+      index,
       collab
     );
 
@@ -49,18 +55,22 @@ export class PageArrows {
     layerId: string,
     parentId: string | null
   ) {
-    for (const arrowId of arrowIds) {
-      this.create(arrowId, layerId, parentId);
+    for (let index = 0; index < arrowIds.length; index++) {
+      this.create(arrowIds[index], layerId, parentId, index);
     }
 
     (syncedstore.getYjsValue(arrowIds) as Y.Array<string>).observe((event) => {
+      let index = 0;
+
       for (const delta of event.changes.delta) {
-        if (delta.insert == null) {
-          continue;
+        if (delta.retain != null) {
+          index += delta.retain;
         }
 
-        for (const arrowId of delta.insert) {
-          this.create(arrowId, layerId, parentId);
+        if (delta.insert != null) {
+          for (const arrowId of delta.insert) {
+            this.create(arrowId, layerId, parentId, index);
+          }
         }
       }
     });

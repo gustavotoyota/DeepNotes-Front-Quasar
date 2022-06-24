@@ -29,18 +29,23 @@ export class PageNotes {
   createAndObserveChildren(
     noteId: string,
     layerId: string,
-    parentId: string | null
+    parentId: string | null,
+    index: number
   ): void {
     let note = this.fromId(noteId);
 
     if (note != null) {
       if (note.react.parentId !== parentId) {
         this.page.selection.remove(note);
-
-        note.removeFromRegion();
-
-        note.react.parentId = parentId;
       }
+
+      note.react.parentId = parentId;
+      note.react.index = index;
+
+      this.fromId(noteId)?.removeFromRegions(true);
+
+      note.occurrences[note.react.region.id] ??= new Set();
+      note.occurrences[note.react.region.id].add(index);
 
       return;
     }
@@ -51,7 +56,14 @@ export class PageNotes {
       return;
     }
 
-    note = this.factory.makeNote(this.page, noteId, layerId, parentId, collab);
+    note = this.factory.makeNote(
+      this.page,
+      noteId,
+      layerId,
+      parentId,
+      index,
+      collab
+    );
 
     this.react.map[note.id] = note;
 
@@ -59,7 +71,7 @@ export class PageNotes {
     this.page.arrows.createAndObserveIds(
       note.collab.arrowIds,
       layerId,
-      parentId
+      note.id
     );
   }
   createAndObserveIds(
@@ -67,15 +79,21 @@ export class PageNotes {
     layerId: string,
     parentId: string | null
   ) {
-    for (const noteId of noteIds) {
-      this.createAndObserveChildren(noteId, layerId, parentId);
+    for (let index = 0; index < noteIds.length; index++) {
+      this.createAndObserveChildren(noteIds[index], layerId, parentId, index);
     }
 
     (syncedstore.getYjsValue(noteIds) as Y.Map<string>).observe((event) => {
+      let index = 0;
+
       for (const delta of event.changes.delta) {
+        if (delta.retain != null) {
+          index += delta.retain;
+        }
+
         if (delta.insert != null) {
           for (const noteId of delta.insert) {
-            this.createAndObserveChildren(noteId, layerId, parentId);
+            this.createAndObserveChildren(noteId, layerId, parentId, index);
           }
         }
       }

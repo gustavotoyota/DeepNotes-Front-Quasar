@@ -70,10 +70,11 @@ export class PageArrow extends PageElem {
     id: string,
     layerId: string,
     parentId: string | null,
+    index: number,
     collab: IArrowCollab,
     fake = false
   ) {
-    super(page, id, ElemType.ARROW, layerId, parentId);
+    super(page, id, ElemType.ARROW, layerId, parentId, index);
 
     this.collab = collab;
 

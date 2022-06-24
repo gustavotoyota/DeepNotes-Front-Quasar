@@ -21,6 +21,7 @@ export class PageArrowCreation {
       null as any,
       null as any,
       null,
+      -1,
       reactive(
         IArrowCollab.parse({
           sourceId: v4(),

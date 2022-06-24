@@ -96,6 +96,7 @@ export class PageResizing {
         note.id,
         null as any,
         null,
+        -1,
         reactive(collab)
       );
 

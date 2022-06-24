@@ -169,7 +169,7 @@ async function createPage() {
       pageId: string;
     }>('/api/pages/create', {
       parentPageId: page.value.id,
-      encryptedPageTitle: encryptedPageTitle,
+      encryptedPageTitle,
 
       createGroup: createGroup.value,
       groupName: groupName.value,
@@ -178,9 +178,11 @@ async function createPage() {
         : null,
     });
 
-    for (const selectedNote of page.value.selection.react.notes) {
-      selectedNote.collab.link = response.data.pageId;
-    }
+    page.value.collab.doc.transact(() => {
+      for (const selectedNote of page.value.selection.react.notes) {
+        selectedNote.collab.link = response.data.pageId;
+      }
+    });
 
     await $pages.goToPage(response.data.pageId, router, true);
 

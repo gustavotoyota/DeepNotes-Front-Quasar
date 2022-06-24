@@ -118,6 +118,7 @@ div :deep(.ProseMirror) {
   overflow: auto;
 
   padding: $note-padding;
+  padding-bottom: $note-padding - 2px;
 
   width: max-content;
   min-width: MAX(100%, 1px + $note-padding * 2);
@@ -249,7 +250,7 @@ div :deep(.ProseMirror) {
     line-height: unset;
 
     margin-block-start: 0;
-    margin-block-end: -3px;
+    margin-block-end: 0;
 
     letter-spacing: unset;
   }

@@ -53,11 +53,15 @@ export class PageUndoRedo {
     this.page.selection.clear();
 
     this.undoManager?.undo();
+
+    this.updateReactiveData();
   }
   redo() {
     this.page.selection.clear();
 
     this.undoManager?.redo();
+
+    this.updateReactiveData();
   }
 
   updateReactiveData = () => {

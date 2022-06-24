@@ -35,6 +35,8 @@ export class PageNotes {
 
     if (note != null) {
       if (note.react.parentId !== parentId) {
+        this.page.selection.remove(note);
+
         note.removeFromRegion();
 
         note.react.parentId = parentId;

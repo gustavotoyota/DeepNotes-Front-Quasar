@@ -135,6 +135,8 @@ async function onLeftPointerUp() {
   overflow: hidden;
 
   position: relative;
+
+  z-index: 2147483646;
 }
 
 .note-spatial-drop-zone {

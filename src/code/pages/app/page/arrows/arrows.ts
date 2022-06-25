@@ -2,6 +2,7 @@ import type { Y } from '@syncedstore/core';
 import { pull } from 'lodash';
 import { Factory } from 'src/code/pages/static/composition-root';
 import { computed, reactive, shallowReactive } from 'vue';
+import { z } from 'zod';
 
 import { AppPage } from '../page';
 import { IArrowCollab, PageArrow } from './arrow';
@@ -77,46 +78,48 @@ export class PageArrows {
   }
 
   observeMap() {
-    (syncedstore.getYjsValue(this.react.collab) as Y.Map<IArrowCollab>).observe(
-      (event) => {
-        for (const [arrowId, change] of event.changes.keys) {
-          if (change.action !== 'delete') {
-            continue;
-          }
-
-          const arrow = this.react.map[arrowId];
-
-          // Remove arrow from outgoing arrows
-
-          const sourceNoteId =
-            change.oldValue._map.get('sourceId').content.arr[0];
-
-          if (sourceNoteId != null) {
-            const note = this.page.notes.fromId(sourceNoteId);
-
-            if (note != null) {
-              pull(note.outgoingArrows, arrow);
-            }
-          }
-
-          // Remove arrow from incoming arrows
-
-          const targetNoteId =
-            change.oldValue._map.get('targetId').content.arr[0];
-
-          if (targetNoteId != null) {
-            const note = this.page.notes.fromId(targetNoteId);
-
-            if (note != null) {
-              pull(note.incomingArrows, arrow);
-            }
-          }
-
-          // Remove arrow from map
-
-          delete this.react.map[arrowId];
+    (
+      syncedstore.getYjsValue(this.react.collab) as Y.Map<
+        z.output<typeof IArrowCollab>
+      >
+    ).observe((event) => {
+      for (const [arrowId, change] of event.changes.keys) {
+        if (change.action !== 'delete') {
+          continue;
         }
+
+        const arrow = this.react.map[arrowId];
+
+        // Remove arrow from outgoing arrows
+
+        const sourceNoteId =
+          change.oldValue._map.get('sourceId').content.arr[0];
+
+        if (sourceNoteId != null) {
+          const note = this.page.notes.fromId(sourceNoteId);
+
+          if (note != null) {
+            pull(note.outgoingArrows, arrow);
+          }
+        }
+
+        // Remove arrow from incoming arrows
+
+        const targetNoteId =
+          change.oldValue._map.get('targetId').content.arr[0];
+
+        if (targetNoteId != null) {
+          const note = this.page.notes.fromId(targetNoteId);
+
+          if (note != null) {
+            pull(note.incomingArrows, arrow);
+          }
+        }
+
+        // Remove arrow from map
+
+        delete this.react.map[arrowId];
       }
-    );
+    });
   }
 }

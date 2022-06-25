@@ -112,6 +112,15 @@ async function register() {
   const derivedKeys = await computeDerivedKeys(data.email, data.password);
   const randomKeys = await generateRandomKeys(derivedKeys.masterKey);
 
+  const userSymmetricKey = wrapSymmetricKey(randomKeys.userSymmetricKey);
+
+  const encryptedDefaultNote = userSymmetricKey.encrypt(
+    new TextEncoder().encode(JSON.stringify({}))
+  );
+  const encryptedDefaultArrow = userSymmetricKey.encrypt(
+    new TextEncoder().encode(JSON.stringify({}))
+  );
+
   try {
     await $api.post('/auth/register', {
       email: data.email,
@@ -125,10 +134,12 @@ async function register() {
       encryptedUserSymmetricKey: to_base64(
         randomKeys.encryptedUserSymmetricKey
       ),
-
       encryptedGroupSymmetricKey: to_base64(
         randomKeys.encryptedGroupSymmetricKey
       ),
+
+      encryptedDefaultNote: to_base64(encryptedDefaultNote),
+      encryptedDefaultArrow: to_base64(encryptedDefaultArrow),
 
       encryptedMainPageTitle: to_base64(
         wrapSymmetricKey(randomKeys.groupSymmetricKey).encrypt(

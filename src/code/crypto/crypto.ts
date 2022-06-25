@@ -6,7 +6,7 @@ import { concatUint8Array } from '../utils';
 import { privateKey } from './private-key';
 
 export function encryptAssymetric(
-  plaintext: Uint8Array,
+  plaintext: Uint8Array | string,
   recipientsPublicKey: Uint8Array,
   sendersPrivateKey: Uint8Array
 ): Uint8Array {
@@ -38,7 +38,7 @@ export function decryptAssymetric(
 }
 
 export function encryptSymmetric(
-  plaintext: Uint8Array,
+  plaintext: Uint8Array | string,
   key: Uint8Array,
   additionalData: string | null = null
 ): Uint8Array {
@@ -114,9 +114,10 @@ export async function generateRandomKeys(masterKey: Uint8Array) {
 
   const userSymmetricKey = sodium.randombytes_buf(32);
 
-  const encryptedUserSymmetricKey = encryptSymmetric(
+  const encryptedUserSymmetricKey = encryptAssymetric(
     userSymmetricKey,
-    masterKey
+    keyPair.publicKey,
+    keyPair.privateKey
   );
 
   // Group symmetric key
@@ -131,6 +132,8 @@ export async function generateRandomKeys(masterKey: Uint8Array) {
 
   return {
     publicKey: keyPair.publicKey,
+
+    privateKey: keyPair.privateKey,
     encryptedPrivateKey,
 
     userSymmetricKey,

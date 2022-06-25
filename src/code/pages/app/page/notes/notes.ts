@@ -4,7 +4,6 @@ import { Vec2 } from 'src/code/pages/static/vec2';
 import { computed, reactive, shallowReactive } from 'vue';
 import { z } from 'zod';
 
-import { ITemplate } from '../../templates';
 import { AppPage } from '../page';
 import { INoteCollab, PageNote } from './note';
 
@@ -114,14 +113,14 @@ export class PageNotes {
     });
   }
 
-  async createFromTemplate(template: ITemplate, clientPos: Vec2) {
+  async create(clientPos: Vec2) {
     if (this.page.react.readonly) {
       return;
     }
 
     const noteId = this.page.app.serialization.deserialize(
       {
-        notes: [template.data],
+        notes: [$pages.react.defaultNote],
         arrows: [],
       },
       this.page.react.currentLayer.collab

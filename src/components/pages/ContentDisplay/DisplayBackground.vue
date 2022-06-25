@@ -28,10 +28,7 @@ function onLeftPointerDown(event: PointerEvent) {
 async function onLeftDoubleClick(event: MouseEvent) {
   const clientPos = page.pos.eventToClient(event);
 
-  await page.notes.createFromTemplate(
-    $pages.templates.react.default,
-    clientPos
-  );
+  await page.notes.create(clientPos);
 }
 </script>
 

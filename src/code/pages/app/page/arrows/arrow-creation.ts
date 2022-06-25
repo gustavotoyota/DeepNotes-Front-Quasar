@@ -1,9 +1,12 @@
-import { cloneDeep } from 'lodash';
+import { cloneDeep, merge } from 'lodash';
+import { Factory } from 'src/code/pages/static/composition-root';
 import { listenPointerEvents } from 'src/code/pages/static/dom';
 import { v4 } from 'uuid';
 import { reactive } from 'vue';
 import * as Y from 'yjs';
+import { z } from 'zod';
 
+import { ISerialArrow } from '../../serialization';
 import { PageNote } from '../notes/note';
 import { AppPage } from '../page';
 import { IArrowCollab, PageArrow } from './arrow';
@@ -15,8 +18,8 @@ export class PageArrowCreation {
 
   readonly fakeArrow: PageArrow;
 
-  constructor(readonly page: AppPage) {
-    this.fakeArrow = new PageArrow(
+  constructor(factory: Factory, readonly page: AppPage) {
+    this.fakeArrow = factory.makeArrow(
       this.page,
       null as any,
       null as any,
@@ -26,7 +29,7 @@ export class PageArrowCreation {
         IArrowCollab.parse({
           sourceId: v4(),
           targetId: v4(),
-        } as IArrowCollab)
+        } as z.input<typeof IArrowCollab>)
       ),
       true
     );
@@ -38,6 +41,11 @@ export class PageArrowCreation {
     }
 
     this.react.active = true;
+
+    const serialArrow = ISerialArrow.parse($pages.react.defaultArrow);
+    const arrowCollab = $pages.serialization.deserializeArrow(serialArrow);
+
+    merge(this.fakeArrow.collab, arrowCollab);
 
     this.fakeArrow.collab.sourceId = sourceNote.id;
     this.fakeArrow.collab.targetId = null as any;

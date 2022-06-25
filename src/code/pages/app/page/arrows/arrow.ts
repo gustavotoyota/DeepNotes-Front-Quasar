@@ -12,8 +12,8 @@ import { PageNote } from '../notes/note';
 import { AppPage } from '../page';
 
 export const IArrowCollab = z.object({
-  sourceId: z.string().uuid(),
-  targetId: z.string().uuid(),
+  sourceId: z.string().uuid().optional(),
+  targetId: z.string().uuid().optional(),
 
   label: z
     .object({
@@ -31,7 +31,6 @@ export const IArrowCollab = z.object({
 
   color: z.string().default('#b0b0b0'),
 });
-export type IArrowCollab = z.output<typeof IArrowCollab>;
 
 export interface IArrowReact extends IElemReact {
   fakeTargetPos: Vec2 | null;
@@ -61,8 +60,6 @@ export interface IArrowReact extends IElemReact {
 export class PageArrow extends PageElem {
   static readonly ARROW_SIZE = 10;
 
-  readonly collab: IArrowCollab;
-
   declare readonly react: UnwrapNestedRefs<IArrowReact>;
 
   constructor(
@@ -71,7 +68,7 @@ export class PageArrow extends PageElem {
     layerId: string,
     parentId: string | null,
     index: number,
-    collab: IArrowCollab,
+    readonly collab: z.output<typeof IArrowCollab>,
     fake = false
   ) {
     super(page, id, ElemType.ARROW, layerId, parentId, index);
@@ -101,10 +98,10 @@ export class PageArrow extends PageElem {
       }),
 
       sourceNote: computed(
-        () => this.page.notes.react.map[this.collab.sourceId]
+        () => this.page.notes.react.map[this.collab.sourceId!]
       ),
       targetNote: computed(
-        () => this.page.notes.react.map[this.collab.targetId]
+        () => this.page.notes.react.map[this.collab.targetId!]
       ),
 
       sourceCenter: computed(() => this.react.sourceNote.react.worldCenter),

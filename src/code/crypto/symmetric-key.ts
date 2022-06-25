@@ -16,7 +16,7 @@ export function wrapSymmetricKey(value: Uint8Array | null = null) {
     }
 
     encrypt(
-      plaintext: Uint8Array,
+      plaintext: Uint8Array | string,
       additionalData: string | null = null
     ): Uint8Array {
       return encryptSymmetric(plaintext, _value!, additionalData);

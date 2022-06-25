@@ -30,10 +30,6 @@
             :settings="settings"
           />
           <TabBtn
-            name="Templates"
-            :settings="settings"
-          />
-          <TabBtn
             name="Groups"
             :settings="settings"
           />
@@ -59,7 +55,6 @@
           "
         >
           <GeneralTab v-if="settings.tab === 'General'" />
-          <TemplatesTab v-if="settings.tab === 'Templates'" />
           <GroupsTab v-if="settings.tab === 'Groups'" />
           <InvitationsTab v-if="settings.tab === 'Invitations'" />
           <RequestsTab v-if="settings.tab === 'Requests'" />
@@ -76,7 +71,6 @@
           label="Close"
           color="primary"
           v-close-popup
-          @click.prevent="save"
         />
       </q-card-actions>
     </q-card>
@@ -99,9 +93,6 @@ export function initialSettings() {
 
     general: {
       displayName: '',
-    },
-    templates: {
-      selectedIds: new Set<string>(),
     },
     groups: {
       list: [] as IGroupData[],
@@ -138,7 +129,6 @@ import GeneralTab from './GeneralTab.vue';
 import GroupsTab from './GroupsTab.vue';
 import InvitationsTab from './InvitationsTab.vue';
 import RequestsTab from './RequestsTab.vue';
-import TemplatesTab from './TemplatesTab.vue';
 
 const visible = ref(false);
 
@@ -187,20 +177,4 @@ watch(visible, async () => {
     console.error(err);
   }
 });
-
-async function save() {
-  try {
-    await $api.post('/api/templates/update-settings', {
-      templates: $pages.templates.react.list,
-      defaultTemplateId: $pages.templates.react.defaultId,
-    });
-  } catch (err: any) {
-    Notify.create({
-      message: err.response?.data.message ?? 'An error has occurred.',
-      color: 'negative',
-    });
-
-    console.error(err);
-  }
-}
 </script>

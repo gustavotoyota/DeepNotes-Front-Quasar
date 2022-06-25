@@ -17,6 +17,7 @@ import {
   UnwrapNestedRefs,
 } from 'vue';
 import { Router } from 'vue-router';
+import { z } from 'zod';
 
 import { Factory, factory } from '../static/composition-root';
 import { createComputedDict } from '../static/computed-dict';
@@ -27,8 +28,11 @@ import {
   REALTIME_ENCRYPTED_PAGE_TITLE,
   REALTIME_USER_NOTIFICATION,
 } from './realtime';
-import { AppSerialization } from './serialization';
-import { AppTemplates, ITemplate } from './templates';
+import {
+  AppSerialization,
+  ISerialArrow,
+  ISerialNoteInput,
+} from './serialization';
 
 export const DICT_PAGE_GROUP_ID = 'page-group-id';
 export const DICT_GROUP_SYMMETRIC_KEY = 'group-symmetric-key';
@@ -76,6 +80,10 @@ export interface IAppReact {
 
   userId: string;
   publicKey: Uint8Array;
+  symmetricKey: ShallowRef<SymmetricKey>;
+
+  defaultNote: ShallowRef<ISerialNoteInput>;
+  defaultArrow: ShallowRef<z.input<typeof ISerialArrow>>;
 
   dict: Record<string, any>;
 
@@ -84,7 +92,6 @@ export interface IAppReact {
 
 export class PagesApp {
   readonly serialization: AppSerialization;
-  readonly templates: AppTemplates;
   readonly pageCache: AppPageCache;
   readonly realtime: AppRealtime;
 
@@ -96,7 +103,6 @@ export class PagesApp {
 
   constructor(factory: Factory) {
     this.serialization = factory.makeSerialization(this);
-    this.templates = factory.makeTemplates(this);
     this.pageCache = factory.makePageCache(this);
     this.realtime = factory.makeRealtime(
       process.env.DEV
@@ -115,6 +121,13 @@ export class PagesApp {
 
       userId: null as any,
       publicKey: null as any,
+      symmetricKey: shallowRef(null as any),
+
+      defaultNote: shallowRef({}),
+      defaultArrow: shallowRef({
+        sourceIndex: null as any,
+        targetIndex: null as any,
+      }),
 
       dict: {},
 
@@ -138,7 +151,7 @@ export class PagesApp {
             return '';
           }
 
-          return new TextDecoder('utf-8').decode(
+          return new TextDecoder().decode(
             symmetricKey.decrypt(from_base64(encryptedPageTitle))
           );
         },
@@ -179,25 +192,43 @@ export class PagesApp {
   async loadData() {
     const response = await $api.post<{
       userId: string;
-      publicKey: string;
 
-      templates: ITemplate[];
-      defaultTemplateId: string;
+      publicKey: string;
+      encryptedSymmetricKey: string;
+
+      encryptedDefaultNote: string;
+      encryptedDefaultArrow: string;
     }>('/api/users/data');
 
     // Load user data
 
     this.react.userId = response.data.userId;
     this.react.publicKey = from_base64(response.data.publicKey);
+    this.react.symmetricKey = wrapSymmetricKey(
+      privateKey.decrypt(
+        from_base64(response.data.encryptedSymmetricKey),
+        this.react.publicKey
+      )
+    );
+
+    this.react.defaultNote = JSON.parse(
+      new TextDecoder().decode(
+        this.react.symmetricKey.decrypt(
+          from_base64(response.data.encryptedDefaultNote)
+        )
+      )
+    );
+    this.react.defaultArrow = JSON.parse(
+      new TextDecoder().decode(
+        this.react.symmetricKey.decrypt(
+          from_base64(response.data.encryptedDefaultArrow)
+        )
+      )
+    );
 
     this.realtime.subscribe(
       `${REALTIME_USER_NOTIFICATION}:${this.react.userId}`
     );
-
-    // Load templates
-
-    this.templates.react.list = response.data.templates;
-    this.templates.react.defaultId = response.data.defaultTemplateId;
 
     this.loadedPromise.resolve();
   }

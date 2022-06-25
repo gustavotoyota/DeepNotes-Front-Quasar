@@ -19,16 +19,18 @@ export const ISerialArrow = IArrowCollab.omit({
 
   label: true,
 }).extend({
-  sourceIndex: z.number(),
-  targetIndex: z.number(),
+  sourceIndex: z.number().optional(),
+  targetIndex: z.number().optional(),
 
-  label: z.object({
-    enabled: z.boolean().default(false),
-    value: z.any().default({
-      type: 'doc',
-      content: [],
-    }),
-  }),
+  label: z
+    .object({
+      enabled: z.boolean().default(false),
+      value: z.any().default({
+        type: 'doc',
+        content: [],
+      }),
+    })
+    .default({}),
 });
 
 // Note
@@ -162,25 +164,13 @@ export class AppSerialization {
 
     for (const arrow of page.arrows.fromIds(container.arrowIds)) {
       if (
-        !noteMap.has(arrow.collab.sourceId) ||
-        !noteMap.has(arrow.collab.targetId)
+        !noteMap.has(arrow.collab.sourceId!) ||
+        !noteMap.has(arrow.collab.targetId!)
       ) {
         continue;
       }
 
-      const serialArrow: z.output<typeof ISerialArrow> = {
-        ...arrow.collab,
-
-        sourceIndex: noteMap.get(arrow.collab.sourceId)!,
-        targetIndex: noteMap.get(arrow.collab.targetId)!,
-
-        label: {
-          enabled: arrow.collab.label.enabled,
-          value: yXmlFragmentToProsemirrorJSON(arrow.collab.label.value),
-        },
-      };
-
-      serialRegion.arrows.push(serialArrow);
+      serialRegion.arrows.push(this.serializeArrow(arrow.collab, noteMap));
     }
 
     if (parse) {
@@ -189,7 +179,46 @@ export class AppSerialization {
 
     return serialRegion;
   }
+  serializeArrow(
+    arrowCollab: z.output<typeof IArrowCollab>,
+    noteMap = new Map<string, number>()
+  ): z.output<typeof ISerialArrow> {
+    return {
+      ...arrowCollab,
 
+      sourceIndex: noteMap.get(arrowCollab.sourceId!)!,
+      targetIndex: noteMap.get(arrowCollab.targetId!)!,
+
+      label: {
+        enabled: arrowCollab.label.enabled,
+        value: yXmlFragmentToProsemirrorJSON(arrowCollab.label.value),
+      },
+    };
+  }
+
+  deserialize(
+    serialRegion: ISerialRegionInput,
+    destRegion: z.output<typeof IRegionCollab>,
+    destIndex?: number | null,
+    parse = true
+  ): z.output<typeof IRegionCollab> {
+    let result: z.output<typeof IRegionCollab> = { noteIds: [], arrowIds: [] };
+
+    if (parse) {
+      serialRegion = ISerialRegion.parse(serialRegion);
+    }
+
+    $pages.react.page.collab.doc.transact(() => {
+      result = this._deserializeAux(serialRegion as ISerialRegionOutput);
+
+      destIndex = destIndex ?? destRegion.noteIds.length;
+      destRegion.noteIds.splice(destIndex, 0, ...result.noteIds);
+
+      destRegion.arrowIds.push(...result.arrowIds);
+    });
+
+    return result;
+  }
   private _deserializeAux(
     serialRegion: ISerialRegionOutput
   ): z.output<typeof IRegionCollab> {
@@ -268,24 +297,13 @@ export class AppSerialization {
 
     if (serialRegion.arrows != null) {
       for (const serialArrow of serialRegion.arrows) {
-        const arrowCollab: IArrowCollab = {
-          ...serialArrow,
-
-          sourceId: noteMap.get(serialArrow.sourceIndex)!,
-          targetId: noteMap.get(serialArrow.targetIndex)!,
-
-          label: {
-            enabled: serialArrow.label.enabled,
-            value: prosemirrorJSONToYXmlFragment(
-              tiptap.schema,
-              serialArrow.label.value
-            ),
-          },
-        };
-
         const arrowId = v4();
 
-        page.arrows.react.collab[arrowId] = arrowCollab as IArrowCollab;
+        const arrowCollab = this.deserializeArrow(serialArrow);
+
+        page.arrows.react.collab[arrowId] = arrowCollab as z.output<
+          typeof IArrowCollab
+        >;
 
         arrowIds.push(arrowId);
       }
@@ -293,27 +311,23 @@ export class AppSerialization {
 
     return { noteIds, arrowIds };
   }
-  deserialize(
-    serialRegion: ISerialRegionInput,
-    destRegion: z.output<typeof IRegionCollab>,
-    destIndex?: number | null,
-    parse = true
-  ): z.output<typeof IRegionCollab> {
-    let result: z.output<typeof IRegionCollab> = { noteIds: [], arrowIds: [] };
+  deserializeArrow(
+    serialArrow: z.output<typeof ISerialArrow>,
+    noteMap = new Map<number, string>()
+  ): z.output<typeof IArrowCollab> {
+    return {
+      ...serialArrow,
 
-    if (parse) {
-      serialRegion = ISerialRegion.parse(serialRegion);
-    }
+      sourceId: noteMap.get(serialArrow.sourceIndex!)!,
+      targetId: noteMap.get(serialArrow.targetIndex!)!,
 
-    $pages.react.page.collab.doc.transact(() => {
-      result = this._deserializeAux(serialRegion as ISerialRegionOutput);
-
-      destIndex = destIndex ?? destRegion.noteIds.length;
-      destRegion.noteIds.splice(destIndex, 0, ...result.noteIds);
-
-      destRegion.arrowIds.push(...result.arrowIds);
-    });
-
-    return result;
+      label: {
+        enabled: serialArrow.label.enabled,
+        value: prosemirrorJSONToYXmlFragment(
+          tiptap.schema,
+          serialArrow.label.value
+        ),
+      },
+    };
   }
 }

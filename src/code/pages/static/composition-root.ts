@@ -35,14 +35,12 @@ import { PageUndoRedo } from '../app/page/undo-redo';
 import { AppPageCache } from '../app/page-cache';
 import { AppRealtime } from '../app/realtime';
 import { AppSerialization } from '../app/serialization';
-import { AppTemplates } from '../app/templates';
 import { Container } from './simple-di';
 
 export const container = new Container({
   app: (factory: any) => () => new PagesApp(factory),
 
   serialization: () => (app: PagesApp) => new AppSerialization(app),
-  templates: () => (app: PagesApp) => new AppTemplates(app),
   pageCache: () => (app: PagesApp) => new AppPageCache(app),
   realtime: () => (url: string) => new AppRealtime(url),
 
@@ -105,10 +103,12 @@ export const container = new Container({
       layerId: string,
       parentId: string | null,
       index: number,
-      collab: IArrowCollab
+      collab: z.output<typeof IArrowCollab>,
+      fake = false
     ) =>
-      new PageArrow(page, id, layerId, parentId, index, collab),
-  arrowCreation: () => (page: AppPage) => new PageArrowCreation(page),
+      new PageArrow(page, id, layerId, parentId, index, collab, fake),
+  arrowCreation: (factory: any) => (page: AppPage) =>
+    new PageArrowCreation(factory, page),
 });
 
 export const factory = container.factory;

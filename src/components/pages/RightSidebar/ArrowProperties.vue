@@ -61,9 +61,7 @@
       />
     </div>
 
-    <Gap />
     <q-separator />
-    <Gap />
 
     <div style="padding: 20px; display: flex">
       <Checkbox
@@ -77,9 +75,7 @@
       />
     </div>
 
-    <Gap />
     <q-separator />
-    <Gap />
 
     <div style="padding: 20px">
       <q-color
@@ -117,6 +113,18 @@
         ]"
       />
     </div>
+
+    <q-separator />
+
+    <!-- Default -->
+
+    <div style="padding: 20px; display: flex; flex-direction: column">
+      <q-btn
+        label="Set as default"
+        color="primary"
+        @click="setAsDefault()"
+      />
+    </div>
   </div>
 </template>
 
@@ -124,8 +132,11 @@
   setup
   lang="ts"
 >
+import { to_base64 } from 'libsodium-wrappers';
+import { Notify } from 'quasar';
 import { PageArrow } from 'src/code/pages/app/page/arrows/arrow';
 import { AppPage } from 'src/code/pages/app/page/page';
+import { ISerialArrow } from 'src/code/pages/app/serialization';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
 import { inject, Ref, toRef } from 'vue';
@@ -145,5 +156,41 @@ function changeProp(value: any, func: (arrow: PageArrow, value: any) => void) {
       func(arrow, value);
     }
   });
+}
+
+async function setAsDefault() {
+  if (!($pages.react.page.activeElem.react.elem instanceof PageArrow)) {
+    return;
+  }
+
+  $pages.react.defaultArrow = ISerialArrow.parse(
+    $pages.serialization.serializeArrow(
+      $pages.react.page.activeElem.react.elem.collab
+    )
+  );
+
+  try {
+    await $api.post<{
+      templateId: string;
+    }>('/api/users/save-default-arrow', {
+      encryptedDefaultArrow: to_base64(
+        $pages.react.symmetricKey.encrypt(
+          new TextEncoder().encode(JSON.stringify($pages.react.defaultArrow))
+        )
+      ),
+    });
+
+    Notify.create({
+      message: 'Default arrow set.',
+      color: 'positive',
+    });
+  } catch (err: any) {
+    Notify.create({
+      message: err.response?.data.message ?? 'An error has occurred.',
+      color: 'negative',
+    });
+
+    console.error(err);
+  }
 }
 </script>

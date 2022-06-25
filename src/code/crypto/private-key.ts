@@ -16,10 +16,10 @@ export function wrapPrivateKey(value: Uint8Array | null = null) {
     }
 
     encrypt(
-      nonceAndPlaintext: Uint8Array,
+      plaintext: Uint8Array | string,
       recipientsPublicKey: Uint8Array
     ): Uint8Array {
-      return encryptAssymetric(nonceAndPlaintext, recipientsPublicKey, _value!);
+      return encryptAssymetric(plaintext, recipientsPublicKey, _value!);
     }
     decrypt(
       nonceAndCiphertext: Uint8Array,

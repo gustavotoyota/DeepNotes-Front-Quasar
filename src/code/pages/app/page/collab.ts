@@ -12,7 +12,7 @@ export interface IAppCollabStore {
   page: IPageCollab;
   layers: Record<string, ILayerCollab>;
   notes: Record<string, z.output<typeof INoteCollab>>;
-  arrows: Record<string, IArrowCollab>;
+  arrows: Record<string, z.output<typeof IArrowCollab>>;
 }
 
 export class PageCollab {

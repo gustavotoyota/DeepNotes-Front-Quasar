@@ -200,10 +200,14 @@
 
     <q-separator />
 
-    <!-- Template -->
+    <!-- Default -->
 
     <div style="padding: 20px; display: flex; flex-direction: column">
-      <SaveAsTemplateDialog />
+      <q-btn
+        label="Set as default"
+        color="primary"
+        @click="setAsDefault()"
+      />
     </div>
 
     <q-separator />
@@ -625,6 +629,8 @@
   setup
   lang="ts"
 >
+import { to_base64 } from 'libsodium-wrappers';
+import { Notify } from 'quasar';
 import { DICT_PAGE_GROUP_ID } from 'src/code/pages/app/app';
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
@@ -637,7 +643,6 @@ import Checkbox from '../../misc/Checkbox.vue';
 import Combobox from '../../misc/Combobox.vue';
 import MiniSidebarBtn from '../../misc/MiniSidebarBtn.vue';
 import NewPageDialog from './NewPageDialog.vue';
-import SaveAsTemplateDialog from './SaveAsTemplateDialog.vue';
 
 const ui = useUI();
 
@@ -651,5 +656,36 @@ function changeProp(value: any, func: (note: PageNote, value: any) => void) {
       func(note, value);
     }
   });
+}
+
+async function setAsDefault() {
+  $pages.react.defaultNote = $pages.serialization.serialize({
+    noteIds: [$pages.react.page.activeElem.react.id!],
+    arrowIds: [],
+  }).notes[0];
+
+  try {
+    await $api.post<{
+      templateId: string;
+    }>('/api/users/save-default-note', {
+      encryptedDefaultNote: to_base64(
+        $pages.react.symmetricKey.encrypt(
+          new TextEncoder().encode(JSON.stringify($pages.react.defaultNote))
+        )
+      ),
+    });
+
+    Notify.create({
+      message: 'Default note set.',
+      color: 'positive',
+    });
+  } catch (err: any) {
+    Notify.create({
+      message: err.response?.data.message ?? 'An error has occurred.',
+      color: 'negative',
+    });
+
+    console.error(err);
+  }
 }
 </script>

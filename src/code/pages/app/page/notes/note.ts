@@ -308,7 +308,7 @@ export class PageNote extends PageElem implements IPageRegion {
           );
         }),
         selfPinned: computed(() => {
-          return this.react.spatial && this.react.width.self.endsWith('px');
+          return this.react.width.self.endsWith('px');
         }),
         pinned: computed(() => {
           return this.react.width.parentPinned || this.react.width.selfPinned;

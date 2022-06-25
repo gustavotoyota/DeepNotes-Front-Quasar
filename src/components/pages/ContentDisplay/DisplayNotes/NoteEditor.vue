@@ -118,7 +118,7 @@ div :deep(.ProseMirror) {
   overflow: auto;
 
   padding: $note-padding;
-  padding-bottom: $note-padding - 2px;
+  padding-bottom: $note-padding - 1px;
 
   width: max-content;
   min-width: MAX(100%, 1px + $note-padding * 2);

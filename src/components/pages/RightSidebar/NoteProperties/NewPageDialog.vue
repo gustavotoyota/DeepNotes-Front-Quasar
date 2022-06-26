@@ -111,7 +111,7 @@ watch(visible, async () => {
       return;
     }
 
-    const text = activeelem.react.collab[activeElem.react.topSection].value;
+    const text = activeElem.react.collab[activeElem.react.topSection].value;
     pageTitle.value = text.toDOM().textContent!.split('\n')[0];
 
     pageTitleElem.value?.focus();

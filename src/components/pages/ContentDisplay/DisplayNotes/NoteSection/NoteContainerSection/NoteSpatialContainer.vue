@@ -9,6 +9,20 @@
     @pointerout.stop="onPointerOut"
     @pointerup.left="onLeftPointerUp"
   >
+    <!-- Background -->
+
+    <div
+      class="note-spatial-background"
+      @dblclick.left="onLeftDoubleClick"
+    >
+      <!-- Placeholder -->
+
+      <template v-if="note.react.notes.length === 0">
+        <div>Drag notes here or</div>
+        <div>double-click to create.</div>
+      </template>
+    </div>
+
     <!-- Arrows -->
 
     <svg
@@ -55,7 +69,7 @@
       /></template>
     </template>
 
-    <!-- Placeholder -->
+    <!-- Arrow creation -->
 
     <svg
       v-if="
@@ -90,6 +104,7 @@
 >
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
+import { Vec2 } from 'src/code/pages/static/vec2';
 import { inject, onMounted, ref } from 'vue';
 
 import DisplayArrow from '../../../DisplayArrows/DisplayArrow.vue';
@@ -120,6 +135,10 @@ async function onLeftPointerUp() {
 
   await page.dropping.perform(note);
 }
+
+async function onLeftDoubleClick(event: MouseEvent) {
+  await page.notes.create(note, new Vec2(event.offsetX, event.offsetY));
+}
 </script>
 
 <style scoped>
@@ -137,6 +156,19 @@ async function onLeftPointerUp() {
   position: relative;
 
   z-index: 2147483646;
+}
+
+.note-spatial-background {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  color: #e0e0e0;
+  font-size: 13px;
 }
 
 .note-spatial-drop-zone {

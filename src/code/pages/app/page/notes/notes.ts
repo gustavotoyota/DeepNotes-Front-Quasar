@@ -5,6 +5,7 @@ import { computed, reactive, shallowReactive } from 'vue';
 import { z } from 'zod';
 
 import { AppPage } from '../page';
+import { IPageRegion } from '../regions/region';
 import { INoteCollab, PageNote } from './note';
 
 export class PageNotes {
@@ -113,7 +114,7 @@ export class PageNotes {
     });
   }
 
-  async create(clientPos: Vec2) {
+  async create(region: IPageRegion, worldPos: Vec2, centralize = true) {
     if (this.page.react.readonly) {
       return;
     }
@@ -123,7 +124,7 @@ export class PageNotes {
         notes: [$pages.react.defaultNote],
         arrows: [],
       },
-      this.page.react.currentLayer.collab
+      region.collab
     ).noteIds[0];
 
     const note = this.page.notes.react.map[noteId];
@@ -131,10 +132,13 @@ export class PageNotes {
     await this.page.editing.start(note);
 
     const worldSize = note.getWorldRect('note-frame').size;
-    const worldPos = this.page.pos.clientToWorld(clientPos);
 
-    note.collab.pos = worldSize
-      .mul(new Vec2(note.collab.anchor).subScalar(0.5))
-      .add(worldPos);
+    note.collab.pos = worldPos;
+
+    if (centralize) {
+      note.collab.pos = new Vec2(note.collab.pos).add(
+        worldSize.mul(new Vec2(note.collab.anchor).subScalar(0.5))
+      );
+    }
   }
 }

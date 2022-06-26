@@ -24,6 +24,7 @@
         :parent-note="note"
         :always-visible="true"
         style="top: 0; bottom: 0"
+        @dblclick.left="onLeftDoubleClick"
       />
     </div>
 
@@ -76,11 +77,13 @@
     <div style="flex: 1; position: relative">
       <NoteDropZone
         :parent-note="note"
+        :always-visible="true"
         style="right: 3px; bottom: 3px"
         :style="{
           left: note.collab.container.horizontal ? '-3px' : '3px',
           top: note.collab.container.horizontal ? '3px' : '-3px',
         }"
+        @dblclick.left="onLeftDoubleClick"
       />
     </div>
   </div>
@@ -105,6 +108,16 @@ const containerElem = ref<Element>();
 onMounted(() => {
   note.react.container.elem = containerElem.value!;
 });
+
+async function onLeftDoubleClick(event: MouseEvent) {
+  const clientPos = page.pos.eventToClient(event);
+  const clientTopLeft = page.rects.fromDOM(
+    note.react.container.elem.getBoundingClientRect()
+  ).topLeft;
+  const worldPos = page.sizes.screenToWorld2D(clientPos.sub(clientTopLeft));
+
+  await page.notes.create(note, worldPos, false);
+}
 </script>
 
 <style scoped>

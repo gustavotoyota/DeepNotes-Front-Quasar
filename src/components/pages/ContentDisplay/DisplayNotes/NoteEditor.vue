@@ -43,6 +43,8 @@ let loading = true;
 note.react.numEditorsLoading++;
 page.react.numEditorsLoading++;
 
+note.react.allEditorsLoaded = false;
+
 function finishLoading() {
   if (!loading) {
     return;
@@ -52,6 +54,10 @@ function finishLoading() {
 
   note.react.numEditorsLoading--;
   page.react.numEditorsLoading--;
+
+  if (note.react.numEditorsLoading === 0) {
+    note.react.allEditorsLoaded = true;
+  }
 }
 
 const value = note.react.collab[props.section].value;

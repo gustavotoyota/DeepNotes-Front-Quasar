@@ -34,7 +34,18 @@ export class PageNotes {
   ): void {
     let note = this.fromId(noteId);
 
-    if (note != null) {
+    if (note == null) {
+      note = this.factory.makeNote(this.page, noteId, layerId, parentId, index);
+
+      this.react.map[note.id] = note;
+
+      this.createAndObserveIds(note.react.collab.noteIds, layerId, note.id);
+      this.page.arrows.createAndObserveIds(
+        note.react.collab.arrowIds,
+        layerId,
+        note.id
+      );
+    } else {
       if (note.react.parentId !== parentId) {
         this.page.selection.remove(note);
       }
@@ -46,20 +57,7 @@ export class PageNotes {
 
       note.occurrences[note.react.region.id] ??= new Set();
       note.occurrences[note.react.region.id].add(index);
-
-      return;
     }
-
-    note = this.factory.makeNote(this.page, noteId, layerId, parentId, index);
-
-    this.react.map[note.id] = note;
-
-    this.createAndObserveIds(note.react.collab.noteIds, layerId, note.id);
-    this.page.arrows.createAndObserveIds(
-      note.react.collab.arrowIds,
-      layerId,
-      note.id
-    );
   }
   createAndObserveIds(
     noteIds: string[],

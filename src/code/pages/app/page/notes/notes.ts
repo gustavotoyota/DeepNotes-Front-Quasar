@@ -57,6 +57,8 @@ export class PageNotes {
 
       note.occurrences[note.react.region.id] ??= new Set();
       note.occurrences[note.react.region.id].add(index);
+
+      note.react.initialized = false;
     }
   }
   createAndObserveIds(

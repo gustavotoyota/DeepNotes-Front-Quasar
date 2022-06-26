@@ -185,6 +185,7 @@ export interface INoteReact extends IRegionReact, IElemReact {
   numEditorsLoading: number;
   allEditorsLoaded: boolean;
   loaded: ComputedRef<boolean>;
+  initialized: boolean;
 }
 
 export class PageNote extends PageElem implements IPageRegion {
@@ -492,6 +493,10 @@ export class PageNote extends PageElem implements IPageRegion {
       numEditorsLoading: 0,
       allEditorsLoaded: true,
       loaded: computed(() => {
+        if (this.react.initialized) {
+          return true;
+        }
+
         for (const childNote of this.react.notes) {
           if (!childNote.react.allEditorsLoaded) {
             return false;
@@ -500,6 +505,7 @@ export class PageNote extends PageElem implements IPageRegion {
 
         return this.react.allEditorsLoaded;
       }),
+      initialized: false,
     };
 
     Object.assign(this.react, react);

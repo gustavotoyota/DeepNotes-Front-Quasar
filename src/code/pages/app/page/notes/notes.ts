@@ -35,6 +35,10 @@ export class PageNotes {
     let note = this.fromId(noteId);
 
     if (note == null) {
+      if (this.react.collab[noteId] == null) {
+        return;
+      }
+
       note = this.factory.makeNote(this.page, noteId, layerId, parentId, index);
 
       this.react.map[note.id] = note;

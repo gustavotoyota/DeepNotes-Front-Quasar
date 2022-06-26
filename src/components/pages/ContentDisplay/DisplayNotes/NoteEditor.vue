@@ -3,7 +3,7 @@
     :editor="editor"
     :class="{
       'padding-fix': paddingFix,
-      'no-wrap': !note.collab[props.section].wrap,
+      'no-wrap': !note.react.collab[props.section].wrap,
     }"
   />
 </template>
@@ -32,7 +32,8 @@ const note = inject<PageNote>('note')!;
 
 const paddingFix = computed(
   () =>
-    note.collab.collapsing.enabled && props.section === note.react.topSection
+    note.react.collab.collapsing.enabled &&
+    props.section === note.react.topSection
 );
 
 // Setup Tiptap editor
@@ -53,7 +54,7 @@ function finishLoading() {
   page.react.numEditorsLoading--;
 }
 
-const value = note.collab[props.section].value;
+const value = note.react.collab[props.section].value;
 
 const editor = tiptap.useEditor({
   content: value instanceof Y.XmlFragment ? undefined : value,

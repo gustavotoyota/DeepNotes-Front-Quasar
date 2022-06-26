@@ -27,9 +27,7 @@ export class PageLayers {
   }
 
   create(id: string) {
-    const collab = this.react.collab[id];
-
-    const layer = this.factory.makeLayer(this.page, id, collab);
+    const layer = this.factory.makeLayer(this.page, id);
 
     this.react.map[layer.id] = layer;
   }

@@ -50,26 +50,13 @@ export class PageNotes {
       return;
     }
 
-    const collab = this.react.collab[noteId];
-
-    if (collab == null) {
-      return;
-    }
-
-    note = this.factory.makeNote(
-      this.page,
-      noteId,
-      layerId,
-      parentId,
-      index,
-      collab
-    );
+    note = this.factory.makeNote(this.page, noteId, layerId, parentId, index);
 
     this.react.map[note.id] = note;
 
-    this.createAndObserveIds(note.collab.noteIds, layerId, note.id);
+    this.createAndObserveIds(note.react.collab.noteIds, layerId, note.id);
     this.page.arrows.createAndObserveIds(
-      note.collab.arrowIds,
+      note.react.collab.arrowIds,
       layerId,
       note.id
     );
@@ -124,7 +111,7 @@ export class PageNotes {
         notes: [$pages.react.defaultNote],
         arrows: [],
       },
-      region.collab
+      region.react.collab
     ).noteIds[0];
 
     const note = this.page.notes.react.map[noteId];
@@ -133,11 +120,11 @@ export class PageNotes {
 
     const worldSize = note.getWorldRect('note-frame').size;
 
-    note.collab.pos = worldPos;
+    note.react.collab.pos = worldPos;
 
     if (centralize) {
-      note.collab.pos = new Vec2(note.collab.pos).add(
-        worldSize.mul(new Vec2(note.collab.anchor).subScalar(0.5))
+      note.react.collab.pos = new Vec2(note.react.collab.pos).add(
+        worldSize.mul(new Vec2(note.react.collab.anchor).subScalar(0.5))
       );
     }
   }

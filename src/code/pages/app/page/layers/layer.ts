@@ -1,4 +1,4 @@
-import { computed, reactive, UnwrapNestedRefs } from 'vue';
+import { computed, ComputedRef, reactive, UnwrapNestedRefs } from 'vue';
 import { z } from 'zod';
 
 import { AppPage } from '../page';
@@ -9,20 +9,24 @@ export const ILayerCollab = IRegionCollab.extend({
 });
 export type ILayerCollab = z.output<typeof ILayerCollab>;
 
+export interface ILayerReact extends IRegionReact {
+  collab: ComputedRef<ILayerCollab>;
+}
+
 export class PageLayer implements IPageRegion {
-  declare readonly react: UnwrapNestedRefs<IRegionReact>;
+  declare readonly react: UnwrapNestedRefs<ILayerReact>;
 
-  constructor(
-    readonly page: AppPage,
-    readonly id: string,
-    readonly collab: ILayerCollab
-  ) {
+  constructor(readonly page: AppPage, readonly id: string) {
     this.react = reactive({
-      noteIds: computed(() => this.collab.noteIds),
-      arrowIds: computed(() => this.collab.arrowIds),
+      collab: computed(() => this.page.layers.react.collab[this.id]),
 
-      notes: computed(() => this.page.notes.fromIds(this.collab.noteIds)),
-      arrows: computed(() => this.page.arrows.fromIds(this.collab.arrowIds)),
+      noteIds: computed(() => this.react.collab.noteIds),
+      arrowIds: computed(() => this.react.collab.arrowIds),
+
+      notes: computed(() => this.page.notes.fromIds(this.react.collab.noteIds)),
+      arrows: computed(() =>
+        this.page.arrows.fromIds(this.react.collab.arrowIds)
+      ),
     });
   }
 }

@@ -22,8 +22,8 @@ export class PageDropping {
 
     this.page.collab.doc.transact(() => {
       for (const selectedNote of selectedNotes) {
-        selectedNote.collab.pos.x -= containerWorldTopLeft.x;
-        selectedNote.collab.pos.y -= containerWorldTopLeft.y;
+        selectedNote.react.collab.pos.x -= containerWorldTopLeft.x;
+        selectedNote.react.collab.pos.y -= containerWorldTopLeft.y;
 
         selectedNote.moveToRegion(parentNote, dropIndex);
       }

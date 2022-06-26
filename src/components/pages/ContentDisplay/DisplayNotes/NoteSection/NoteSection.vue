@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="note.collab[section].enabled"
+    v-if="note.react.collab[section].enabled"
     :style="{
       height: note.react[section].visible ? undefined : '0px',
       overflow: note.react[section].visible ? undefined : 'hidden',

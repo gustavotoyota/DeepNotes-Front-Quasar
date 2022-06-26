@@ -4,10 +4,14 @@
       :parent-note="note.react.parent"
       :index="note.react.index"
       :style="{
-        top: note.react.parent.collab.container.horizontal ? '0' : '0%',
-        bottom: note.react.parent.collab.container.horizontal ? '0' : '50%',
-        left: note.react.parent.collab.container.horizontal ? '0%' : '0',
-        right: note.react.parent.collab.container.horizontal ? '50%' : '0',
+        top: note.react.parent.react.collab.container.horizontal ? '0' : '0%',
+        bottom: note.react.parent.react.collab.container.horizontal
+          ? '0'
+          : '50%',
+        left: note.react.parent.react.collab.container.horizontal ? '0%' : '0',
+        right: note.react.parent.react.collab.container.horizontal
+          ? '50%'
+          : '0',
       }"
     />
 
@@ -15,10 +19,12 @@
       :parent-note="note.react.parent"
       :index="note.react.index + 1"
       :style="{
-        top: note.react.parent.collab.container.horizontal ? '0' : '50%',
-        bottom: note.react.parent.collab.container.horizontal ? '0' : '0%',
-        left: note.react.parent.collab.container.horizontal ? '50%' : '0',
-        right: note.react.parent.collab.container.horizontal ? '0%' : '0',
+        top: note.react.parent.react.collab.container.horizontal ? '0' : '50%',
+        bottom: note.react.parent.react.collab.container.horizontal
+          ? '0'
+          : '0%',
+        left: note.react.parent.react.collab.container.horizontal ? '50%' : '0',
+        right: note.react.parent.react.collab.container.horizontal ? '0%' : '0',
       }"
     />
   </div>

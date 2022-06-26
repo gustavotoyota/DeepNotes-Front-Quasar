@@ -3,7 +3,7 @@
     section="container"
     style="position: relative"
   >
-    <NoteSpatialContainer v-if="note.collab.container.spatial" />
+    <NoteSpatialContainer v-if="note.react.collab.container.spatial" />
     <NoteListContainer v-else />
   </NoteSection>
 </template>

@@ -7,10 +7,14 @@ export class PageElems {
     this.page.layers.createAndObserveIds(this.page.react.collab.layerIds);
 
     for (const layer of this.page.react.layers) {
-      this.page.notes.createAndObserveIds(layer.collab.noteIds, layer.id, null);
+      this.page.notes.createAndObserveIds(
+        layer.react.collab.noteIds,
+        layer.id,
+        null
+      );
 
       this.page.arrows.createAndObserveIds(
-        layer.collab.arrowIds,
+        layer.react.collab.arrowIds,
         layer.id,
         null
       );

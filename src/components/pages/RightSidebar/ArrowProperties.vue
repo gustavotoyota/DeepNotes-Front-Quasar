@@ -3,10 +3,10 @@
     <MiniSidebarBtn
       tooltip="Backward"
       icon="mdi-arrow-left-thick"
-      :active="arrow.collab.backward"
+      :active="arrow.react.collab.backward"
       @click="
-        changeProp(!arrow.collab.backward, (arrow, value) => {
-          arrow.collab.backward = value;
+        changeProp(!arrow.react.collab.backward, (arrow, value) => {
+          arrow.react.collab.backward = value;
         })
       "
     />
@@ -14,10 +14,10 @@
     <MiniSidebarBtn
       tooltip="Forward"
       icon="mdi-arrow-right-thick"
-      :active="arrow.collab.forward"
+      :active="arrow.react.collab.forward"
       @click="
-        changeProp(!arrow.collab.forward, (arrow, value) => {
-          arrow.collab.forward = value;
+        changeProp(!arrow.react.collab.forward, (arrow, value) => {
+          arrow.react.collab.forward = value;
         })
       "
     />
@@ -27,10 +27,10 @@
     <MiniSidebarBtn
       tooltip="Dashed"
       icon="mdi-border-none"
-      :active="arrow.collab.dashed"
+      :active="arrow.react.collab.dashed"
       @click="
-        changeProp(!arrow.collab.dashed, (arrow, value) => {
-          arrow.collab.dashed = value;
+        changeProp(!arrow.react.collab.dashed, (arrow, value) => {
+          arrow.react.collab.dashed = value;
         })
       "
     />
@@ -40,10 +40,10 @@
     <div style="padding: 20px; display: flex">
       <Checkbox
         label="Backward"
-        :model-value="arrow.collab.backward"
+        :model-value="arrow.react.collab.backward"
         @click="
-          changeProp(!arrow.collab.backward, (arrow, value) => {
-            arrow.collab.backward = value;
+          changeProp(!arrow.react.collab.backward, (arrow, value) => {
+            arrow.react.collab.backward = value;
           })
         "
       />
@@ -52,10 +52,10 @@
 
       <Checkbox
         label="Forward"
-        :model-value="arrow.collab.forward"
+        :model-value="arrow.react.collab.forward"
         @click="
-          changeProp(!arrow.collab.forward, (arrow, value) => {
-            arrow.collab.forward = value;
+          changeProp(!arrow.react.collab.forward, (arrow, value) => {
+            arrow.react.collab.forward = value;
           })
         "
       />
@@ -66,10 +66,10 @@
     <div style="padding: 20px; display: flex">
       <Checkbox
         label="Dashed"
-        :model-value="arrow.collab.dashed"
+        :model-value="arrow.react.collab.dashed"
         @click="
-          changeProp(!arrow.collab.dashed, (arrow, value) => {
-            arrow.collab.dashed = value;
+          changeProp(!arrow.react.collab.dashed, (arrow, value) => {
+            arrow.react.collab.dashed = value;
           })
         "
       />
@@ -80,10 +80,10 @@
     <div style="padding: 20px">
       <q-color
         :disable="page.react.readonly"
-        :model-value="arrow.collab.color"
+        :model-value="arrow.react.collab.color"
         @update:model-value="
           changeProp($event, (arrow, value) => {
-            arrow.collab.color = value;
+            arrow.react.collab.color = value;
           })
         "
         default-view="palette"
@@ -165,7 +165,7 @@ async function setAsDefault() {
 
   $pages.react.defaultArrow = ISerialArrow.parse(
     $pages.serialization.serializeArrow(
-      $pages.react.page.activeElem.react.elem.collab
+      $pages.react.page.activeElem.react.elem.react.collab
     )
   );
 

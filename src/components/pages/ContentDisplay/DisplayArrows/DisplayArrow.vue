@@ -24,11 +24,11 @@
       :y1="arrow.react.sourcePos.y"
       :x2="arrow.react.targetPos.x"
       :y2="arrow.react.targetPos.y"
-      :stroke-dasharray="arrow.collab.dashed ? '6,6' : undefined"
+      :stroke-dasharray="arrow.react.collab.dashed ? '6,6' : undefined"
     />
 
     <polyline
-      v-if="arrow.collab.backward"
+      v-if="arrow.react.collab.backward"
       :stroke="arrow.react.color.final"
       :points="`${arrow.react.sourcePos.x + PageArrow.ARROW_SIZE},${
         arrow.react.sourcePos.y - PageArrow.ARROW_SIZE
@@ -42,7 +42,7 @@
     />
 
     <polyline
-      v-if="arrow.collab.forward"
+      v-if="arrow.react.collab.forward"
       :stroke="arrow.react.color.final"
       :points="`${arrow.react.targetPos.x - PageArrow.ARROW_SIZE},${
         arrow.react.targetPos.y - PageArrow.ARROW_SIZE

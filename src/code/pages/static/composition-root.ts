@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { PagesApp } from '../app/app';
-import { IArrowCollab, PageArrow } from '../app/page/arrows/arrow';
+import { PageArrow } from '../app/page/arrows/arrow';
 import { PageArrowCreation } from '../app/page/arrows/arrow-creation';
 import { PageArrows } from '../app/page/arrows/arrows';
 import { PageCamera } from '../app/page/camera/camera';
@@ -12,7 +12,7 @@ import { PageCollab } from '../app/page/collab';
 import { PageClipboard } from '../app/page/elems/clipboard';
 import { PageDeleting } from '../app/page/elems/deleting';
 import { PageElems } from '../app/page/elems/elems';
-import { ILayerCollab, PageLayer } from '../app/page/layers/layer';
+import { PageLayer } from '../app/page/layers/layer';
 import { PageLayers } from '../app/page/layers/layers';
 import { PageCloning } from '../app/page/notes/cloning';
 import { PageDragging } from '../app/page/notes/dragging';
@@ -66,8 +66,7 @@ export const container = new Container({
   boxSelection: () => (page: AppPage) => new PageBoxSelection(page),
 
   layers: (factory: any) => (page: AppPage) => new PageLayers(factory, page),
-  layer: () => (page: AppPage, id: string, collab: ILayerCollab) =>
-    new PageLayer(page, id, collab),
+  layer: () => (page: AppPage, id: string) => new PageLayer(page, id),
 
   regions: () => (page: AppPage) => new PageRegions(page),
 
@@ -84,7 +83,7 @@ export const container = new Container({
       layerId: string,
       parentId: string | null,
       index: number,
-      collab: z.output<typeof INoteCollab>
+      collab?: z.output<typeof INoteCollab>
     ) =>
       new PageNote(page, id, layerId, parentId, index, collab),
   editing: () => (page: AppPage) => new PageEditing(page),
@@ -103,10 +102,9 @@ export const container = new Container({
       layerId: string,
       parentId: string | null,
       index: number,
-      collab: z.output<typeof IArrowCollab>,
       fake = false
     ) =>
-      new PageArrow(page, id, layerId, parentId, index, collab, fake),
+      new PageArrow(page, id, layerId, parentId, index, fake),
   arrowCreation: (factory: any) => (page: AppPage) =>
     new PageArrowCreation(factory, page),
 });

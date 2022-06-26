@@ -1,7 +1,7 @@
 <template>
   <SVGDisplay>
     <template
-      v-for="(arrowId, index) in layer.collab.arrowIds"
+      v-for="(arrowId, index) in layer.react.collab.arrowIds"
       :key="arrowId"
     >
       <template

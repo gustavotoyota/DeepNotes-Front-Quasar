@@ -126,33 +126,33 @@ export class AppSerialization {
       // Children
 
       const serialNote: Partial<ISerialNoteOutput> = this.serialize(
-        note.collab
+        note.react.collab
       );
 
       // Head and body
 
       serialNote.head = {
-        enabled: note.collab.head.enabled,
-        value: yXmlFragmentToProsemirrorJSON(note.collab.head.value),
-        wrap: note.collab.head.wrap,
-        height: cloneDeep(note.collab.head.height),
+        enabled: note.react.collab.head.enabled,
+        value: yXmlFragmentToProsemirrorJSON(note.react.collab.head.value),
+        wrap: note.react.collab.head.wrap,
+        height: cloneDeep(note.react.collab.head.height),
       };
       serialNote.body = {
-        enabled: note.collab.body.enabled,
-        value: yXmlFragmentToProsemirrorJSON(note.collab.body.value),
-        wrap: note.collab.body.wrap,
-        height: cloneDeep(note.collab.body.height),
+        enabled: note.react.collab.body.enabled,
+        value: yXmlFragmentToProsemirrorJSON(note.react.collab.body.value),
+        wrap: note.react.collab.body.wrap,
+        height: cloneDeep(note.react.collab.body.height),
       };
 
       // Rest of the properties
 
-      const collabKeys = Object.keys(note.collab);
+      const collabKeys = Object.keys(note.react.collab);
 
       pull(collabKeys, 'head', 'body', 'noteIds', 'arrowIds', 'zIndex');
 
       for (const collabKey of collabKeys) {
         // @ts-ignore
-        serialNote[collabKey] = cloneDeep(note.collab[collabKey]);
+        serialNote[collabKey] = cloneDeep(note.react.collab[collabKey]);
       }
 
       noteMap.set(note.id, serialRegion.notes.length);
@@ -164,13 +164,15 @@ export class AppSerialization {
 
     for (const arrow of page.arrows.fromIds(container.arrowIds)) {
       if (
-        !noteMap.has(arrow.collab.sourceId!) ||
-        !noteMap.has(arrow.collab.targetId!)
+        !noteMap.has(arrow.react.collab.sourceId!) ||
+        !noteMap.has(arrow.react.collab.targetId!)
       ) {
         continue;
       }
 
-      serialRegion.arrows.push(this.serializeArrow(arrow.collab, noteMap));
+      serialRegion.arrows.push(
+        this.serializeArrow(arrow.react.collab, noteMap)
+      );
     }
 
     if (parse) {
@@ -268,7 +270,7 @@ export class AppSerialization {
           noteCollab[collabKey] = cloneDeep(serialNote[collabKey]);
         }
 
-        noteCollab.zIndex = page.react.currentLayer.collab.nextZIndex++;
+        noteCollab.zIndex = page.react.currentLayer.react.collab.nextZIndex++;
 
         // Children
 

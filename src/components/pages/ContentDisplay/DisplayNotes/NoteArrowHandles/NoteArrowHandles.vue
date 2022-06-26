@@ -3,7 +3,7 @@
     v-if="
       !page.react.readonly &&
       (note.react.parent == null ||
-        note.react.parent.collab.container.spatial) &&
+        note.react.parent.react.collab.container.spatial) &&
       note.react.active &&
       !note.react.dragging
     "

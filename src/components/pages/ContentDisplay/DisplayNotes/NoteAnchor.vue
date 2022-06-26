@@ -5,10 +5,10 @@
     :class="{ absolute: note.react.spatial }"
     :style="{
       position: note.react.spatial ? 'absolute' : 'relative',
-      left: note.react.spatial ? `${note.collab.pos.x}px` : undefined,
-      top: note.react.spatial ? `${note.collab.pos.y}px` : undefined,
+      left: note.react.spatial ? `${note.react.collab.pos.x}px` : undefined,
+      top: note.react.spatial ? `${note.react.collab.pos.y}px` : undefined,
       width: note.react.spatial ? undefined : '100%',
-      'z-index': note.react.spatial ? note.collab.zIndex : undefined,
+      'z-index': note.react.spatial ? note.react.collab.zIndex : undefined,
       visibility:
         !note.react.loaded || note.react.resizing ? 'hidden' : undefined,
     }"

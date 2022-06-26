@@ -9,7 +9,9 @@
       position: note.react.spatial ? 'absolute' : 'relative',
       transform: note.react.spatial
         ? `translate(` +
-          `${-note.collab.anchor.x * 100}%, ${-note.collab.anchor.y * 100}%)`
+          `${-note.react.collab.anchor.x * 100}%, ${
+            -note.react.collab.anchor.y * 100
+          }%)`
         : undefined,
 
       opacity: note.react.dragging ? '0.7' : undefined,

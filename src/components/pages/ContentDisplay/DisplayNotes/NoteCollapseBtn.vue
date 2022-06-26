@@ -1,6 +1,8 @@
 <template>
   <div
-    v-if="note.collab.collapsing.enabled && note.react.topSection === section"
+    v-if="
+      note.react.collab.collapsing.enabled && note.react.topSection === section
+    "
     style="flex: none"
   >
     <q-btn

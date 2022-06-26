@@ -33,6 +33,8 @@ export const IArrowCollab = z.object({
 });
 
 export interface IArrowReact extends IElemReact {
+  collab: ComputedRef<z.output<typeof IArrowCollab>>;
+
   fakeTargetPos: Vec2 | null;
 
   valid: ComputedRef<boolean>;
@@ -68,14 +70,13 @@ export class PageArrow extends PageElem {
     layerId: string,
     parentId: string | null,
     index: number,
-    readonly collab: z.output<typeof IArrowCollab>,
     fake = false
   ) {
     super(page, id, ElemType.ARROW, layerId, parentId, index);
 
-    this.collab = collab;
-
     const react: Omit<IArrowReact, keyof IElemReact> = {
+      collab: computed(() => this.page.arrows.react.collab[this.id]),
+
       fakeTargetPos: fake ? new Vec2() : null,
 
       valid: computed(() => {
@@ -98,10 +99,10 @@ export class PageArrow extends PageElem {
       }),
 
       sourceNote: computed(
-        () => this.page.notes.react.map[this.collab.sourceId!]
+        () => this.page.notes.react.map[this.react.collab.sourceId!]
       ),
       targetNote: computed(
-        () => this.page.notes.react.map[this.collab.targetId!]
+        () => this.page.notes.react.map[this.react.collab.targetId!]
       ),
 
       sourceCenter: computed(() => this.react.sourceNote.react.worldCenter),
@@ -143,10 +144,10 @@ export class PageArrow extends PageElem {
 
       color: {
         highlight: computed(() =>
-          lightenByRatio(new Color(this.collab.color), 0.6).hex()
+          lightenByRatio(new Color(this.react.collab.color), 0.6).hex()
         ),
         light: computed(() =>
-          lightenByRatio(new Color(this.collab.color), 0.3).hex()
+          lightenByRatio(new Color(this.react.collab.color), 0.3).hex()
         ),
         final: computed(() => {
           if (this.react.active) {
@@ -154,7 +155,7 @@ export class PageArrow extends PageElem {
           } else if (this.react.selected) {
             return this.react.color.light;
           } else {
-            return this.collab.color;
+            return this.react.collab.color;
           }
         }),
       },
@@ -179,10 +180,10 @@ export class PageArrow extends PageElem {
   }
 
   removeFromRegion() {
-    if (this.react.region.collab.arrowIds[this.react.index] !== this.id) {
+    if (this.react.region.react.collab.arrowIds[this.react.index] !== this.id) {
       return;
     }
 
-    this.react.region.collab.arrowIds.splice(this.react.index, 1);
+    this.react.region.react.collab.arrowIds.splice(this.react.index, 1);
   }
 }

@@ -111,7 +111,7 @@ watch(visible, async () => {
       return;
     }
 
-    const text = activeElem.collab[activeElem.react.topSection].value;
+    const text = activeelem.react.collab[activeElem.react.topSection].value;
     pageTitle.value = text.toDOM().textContent!.split('\n')[0];
 
     pageTitleElem.value?.focus();
@@ -180,7 +180,7 @@ async function createPage() {
 
     page.value.collab.doc.transact(() => {
       for (const selectedNote of page.value.selection.react.notes) {
-        selectedNote.collab.link = response.data.pageId;
+        selectedNote.react.collab.link = response.data.pageId;
       }
     });
 

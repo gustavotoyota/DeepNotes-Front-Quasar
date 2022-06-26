@@ -39,8 +39,8 @@ export class PageCloning {
 
     this.page.collab.doc.transact(() => {
       for (const note of notes) {
-        note.collab.pos.x += 8;
-        note.collab.pos.y += 8;
+        note.react.collab.pos.x += 8;
+        note.react.collab.pos.y += 8;
       }
     });
 

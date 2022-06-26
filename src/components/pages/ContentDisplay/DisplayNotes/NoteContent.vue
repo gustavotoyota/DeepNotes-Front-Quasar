@@ -1,7 +1,9 @@
 <template>
   <a
-    :href="note.react.selected ? undefined : note.collab.link || undefined"
-    :target="note.collab.link ? '_blank' : undefined"
+    :href="
+      note.react.selected ? undefined : note.react.collab.link || undefined
+    "
+    :target="note.react.collab.link ? '_blank' : undefined"
     :style="{
       cursor: note.react.cursor,
     }"
@@ -60,7 +62,7 @@ function onLeftPointerDown(event: PointerEvent) {
   }
 
   if (
-    (note.collab.link || (event.target as Element).closest('a[href]')) &&
+    (note.react.collab.link || (event.target as Element).closest('a[href]')) &&
     !event.altKey &&
     !event.shiftKey &&
     !note.react.selected

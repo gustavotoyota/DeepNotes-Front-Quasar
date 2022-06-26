@@ -65,14 +65,14 @@ export class PageResizing {
       note.react.resizing = true;
 
       const collab = (
-        syncedstore.getYjsValue(note.collab) as Y.Map<any>
+        syncedstore.getYjsValue(note.react.collab) as Y.Map<any>
       ).toJSON() as z.output<typeof INoteCollab>;
 
       collab.head.value = yXmlFragmentToProsemirrorJSON(
-        note.collab.head.value
+        note.react.collab.head.value
       ) as any;
       collab.body.value = yXmlFragmentToProsemirrorJSON(
-        note.collab.body.value
+        note.react.collab.body.value
       ) as any;
 
       collab.anchor = new Vec2();
@@ -112,7 +112,7 @@ export class PageResizing {
       this.react.ghosts.push(ghost);
     }
 
-    this.activeGhost.collab.zIndex = nextZIndex++;
+    this.activeGhost.react.collab.zIndex = nextZIndex++;
 
     await nextTick();
 
@@ -176,18 +176,20 @@ export class PageResizing {
         continue;
       }
 
-      ghost.collab.width[ghost.react.sizeProp] = `${newSectionRect.size.x}px`;
+      ghost.react.collab.width[
+        ghost.react.sizeProp
+      ] = `${newSectionRect.size.x}px`;
 
       if (this.section != null) {
-        ghost.collab[this.section].height[
+        ghost.react.collab[this.section].height[
           ghost.react.sizeProp
         ] = `${newSectionRect.size.y}px`;
       }
 
       const frameRect = note.getWorldRect('note-frame');
 
-      ghost.collab.pos.x = frameRect.topLeft.x + posDelta.x;
-      ghost.collab.pos.y = frameRect.topLeft.y + posDelta.y;
+      ghost.react.collab.pos.x = frameRect.topLeft.x + posDelta.x;
+      ghost.react.collab.pos.y = frameRect.topLeft.y + posDelta.y;
     }
   };
 
@@ -201,23 +203,23 @@ export class PageResizing {
         }
 
         if (this.side.includes('w') || this.side.includes('e')) {
-          note.collab.width[note.react.sizeProp] =
-            ghost.collab.width[ghost.react.sizeProp];
+          note.react.collab.width[note.react.sizeProp] =
+            ghost.react.collab.width[ghost.react.sizeProp];
         }
 
         if (
           this.section != null &&
           (this.side.includes('n') || this.side.includes('s'))
         ) {
-          note.collab[this.section].height[note.react.sizeProp] =
-            ghost.collab[this.section].height[ghost.react.sizeProp];
+          note.react.collab[this.section].height[note.react.sizeProp] =
+            ghost.react.collab[this.section].height[ghost.react.sizeProp];
         }
 
         const worldRect = ghost.react.worldRect;
 
-        note.collab.pos = worldRect.topLeft.vecLerp(
+        note.react.collab.pos = worldRect.topLeft.vecLerp(
           worldRect.bottomRight,
-          new Vec2(note.collab.anchor)
+          new Vec2(note.react.collab.anchor)
         );
 
         if (note.react.parent != null) {
@@ -228,8 +230,8 @@ export class PageResizing {
             containerClientRect.topLeft
           );
 
-          note.collab.pos.x -= containerWorldTopLeft.x;
-          note.collab.pos.y -= containerWorldTopLeft.y;
+          note.react.collab.pos.x -= containerWorldTopLeft.x;
+          note.react.collab.pos.y -= containerWorldTopLeft.y;
         }
 
         note.react.resizing = false;
@@ -243,7 +245,7 @@ export class PageResizing {
     const frameRect = note.getWorldRect('note-frame');
 
     let verticalRect;
-    if (this.section != null && note.collab[this.section].enabled) {
+    if (this.section != null && note.react.collab[this.section].enabled) {
       verticalRect = note.getWorldRect(`note-${this.section}-section`);
     } else {
       verticalRect = frameRect;

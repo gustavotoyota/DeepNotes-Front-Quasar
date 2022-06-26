@@ -38,15 +38,12 @@ export class PageArrows {
     parentId: string | null,
     index: number
   ) {
-    const collab = this.react.collab[arrowId];
-
     const arrow = this.factory.makeArrow(
       this.page,
       arrowId,
       layerId,
       parentId,
-      index,
-      collab
+      index
     );
 
     this.react.map[arrow.id] = arrow;

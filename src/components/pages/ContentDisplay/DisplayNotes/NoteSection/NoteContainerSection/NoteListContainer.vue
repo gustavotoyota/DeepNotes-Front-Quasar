@@ -8,8 +8,12 @@
     class="note-container-content"
     :style="{
       width: note.react.width.target,
-      'flex-direction': note.collab.container.horizontal ? 'row' : 'column',
-      'flex-wrap': note.collab.container.wrapChildren ? 'wrap' : undefined,
+      'flex-direction': note.react.collab.container.horizontal
+        ? 'row'
+        : 'column',
+      'flex-wrap': note.react.collab.container.wrapChildren
+        ? 'wrap'
+        : undefined,
     }"
   >
     <!-- Placeholder -->
@@ -31,7 +35,7 @@
     <!-- Children -->
 
     <template
-      v-for="(childNoteId, index) in note.collab.noteIds"
+      v-for="(childNoteId, index) in note.react.collab.noteIds"
       :key="childNoteId"
     >
       <template
@@ -45,12 +49,12 @@
           "
           class="note-container-child"
           :style="{
-            'flex-direction': note.collab.container.horizontal
+            'flex-direction': note.react.collab.container.horizontal
               ? 'row'
               : 'column',
             width:
-              !note.collab.container.horizontal &&
-              note.collab.container.stretchChildren
+              !note.react.collab.container.horizontal &&
+              note.react.collab.container.stretchChildren
                 ? 'calc(100% - 6px)'
                 : undefined,
           }"
@@ -80,8 +84,8 @@
         :always-visible="true"
         style="right: 3px; bottom: 3px"
         :style="{
-          left: note.collab.container.horizontal ? '-3px' : '3px',
-          top: note.collab.container.horizontal ? '3px' : '-3px',
+          left: note.react.collab.container.horizontal ? '-3px' : '3px',
+          top: note.react.collab.container.horizontal ? '3px' : '-3px',
         }"
         @dblclick.left="onLeftDoubleClick"
       />

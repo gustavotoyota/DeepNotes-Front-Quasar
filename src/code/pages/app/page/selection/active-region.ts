@@ -34,8 +34,8 @@ export class PageActiveRegion {
         }
       }),
 
-      noteIds: computed(() => this.react.region.collab.noteIds),
-      arrowIds: computed(() => this.react.region.collab.arrowIds),
+      noteIds: computed(() => this.react.region.react.collab.noteIds),
+      arrowIds: computed(() => this.react.region.react.collab.arrowIds),
 
       notes: computed(() => this.react.region.react.notes),
       arrows: computed(() => this.react.region.react.arrows),

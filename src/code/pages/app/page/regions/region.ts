@@ -11,6 +11,8 @@ export const IRegionCollab = z.object({
 });
 
 export interface IRegionReact {
+  collab: ComputedRef<z.output<typeof IRegionCollab>>;
+
   notes: ComputedRef<PageNote[]>;
   arrows: ComputedRef<PageArrow[]>;
 }
@@ -21,6 +23,4 @@ export interface IPageRegion {
   id: string;
 
   react: UnwrapRef<IRegionReact>;
-
-  collab: z.output<typeof IRegionCollab>;
 }

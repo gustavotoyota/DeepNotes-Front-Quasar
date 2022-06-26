@@ -60,7 +60,7 @@ export class PageEditing {
       this.stop();
     }
 
-    if (this.page.react.readonly || note.collab.readOnly) {
+    if (this.page.react.readonly || note.react.collab.readOnly) {
       return;
     }
 

@@ -1,7 +1,7 @@
 <template>
   <DOMDisplay>
     <template
-      v-for="(noteId, index) in layer.collab.noteIds"
+      v-for="(noteId, index) in layer.react.collab.noteIds"
       :key="noteId"
     >
       <template

@@ -45,10 +45,10 @@ export class PageArrowCreation {
     const serialArrow = ISerialArrow.parse($pages.react.defaultArrow);
     const arrowCollab = $pages.serialization.deserializeArrow(serialArrow);
 
-    merge(this.fakeArrow.collab, arrowCollab);
+    merge(this.fakeArrow.react.collab, arrowCollab);
 
-    this.fakeArrow.collab.sourceId = sourceNote.id;
-    this.fakeArrow.collab.targetId = null as any;
+    this.fakeArrow.react.collab.sourceId = sourceNote.id;
+    this.fakeArrow.react.collab.targetId = null as any;
 
     this.fakeArrow.react.parentId = sourceNote.react.parentId;
 
@@ -81,7 +81,7 @@ export class PageArrowCreation {
     this.react.active = false;
 
     this.fakeArrow.react.fakeTargetPos = null;
-    this.fakeArrow.collab.targetId = targetNote.id;
+    this.fakeArrow.react.collab.targetId = targetNote.id;
 
     if (!this.fakeArrow.react.valid) {
       return;
@@ -89,7 +89,7 @@ export class PageArrowCreation {
 
     // Create arrow collab
 
-    const newCollab = cloneDeep(this.fakeArrow.collab);
+    const newCollab = cloneDeep(this.fakeArrow.react.collab);
 
     newCollab.label.value = new Y.XmlFragment();
 
@@ -100,7 +100,7 @@ export class PageArrowCreation {
     this.page.collab.doc.transact(() => {
       this.page.arrows.react.collab[arrowId] = newCollab;
 
-      targetNote.react.region.collab.arrowIds.push(arrowId);
+      targetNote.react.region.react.collab.arrowIds.push(arrowId);
     });
 
     // Select arrow

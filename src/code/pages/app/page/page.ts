@@ -170,7 +170,7 @@ export class AppPage {
         const result = [];
 
         for (const layer of this.react.layers) {
-          result.push(...layer.collab.noteIds);
+          result.push(...layer.react.collab.noteIds);
         }
 
         return result;
@@ -179,7 +179,7 @@ export class AppPage {
         const result = [];
 
         for (const layer of this.react.layers) {
-          result.push(...layer.collab.arrowIds);
+          result.push(...layer.react.collab.arrowIds);
         }
 
         return result;

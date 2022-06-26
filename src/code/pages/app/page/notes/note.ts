@@ -114,6 +114,8 @@ export interface INoteTextSectionReact extends INoteSectionReact {
 }
 
 export interface INoteReact extends IRegionReact, IElemReact {
+  collab: ComputedRef<z.output<typeof INoteCollab>>;
+
   editing: boolean;
   dragging: boolean;
   resizing: boolean;
@@ -198,7 +200,7 @@ export class PageNote extends PageElem implements IPageRegion {
     layerId: string,
     parentId: string | null,
     index: number,
-    readonly collab: z.output<typeof INoteCollab>
+    readonly collab?: z.output<typeof INoteCollab>
   ) {
     super(page, id, ElemType.NOTE, layerId, parentId, index);
 
@@ -206,19 +208,23 @@ export class PageNote extends PageElem implements IPageRegion {
       computed(() => {
         if (
           this.react.collapsing.collapsed &&
-          this.collab[section].height.collapsed === 'auto'
+          this.react.collab[section].height.collapsed === 'auto'
         ) {
           if (this.react.numEnabledSections === 1) {
             return '0px';
           } else {
-            return this.collab[section].height.expanded;
+            return this.react.collab[section].height.expanded;
           }
         }
 
-        return this.collab[section].height[this.react.sizeProp];
+        return this.react.collab[section].height[this.react.sizeProp];
       });
 
     const react: Omit<INoteReact, keyof IElemReact> = {
+      collab: computed(
+        () => this.collab ?? this.page.notes.react.collab[this.id]
+      ),
+
       editing: false,
       dragging: false,
       resizing: false,
@@ -226,14 +232,14 @@ export class PageNote extends PageElem implements IPageRegion {
 
       head: {
         editor: shallowRef(null),
-        visible: computed(() => this.collab.head.enabled),
+        visible: computed(() => this.react.collab.head.enabled),
         height: makeSectionHeight('head'),
       },
       body: {
         editor: shallowRef(null),
         visible: computed(
           () =>
-            this.collab.body.enabled &&
+            this.react.collab.body.enabled &&
             (!this.react.collapsing.collapsed ||
               this.react.topSection === 'body')
         ),
@@ -242,7 +248,7 @@ export class PageNote extends PageElem implements IPageRegion {
       container: {
         visible: computed(
           () =>
-            this.collab.container.enabled &&
+            this.react.collab.container.enabled &&
             (!this.react.collapsing.collapsed ||
               this.react.topSection === 'container')
         ),
@@ -253,27 +259,27 @@ export class PageNote extends PageElem implements IPageRegion {
       collapsing: {
         collapsed: computed({
           get: () => {
-            if (!this.collab.collapsing.enabled) {
+            if (!this.react.collab.collapsing.enabled) {
               return false;
             }
 
             if (
               this.page.react.readonly ||
-              this.collab.collapsing.localCollapsing
+              this.react.collab.collapsing.localCollapsing
             ) {
               return this.react.collapsing.locallyCollapsed;
             }
 
-            return this.collab.collapsing.collapsed;
+            return this.react.collab.collapsing.collapsed;
           },
           set: (val) => {
             if (
               this.page.react.readonly ||
-              this.collab.collapsing.localCollapsing
+              this.react.collab.collapsing.localCollapsing
             ) {
               this.react.collapsing.locallyCollapsed = val;
             } else {
-              this.collab.collapsing.collapsed = val;
+              this.react.collab.collapsing.collapsed = val;
             }
           },
         }),
@@ -287,22 +293,22 @@ export class PageNote extends PageElem implements IPageRegion {
       spatial: computed(
         () =>
           this.react.parent == null ||
-          this.react.parent.collab.container.spatial
+          this.react.parent.react.collab.container.spatial
       ),
 
       width: {
         stretched: computed(() => {
           return (
             this.react.parent != null &&
-            !this.react.parent.collab.container.spatial &&
-            !this.react.parent.collab.container.horizontal &&
-            this.react.parent.collab.container.stretchChildren
+            !this.react.parent.react.collab.container.spatial &&
+            !this.react.parent.react.collab.container.horizontal &&
+            this.react.parent.react.collab.container.stretchChildren
           );
         }),
         parentPinned: computed(() => {
           return (
             this.react.parent != null &&
-            !this.react.parent.collab.container.spatial &&
+            !this.react.parent.react.collab.container.spatial &&
             this.react.parent.react.width.pinned &&
             this.react.width.stretched
           );
@@ -318,7 +324,7 @@ export class PageNote extends PageElem implements IPageRegion {
           if (
             // Is empty container with unpinned width:
             !this.react.width.pinned &&
-            this.collab.container.enabled &&
+            this.react.collab.container.enabled &&
             this.react.notes.length === 0
           ) {
             return '130px';
@@ -329,12 +335,12 @@ export class PageNote extends PageElem implements IPageRegion {
         self: computed(() => {
           if (
             this.react.collapsing.collapsed &&
-            this.collab.width.collapsed === 'auto'
+            this.react.collab.width.collapsed === 'auto'
           ) {
-            return this.collab.width.expanded;
+            return this.react.collab.width.expanded;
           }
 
-          return this.collab.width[this.react.sizeProp];
+          return this.react.collab.width[this.react.sizeProp];
         }),
         final: computed(() => {
           if (this.react.width.stretched) {
@@ -353,11 +359,11 @@ export class PageNote extends PageElem implements IPageRegion {
       },
 
       topSection: computed(() => {
-        if (this.collab.head.enabled) {
+        if (this.react.collab.head.enabled) {
           return 'head';
-        } else if (this.collab.body.enabled) {
+        } else if (this.react.collab.body.enabled) {
           return 'body';
-        } else if (this.collab.container.enabled) {
+        } else if (this.react.collab.container.enabled) {
           return 'container';
         } else {
           throw new Error('No sections enabled');
@@ -366,11 +372,11 @@ export class PageNote extends PageElem implements IPageRegion {
       bottomSection: computed(() => {
         if (this.react.collapsing.collapsed) {
           return this.react.topSection;
-        } else if (this.collab.container.enabled) {
+        } else if (this.react.collab.container.enabled) {
           return 'container';
-        } else if (this.collab.body.enabled) {
+        } else if (this.react.collab.body.enabled) {
           return 'body';
-        } else if (this.collab.head.enabled) {
+        } else if (this.react.collab.head.enabled) {
           return 'head';
         } else {
           throw new Error('No sections enabled');
@@ -379,13 +385,13 @@ export class PageNote extends PageElem implements IPageRegion {
       numEnabledSections: computed(() => {
         let numSections = 0;
 
-        if (this.collab.head.enabled) {
+        if (this.react.collab.head.enabled) {
           ++numSections;
         }
-        if (this.collab.body.enabled) {
+        if (this.react.collab.body.enabled) {
           ++numSections;
         }
-        if (this.collab.container.enabled) {
+        if (this.react.collab.container.enabled) {
           ++numSections;
         }
 
@@ -396,12 +402,12 @@ export class PageNote extends PageElem implements IPageRegion {
       worldRect: computed(
         () =>
           new Rect(
-            new Vec2(this.collab.pos).sub(
-              new Vec2(this.collab.anchor).mul(this.react.worldSize)
+            new Vec2(this.react.collab.pos).sub(
+              new Vec2(this.react.collab.anchor).mul(this.react.worldSize)
             ),
-            new Vec2(this.collab.pos).add(
+            new Vec2(this.react.collab.pos).add(
               new Vec2(1)
-                .sub(new Vec2(this.collab.anchor))
+                .sub(new Vec2(this.react.collab.anchor))
                 .mul(this.react.worldSize)
             )
           )
@@ -412,8 +418,8 @@ export class PageNote extends PageElem implements IPageRegion {
         page.rects.worldToClient(this.react.worldRect)
       ),
 
-      notes: computed(() => page.notes.fromIds(this.collab.noteIds)),
-      arrows: computed(() => page.arrows.fromIds(this.collab.arrowIds)),
+      notes: computed(() => page.notes.fromIds(this.react.collab.noteIds)),
+      arrows: computed(() => page.arrows.fromIds(this.react.collab.arrowIds)),
 
       cursor: computed(() => {
         if (this.react.editing) {
@@ -424,7 +430,7 @@ export class PageNote extends PageElem implements IPageRegion {
           return 'default';
         }
 
-        if (this.collab.link) {
+        if (this.react.collab.link) {
           return 'pointer';
         }
 
@@ -439,9 +445,9 @@ export class PageNote extends PageElem implements IPageRegion {
           lightenByRatio(Color(this.react.color.base), 0.25).hex()
         ),
         base: computed(() =>
-          this.collab.color.inherit && this.react.parent != null
+          this.react.collab.color.inherit && this.react.parent != null
             ? this.react.parent.react.color.base
-            : this.collab.color.value
+            : this.react.collab.color.value
         ),
         shadow: computed(() =>
           darkenByRatio(Color(this.react.color.base), 0.5).hex()
@@ -459,18 +465,22 @@ export class PageNote extends PageElem implements IPageRegion {
 
       link: {
         external: computed(() => {
-          if (this.collab.link == null) {
+          if (this.react.collab.link == null) {
             return false;
           }
 
           if (
-            !this.collab.link.startsWith('http://') &&
-            !this.collab.link.startsWith('https://')
+            !this.react.collab.link.startsWith('http://') &&
+            !this.react.collab.link.startsWith('https://')
           ) {
             return false;
           }
 
-          if (this.collab.link.startsWith(`${window.location.origin}/pages/`)) {
+          if (
+            this.react.collab.link.startsWith(
+              `${window.location.origin}/pages/`
+            )
+          ) {
             return false;
           }
 
@@ -486,11 +496,14 @@ export class PageNote extends PageElem implements IPageRegion {
   }
 
   bringToTop() {
-    if (this.collab.zIndex === this.react.layer.collab.nextZIndex - 1) {
+    if (
+      this.react.collab.zIndex ===
+      this.react.layer.react.collab.nextZIndex - 1
+    ) {
       return;
     }
 
-    this.collab.zIndex = this.react.layer.collab.nextZIndex++;
+    this.react.collab.zIndex = this.react.layer.react.collab.nextZIndex++;
   }
 
   getNode(part: string | null): Element {
@@ -563,8 +576,8 @@ export class PageNote extends PageElem implements IPageRegion {
         for (let i = sortedIndexes.length - 1; i >= 0; i--) {
           const index = sortedIndexes[i];
 
-          if (region.collab.noteIds[index] === this.id) {
-            region.collab.noteIds.splice(index, 1);
+          if (region.react.collab.noteIds[index] === this.id) {
+            region.react.collab.noteIds.splice(index, 1);
           }
         }
       }
@@ -582,8 +595,8 @@ export class PageNote extends PageElem implements IPageRegion {
         this.react.parentId = null;
       }
 
-      region.collab.noteIds.splice(
-        insertIndex ?? region.collab.noteIds.length,
+      region.react.collab.noteIds.splice(
+        insertIndex ?? region.react.collab.noteIds.length,
         0,
         this.id
       );
@@ -592,12 +605,12 @@ export class PageNote extends PageElem implements IPageRegion {
 
   reverseChildren() {
     this.page.collab.doc.transact(() => {
-      const children = this.collab.noteIds.splice(
+      const children = this.react.collab.noteIds.splice(
         0,
-        this.collab.noteIds.length
+        this.react.collab.noteIds.length
       );
 
-      this.collab.noteIds.push(...children.reverse());
+      this.react.collab.noteIds.push(...children.reverse());
     });
   }
 }

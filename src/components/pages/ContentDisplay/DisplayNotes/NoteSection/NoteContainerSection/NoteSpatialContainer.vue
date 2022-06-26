@@ -33,7 +33,7 @@
       height="100%"
     >
       <template
-        v-for="(arrowId, index) in note.collab.arrowIds"
+        v-for="(arrowId, index) in note.react.collab.arrowIds"
         :key="arrowId"
       >
         <template
@@ -52,7 +52,7 @@
     <!-- Notes -->
 
     <template
-      v-for="(childNoteId, index) in note.collab.noteIds"
+      v-for="(childNoteId, index) in note.react.collab.noteIds"
       :key="childNoteId"
     >
       <template

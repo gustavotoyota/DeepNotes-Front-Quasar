@@ -2,7 +2,7 @@
   <div
     v-if="
       !note.page.react.readonly &&
-      note.collab.resizable &&
+      note.react.collab.resizable &&
       note.react.selected &&
       !note.react.ghost
     "

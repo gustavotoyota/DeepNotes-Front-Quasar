@@ -39,7 +39,7 @@ export class PageDragging {
 
     if (
       !(this.page.activeElem.react.elem instanceof PageNote) ||
-      !this.page.activeElem.react.elem.collab.movable
+      !this.page.activeElem.react.elem.react.collab.movable
     ) {
       if (event.pointerType !== 'mouse') {
         this.page.panning.start(event);
@@ -84,7 +84,7 @@ export class PageDragging {
       // Update dragging states
 
       for (const selectedNote of this.page.selection.react.notes) {
-        selectedNote.react.dragging = selectedNote.collab.movable;
+        selectedNote.react.dragging = selectedNote.react.collab.movable;
 
         if (!selectedNote.react.dragging) {
           this.page.selection.remove(selectedNote);
@@ -95,8 +95,8 @@ export class PageDragging {
 
       this.page.collab.doc.transact(() => {
         for (const selectedNote of this.page.selection.react.notes) {
-          selectedNote.collab.pos.x += gapWorldDelta.x;
-          selectedNote.collab.pos.y += gapWorldDelta.y;
+          selectedNote.react.collab.pos.x += gapWorldDelta.x;
+          selectedNote.react.collab.pos.y += gapWorldDelta.y;
         }
       });
 
@@ -111,8 +111,8 @@ export class PageDragging {
 
     this.page.collab.doc.transact(() => {
       for (const note of this.page.selection.react.notes) {
-        note.collab.pos.x += worldDelta.x;
-        note.collab.pos.y += worldDelta.y;
+        note.react.collab.pos.x += worldDelta.x;
+        note.react.collab.pos.y += worldDelta.y;
       }
     });
   };
@@ -137,7 +137,8 @@ export class PageDragging {
       (a: PageNote, b: PageNote) => b.react.index - a.react.index
     );
 
-    const insertIndex = this.page.react.currentLayer.collab.noteIds.length;
+    const insertIndex =
+      this.page.react.currentLayer.react.collab.noteIds.length;
 
     this.page.collab.doc.transact(() => {
       for (const selectedNote of selectedNotes) {
@@ -152,7 +153,7 @@ export class PageDragging {
     // Adjust note positions and sizes
     // With mouse in the center of the active element
 
-    if (region instanceof PageNote && region.collab.container.spatial) {
+    if (region instanceof PageNote && region.react.collab.container.spatial) {
       const containerClientRect = this.page.rects.fromDOM(
         region.react.container.elem.getBoundingClientRect()
       );
@@ -162,8 +163,8 @@ export class PageDragging {
 
       this.page.collab.doc.transact(() => {
         for (const selectedNote of this.page.selection.react.notes) {
-          selectedNote.collab.pos.x += containerWorldTopLeft.x;
-          selectedNote.collab.pos.y += containerWorldTopLeft.y;
+          selectedNote.react.collab.pos.x += containerWorldTopLeft.x;
+          selectedNote.react.collab.pos.y += containerWorldTopLeft.y;
         }
       });
 
@@ -189,14 +190,14 @@ export class PageDragging {
 
           const worldSize = selectedNote.getWorldRect('note-frame').size;
 
-          selectedNote.collab.pos.x =
+          selectedNote.react.collab.pos.x =
             prevCenter.x +
             mouseOffset.x +
-            worldSize.x * (selectedNote.collab.anchor.x - 0.5);
-          selectedNote.collab.pos.y =
+            worldSize.x * (selectedNote.react.collab.anchor.x - 0.5);
+          selectedNote.react.collab.pos.y =
             prevCenter.y +
             mouseOffset.y +
-            worldSize.y * (selectedNote.collab.anchor.y - 0.5);
+            worldSize.y * (selectedNote.react.collab.anchor.y - 0.5);
         });
       }
     });

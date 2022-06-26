@@ -36,8 +36,6 @@ const targetIndex = computed(
 const page = inject<AppPage>('page')!;
 
 function onPointerOver() {
-  console.log('onPointerOver');
-
   if (!page.dragging.react.active) {
     return;
   }
@@ -47,8 +45,6 @@ function onPointerOver() {
 }
 
 function onPointerOut() {
-  console.log('onPointerOut');
-
   if (!page.dragging.react.active) {
     return;
   }

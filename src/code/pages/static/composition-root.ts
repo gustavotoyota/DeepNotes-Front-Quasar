@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { PagesApp } from '../app/app';
-import { PageArrow } from '../app/page/arrows/arrow';
+import { IArrowCollab, PageArrow } from '../app/page/arrows/arrow';
 import { PageArrowCreation } from '../app/page/arrows/arrow-creation';
 import { PageArrows } from '../app/page/arrows/arrows';
 import { PageCamera } from '../app/page/camera/camera';
@@ -102,9 +102,9 @@ export const container = new Container({
       layerId: string,
       parentId: string | null,
       index: number,
-      fake = false
+      collab?: z.output<typeof IArrowCollab>
     ) =>
-      new PageArrow(page, id, layerId, parentId, index, fake),
+      new PageArrow(page, id, layerId, parentId, index, collab),
   arrowCreation: (factory: any) => (page: AppPage) =>
     new PageArrowCreation(factory, page),
 });

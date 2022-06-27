@@ -30,8 +30,7 @@ export class PageArrowCreation {
           sourceId: v4(),
           targetId: v4(),
         } as z.input<typeof IArrowCollab>)
-      ),
-      true
+      )
     );
   }
 

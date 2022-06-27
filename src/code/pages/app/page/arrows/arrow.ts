@@ -70,14 +70,16 @@ export class PageArrow extends PageElem {
     layerId: string,
     parentId: string | null,
     index: number,
-    fake = false
+    readonly collab?: z.output<typeof IArrowCollab>
   ) {
     super(page, id, ElemType.ARROW, layerId, parentId, index);
 
     const react: Omit<IArrowReact, keyof IElemReact> = {
-      collab: computed(() => this.page.arrows.react.collab[this.id]),
+      collab: computed(
+        () => this.collab ?? this.page.arrows.react.collab[this.id]
+      ),
 
-      fakeTargetPos: fake ? new Vec2() : null,
+      fakeTargetPos: this.collab ? new Vec2() : null,
 
       valid: computed(() => {
         if (this.react.sourceNote == null) {
@@ -163,7 +165,7 @@ export class PageArrow extends PageElem {
 
     Object.assign(this.react, react);
 
-    if (!fake) {
+    if (!this.collab) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       nextTick(() => {
         // nextTick is necessary because the arrow may be created before the notes

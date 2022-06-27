@@ -11,7 +11,7 @@
     @pointerover="onPointerOver"
     @pointerout="onPointerOut"
     @pointerup.left="onLeftPointerUp"
-  />
+  ></div>
 </template>
 
 <script

@@ -50,7 +50,7 @@ export class PageNotes {
         note.id
       );
     } else {
-      if (note.react.parentId !== parentId) {
+      if (note.react.parentId != parentId) {
         this.page.selection.remove(note);
       }
 
@@ -105,7 +105,12 @@ export class PageNotes {
     });
   }
 
-  async create(region: IPageRegion, worldPos: Vec2, centralize = true) {
+  async create(
+    region: IPageRegion,
+    worldPos: Vec2,
+    centralize = true,
+    destIndex?: number
+  ) {
     if (this.page.react.readonly) {
       return;
     }
@@ -115,7 +120,8 @@ export class PageNotes {
         notes: [$pages.react.defaultNote],
         arrows: [],
       },
-      region.react.collab
+      region.react.collab,
+      destIndex
     ).noteIds[0];
 
     const note = this.page.notes.react.map[noteId];

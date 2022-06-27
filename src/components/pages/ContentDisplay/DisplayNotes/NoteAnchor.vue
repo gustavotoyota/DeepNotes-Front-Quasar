@@ -13,7 +13,7 @@
         !note.react.loaded || note.react.resizing ? 'hidden' : undefined,
     }"
   >
-    <slot />
+    <slot></slot>
   </div>
 </template>
 

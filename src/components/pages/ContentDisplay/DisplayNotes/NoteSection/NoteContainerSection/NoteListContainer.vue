@@ -16,13 +16,18 @@
         : undefined,
     }"
   >
-    <!-- Placeholder -->
+    <!-- Background -->
 
     <div
       v-if="note.react.notes.length === 0"
-      class="note-container-placeholder"
+      class="note-container-background"
     >
-      Drop notes here
+      <!-- Placeholder -->
+
+      <div>Drag notes here or</div>
+      <div>double-click to create.</div>
+
+      <!-- Initial dropzone -->
 
       <NoteDropZone
         :parent-note="note"
@@ -68,8 +73,10 @@
             <NoteDropZone
               v-if="index < note.react.notes.length - 1"
               :parent-note="note"
+              :always-visible="true"
               :index="index + 1"
               style="position: absolute; min-width: 6px; min-height: 6px"
+              @dblclick.left="onLeftDoubleClick($event, index + 1)"
             />
           </div>
         </div>
@@ -113,14 +120,14 @@ onMounted(() => {
   note.react.container.elem = containerElem.value!;
 });
 
-async function onLeftDoubleClick(event: MouseEvent) {
+async function onLeftDoubleClick(event: MouseEvent, destIndex?: number) {
   const clientPos = page.pos.eventToClient(event);
   const clientTopLeft = page.rects.fromDOM(
     note.react.container.elem.getBoundingClientRect()
   ).topLeft;
   const worldPos = page.sizes.screenToWorld2D(clientPos.sub(clientTopLeft));
 
-  await page.notes.create(note, worldPos, false);
+  await page.notes.create(note, worldPos, false, destIndex);
 }
 </script>
 
@@ -138,7 +145,7 @@ async function onLeftDoubleClick(event: MouseEvent) {
   touch-action: pan-x pan-y !important;
 }
 
-.note-container-placeholder {
+.note-container-background {
   position: relative;
 
   margin: 3px;
@@ -151,6 +158,7 @@ async function onLeftDoubleClick(event: MouseEvent) {
   overflow: hidden;
 
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 

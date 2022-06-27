@@ -21,11 +21,3 @@ import NoteSpatialContainer from './NoteSpatialContainer.vue';
 
 const note = inject<PageNote>('note')!;
 </script>
-
-<style scoped>
-.note-container-section {
-  display: flex;
-
-  min-height: 52.45px;
-}
-</style>

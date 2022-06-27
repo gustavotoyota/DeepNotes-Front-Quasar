@@ -40,14 +40,22 @@ const page = inject<AppPage>('page')!;
 const note = inject<PageNote>('note')!;
 
 const left = computed(() => {
-  if (props.side.includes('w')) return '0%';
-  else if (props.side.includes('e')) return '100%';
-  else return '50%';
+  if (props.side.includes('w')) {
+    return '0%';
+  } else if (props.side.includes('e')) {
+    return '100%';
+  } else {
+    return '50%';
+  }
 });
 const top = computed(() => {
-  if (props.side.includes('n')) return '0%';
-  else if (props.side.includes('s')) return '100%';
-  else return '50%';
+  if (props.side.includes('n')) {
+    return '0%';
+  } else if (props.side.includes('s')) {
+    return '100%';
+  } else {
+    return '50%';
+  }
 });
 
 async function onLeftPointerDown(event: PointerEvent) {

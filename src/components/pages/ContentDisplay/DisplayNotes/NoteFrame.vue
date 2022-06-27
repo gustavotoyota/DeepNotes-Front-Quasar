@@ -18,7 +18,7 @@
       'pointer-events': note.react.dragging ? 'none' : undefined,
     }"
   >
-    <slot />
+    <slot></slot>
   </div>
 </template>
 

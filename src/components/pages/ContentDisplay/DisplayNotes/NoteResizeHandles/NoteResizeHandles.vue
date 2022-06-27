@@ -1,11 +1,6 @@
 <template>
   <div>
-    <template
-      v-if="
-        note.react.parent == null ||
-        note.react.parent.react.collab.container.spatial
-      "
-    >
+    <template v-if="note.react.spatial">
       <NoteResizeHandle
         side="nw"
         :section="note.react.topSection"
@@ -25,9 +20,7 @@
       <NoteResizeHandle side="w" />
     </template>
 
-    <template
-      v-if="!note.react.width.stretched || note.react.parent!.react.collab.container.spatial"
-    >
+    <template v-if="!note.react.width.stretched || note.react.spatial">
       <NoteResizeHandle side="e" />
       <NoteResizeHandle
         side="se"

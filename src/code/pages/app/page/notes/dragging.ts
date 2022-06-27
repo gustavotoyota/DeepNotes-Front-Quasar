@@ -117,7 +117,7 @@ export class PageDragging {
     });
   };
 
-  private async _dragOut() {
+  private async _dragOut(): Promise<void> {
     // Store note positions
 
     const prevCenters = new Map<string, Vec2>();
@@ -146,14 +146,24 @@ export class PageDragging {
       }
     });
 
+    // Obtain active region
+
     const region = this.page.activeRegion.react.region;
+
+    if (!(region instanceof PageNote)) {
+      return;
+    }
+
+    // Clear active region
 
     this.page.activeRegion.react.id = null;
 
     // Adjust note positions and sizes
     // With mouse in the center of the active element
 
-    if (region instanceof PageNote && region.react.collab.container.spatial) {
+    if (region.react.collab.container.spatial) {
+      // Drag out of spatial container
+
       const containerClientRect = this.page.rects.fromDOM(
         region.react.container.elem.getBoundingClientRect()
       );
@@ -167,40 +177,40 @@ export class PageDragging {
           selectedNote.react.collab.pos.y += containerWorldTopLeft.y;
         }
       });
+    } else {
+      // Drag out of list container
 
-      return;
-    }
+      await nextTick();
 
-    await nextTick();
+      const activeElem = this.page.activeElem.react.elem;
 
-    const activeElem = this.page.activeElem.react.elem;
-
-    if (!(activeElem instanceof PageNote)) {
-      return false;
-    }
-
-    this.page.collab.doc.transact(() => {
-      for (const selectedNote of this.page.selection.react.notes) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        watchUntilTrue(() => selectedNote.react.loaded).then(() => {
-          const worldPos = this.page.pos.clientToWorld(this.react.currentPos);
-          const mouseOffset = worldPos.sub(prevCenters.get(activeElem.id)!);
-
-          const prevCenter = prevCenters.get(selectedNote.id)!;
-
-          const worldSize = selectedNote.getWorldRect('note-frame').size;
-
-          selectedNote.react.collab.pos.x =
-            prevCenter.x +
-            mouseOffset.x +
-            worldSize.x * (selectedNote.react.collab.anchor.x - 0.5);
-          selectedNote.react.collab.pos.y =
-            prevCenter.y +
-            mouseOffset.y +
-            worldSize.y * (selectedNote.react.collab.anchor.y - 0.5);
-        });
+      if (!(activeElem instanceof PageNote)) {
+        return;
       }
-    });
+
+      this.page.collab.doc.transact(() => {
+        for (const selectedNote of this.page.selection.react.notes) {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          watchUntilTrue(() => selectedNote.react.loaded).then(() => {
+            const worldPos = this.page.pos.clientToWorld(this.react.currentPos);
+            const mouseOffset = worldPos.sub(prevCenters.get(activeElem.id)!);
+
+            const prevCenter = prevCenters.get(selectedNote.id)!;
+
+            const worldSize = selectedNote.getWorldRect('note-frame').size;
+
+            selectedNote.react.collab.pos.x =
+              prevCenter.x +
+              mouseOffset.x +
+              worldSize.x * (selectedNote.react.collab.anchor.x - 0.5);
+            selectedNote.react.collab.pos.y =
+              prevCenter.y +
+              mouseOffset.y +
+              worldSize.y * (selectedNote.react.collab.anchor.y - 0.5);
+          });
+        }
+      });
+    }
   }
 
   private _finish = () => {

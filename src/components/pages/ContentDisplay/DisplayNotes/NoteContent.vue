@@ -22,7 +22,7 @@
       @pointerdown.left.stop="onLeftPointerDown"
       @pointerup.left="onLeftPointerUp"
     >
-      <slot />
+      <slot></slot>
     </div>
   </a>
 </template>

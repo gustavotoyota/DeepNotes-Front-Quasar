@@ -85,7 +85,7 @@
       <DisplayArrow :arrow="page.arrowCreation.fakeArrow" />
     </svg>
 
-    <!-- Drop zone -->
+    <!-- Fake drop zone -->
 
     <div
       v-if="

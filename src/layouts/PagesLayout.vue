@@ -37,7 +37,7 @@ import { AppPage } from 'src/code/pages/app/page/page';
 import { factory } from 'src/code/pages/static/composition-root';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import ContentDisplay from 'src/components/pages/ContentDisplay/ContentDisplay.vue';
-import LeftSidebar from 'src/components/pages/LeftSidebar.vue';
+import LeftSidebar from 'src/components/pages/LeftSidebar/LeftSidebar.vue';
 import MainToolbar from 'src/components/pages/MainToolbar/MainToolbar.vue';
 import RightSidebar from 'src/components/pages/RightSidebar/RightSidebar.vue';
 import { useApp } from 'src/stores/app';

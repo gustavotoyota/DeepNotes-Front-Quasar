@@ -51,7 +51,7 @@ export class PageCollab {
     this.page.react.currentLayerId = initialLayerId;
 
     this.doc.transact(() => {
-      // Object.assign because cannot assign root elements
+      // Object.assign because cannot directly assign root elements
 
       Object.assign(this.store.page, {
         layerIds: [initialLayerId],
@@ -59,11 +59,13 @@ export class PageCollab {
 
       Object.assign(this.store.layers, {
         [initialLayerId]: {
+          name: 'Default layer',
+
           noteIds: [],
           arrowIds: [],
 
           nextZIndex: 0,
-        },
+        } as ILayerCollab,
       });
     });
   }

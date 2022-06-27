@@ -5,6 +5,8 @@ import { AppPage } from '../page';
 import { IPageRegion, IRegionCollab, IRegionReact } from '../regions/region';
 
 export const ILayerCollab = IRegionCollab.extend({
+  name: z.string(),
+
   nextZIndex: z.number(),
 });
 export type ILayerCollab = z.output<typeof ILayerCollab>;

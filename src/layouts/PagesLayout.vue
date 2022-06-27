@@ -189,7 +189,7 @@ async function onKeyDown(event: KeyboardEvent) {
 
       const editor = activeElem.react[page.value.editing.react.section!].editor;
 
-      editor?.commands.clearContent();
+      editor?.commands.deleteSelection();
     }
   }
 }
@@ -226,7 +226,7 @@ async function onKeyPress(event: KeyboardEvent) {
 
     const editor = activeElem.react[page.value.editing.react.section!].editor;
 
-    editor?.chain().clearContent().insertContent(event.key).run();
+    editor?.chain().deleteSelection().insertContent(event.key).run();
   }
 }
 

@@ -29,7 +29,7 @@ async function onLeftDoubleClick(event: MouseEvent) {
   const clientPos = page.pos.eventToClient(event);
   const worldPos = page.pos.clientToWorld(clientPos);
 
-  await page.notes.create(page.react.currentLayer, worldPos);
+  await page.notes.create(page.react.activeLayer, worldPos);
 }
 </script>
 

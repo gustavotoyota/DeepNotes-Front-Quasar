@@ -31,9 +31,11 @@ export const IArrowCollab = z.object({
 
   color: z.string().default('#b0b0b0'),
 });
+export type IArrowCollabInput = z.input<typeof IArrowCollab>;
+export type IArrowCollabOutput = z.output<typeof IArrowCollab>;
 
 export interface IArrowReact extends IElemReact {
-  collab: ComputedRef<z.output<typeof IArrowCollab>>;
+  collab: ComputedRef<IArrowCollabOutput>;
 
   fakeTargetPos: Vec2 | null;
 
@@ -67,12 +69,12 @@ export class PageArrow extends PageElem {
   constructor(
     page: AppPage,
     id: string,
+    regionId: string | null,
     layerId: string,
-    parentId: string | null,
     index: number,
-    readonly collab?: z.output<typeof IArrowCollab>
+    readonly collab?: IArrowCollabOutput
   ) {
-    super(page, id, ElemType.ARROW, layerId, parentId, index);
+    super(page, id, ElemType.ARROW, regionId, layerId, index);
 
     const react: Omit<IArrowReact, keyof IElemReact> = {
       collab: computed(
@@ -95,8 +97,8 @@ export class PageArrow extends PageElem {
         }
 
         return (
-          this.react.sourceNote.react.parent === this.react.parent &&
-          this.react.targetNote.react.parent === this.react.parent
+          this.react.sourceNote.react.region === this.react.region &&
+          this.react.targetNote.react.region === this.react.region
         );
       }),
 
@@ -181,11 +183,11 @@ export class PageArrow extends PageElem {
     }
   }
 
-  removeFromRegion() {
-    if (this.react.region.react.collab.arrowIds[this.react.index] !== this.id) {
+  removeFromLayer() {
+    if (this.react.layer.react.collab.arrowIds[this.react.index] !== this.id) {
       return;
     }
 
-    this.react.region.react.collab.arrowIds.splice(this.react.index, 1);
+    this.react.layer.react.collab.arrowIds.splice(this.react.index, 1);
   }
 }

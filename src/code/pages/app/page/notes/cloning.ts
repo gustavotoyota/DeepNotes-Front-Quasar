@@ -13,7 +13,7 @@ export class PageCloning {
 
     // Serialize selection
 
-    const serialRegion = this.page.app.serialization.serialize(
+    const serialObject = this.page.app.serialization.serialize(
       this.page.selection.react
     );
 
@@ -24,10 +24,9 @@ export class PageCloning {
       destIndex = this.page.selection.react.notes.at(-1)!.react.index + 1;
 
     const { noteIds, arrowIds } = this.page.app.serialization.deserialize(
-      serialRegion,
-      this.page.activeRegion.react,
-      destIndex,
-      false
+      serialObject,
+      this.page.activeRegion.react.region.react.activeLayer,
+      destIndex
     );
 
     // Select and reposition clones

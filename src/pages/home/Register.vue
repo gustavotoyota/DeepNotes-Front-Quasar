@@ -83,6 +83,7 @@ import { to_base64 } from 'libsodium-wrappers';
 import { Notify } from 'quasar';
 import { computeDerivedKeys, generateRandomKeys } from 'src/code/crypto/crypto';
 import { wrapSymmetricKey } from 'src/code/crypto/symmetric-key';
+import { ISerialObjectInput } from 'src/code/pages/app/serialization';
 import Gap from 'src/components/misc/Gap.vue';
 import { useAuth } from 'src/stores/auth';
 import { reactive } from 'vue';
@@ -115,7 +116,17 @@ async function register() {
   const userSymmetricKey = wrapSymmetricKey(randomKeys.userSymmetricKey);
 
   const encryptedDefaultNote = userSymmetricKey.encrypt(
-    new TextEncoder().encode(JSON.stringify({}))
+    new TextEncoder().encode(
+      JSON.stringify({
+        layers: [
+          {
+            noteIndexes: [0],
+          },
+          {},
+        ],
+        notes: [{ layerIndexes: [1] }],
+      } as ISerialObjectInput)
+    )
   );
   const encryptedDefaultArrow = userSymmetricKey.encrypt(
     new TextEncoder().encode(JSON.stringify({}))

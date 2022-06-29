@@ -1,36 +1,34 @@
 import { Rect } from 'src/code/pages/static/rect';
 import { Vec2 } from 'src/code/pages/static/vec2';
-import { z } from 'zod';
 
+import { PageNote } from '../notes/note';
 import { AppPage } from '../page';
-import { IPageRegion, IRegionCollab } from './region';
+import { IRegionElemsOutput } from './region';
 
 export class PageRegions {
   constructor(readonly page: AppPage) {}
 
-  fromId(id: string | null): IPageRegion | null {
+  fromId(id: string | null): AppPage | PageNote {
     const note = this.page.notes.fromId(id);
 
     if (note != null) {
       return note;
+    } else {
+      return this.page;
     }
-
-    return this.page.layers.fromId(id);
   }
 
-  getWorldRect(collab: z.output<typeof IRegionCollab>) {
+  getWorldRect(regionElems: IRegionElemsOutput) {
     const worldRect = new Rect(
       new Vec2(Infinity, Infinity),
       new Vec2(-Infinity, -Infinity)
     );
 
-    const notes = this.page.notes.fromIds(collab.noteIds);
-
-    if (notes.length === 0) {
+    if (regionElems.notes.length === 0) {
       return new Rect(this.page.camera.react.pos, this.page.camera.react.pos);
     }
 
-    for (const note of notes) {
+    for (const note of regionElems.notes) {
       worldRect.topLeft.x = Math.min(
         worldRect.topLeft.x,
         note.react.worldRect.topLeft.x

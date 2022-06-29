@@ -70,9 +70,9 @@
           >
             <q-item
               v-if="layer != null"
-              :active="layer.id == page.react.currentLayer.id"
+              :active="layer.id == page.react.activeLayer.id"
               clickable
-              @click="page.react.currentLayerId = layer.id"
+              @click="page.react.activeLayerId = layer.id"
             >
               <q-item-section avatar>
                 <q-icon name="mdi-layers" />

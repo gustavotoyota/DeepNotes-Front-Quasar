@@ -4,7 +4,7 @@ import {
 } from 'src/code/pages/static/clipboard';
 import { Vec2 } from 'src/code/pages/static/vec2';
 
-import { ISerialRegion } from '../../serialization';
+import { ISerialObject } from '../../serialization';
 import { AppPage } from '../page';
 import { PageElem } from './elem';
 
@@ -43,19 +43,19 @@ export class PageClipboard {
     // Get from clipboard
 
     const clipboardText = text ?? (await getClipboardText());
-    let clipboardRegion = JSON.parse(clipboardText);
-    clipboardRegion = ISerialRegion.parse(clipboardRegion);
+    const clipboardObjectInput = JSON.parse(clipboardText);
+    const clipboardObjectOutput = ISerialObject.parse(clipboardObjectInput);
 
     // Center notes around destination
 
-    if (this.page.activeRegion.react.id == null) {
+    if (this.page.activeRegion.react.region instanceof AppPage) {
       const worldRect = this.page.regions.getWorldRect(
         this.page.selection.react
       );
 
       const destCenter = worldRect.center.add(new Vec2(8, 8));
 
-      for (const clipboardNote of clipboardRegion.notes) {
+      for (const clipboardNote of clipboardObjectOutput.notes) {
         clipboardNote.pos.x += destCenter.x;
         clipboardNote.pos.y += destCenter.y;
       }
@@ -68,8 +68,8 @@ export class PageClipboard {
       destIndex = this.page.selection.react.notes.at(-1)!.react.index + 1;
 
     const { noteIds, arrowIds } = this.page.app.serialization.deserialize(
-      clipboardRegion,
-      this.page.activeRegion.react,
+      clipboardObjectOutput,
+      this.page.activeRegion.react.region.react.activeLayer,
       destIndex
     );
 

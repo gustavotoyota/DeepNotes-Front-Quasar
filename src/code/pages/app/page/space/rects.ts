@@ -34,10 +34,10 @@ export class PageRects {
       this.pos.clientToWorld(clientRect.bottomRight)
     );
   }
-  worldToClient(clientRect: Rect): Rect {
+  worldToClient(worldRect: Rect): Rect {
     return new Rect(
-      this.pos.worldToClient(clientRect.topLeft),
-      this.pos.worldToClient(clientRect.bottomRight)
+      this.pos.worldToClient(worldRect.topLeft),
+      this.pos.worldToClient(worldRect.bottomRight)
     );
   }
 
@@ -47,10 +47,10 @@ export class PageRects {
       this.pos.displayToWorld(displayRect.bottomRight)
     );
   }
-  worldToDisplay(displayRect: Rect): Rect {
+  worldToDisplay(worldRect: Rect): Rect {
     return new Rect(
-      this.pos.worldToDisplay(displayRect.topLeft),
-      this.pos.worldToDisplay(displayRect.bottomRight)
+      this.pos.worldToDisplay(worldRect.topLeft),
+      this.pos.worldToDisplay(worldRect.bottomRight)
     );
   }
 
@@ -60,10 +60,10 @@ export class PageRects {
       this.pos.displayToClient(displayRect.bottomRight)
     );
   }
-  clientToDisplay(displayRect: Rect): Rect {
+  clientToDisplay(clientRect: Rect): Rect {
     return new Rect(
-      this.pos.clientToDisplay(displayRect.topLeft),
-      this.pos.clientToDisplay(displayRect.bottomRight)
+      this.pos.clientToDisplay(clientRect.topLeft),
+      this.pos.clientToDisplay(clientRect.bottomRight)
     );
   }
 }

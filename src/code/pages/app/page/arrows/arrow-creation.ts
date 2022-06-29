@@ -4,12 +4,11 @@ import { listenPointerEvents } from 'src/code/pages/static/dom';
 import { v4 } from 'uuid';
 import { reactive } from 'vue';
 import * as Y from 'yjs';
-import { z } from 'zod';
 
 import { ISerialArrow } from '../../serialization';
 import { PageNote } from '../notes/note';
 import { AppPage } from '../page';
-import { IArrowCollab, PageArrow } from './arrow';
+import { IArrowCollab, IArrowCollabInput, PageArrow } from './arrow';
 
 export class PageArrowCreation {
   readonly react = reactive({
@@ -22,14 +21,14 @@ export class PageArrowCreation {
     this.fakeArrow = factory.makeArrow(
       this.page,
       null as any,
-      null as any,
       null,
+      null as any,
       -1,
       reactive(
         IArrowCollab.parse({
           sourceId: v4(),
           targetId: v4(),
-        } as z.input<typeof IArrowCollab>)
+        } as IArrowCollabInput)
       )
     );
   }
@@ -49,7 +48,8 @@ export class PageArrowCreation {
     this.fakeArrow.react.collab.sourceId = sourceNote.id;
     this.fakeArrow.react.collab.targetId = null as any;
 
-    this.fakeArrow.react.parentId = sourceNote.react.parentId;
+    this.fakeArrow.react.regionId = sourceNote.react.regionId;
+    this.fakeArrow.react.layerId = sourceNote.react.layerId;
 
     listenPointerEvents(event, {
       move: this._update,
@@ -64,12 +64,15 @@ export class PageArrowCreation {
   private _update = (event: PointerEvent) => {
     this.fakeArrow.react.fakeTargetPos = this.page.pos.eventToWorld(event);
 
-    if (this.fakeArrow.react.parent?.react.container.elem != null) {
+    if (
+      this.fakeArrow.react.region instanceof PageNote &&
+      this.fakeArrow.react.region.react.container.elem != null
+    ) {
       this.fakeArrow.react.fakeTargetPos =
         this.fakeArrow.react.fakeTargetPos.sub(
           this.page.pos.clientToWorld(
             this.page.rects.fromDOM(
-              this.fakeArrow.react.parent.react.container.elem.getBoundingClientRect()
+              this.fakeArrow.react.region.react.container.elem.getBoundingClientRect()
             ).topLeft
           )
         );
@@ -99,7 +102,7 @@ export class PageArrowCreation {
     this.page.collab.doc.transact(() => {
       this.page.arrows.react.collab[arrowId] = newCollab;
 
-      targetNote.react.region.react.collab.arrowIds.push(arrowId);
+      targetNote.react.layer.react.collab.arrowIds.push(arrowId);
     });
 
     // Select arrow

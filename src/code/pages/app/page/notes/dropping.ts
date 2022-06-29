@@ -25,7 +25,7 @@ export class PageDropping {
         selectedNote.react.collab.pos.x -= containerWorldTopLeft.x;
         selectedNote.react.collab.pos.y -= containerWorldTopLeft.y;
 
-        selectedNote.moveToRegion(parentNote, dropIndex);
+        selectedNote.moveToLayer(parentNote.react.activeLayer, dropIndex);
       }
     });
 

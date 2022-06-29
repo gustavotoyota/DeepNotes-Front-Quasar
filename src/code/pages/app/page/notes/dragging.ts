@@ -100,7 +100,7 @@ export class PageDragging {
         }
       });
 
-      if (this.page.activeRegion.react.id != null) {
+      if (this.page.activeRegion.react.region instanceof PageNote) {
         await this._dragOut();
       }
 
@@ -137,12 +137,11 @@ export class PageDragging {
       (a: PageNote, b: PageNote) => b.react.index - a.react.index
     );
 
-    const insertIndex =
-      this.page.react.currentLayer.react.collab.noteIds.length;
+    const insertIndex = this.page.react.activeLayer.react.collab.noteIds.length;
 
     this.page.collab.doc.transact(() => {
       for (const selectedNote of selectedNotes) {
-        selectedNote.moveToRegion(this.page.react.currentLayer, insertIndex);
+        selectedNote.moveToLayer(this.page.react.activeLayer, insertIndex);
       }
     });
 

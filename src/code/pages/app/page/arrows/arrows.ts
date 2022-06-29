@@ -2,10 +2,9 @@ import type { Y } from '@syncedstore/core';
 import { pull } from 'lodash';
 import { Factory } from 'src/code/pages/static/composition-root';
 import { computed, reactive, shallowReactive } from 'vue';
-import { z } from 'zod';
 
 import { AppPage } from '../page';
-import { IArrowCollab, PageArrow } from './arrow';
+import { IArrowCollabOutput, PageArrow } from './arrow';
 
 export class PageArrows {
   readonly react = reactive({
@@ -34,27 +33,29 @@ export class PageArrows {
 
   create(
     arrowId: string,
+    regionId: string | null,
     layerId: string,
-    parentId: string | null,
     index: number
   ) {
     const arrow = this.factory.makeArrow(
       this.page,
       arrowId,
+      regionId,
       layerId,
-      parentId,
       index
     );
+
+    arrow.react.layerId = layerId;
 
     this.react.map[arrow.id] = arrow;
   }
   createAndObserveIds(
     arrowIds: string[],
-    layerId: string,
-    parentId: string | null
+    regionId: string | null,
+    layerId: string
   ) {
     for (let index = 0; index < arrowIds.length; index++) {
-      this.create(arrowIds[index], layerId, parentId, index);
+      this.create(arrowIds[index], regionId, layerId, index);
     }
 
     (syncedstore.getYjsValue(arrowIds) as Y.Array<string>).observe((event) => {
@@ -67,7 +68,7 @@ export class PageArrows {
 
         if (delta.insert != null) {
           for (const arrowId of delta.insert) {
-            this.create(arrowId, layerId, parentId, index);
+            this.create(arrowId, regionId, layerId, index);
           }
         }
       }
@@ -76,9 +77,7 @@ export class PageArrows {
 
   observeMap() {
     (
-      syncedstore.getYjsValue(this.react.collab) as Y.Map<
-        z.output<typeof IArrowCollab>
-      >
+      syncedstore.getYjsValue(this.react.collab) as Y.Map<IArrowCollabOutput>
     ).observe((event) => {
       for (const [arrowId, change] of event.changes.keys) {
         if (change.action !== 'delete') {

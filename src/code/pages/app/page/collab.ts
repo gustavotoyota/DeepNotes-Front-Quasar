@@ -1,18 +1,17 @@
 import type { Y } from '@syncedstore/core';
 import { WebsocketProvider } from 'src/code/pages/app/page/y-websocket';
 import { v4 } from 'uuid';
-import { z } from 'zod';
 
-import { IArrowCollab } from './arrows/arrow';
-import { ILayerCollab } from './layers/layer';
-import { INoteCollab } from './notes/note';
-import { AppPage, IPageCollab } from './page';
+import { IArrowCollabOutput } from './arrows/arrow';
+import { ILayerCollab, ILayerCollabOutput } from './layers/layer';
+import { INoteCollabOutput } from './notes/note';
+import { AppPage, IPageCollabOutput } from './page';
 
 export interface IAppCollabStore {
-  page: IPageCollab;
-  layers: Record<string, ILayerCollab>;
-  notes: Record<string, z.output<typeof INoteCollab>>;
-  arrows: Record<string, z.output<typeof IArrowCollab>>;
+  page: IPageCollabOutput;
+  layers: Record<string, ILayerCollabOutput>;
+  notes: Record<string, INoteCollabOutput>;
+  arrows: Record<string, IArrowCollabOutput>;
 }
 
 export class PageCollab {
@@ -48,7 +47,7 @@ export class PageCollab {
   reset() {
     const initialLayerId = v4();
 
-    this.page.react.currentLayerId = initialLayerId;
+    this.page.react.activeLayerId = initialLayerId;
 
     this.doc.transact(() => {
       // Object.assign because cannot directly assign root elements
@@ -58,14 +57,7 @@ export class PageCollab {
       });
 
       Object.assign(this.store.layers, {
-        [initialLayerId]: {
-          name: 'Default layer',
-
-          noteIds: [],
-          arrowIds: [],
-
-          nextZIndex: 0,
-        } as ILayerCollab,
+        [initialLayerId]: ILayerCollab.parse({}),
       });
     });
   }

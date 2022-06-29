@@ -89,6 +89,10 @@ export class PageBoxSelection {
   };
 
   private _pointerUp = (event: PointerEvent) => {
+    if (!this.react.active) {
+      return;
+    }
+
     this.react.active = false;
 
     const clientStart = this.page.pos.displayToClient(this.react.displayStart);
@@ -106,7 +110,7 @@ export class PageBoxSelection {
     const clientRect = new Rect(clientTopLeft, clientBottomRight);
 
     for (const note of this.page.react.notes) {
-      if (!clientRect.containsRect(note.react.clientRect)) {
+      if (!clientRect.containsRect(note.getClientRect('note-frame'))) {
         continue;
       }
 

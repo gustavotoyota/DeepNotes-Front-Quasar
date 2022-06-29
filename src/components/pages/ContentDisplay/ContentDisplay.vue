@@ -63,7 +63,7 @@
       <SVGDisplay
         v-if="
           page.arrowCreation.react.active &&
-          page.arrowCreation.fakeArrow.react.parent == null
+          page.arrowCreation.fakeArrow.react.region instanceof AppPage
         "
       >
         <DisplayArrow :arrow="page.arrowCreation.fakeArrow" />

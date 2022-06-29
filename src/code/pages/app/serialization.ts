@@ -1,4 +1,4 @@
-import { cloneDeep, pull } from 'lodash';
+import { cloneDeep } from 'lodash';
 import { v4 } from 'uuid';
 import {
   prosemirrorJSONToYXmlFragment,
@@ -7,9 +7,20 @@ import {
 import { z } from 'zod';
 
 import { PagesApp } from './app';
-import { IArrowCollab } from './page/arrows/arrow';
-import { INoteCollab } from './page/notes/note';
-import { IRegionCollab } from './page/regions/region';
+import {
+  IArrowCollab,
+  IArrowCollabInput,
+  IArrowCollabOutput,
+  PageArrow,
+} from './page/arrows/arrow';
+import {
+  ILayerCollab,
+  ILayerCollabInput,
+  ILayerCollabOutput,
+  PageLayer,
+} from './page/layers/layer';
+import { INoteCollab, INoteCollabInput, PageNote } from './page/notes/note';
+import { IRegionElemIdsInput } from './page/regions/region';
 
 // Arrow
 
@@ -32,6 +43,8 @@ export const ISerialArrow = IArrowCollab.omit({
     })
     .default({}),
 });
+export type ISerialArrowInput = z.input<typeof ISerialArrow>;
+export type ISerialArrowOutput = z.output<typeof ISerialArrow>;
 
 // Note
 
@@ -49,279 +62,333 @@ export const ISerialTextSection = z.object({
     })
     .default({}),
 });
-
-export interface ISerialNoteInput
-  extends Omit<
-      z.input<typeof INoteCollab>,
-      'head' | 'body' | keyof z.input<typeof IRegionCollab> | 'zIndex'
-    >,
-    ISerialRegionInput {
-  head?: z.input<typeof ISerialTextSection>;
-  body?: z.input<typeof ISerialTextSection>;
-}
-export interface ISerialNoteOutput
-  extends Omit<
-      z.output<typeof INoteCollab>,
-      'head' | 'body' | keyof z.output<typeof IRegionCollab> | 'zIndex'
-    >,
-    ISerialRegionOutput {
-  head: z.output<typeof ISerialTextSection>;
-  body: z.output<typeof ISerialTextSection>;
-}
+export type ISerialTextSectionInput = z.input<typeof ISerialTextSection>;
+export type ISerialTextSectionOutput = z.output<typeof ISerialTextSection>;
 
 export const ISerialNote = z.lazy(() =>
   INoteCollab.omit({
     head: true,
     body: true,
 
-    noteIds: true,
-    arrowIds: true,
+    layerIds: true,
 
     zIndex: true,
   }).extend({
     head: ISerialTextSection.default({ enabled: true }),
     body: ISerialTextSection.default({ enabled: false }),
 
-    notes: ISerialNote.array().default([]),
-    arrows: ISerialArrow.array().default([]),
+    layerIndexes: z.number().array().default([]),
   })
-) as z.ZodType<ISerialNoteOutput>;
+);
+export type ISerialNoteInput = z.input<typeof ISerialNote>;
+export type ISerialNoteOutput = z.output<typeof ISerialNote>;
 
-// Region
+// Layer
 
-export interface ISerialRegionInput {
-  notes?: ISerialNoteInput[];
-  arrows?: z.input<typeof ISerialArrow>[];
+export const ISerialLayer = ILayerCollab.omit({
+  noteIds: true,
+  arrowIds: true,
+}).extend({
+  noteIndexes: z.number().array().default([]),
+  arrowIndexes: z.number().array().default([]),
+});
+export type ISerialLayerInput = z.input<typeof ISerialLayer>;
+export type ISerialLayerOutput = z.output<typeof ISerialLayer>;
+
+// Object
+
+export const ISerialObject = z.object({
+  layers: ISerialLayer.array().default([]),
+  notes: ISerialNote.array().default([]),
+  arrows: ISerialArrow.array().default([]),
+});
+export type ISerialObjectInput = z.input<typeof ISerialObject>;
+export type ISerialObjectOutput = z.output<typeof ISerialObject>;
+
+export interface ISerializationMaps {
+  layers: Map<string, number>;
+  notes: Map<string, number>;
+  arrows: Map<string, number>;
 }
-export interface ISerialRegionOutput {
-  notes: ISerialNoteOutput[];
-  arrows: z.output<typeof ISerialArrow>[];
-}
-export const ISerialRegion = z.lazy(() =>
-  z.object({
-    notes: ISerialNote.array().default([]),
-    arrows: ISerialArrow.array().default([]),
-  })
-) as z.ZodType<ISerialRegionOutput, z.ZodTypeDef, ISerialRegionInput>;
 
 export class AppSerialization {
   constructor(readonly app: PagesApp) {}
 
-  serialize(
-    container: z.output<typeof IRegionCollab>,
-    parse = true
-  ): ISerialRegionOutput {
-    let serialRegion: ISerialRegionOutput = {
+  // Input: objects to be serialized
+  // Output: flat serialized representation of input
+
+  serialize(input: IRegionElemIdsInput): ISerialObjectOutput {
+    const result: ISerialObjectOutput = {
+      layers: [],
       notes: [],
       arrows: [],
     };
 
-    const page = $pages.react.page;
+    const maps: ISerializationMaps = {
+      layers: new Map<string, number>(),
+      notes: new Map<string, number>(),
+      arrows: new Map<string, number>(),
+    };
 
-    // Serialize notes
+    this._serializeLayer(
+      {
+        id: 'root',
+        react: {
+          notes: $pages.react.page.notes.fromIds(input.noteIds ?? []),
+          arrows: $pages.react.page.arrows.fromIds(input.arrowIds ?? []),
+        },
+      } as PageLayer,
+      maps,
+      result
+    );
 
-    const noteMap = new Map<string, number>();
+    return result;
+  }
+  private _serializeLayer(
+    layer: PageLayer,
+    maps: ISerializationMaps,
+    result: ISerialObjectOutput
+  ): number | null {
+    let layerIndex = maps.layers.get(layer.id);
 
-    for (const note of page.notes.fromIds(container.noteIds)) {
-      // Children
+    if (layerIndex != null) {
+      return layerIndex;
+    }
 
-      const serialNote: Partial<ISerialNoteOutput> = this.serialize(
-        note.react.collab
-      );
+    const serialLayer: ISerialLayerOutput = ISerialLayer.parse({
+      name: layer.react.collab?.name,
 
-      // Head and body
+      noteIndexes: [],
+      arrowIndexes: [],
 
-      serialNote.head = {
+      nextZIndex: layer.react.collab?.nextZIndex,
+    } as ISerialLayerInput);
+
+    layerIndex = result.layers.length;
+
+    result.layers.push(serialLayer);
+    maps.layers.set(layer.id, layerIndex);
+
+    for (const note of layer.react.notes) {
+      const noteIndex = this._serializeNote(note, maps, result);
+
+      if (noteIndex != null) {
+        serialLayer.noteIndexes.push(noteIndex);
+      }
+    }
+
+    for (const arrow of layer.react.arrows) {
+      const arrowIndex = this._serializeArrow(arrow, maps, result);
+
+      if (arrowIndex != null) {
+        serialLayer.arrowIndexes.push(arrowIndex);
+      }
+    }
+
+    return layerIndex;
+  }
+  private _serializeNote(
+    note: PageNote,
+    maps: ISerializationMaps,
+    result: ISerialObjectOutput
+  ): number | null {
+    let noteIndex = maps.notes.get(note.id);
+
+    if (noteIndex != null) {
+      return noteIndex;
+    }
+
+    const serialNote = ISerialNote.parse({
+      ...note.react.collab,
+
+      head: {
         enabled: note.react.collab.head.enabled,
         value: yXmlFragmentToProsemirrorJSON(note.react.collab.head.value),
         wrap: note.react.collab.head.wrap,
         height: cloneDeep(note.react.collab.head.height),
-      };
-      serialNote.body = {
+      },
+      body: {
         enabled: note.react.collab.body.enabled,
         value: yXmlFragmentToProsemirrorJSON(note.react.collab.body.value),
         wrap: note.react.collab.body.wrap,
         height: cloneDeep(note.react.collab.body.height),
-      };
-
-      // Rest of the properties
-
-      const collabKeys = Object.keys(note.react.collab);
-
-      pull(collabKeys, 'head', 'body', 'noteIds', 'arrowIds', 'zIndex');
-
-      for (const collabKey of collabKeys) {
-        // @ts-ignore
-        serialNote[collabKey] = cloneDeep(note.react.collab[collabKey]);
-      }
-
-      noteMap.set(note.id, serialRegion.notes.length);
-
-      serialRegion.notes.push(serialNote as ISerialNoteOutput);
-    }
-
-    // Serialize arrows
-
-    for (const arrow of page.arrows.fromIds(container.arrowIds)) {
-      if (
-        !noteMap.has(arrow.react.collab.sourceId!) ||
-        !noteMap.has(arrow.react.collab.targetId!)
-      ) {
-        continue;
-      }
-
-      serialRegion.arrows.push(
-        this.serializeArrow(arrow.react.collab, noteMap)
-      );
-    }
-
-    if (parse) {
-      serialRegion = ISerialRegion.parse(serialRegion);
-    }
-
-    return serialRegion;
-  }
-  serializeArrow(
-    arrowCollab: z.output<typeof IArrowCollab>,
-    noteMap = new Map<string, number>()
-  ): z.output<typeof ISerialArrow> {
-    return {
-      ...arrowCollab,
-
-      sourceIndex: noteMap.get(arrowCollab.sourceId!)!,
-      targetIndex: noteMap.get(arrowCollab.targetId!)!,
-
-      label: {
-        enabled: arrowCollab.label.enabled,
-        value: yXmlFragmentToProsemirrorJSON(arrowCollab.label.value),
       },
-    };
-  }
 
-  deserialize(
-    serialRegion: ISerialRegionInput,
-    destRegion: z.output<typeof IRegionCollab>,
-    destIndex?: number | null,
-    parse = true
-  ): z.output<typeof IRegionCollab> {
-    let result: z.output<typeof IRegionCollab> = { noteIds: [], arrowIds: [] };
-
-    if (parse) {
-      serialRegion = ISerialRegion.parse(serialRegion);
-    }
-
-    $pages.react.page.collab.doc.transact(() => {
-      result = this._deserializeAux(serialRegion as ISerialRegionOutput);
-
-      destIndex = destIndex ?? destRegion.noteIds.length;
-      destRegion.noteIds.splice(destIndex, 0, ...result.noteIds);
-
-      destRegion.arrowIds.push(...result.arrowIds);
+      layerIndexes: [],
     });
 
-    return result;
+    noteIndex = result.notes.length;
+
+    result.notes.push(serialNote);
+    maps.notes.set(note.id, noteIndex);
+
+    for (const layer of note.react.layers) {
+      const layerIndex = this._serializeLayer(layer, maps, result);
+
+      if (layerIndex != null) {
+        serialNote.layerIndexes.push(layerIndex);
+      }
+    }
+
+    return noteIndex;
   }
-  private _deserializeAux(
-    serialRegion: ISerialRegionOutput
-  ): z.output<typeof IRegionCollab> {
-    const page = $pages.react.page;
+  private _serializeArrow(
+    arrow: PageArrow,
+    maps: ISerializationMaps,
+    result: ISerialObjectOutput
+  ): number | null {
+    let arrowIndex = maps.arrows.get(arrow.id);
+
+    if (arrowIndex != null) {
+      return arrowIndex;
+    }
+
+    const serialArrow = ISerialArrow.parse({
+      ...arrow.react.collab,
+
+      sourceIndex:
+        this._serializeNote(arrow.react.sourceNote, maps, result) ?? undefined,
+      targetIndex:
+        this._serializeNote(arrow.react.targetNote, maps, result) ?? undefined,
+
+      label: {
+        enabled: arrow.react.collab.label.enabled,
+        value: yXmlFragmentToProsemirrorJSON(arrow.react.collab.label.value),
+      },
+    });
+
+    arrowIndex = result.arrows.length;
+
+    result.arrows.push(serialArrow);
+    maps.arrows.set(arrow.id, arrowIndex);
+
+    return arrowIndex;
+  }
+
+  // Input: flat serialized representation of input
+  // Result: objects deserialized from input
+
+  deserialize(
+    serialObjectInput: ISerialObjectInput,
+    destLayer: PageLayer,
+    destIndex?: number
+  ): ILayerCollabOutput {
+    const serialObjectOutput = ISerialObject.parse(serialObjectInput);
+
+    let layerCollab: ILayerCollabOutput;
+
+    $pages.react.page.collab.doc.transact(() => {
+      layerCollab = this._deserializeLayer(
+        serialObjectOutput.layers[0],
+        serialObjectOutput
+      );
+
+      destLayer.react.collab.noteIds.splice(
+        destIndex ?? destLayer.react.collab.noteIds.length,
+        0,
+        ...layerCollab.noteIds
+      );
+
+      destLayer.react.collab.arrowIds.push(...layerCollab.arrowIds);
+    });
+
+    return layerCollab!;
+  }
+  private _deserializeLayer(
+    serialLayer: ISerialLayerOutput,
+    serialObject: ISerialObjectOutput
+  ): ILayerCollabOutput {
+    const layerCollab = ILayerCollab.parse({
+      ...serialLayer,
+    } as ILayerCollabInput);
 
     const noteMap = new Map<number, string>();
 
-    // Deserialize notes
+    for (const noteIndex of serialLayer.noteIndexes) {
+      const noteId = this._deserializeNote(
+        serialObject.notes[noteIndex],
+        layerCollab,
+        serialObject
+      );
 
-    const noteIds = [];
+      layerCollab.noteIds.push(noteId);
 
-    if (serialRegion.notes != null) {
-      for (let i = 0; i < serialRegion.notes.length; i++) {
-        const serialNote = serialRegion.notes[i];
-
-        const noteCollab = {} as Partial<z.output<typeof INoteCollab>>;
-
-        // Head and body
-
-        noteCollab.head = {
-          enabled: serialNote.head.enabled,
-          value: prosemirrorJSONToYXmlFragment(
-            tiptap.schema,
-            serialNote.head.value
-          ),
-          wrap: serialNote.head.wrap,
-          height: cloneDeep(serialNote.head.height),
-        };
-        noteCollab.body = {
-          enabled: serialNote.body.enabled,
-          value: prosemirrorJSONToYXmlFragment(
-            tiptap.schema,
-            serialNote.body.value
-          ),
-          wrap: serialNote.body.wrap,
-          height: cloneDeep(serialNote.body.height),
-        };
-
-        // Rest of the keys
-
-        const collabKeys = Object.keys(serialNote);
-
-        pull(collabKeys, 'head', 'body', 'notes', 'arrows');
-
-        for (const collabKey of collabKeys) {
-          // @ts-ignore
-          noteCollab[collabKey] = cloneDeep(serialNote[collabKey]);
-        }
-
-        noteCollab.zIndex = page.react.currentLayer.react.collab.nextZIndex++;
-
-        // Children
-
-        const deserializedChild = this._deserializeAux(serialNote);
-
-        noteCollab.noteIds = deserializedChild.noteIds;
-        noteCollab.arrowIds = deserializedChild.arrowIds;
-
-        // Add note data to the store
-
-        const noteId = v4();
-
-        page.notes.react.collab[noteId] = noteCollab as z.output<
-          typeof INoteCollab
-        >;
-
-        noteMap.set(i, noteId);
-
-        noteIds.push(noteId);
-      }
+      noteMap.set(noteIndex, noteId);
     }
 
-    // Deserialize arrows
+    for (const arrowIndex of serialLayer.arrowIndexes) {
+      const arrowCollab = this.deserializeArrow(
+        serialObject.arrows[arrowIndex],
+        noteMap
+      );
 
-    const arrowIds = [];
+      const arrowId = v4();
 
-    if (serialRegion.arrows != null) {
-      for (const serialArrow of serialRegion.arrows) {
-        const arrowId = v4();
+      $pages.react.page.arrows.react.collab[arrowId] = arrowCollab;
 
-        const arrowCollab = this.deserializeArrow(serialArrow);
-
-        page.arrows.react.collab[arrowId] = arrowCollab as z.output<
-          typeof IArrowCollab
-        >;
-
-        arrowIds.push(arrowId);
-      }
+      layerCollab.arrowIds.push(arrowId);
     }
 
-    return { noteIds, arrowIds };
+    return layerCollab;
+  }
+  private _deserializeNote(
+    serialNote: ISerialNoteOutput,
+    layerCollab: ILayerCollabOutput,
+    serialObject: ISerialObjectOutput
+  ): string {
+    const noteCollab = INoteCollab.parse({
+      ...serialNote,
+
+      head: {
+        enabled: serialNote.head.enabled,
+        value: prosemirrorJSONToYXmlFragment(
+          tiptap.schema,
+          serialNote.head.value
+        ),
+        wrap: serialNote.head.wrap,
+        height: cloneDeep(serialNote.head.height),
+      },
+      body: {
+        enabled: serialNote.body.enabled,
+        value: prosemirrorJSONToYXmlFragment(
+          tiptap.schema,
+          serialNote.body.value
+        ),
+        wrap: serialNote.body.wrap,
+        height: cloneDeep(serialNote.body.height),
+      },
+
+      zIndex: layerCollab.nextZIndex++,
+    } as INoteCollabInput);
+
+    for (const layerIndex of serialNote.layerIndexes) {
+      const layerId = v4();
+
+      const layerCollab = this._deserializeLayer(
+        serialObject.layers[layerIndex],
+        serialObject
+      );
+
+      $pages.react.page.layers.react.collab[layerId] = layerCollab;
+
+      noteCollab.layerIds.push(layerId);
+    }
+
+    const noteId = v4();
+
+    $pages.react.page.notes.react.collab[noteId] = noteCollab;
+
+    return noteId;
   }
   deserializeArrow(
-    serialArrow: z.output<typeof ISerialArrow>,
+    serialArrow: ISerialArrowOutput,
     noteMap = new Map<number, string>()
-  ): z.output<typeof IArrowCollab> {
-    return {
+  ): IArrowCollabOutput {
+    return IArrowCollab.parse({
       ...serialArrow,
 
-      sourceId: noteMap.get(serialArrow.sourceIndex!)!,
-      targetId: noteMap.get(serialArrow.targetIndex!)!,
+      sourceId: noteMap.get(serialArrow.sourceIndex!),
+      targetId: noteMap.get(serialArrow.targetIndex!),
 
       label: {
         enabled: serialArrow.label.enabled,
@@ -330,6 +397,6 @@ export class AppSerialization {
           serialArrow.label.value
         ),
       },
-    };
+    } as IArrowCollabInput);
   }
 }

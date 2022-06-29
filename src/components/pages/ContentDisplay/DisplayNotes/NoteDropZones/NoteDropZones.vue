@@ -1,30 +1,32 @@
 <template>
-  <div v-if="note.react.parent != null && page.dragging.react.active">
+  <div
+    v-if="note.react.region instanceof PageNote && page.dragging.react.active"
+  >
     <NoteDropZone
-      :parent-note="note.react.parent"
+      :parent-note="note.react.region"
       :index="note.react.index"
       :style="{
-        top: note.react.parent.react.collab.container.horizontal ? '0' : '0%',
-        bottom: note.react.parent.react.collab.container.horizontal
+        top: note.react.region.react.collab.container.horizontal ? '0' : '0%',
+        bottom: note.react.region.react.collab.container.horizontal
           ? '0'
           : '50%',
-        left: note.react.parent.react.collab.container.horizontal ? '0%' : '0',
-        right: note.react.parent.react.collab.container.horizontal
+        left: note.react.region.react.collab.container.horizontal ? '0%' : '0',
+        right: note.react.region.react.collab.container.horizontal
           ? '50%'
           : '0',
       }"
     />
 
     <NoteDropZone
-      :parent-note="note.react.parent"
+      :parent-note="note.react.region"
       :index="note.react.index + 1"
       :style="{
-        top: note.react.parent.react.collab.container.horizontal ? '0' : '50%',
-        bottom: note.react.parent.react.collab.container.horizontal
+        top: note.react.region.react.collab.container.horizontal ? '0' : '50%',
+        bottom: note.react.region.react.collab.container.horizontal
           ? '0'
           : '0%',
-        left: note.react.parent.react.collab.container.horizontal ? '50%' : '0',
-        right: note.react.parent.react.collab.container.horizontal ? '0%' : '0',
+        left: note.react.region.react.collab.container.horizontal ? '50%' : '0',
+        right: note.react.region.react.collab.container.horizontal ? '0%' : '0',
       }"
     />
   </div>

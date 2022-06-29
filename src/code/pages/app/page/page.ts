@@ -27,7 +27,6 @@ import {
   PagesApp,
 } from '../app';
 import { REALTIME_GROUP_NAME, REALTIME_USER_DISPLAY_NAME } from '../realtime';
-import { PageArrow } from './arrows/arrow';
 import { PageArrowCreation } from './arrows/arrow-creation';
 import { PageArrows } from './arrows/arrows';
 import { ICameraData, PageCamera } from './camera/camera';
@@ -37,16 +36,16 @@ import { PageZooming } from './camera/zooming';
 import { PageCollab } from './collab';
 import { PageClipboard } from './elems/clipboard';
 import { PageDeleting } from './elems/deleting';
+import { PageElem } from './elems/elem';
 import { PageElems } from './elems/elems';
-import { PageLayer } from './layers/layer';
 import { PageLayers } from './layers/layers';
 import { PageCloning } from './notes/cloning';
 import { PageDragging } from './notes/dragging';
 import { PageDropping } from './notes/dropping';
 import { PageEditing } from './notes/editing';
-import { PageNote } from './notes/note';
 import { PageNotes } from './notes/notes';
 import { PageResizing } from './notes/resizing';
+import { IPageRegion, IRegionCollab, IRegionReact } from './regions/region';
 import { PageRegions } from './regions/regions';
 import { PageActiveElem } from './selection/active-elem';
 import { PageActiveRegion } from './selection/active-region';
@@ -58,24 +57,12 @@ import { PageRects } from './space/rects';
 import { PageSizes } from './space/sizes';
 import { PageUndoRedo } from './undo-redo';
 
-export const IPageCollab = z.object({
-  layerIds: z.string().array(),
-});
-export type IPageCollab = z.output<typeof IPageCollab>;
+export const IPageCollab = IRegionCollab;
+export type IPageCollabInput = z.input<typeof IPageCollab>;
+export type IPageCollabOutput = z.output<typeof IPageCollab>;
 
-export interface IAppPageReact {
-  collab: ComputedRef<IPageCollab>;
-
-  layers: ComputedRef<PageLayer[]>;
-
-  currentLayerId?: string;
-  currentLayer: ComputedRef<PageLayer>;
-
-  noteIds: ComputedRef<string[]>;
-  arrowIds: ComputedRef<string[]>;
-
-  notes: ComputedRef<PageNote[]>;
-  arrows: ComputedRef<PageArrow[]>;
+export interface IAppPageReact extends IRegionReact {
+  collab: ComputedRef<IPageCollabOutput>;
 
   size: number;
 
@@ -111,7 +98,7 @@ export interface IPageData {
   encryptersPublicKey: string;
 }
 
-export class AppPage {
+export class AppPage implements IPageRegion {
   readonly react: UnwrapNestedRefs<IAppPageReact>;
 
   readonly collab: PageCollab;
@@ -158,14 +145,6 @@ export class AppPage {
 
       collab: computed(() => this.collab.store.page),
 
-      currentLayer: computed(
-        () =>
-          this.layers.fromId(this.react.currentLayerId ?? null) ??
-          Object.values(this.layers.react.map)[0]
-      ),
-
-      layers: computed(() => this.layers.fromIds(this.react.collab.layerIds)),
-
       noteIds: computed(() => {
         const result = [];
 
@@ -185,8 +164,18 @@ export class AppPage {
         return result;
       }),
 
+      layers: computed(() => this.layers.fromIds(this.react.collab.layerIds)),
       notes: computed(() => this.notes.fromIds(this.react.noteIds)),
       arrows: computed(() => this.arrows.fromIds(this.react.arrowIds)),
+      elems: computed(() =>
+        (this.react.notes as PageElem[]).concat(this.react.arrows)
+      ),
+
+      activeLayer: computed(
+        () =>
+          this.layers.fromId(this.react.activeLayerId ?? null) ??
+          this.react.layers[0]
+      ),
 
       size: 0,
 

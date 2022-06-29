@@ -552,7 +552,7 @@
         color="primary"
         @click="
           changeProp($event, (note, value) => {
-            note.reverseChildren();
+            note.react.activeLayer.reverseChildren();
           })
         "
       />
@@ -672,7 +672,7 @@ async function setAsDefault() {
   $pages.react.defaultNote = $pages.serialization.serialize({
     noteIds: [$pages.react.page.activeElem.react.id!],
     arrowIds: [],
-  }).notes[0];
+  });
 
   try {
     await $api.post<{

@@ -7,10 +7,9 @@ import {
   watch,
   WritableComputedRef,
 } from 'vue';
-import { z } from 'zod';
 
 import { AppPage } from '../page';
-import { IRegionCollab } from '../regions/region';
+import { IRegionElemsOutput } from '../regions/region';
 
 export interface ICameraReact {
   pos: Vec2;
@@ -88,21 +87,21 @@ export class PageCamera {
   }
 
   fitToScreen() {
-    let regionCollab: z.output<typeof IRegionCollab>;
+    let regionElems: IRegionElemsOutput;
 
     if (this.page.selection.react.notes.length > 0) {
-      regionCollab = this.page.selection.react;
+      regionElems = this.page.selection.react;
     } else {
-      regionCollab = this.page.react;
+      regionElems = this.page.react;
     }
 
-    if (regionCollab.noteIds.length === 0) {
+    if (regionElems.notes.length === 0) {
       this.react.pos = new Vec2();
       this.resetZoom();
       return;
     }
 
-    const worldRect = this.page.regions.getWorldRect(regionCollab);
+    const worldRect = this.page.regions.getWorldRect(regionElems);
 
     if (!this.react.lockPos) {
       this.react.pos = worldRect.center;

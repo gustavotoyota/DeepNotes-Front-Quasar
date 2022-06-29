@@ -2,11 +2,10 @@ import type { Y } from '@syncedstore/core';
 import { Factory } from 'src/code/pages/static/composition-root';
 import { Vec2 } from 'src/code/pages/static/vec2';
 import { computed, reactive, shallowReactive } from 'vue';
-import { z } from 'zod';
 
+import { PageLayer } from '../layers/layer';
 import { AppPage } from '../page';
-import { IPageRegion } from '../regions/region';
-import { INoteCollab, PageNote } from './note';
+import { INoteCollabOutput, PageNote } from './note';
 
 export class PageNotes {
   readonly react = reactive({
@@ -28,8 +27,8 @@ export class PageNotes {
 
   createAndObserveChildren(
     noteId: string,
+    regionId: string | null,
     layerId: string,
-    parentId: string | null,
     index: number
   ): void {
     let note = this.fromId(noteId);
@@ -39,42 +38,33 @@ export class PageNotes {
         return;
       }
 
-      note = this.factory.makeNote(this.page, noteId, layerId, parentId, index);
+      note = this.factory.makeNote(this.page, noteId, regionId, layerId, index);
 
       this.react.map[note.id] = note;
 
-      this.createAndObserveIds(note.react.collab.noteIds, layerId, note.id);
-      this.page.arrows.createAndObserveIds(
-        note.react.collab.arrowIds,
-        layerId,
-        note.id
-      );
+      this.page.layers.createAndObserveIds(note.react.collab.layerIds, note.id);
     } else {
-      if (note.react.parentId != parentId) {
+      if (note.react.layerId != layerId) {
         this.page.selection.remove(note);
       }
 
-      note.react.parentId = parentId;
+      note.react.regionId = regionId;
+      note.react.layerId = layerId;
       note.react.index = index;
-
-      this.fromId(noteId)?.removeFromRegions(true);
-
-      note.occurrences[note.react.region.id] ??= new Set();
-      note.occurrences[note.react.region.id].add(index);
 
       note.react.initialized = false;
     }
   }
   createAndObserveIds(
     noteIds: string[],
-    layerId: string,
-    parentId: string | null
+    regionId: string | null,
+    layerId: string
   ) {
     for (let index = 0; index < noteIds.length; index++) {
-      this.createAndObserveChildren(noteIds[index], layerId, parentId, index);
+      this.createAndObserveChildren(noteIds[index], regionId, layerId, index);
     }
 
-    (syncedstore.getYjsValue(noteIds) as Y.Map<string>).observe((event) => {
+    (syncedstore.getYjsValue(noteIds) as Y.Array<string>).observe((event) => {
       let index = 0;
 
       for (const delta of event.changes.delta) {
@@ -84,7 +74,7 @@ export class PageNotes {
 
         if (delta.insert != null) {
           for (const noteId of delta.insert) {
-            this.createAndObserveChildren(noteId, layerId, parentId, index);
+            this.createAndObserveChildren(noteId, regionId, layerId, index);
           }
         }
       }
@@ -93,9 +83,7 @@ export class PageNotes {
 
   observeMap() {
     (
-      syncedstore.getYjsValue(this.react.collab) as Y.Map<
-        z.output<typeof INoteCollab>
-      >
+      syncedstore.getYjsValue(this.react.collab) as Y.Map<INoteCollabOutput>
     ).observe((event) => {
       for (const [noteId, change] of event.changes.keys) {
         if (change.action === 'delete') {
@@ -106,7 +94,7 @@ export class PageNotes {
   }
 
   async create(
-    region: IPageRegion,
+    layer: PageLayer,
     worldPos: Vec2,
     centralize = true,
     destIndex?: number
@@ -116,11 +104,8 @@ export class PageNotes {
     }
 
     const noteId = this.page.app.serialization.deserialize(
-      {
-        notes: [$pages.react.defaultNote],
-        arrows: [],
-      },
-      region.react.collab,
+      $pages.react.defaultNote,
+      layer,
       destIndex
     ).noteIds[0];
 

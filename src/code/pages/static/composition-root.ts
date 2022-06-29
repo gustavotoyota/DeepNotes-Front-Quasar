@@ -1,7 +1,5 @@
-import { z } from 'zod';
-
 import { PagesApp } from '../app/app';
-import { IArrowCollab, PageArrow } from '../app/page/arrows/arrow';
+import { IArrowCollabOutput, PageArrow } from '../app/page/arrows/arrow';
 import { PageArrowCreation } from '../app/page/arrows/arrow-creation';
 import { PageArrows } from '../app/page/arrows/arrows';
 import { PageCamera } from '../app/page/camera/camera';
@@ -18,7 +16,7 @@ import { PageCloning } from '../app/page/notes/cloning';
 import { PageDragging } from '../app/page/notes/dragging';
 import { PageDropping } from '../app/page/notes/dropping';
 import { PageEditing } from '../app/page/notes/editing';
-import { INoteCollab, PageNote } from '../app/page/notes/note';
+import { INoteCollabOutput, PageNote } from '../app/page/notes/note';
 import { PageNotes } from '../app/page/notes/notes';
 import { PageResizing } from '../app/page/notes/resizing';
 import { AppPage } from '../app/page/page';
@@ -66,7 +64,8 @@ export const container = new Container({
   boxSelection: () => (page: AppPage) => new PageBoxSelection(page),
 
   layers: (factory: any) => (page: AppPage) => new PageLayers(factory, page),
-  layer: () => (page: AppPage, id: string) => new PageLayer(page, id),
+  layer: () => (page: AppPage, id: string, regionId: string | null) =>
+    new PageLayer(page, id, regionId),
 
   regions: () => (page: AppPage) => new PageRegions(page),
 
@@ -80,12 +79,12 @@ export const container = new Container({
     (
       page: AppPage,
       id: string,
+      regionId: string | null,
       layerId: string,
-      parentId: string | null,
       index: number,
-      collab?: z.output<typeof INoteCollab>
+      collab?: INoteCollabOutput
     ) =>
-      new PageNote(page, id, layerId, parentId, index, collab),
+      new PageNote(page, id, regionId, layerId, index, collab),
   editing: () => (page: AppPage) => new PageEditing(page),
   dragging: () => (page: AppPage) => new PageDragging(page),
   dropping: () => (page: AppPage) => new PageDropping(page),
@@ -99,12 +98,12 @@ export const container = new Container({
     (
       page: AppPage,
       id: string,
+      regionId: string | null,
       layerId: string,
-      parentId: string | null,
       index: number,
-      collab?: z.output<typeof IArrowCollab>
+      collab?: IArrowCollabOutput
     ) =>
-      new PageArrow(page, id, layerId, parentId, index, collab),
+      new PageArrow(page, id, regionId, layerId, index, collab),
   arrowCreation: (factory: any) => (page: AppPage) =>
     new PageArrowCreation(factory, page),
 });

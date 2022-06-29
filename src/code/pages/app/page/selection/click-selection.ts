@@ -9,7 +9,7 @@ export class PageClickSelection {
     // Container shift-selection
 
     if (
-      elem.react.parent != null &&
+      elem.react.region instanceof PageNote &&
       event.shiftKey &&
       this.page.activeElem.react.elem instanceof PageNote &&
       elem instanceof PageNote
@@ -20,7 +20,9 @@ export class PageClickSelection {
       const step = Math.sign(toIndex - fromIndex);
 
       for (let i = fromIndex; i !== toIndex; i += step) {
-        this.page.selection.add(this.page.activeRegion.react.notes[i]);
+        this.page.selection.add(
+          this.page.activeRegion.react.region.react.notes[i]
+        );
       }
     }
 
@@ -28,7 +30,7 @@ export class PageClickSelection {
     // And the clicked element is not selected
 
     if (!event.ctrlKey && !event.shiftKey && !elem.react.selected) {
-      this.page.selection.clear(elem.react.parentId);
+      this.page.selection.clear(elem.react.region.id);
     }
 
     // Remove element if selected and holding Ctrl

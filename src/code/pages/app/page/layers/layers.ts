@@ -1,10 +1,9 @@
 import { Y } from '@syncedstore/core';
 import { Factory } from 'src/code/pages/static/composition-root';
 import { computed, reactive, shallowReactive } from 'vue';
-import { z } from 'zod';
 
 import { AppPage } from '../page';
-import { ILayerCollab, PageLayer } from './layer';
+import { ILayerCollabOutput, PageLayer } from './layer';
 
 export class PageLayers {
   readonly react = reactive({
@@ -26,24 +25,35 @@ export class PageLayers {
     return ids.map((id) => this.react.map[id]).filter((item) => item != null);
   }
 
-  create(id: string) {
-    const layer = this.factory.makeLayer(this.page, id);
+  createAndObserveChildren(layerId: string, regionId: string | null) {
+    const layer = this.factory.makeLayer(this.page, layerId, regionId);
 
     this.react.map[layer.id] = layer;
+
+    this.page.notes.createAndObserveIds(
+      layer.react.collab.noteIds,
+      regionId,
+      layer.id
+    );
+    this.page.arrows.createAndObserveIds(
+      layer.react.collab.arrowIds,
+      regionId,
+      layer.id
+    );
   }
-  createAndObserveIds(ids: string[]) {
-    for (const id of ids) {
-      this.create(id);
+  createAndObserveIds(layerIds: string[], regionId: string | null) {
+    for (const layerId of layerIds) {
+      this.createAndObserveChildren(layerId, regionId);
     }
 
-    (syncedstore.getYjsValue(ids) as Y.Array<string>).observe((event) => {
+    (syncedstore.getYjsValue(layerIds) as Y.Array<string>).observe((event) => {
       for (const delta of event.changes.delta) {
         if (delta.insert == null) {
           continue;
         }
 
-        for (const id of delta.insert) {
-          this.create(id);
+        for (const layerId of delta.insert) {
+          this.createAndObserveChildren(layerId, regionId);
         }
       }
     });
@@ -51,9 +61,7 @@ export class PageLayers {
 
   observeMap() {
     (
-      syncedstore.getYjsValue(this.react.collab) as Y.Map<
-        z.output<typeof ILayerCollab>
-      >
+      syncedstore.getYjsValue(this.react.collab) as Y.Map<ILayerCollabOutput>
     ).observe((event) => {
       for (const [noteId, change] of event.changes.keys) {
         if (change.action === 'delete') {

@@ -6,8 +6,7 @@ export const IVec2 = z.object({
   x: z.number(),
   y: z.number(),
 });
-
-export type IVec2 = z.output<typeof IVec2>;
+export type IVec2 = z.infer<typeof IVec2>;
 
 export class Vec2 {
   x: number;

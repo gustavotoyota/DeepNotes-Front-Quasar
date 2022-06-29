@@ -30,7 +30,9 @@ const props = defineProps<{
 }>();
 
 const targetIndex = computed(
-  () => props.index ?? props.parentNote.react.collab.noteIds.length
+  () =>
+    props.index ??
+    props.parentNote.react.activeLayer.react.collab.noteIds.length
 );
 
 const page = inject<AppPage>('page')!;

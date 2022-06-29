@@ -67,8 +67,8 @@ export class PageSelection {
         continue;
       }
 
-      if (elem.react.parentId != this.page.activeRegion.react.id) {
-        this.clear(elem.react.parentId);
+      if (elem.react.region !== this.page.activeRegion.react.region) {
+        this.clear(elem.react.region.id);
       }
 
       elem.react.selected = true;
@@ -104,7 +104,7 @@ export class PageSelection {
   }
 
   selectAll() {
-    for (const elem of this.page.activeRegion.react.elems) {
+    for (const elem of this.page.activeRegion.react.region.react.elems) {
       this.add(elem);
     }
   }

@@ -9,7 +9,7 @@
         :key="note?.id ?? noteId"
       >
         <DisplayNote
-          v-if="note != null && note.react.parent == null"
+          v-if="note != null && note.react.region === page"
           :note="note"
           :index="index"
         />

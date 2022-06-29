@@ -1,5 +1,5 @@
 <template>
-  <NoteAnchor>
+  <NoteAnchor v-show="note.react.index === index || note.react.ghost">
     <NoteDropZones />
 
     <NoteFrame>
@@ -28,8 +28,6 @@
   setup
   lang="ts"
 >
-/* eslint-disable vue/no-mutating-props */
-
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { onUnmounted, provide, watchEffect } from 'vue';
 
@@ -52,16 +50,8 @@ const props = defineProps<{
 provide('note', props.note);
 
 const unwatch = watchEffect(() => {
-  const index = props.index ?? 0;
-
-  props.note.react.index = index;
-
-  if (props.note.react.region == null) {
-    return;
-  }
-
-  props.note.occurrences[props.note.react.region.id] ??= new Set();
-  props.note.occurrences[props.note.react.region.id].add(index);
+  // eslint-disable-next-line vue/no-mutating-props
+  props.note.react.index = props.index ?? 0;
 });
 
 onUnmounted(() => {

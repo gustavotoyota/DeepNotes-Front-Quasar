@@ -28,7 +28,7 @@ export class PageActiveElem {
 
         if (
           activeElem == null ||
-          activeElem.react.parentId != this.page.activeRegion.react.id
+          activeElem.react.region !== this.page.activeRegion.react.region
         )
           return null;
 

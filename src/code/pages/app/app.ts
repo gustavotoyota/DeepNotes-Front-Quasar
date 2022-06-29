@@ -17,7 +17,6 @@ import {
   UnwrapNestedRefs,
 } from 'vue';
 import { Router } from 'vue-router';
-import { z } from 'zod';
 
 import { Factory, factory } from '../static/composition-root';
 import { createComputedDict } from '../static/computed-dict';
@@ -30,8 +29,8 @@ import {
 } from './realtime';
 import {
   AppSerialization,
-  ISerialArrow,
-  ISerialNoteInput,
+  ISerialArrowInput,
+  ISerialObjectInput,
 } from './serialization';
 
 export const DICT_PAGE_GROUP_ID = 'page-group-id';
@@ -82,8 +81,8 @@ export interface IAppReact {
   publicKey: Uint8Array;
   symmetricKey: ShallowRef<SymmetricKey>;
 
-  defaultNote: ShallowRef<ISerialNoteInput>;
-  defaultArrow: ShallowRef<z.input<typeof ISerialArrow>>;
+  defaultNote: ShallowRef<ISerialObjectInput>;
+  defaultArrow: ShallowRef<ISerialArrowInput>;
 
   dict: Record<string, any>;
 

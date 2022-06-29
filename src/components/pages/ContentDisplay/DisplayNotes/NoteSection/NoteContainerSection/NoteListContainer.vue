@@ -40,7 +40,8 @@
     <!-- Children -->
 
     <template
-      v-for="(childNoteId, index) in note.react.collab.noteIds"
+      v-for="(childNoteId, index) in note.react.activeLayer.react.collab
+        .noteIds"
       :key="childNoteId"
     >
       <template
@@ -50,7 +51,7 @@
         <div
           v-if="
             childNote != null &&
-            (childNote.react.parent === note || note.react.ghost)
+            (childNote.react.region === note || note.react.ghost)
           "
           class="note-container-child"
           :style="{
@@ -127,7 +128,7 @@ async function onLeftDoubleClick(event: MouseEvent, destIndex?: number) {
   ).topLeft;
   const worldPos = page.sizes.screenToWorld2D(clientPos.sub(clientTopLeft));
 
-  await page.notes.create(note, worldPos, false, destIndex);
+  await page.notes.create(note.react.activeLayer, worldPos, false, destIndex);
 }
 </script>
 

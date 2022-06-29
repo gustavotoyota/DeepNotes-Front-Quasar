@@ -12,10 +12,9 @@ import {
   UnwrapRef,
 } from 'vue';
 import { yXmlFragmentToProsemirrorJSON } from 'y-prosemirror';
-import { z } from 'zod';
 
 import { AppPage } from '../page';
-import { INoteCollab, NoteSection, NoteSide, PageNote } from './note';
+import { INoteCollabOutput, NoteSection, NoteSide, PageNote } from './note';
 
 export interface IResizingReact {
   active: boolean;
@@ -64,9 +63,9 @@ export class PageResizing {
     for (const note of this.page.selection.react.notes) {
       note.react.resizing = true;
 
-      const collab = (
+      const collab: INoteCollabOutput = (
         syncedstore.getYjsValue(note.react.collab) as Y.Map<any>
-      ).toJSON() as z.output<typeof INoteCollab>;
+      ).toJSON() as INoteCollabOutput;
 
       collab.head.value = yXmlFragmentToProsemirrorJSON(
         note.react.collab.head.value
@@ -94,8 +93,8 @@ export class PageResizing {
       const ghost = this.factory.makeNote(
         this.page,
         note.id,
-        null as any,
         null,
+        null as any,
         -1,
         reactive(collab)
       );
@@ -222,9 +221,9 @@ export class PageResizing {
           new Vec2(note.react.collab.anchor)
         );
 
-        if (note.react.parent != null) {
+        if (note.react.region instanceof PageNote) {
           const containerClientRect = this.page.rects.fromDOM(
-            note.react.parent.react.container.elem.getBoundingClientRect()
+            note.react.region.react.container.elem.getBoundingClientRect()
           );
           const containerWorldTopLeft = this.page.pos.clientToWorld(
             containerClientRect.topLeft

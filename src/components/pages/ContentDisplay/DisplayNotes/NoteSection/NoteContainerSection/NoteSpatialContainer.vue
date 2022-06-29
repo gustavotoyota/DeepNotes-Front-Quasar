@@ -23,50 +23,64 @@
       </template>
     </div>
 
-    <!-- Arrows -->
-
-    <svg
-      style="position: absolute; pointer-events: none"
-      left="0"
-      top="0"
-      width="100%"
-      height="100%"
-    >
-      <template
-        v-for="(arrowId, index) in note.react.collab.arrowIds"
-        :key="arrowId"
-      >
-        <template
-          v-for="arrow in [page.arrows.fromId(arrowId)]"
-          :key="arrow?.id ?? arrowId"
-        >
-          <DisplayArrow
-            v-if="arrow != null"
-            :arrow="arrow"
-            :index="index"
-          />
-        </template>
-      </template>
-    </svg>
-
-    <!-- Notes -->
+    <!-- Layers -->
 
     <template
-      v-for="(childNoteId, index) in note.react.collab.noteIds"
-      :key="childNoteId"
+      v-for="layerId in note.react.collab.layerIds"
+      :key="layerId"
     >
       <template
-        v-for="childNote in [page.notes.fromId(childNoteId)]"
-        :key="childNote?.id ?? childNoteId"
+        v-for="layer in [page.layers.fromId(layerId)]"
+        :key="layer?.id ?? layerId"
       >
-        <DisplayNote
-          v-if="
-            childNote != null &&
-            (childNote.react.parent === note || note.react.ghost)
-          "
-          :note="childNote"
-          :index="index"
-      /></template>
+        <template v-if="layer != null">
+          <!-- Arrows -->
+
+          <svg
+            style="position: absolute; pointer-events: none"
+            left="0"
+            top="0"
+            width="100%"
+            height="100%"
+          >
+            <template
+              v-for="(arrowId, index) in layer.react.collab.arrowIds"
+              :key="arrowId"
+            >
+              <template
+                v-for="arrow in [page.arrows.fromId(arrowId)]"
+                :key="arrow?.id ?? arrowId"
+              >
+                <DisplayArrow
+                  v-if="arrow != null"
+                  :arrow="arrow"
+                  :index="index"
+                />
+              </template>
+            </template>
+          </svg>
+
+          <!-- Notes -->
+
+          <template
+            v-for="(childNoteId, index) in layer.react.collab.noteIds"
+            :key="childNoteId"
+          >
+            <template
+              v-for="childNote in [page.notes.fromId(childNoteId)]"
+              :key="childNote?.id ?? childNoteId"
+            >
+              <DisplayNote
+                v-if="
+                  childNote != null &&
+                  (childNote.react.region === note || note.react.ghost)
+                "
+                :note="childNote"
+                :index="index"
+            /></template>
+          </template>
+        </template>
+      </template>
     </template>
 
     <!-- Arrow creation -->
@@ -74,7 +88,7 @@
     <svg
       v-if="
         page.arrowCreation.react.active &&
-        page.arrowCreation.fakeArrow.react.parent == note
+        page.arrowCreation.fakeArrow.react.region === note
       "
       style="position: absolute; pointer-events: none"
       left="0"
@@ -137,7 +151,10 @@ async function onLeftPointerUp() {
 }
 
 async function onLeftDoubleClick(event: MouseEvent) {
-  await page.notes.create(note, new Vec2(event.offsetX, event.offsetY));
+  await page.notes.create(
+    note.react.activeLayer,
+    new Vec2(event.offsetX, event.offsetY)
+  );
 }
 </script>
 

@@ -394,7 +394,7 @@ export class PageNote extends PageElem implements IPageRegion {
             this.react.collab.container.enabled &&
             this.react.notes.length === 0
           ) {
-            return '130px';
+            return '167px';
           } else {
             return undefined;
           }

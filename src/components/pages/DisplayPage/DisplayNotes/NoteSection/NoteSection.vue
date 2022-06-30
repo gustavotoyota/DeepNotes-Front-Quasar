@@ -11,7 +11,11 @@
       style="display: flex"
       :style="{
         height: note.react[section].height,
-        'min-height': section === 'container' ? '52.45px' : '36.45px',
+        'min-height':
+          section === 'container' &&
+          note.react.activeLayer.react.notes.length === 0
+            ? '72px'
+            : '36.45px',
       }"
     >
       <slot></slot>

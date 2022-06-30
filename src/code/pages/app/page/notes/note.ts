@@ -146,7 +146,6 @@ export interface INoteReact extends IRegionReact, IElemReact {
   container: {
     visible: ComputedRef<boolean>;
     height: ComputedRef<string | undefined>;
-    elem: ShallowRef<Element>;
   };
 
   collapsing: {
@@ -204,6 +203,13 @@ export class PageNote extends PageElem implements IPageRegion {
   readonly incomingArrows: PageArrow[] = [];
   readonly outgoingArrows: PageArrow[] = [];
 
+  originElem!: Element;
+
+  get originClientPos(): Vec2 {
+    return this.page.rects.fromDOM(this.originElem.getBoundingClientRect())
+      .topLeft;
+  }
+
   constructor(
     page: AppPage,
     id: string,
@@ -231,9 +237,61 @@ export class PageNote extends PageElem implements IPageRegion {
       });
 
     const react: Omit<INoteReact, keyof IElemReact> = {
+      // Region
+
       collab: computed(
         () => this.collab ?? this.page.notes.react.collab[this.id]
       ),
+
+      layers: computed(() => page.layers.fromIds(this.react.collab.layerIds)),
+      activeLayer: computed(
+        () =>
+          this.page.layers.fromId(this.react.activeLayerId ?? null) ??
+          this.react.layers[0]
+      ),
+
+      noteIds: computed(() => {
+        const result = [];
+
+        for (const layer of this.react.layers) {
+          result.push(...layer.react.collab.noteIds);
+        }
+
+        return result;
+      }),
+      arrowIds: computed(() => {
+        const result = [];
+
+        for (const layer of this.react.layers) {
+          result.push(...layer.react.collab.arrowIds);
+        }
+
+        return result;
+      }),
+
+      notes: computed(() => {
+        const result = [];
+
+        for (const layer of this.react.layers) {
+          result.push(...layer.react.notes);
+        }
+
+        return result;
+      }),
+      arrows: computed(() => {
+        const result = [];
+
+        for (const layer of this.react.layers) {
+          result.push(...layer.react.arrows);
+        }
+
+        return result;
+      }),
+      elems: computed(() =>
+        (this.react.notes as PageElem[]).concat(this.react.arrows)
+      ),
+
+      // Note
 
       editing: false,
       dragging: false,
@@ -263,7 +321,6 @@ export class PageNote extends PageElem implements IPageRegion {
               this.react.topSection === 'container')
         ),
         height: makeSectionHeight('container'),
-        elem: shallowRef() as any,
       },
 
       collapsing: {
@@ -424,54 +481,6 @@ export class PageNote extends PageElem implements IPageRegion {
       ),
       worldCenter: computed(() => this.react.worldRect.center),
 
-      noteIds: computed(() => {
-        const result = [];
-
-        for (const layer of this.react.layers) {
-          result.push(...layer.react.collab.noteIds);
-        }
-
-        return result;
-      }),
-      arrowIds: computed(() => {
-        const result = [];
-
-        for (const layer of this.react.layers) {
-          result.push(...layer.react.collab.arrowIds);
-        }
-
-        return result;
-      }),
-
-      layers: computed(() => page.layers.fromIds(this.react.collab.layerIds)),
-      notes: computed(() => {
-        const result = [];
-
-        for (const layer of this.react.layers) {
-          result.push(...layer.react.notes);
-        }
-
-        return result;
-      }),
-      arrows: computed(() => {
-        const result = [];
-
-        for (const layer of this.react.layers) {
-          result.push(...layer.react.arrows);
-        }
-
-        return result;
-      }),
-      elems: computed(() =>
-        (this.react.notes as PageElem[]).concat(this.react.arrows)
-      ),
-
-      activeLayer: computed(
-        () =>
-          this.page.layers.fromId(this.react.activeLayerId ?? null) ??
-          this.react.layers[0]
-      ),
-
       cursor: computed(() => {
         if (this.react.editing) {
           return 'auto';
@@ -564,12 +573,12 @@ export class PageNote extends PageElem implements IPageRegion {
   bringToTop() {
     if (
       this.react.collab.zIndex ===
-      this.react.layer.react.collab.nextZIndex - 1
+      this.react.parentLayer.react.collab.nextZIndex - 1
     ) {
       return;
     }
 
-    this.react.collab.zIndex = this.react.layer.react.collab.nextZIndex++;
+    this.react.collab.zIndex = this.react.parentLayer.react.collab.nextZIndex++;
   }
 
   getNode(part: string | null): Element {
@@ -622,8 +631,10 @@ export class PageNote extends PageElem implements IPageRegion {
   }
 
   removeFromLayer() {
-    if (this.react.layer.react.collab.noteIds[this.react.index] === this.id) {
-      this.react.layer.react.collab.noteIds.splice(this.react.index, 1);
+    if (
+      this.react.parentLayer.react.collab.noteIds[this.react.index] === this.id
+    ) {
+      this.react.parentLayer.react.collab.noteIds.splice(this.react.index, 1);
     }
   }
   moveToLayer(layer: PageLayer, insertIndex?: number) {
@@ -631,7 +642,7 @@ export class PageNote extends PageElem implements IPageRegion {
       this.removeFromLayer();
 
       this.react.regionId = layer.react.regionId;
-      this.react.layerId = layer.id;
+      this.react.parentLayerId = layer.id;
 
       layer.react.collab.noteIds.splice(
         insertIndex ?? layer.react.collab.noteIds.length,

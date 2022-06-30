@@ -18,6 +18,7 @@ import { z } from 'zod';
 
 import { Factory } from '../../static/composition-root';
 import { rolesMap } from '../../static/roles';
+import { Vec2 } from '../../static/vec2';
 import { watchUntilTrue } from '../../static/vue';
 import {
   DICT_GROUP_OWNER_ID,
@@ -139,11 +140,25 @@ export class AppPage implements IPageRegion {
 
   unwatchUserDisplayName?: WatchStopHandle;
 
+  originElem!: Element;
+
+  get originClientPos(): Vec2 {
+    return this.rects.fromDOM(this.originElem.getBoundingClientRect()).topLeft;
+  }
+
   constructor(factory: Factory, readonly app: PagesApp, readonly id: string) {
     this.react = reactive({
-      // Page
+      // Region
 
       collab: computed(() => this.collab.store.page),
+
+      layers: computed(() => this.layers.fromIds(this.react.collab.layerIds)),
+
+      activeLayer: computed(
+        () =>
+          this.layers.fromId(this.react.activeLayerId ?? null) ??
+          this.react.layers[0]
+      ),
 
       noteIds: computed(() => {
         const result = [];
@@ -164,18 +179,13 @@ export class AppPage implements IPageRegion {
         return result;
       }),
 
-      layers: computed(() => this.layers.fromIds(this.react.collab.layerIds)),
       notes: computed(() => this.notes.fromIds(this.react.noteIds)),
       arrows: computed(() => this.arrows.fromIds(this.react.arrowIds)),
       elems: computed(() =>
         (this.react.notes as PageElem[]).concat(this.react.arrows)
       ),
 
-      activeLayer: computed(
-        () =>
-          this.layers.fromId(this.react.activeLayerId ?? null) ??
-          this.react.layers[0]
-      ),
+      // Page
 
       size: 0,
 

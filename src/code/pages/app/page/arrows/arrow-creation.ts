@@ -49,7 +49,7 @@ export class PageArrowCreation {
     this.fakeArrow.react.collab.targetId = null as any;
 
     this.fakeArrow.react.regionId = sourceNote.react.regionId;
-    this.fakeArrow.react.layerId = sourceNote.react.layerId;
+    this.fakeArrow.react.parentLayerId = sourceNote.react.parentLayerId;
 
     listenPointerEvents(event, {
       move: this._update,
@@ -66,13 +66,13 @@ export class PageArrowCreation {
 
     if (
       this.fakeArrow.react.region instanceof PageNote &&
-      this.fakeArrow.react.region.react.container.elem != null
+      this.fakeArrow.react.region.originElem != null
     ) {
       this.fakeArrow.react.fakeTargetPos =
         this.fakeArrow.react.fakeTargetPos.sub(
           this.page.pos.clientToWorld(
             this.page.rects.fromDOM(
-              this.fakeArrow.react.region.react.container.elem.getBoundingClientRect()
+              this.fakeArrow.react.region.originElem.getBoundingClientRect()
             ).topLeft
           )
         );
@@ -102,7 +102,7 @@ export class PageArrowCreation {
     this.page.collab.doc.transact(() => {
       this.page.arrows.react.collab[arrowId] = newCollab;
 
-      targetNote.react.layer.react.collab.arrowIds.push(arrowId);
+      targetNote.react.parentLayer.react.collab.arrowIds.push(arrowId);
     });
 
     // Select arrow

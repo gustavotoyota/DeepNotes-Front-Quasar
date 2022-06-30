@@ -1,6 +1,6 @@
 <template>
   <div
-    ref="containerElem"
+    ref="originElem"
     style="position: absolute; inset: 9px; pointer-events: none"
   ></div>
 
@@ -115,16 +115,16 @@ import NoteDropZone from '../../NoteDropZones/NoteDropZone.vue';
 const page = inject<AppPage>('page')!;
 const note = inject<PageNote>('note')!;
 
-const containerElem = ref<Element>();
+const originElem = ref<Element>();
 
 onMounted(() => {
-  note.react.container.elem = containerElem.value!;
+  note.originElem = originElem.value!;
 });
 
 async function onLeftDoubleClick(event: MouseEvent, destIndex?: number) {
   const clientPos = page.pos.eventToClient(event);
   const clientTopLeft = page.rects.fromDOM(
-    note.react.container.elem.getBoundingClientRect()
+    note.originElem.getBoundingClientRect()
   ).topLeft;
   const worldPos = page.sizes.screenToWorld2D(clientPos.sub(clientTopLeft));
 

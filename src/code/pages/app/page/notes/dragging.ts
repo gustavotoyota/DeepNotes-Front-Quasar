@@ -164,7 +164,7 @@ export class PageDragging {
       // Drag out of spatial container
 
       const containerClientRect = this.page.rects.fromDOM(
-        region.react.container.elem.getBoundingClientRect()
+        region.originElem.getBoundingClientRect()
       );
       const containerWorldTopLeft = this.page.pos.clientToWorld(
         containerClientRect.topLeft

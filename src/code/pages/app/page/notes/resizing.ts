@@ -223,7 +223,7 @@ export class PageResizing {
 
         if (note.react.region instanceof PageNote) {
           const containerClientRect = this.page.rects.fromDOM(
-            note.react.region.react.container.elem.getBoundingClientRect()
+            note.react.region.originElem.getBoundingClientRect()
           );
           const containerWorldTopLeft = this.page.pos.clientToWorld(
             containerClientRect.topLeft

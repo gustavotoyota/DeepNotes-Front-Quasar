@@ -1,6 +1,6 @@
 <template>
   <div
-    ref="containerElem"
+    ref="originElem"
     class="note-spatial-container"
     :style="{
       'background-color': note.react.color.shadow,
@@ -128,10 +128,10 @@ import DisplayNote from '../../DisplayNote.vue';
 const page = inject<AppPage>('page')!;
 const note = inject<PageNote>('note')!;
 
-const containerElem = ref<Element>();
+const originElem = ref<Element>();
 
 onMounted(() => {
-  note.react.container.elem = containerElem.value!;
+  note.originElem = originElem.value!;
 });
 
 const pointerOver = ref(false);

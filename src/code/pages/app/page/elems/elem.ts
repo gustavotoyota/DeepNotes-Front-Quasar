@@ -13,8 +13,8 @@ export interface IElemReact {
   regionId: string | null;
   region: ComputedRef<AppPage | PageNote>;
 
-  layerId: string;
-  layer: ComputedRef<PageLayer>;
+  parentLayerId: string;
+  parentLayer: ComputedRef<PageLayer>;
 
   active: boolean;
   selected: boolean;
@@ -37,8 +37,10 @@ export class PageElem {
       regionId,
       region: computed(() => this.page.regions.fromId(this.react.regionId)),
 
-      layerId,
-      layer: computed(() => this.page.layers.fromId(this.react.layerId)!),
+      parentLayerId: layerId,
+      parentLayer: computed(
+        () => this.page.layers.fromId(this.react.parentLayerId)!
+      ),
 
       index,
 

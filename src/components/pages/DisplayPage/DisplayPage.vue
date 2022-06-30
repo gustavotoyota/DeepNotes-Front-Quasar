@@ -1,6 +1,6 @@
 <template>
   <div
-    class="display"
+    class="display-page"
     @wheel="onWheel"
     @pointerdown.left.capture="onLeftPointerDown"
     @pointerdown.middle.prevent="onMiddlePointerDown"
@@ -94,7 +94,7 @@ import { AppPage } from 'src/code/pages/app/page/page';
 import { isMouseOverScrollbar } from 'src/code/pages/static/dom';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
-import { provide } from 'vue';
+import { onMounted, provide } from 'vue';
 
 import DisplayArrow from './DisplayArrows/DisplayArrow.vue';
 import DisplayBackground from './DisplayBackground.vue';
@@ -111,6 +111,11 @@ const props = defineProps<{
 }>();
 
 provide('page', props.page);
+
+onMounted(() => {
+  // eslint-disable-next-line vue/no-mutating-props
+  props.page.originElem = document.querySelector('.display-page')!;
+});
 
 function onWheel(event: WheelEvent) {
   props.page.zooming.perform(event);
@@ -186,7 +191,7 @@ async function rejectInvitation() {
 </script>
 
 <style scoped>
-.display {
+.display-page {
   position: absolute;
 
   inset: 0;
@@ -201,13 +206,13 @@ async function rejectInvitation() {
   justify-content: center;
 }
 
-.display :deep(a[target='_blank']) {
+.display-page :deep(a[target='_blank']) {
   text-decoration: none !important;
 
   color: #81d4fa;
 }
 
-.display :deep(*) {
+.display-page :deep(*) {
   touch-action: none;
 }
 </style>

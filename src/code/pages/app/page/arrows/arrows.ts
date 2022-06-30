@@ -45,7 +45,7 @@ export class PageArrows {
       index
     );
 
-    arrow.react.layerId = layerId;
+    arrow.react.parentLayerId = layerId;
 
     this.react.map[arrow.id] = arrow;
   }

@@ -8,7 +8,7 @@ export class PageDropping {
 
   async perform(parentNote: PageNote, dropIndex?: number) {
     const containerClientRect = this.page.rects.fromDOM(
-      parentNote.react.container.elem.getBoundingClientRect()
+      parentNote.originElem.getBoundingClientRect()
     );
     const containerWorldTopLeft = this.page.pos.clientToWorld(
       containerClientRect.topLeft

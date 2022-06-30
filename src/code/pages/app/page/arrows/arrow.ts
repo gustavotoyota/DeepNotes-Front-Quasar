@@ -184,10 +184,12 @@ export class PageArrow extends PageElem {
   }
 
   removeFromLayer() {
-    if (this.react.layer.react.collab.arrowIds[this.react.index] !== this.id) {
+    if (
+      this.react.parentLayer.react.collab.arrowIds[this.react.index] !== this.id
+    ) {
       return;
     }
 
-    this.react.layer.react.collab.arrowIds.splice(this.react.index, 1);
+    this.react.parentLayer.react.collab.arrowIds.splice(this.react.index, 1);
   }
 }

@@ -1,3 +1,4 @@
+import { Vec2 } from 'src/code/pages/static/vec2';
 import { ComputedRef, UnwrapRef } from 'vue';
 import { z, ZodType } from 'zod';
 
@@ -29,20 +30,25 @@ export type IRegionElemsOutput = z.output<typeof IRegionElems>;
 export interface IRegionReact {
   collab: ComputedRef<IRegionCollabOutput>;
 
-  noteIds: ComputedRef<string[]>;
-  arrowIds: ComputedRef<string[]>;
-
   layers: ComputedRef<PageLayer[]>;
-  notes: ComputedRef<PageNote[]>;
-  arrows: ComputedRef<PageArrow[]>;
-  elems: ComputedRef<PageElem[]>;
 
   activeLayerId?: string;
   activeLayer: ComputedRef<PageLayer>;
+
+  noteIds: ComputedRef<string[]>;
+  arrowIds: ComputedRef<string[]>;
+
+  notes: ComputedRef<PageNote[]>;
+  arrows: ComputedRef<PageArrow[]>;
+  elems: ComputedRef<PageElem[]>;
 }
 
 export interface IPageRegion {
   id: string;
 
   react: UnwrapRef<IRegionReact>;
+
+  originElem: Element;
+
+  get originClientPos(): Vec2;
 }

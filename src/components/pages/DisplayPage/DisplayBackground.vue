@@ -22,7 +22,7 @@ function onLeftPointerDown(event: PointerEvent) {
     page.selection.clear(page);
   }
 
-  page.boxSelection.start(event);
+  page.boxSelection.start(event, page);
 }
 
 async function onLeftDoubleClick(event: MouseEvent) {

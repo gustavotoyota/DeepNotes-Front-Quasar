@@ -1,44 +1,51 @@
 import { listenPointerEvents } from 'src/code/pages/static/dom';
 import { Rect } from 'src/code/pages/static/rect';
 import { Vec2 } from 'src/code/pages/static/vec2';
-import { refProp } from 'src/code/pages/static/vue';
-import { UnwrapRef } from 'vue';
+import { computed, ComputedRef, reactive, UnwrapNestedRefs } from 'vue';
 
+import { PageNote } from '../notes/note';
 import { AppPage } from '../page';
 
 export interface IBoxSelectionReact {
   active: boolean;
 
-  displayStart: Vec2;
-  displayEnd: Vec2;
+  regionId?: string;
+  region: ComputedRef<AppPage | PageNote>;
+
+  startPos: Vec2;
+  endPos: Vec2;
 }
 
 export class PageBoxSelection {
   static readonly MIN_DISTANCE = 5;
 
-  react: UnwrapRef<IBoxSelectionReact>;
+  readonly react: UnwrapNestedRefs<IBoxSelectionReact>;
 
   downEvent!: PointerEvent;
   touchTimer: NodeJS.Timeout | null = null;
 
   constructor(readonly page: AppPage) {
-    this.react = refProp<IBoxSelectionReact>(this, 'react', {
+    this.react = reactive({
       active: false,
 
-      displayStart: new Vec2(),
-      displayEnd: new Vec2(),
+      region: computed(() => this.page.regions.fromId(this.react.regionId!)),
+
+      startPos: new Vec2(),
+      endPos: new Vec2(),
     });
   }
 
-  start(event: PointerEvent) {
-    const displayPos = this.page.pos.eventToDisplay(event);
+  start(event: PointerEvent, region: AppPage | PageNote) {
+    const clientPos = this.page.pos.eventToClient(event);
+    const originClientPos = region.originClientPos;
+    const offsetPos = clientPos.sub(originClientPos);
 
-    this.react = {
-      active: false,
+    this.react.active = false;
 
-      displayStart: new Vec2(displayPos),
-      displayEnd: new Vec2(displayPos),
-    };
+    this.react.regionId = region.id;
+
+    this.react.startPos = new Vec2(offsetPos);
+    this.react.endPos = new Vec2(offsetPos);
 
     this.downEvent = event;
 
@@ -73,10 +80,12 @@ export class PageBoxSelection {
   }
 
   private _pointerMove = (event: PointerEvent) => {
-    const displayPos = this.page.pos.eventToDisplay(event);
+    const clientPos = this.page.pos.eventToClient(event);
+    const originClientPos = this.react.region.originClientPos;
+    const offsetPos = clientPos.sub(originClientPos);
 
     if (!this.react.active) {
-      const dist = displayPos.sub(this.react.displayStart).length();
+      const dist = offsetPos.sub(this.react.startPos).length();
 
       this.react.active = dist >= PageBoxSelection.MIN_DISTANCE;
 
@@ -85,7 +94,7 @@ export class PageBoxSelection {
       }
     }
 
-    this.react.displayEnd = new Vec2(displayPos);
+    this.react.endPos = new Vec2(offsetPos);
   };
 
   private _pointerUp = (event: PointerEvent) => {
@@ -95,22 +104,26 @@ export class PageBoxSelection {
 
     this.react.active = false;
 
-    const clientStart = this.page.pos.displayToClient(this.react.displayStart);
-    const clientEnd = this.page.pos.displayToClient(this.react.displayEnd);
-
-    const clientTopLeft = new Vec2(
-      Math.min(clientStart.x, clientEnd.x),
-      Math.min(clientStart.y, clientEnd.y)
+    const topLeft = new Vec2(
+      Math.min(this.react.startPos.x, this.react.endPos.x),
+      Math.min(this.react.startPos.y, this.react.endPos.y)
     );
-    const clientBottomRight = new Vec2(
-      Math.max(clientStart.x, clientEnd.x),
-      Math.max(clientStart.y, clientEnd.y)
+    const bottomRight = new Vec2(
+      Math.max(this.react.startPos.x, this.react.endPos.x),
+      Math.max(this.react.startPos.y, this.react.endPos.y)
     );
 
-    const clientRect = new Rect(clientTopLeft, clientBottomRight);
+    const boxRect = new Rect(topLeft, bottomRight);
 
-    for (const note of this.page.react.notes) {
-      if (!clientRect.containsRect(note.getClientRect('note-frame'))) {
+    const originClientPos = this.react.region.originClientPos;
+
+    for (const note of this.react.region.react.notes) {
+      const noteRect = note.getClientRect('note-frame');
+
+      noteRect.topLeft = noteRect.topLeft.sub(originClientPos);
+      noteRect.bottomRight = noteRect.bottomRight.sub(originClientPos);
+
+      if (!boxRect.containsRect(noteRect)) {
         continue;
       }
 
@@ -121,10 +134,13 @@ export class PageBoxSelection {
       }
     }
 
-    for (const arrow of this.page.react.arrows) {
-      const clientCenter = this.page.pos.worldToClient(arrow.react.centerPos);
+    for (const arrow of this.react.region.react.arrows) {
+      const arrowClientCenter = this.page.pos.worldToClient(
+        arrow.react.centerPos
+      );
+      const arrowCenter = arrowClientCenter.sub(originClientPos);
 
-      if (!clientRect.containsVec2(clientCenter)) {
+      if (!boxRect.containsVec2(arrowCenter)) {
         continue;
       }
 
@@ -141,9 +157,11 @@ export class PageBoxSelection {
       return;
     }
 
-    const displayPos = this.page.pos.eventToDisplay(event);
+    const clientPos = this.page.pos.eventToClient(event);
+    const originClientPos = this.react.region.originClientPos;
+    const offsetPos = clientPos.sub(originClientPos);
 
-    const dist = displayPos.sub(this.react.displayStart).length();
+    const dist = offsetPos.sub(this.react.startPos).length();
 
     if (dist >= PageBoxSelection.MIN_DISTANCE) {
       this.clearTimer();

@@ -100,6 +100,10 @@
       <DisplayArrow :arrow="page.arrowCreation.fakeArrow" />
     </svg>
 
+    <!-- Box selection -->
+
+    <DisplayBoxSelection :region="note" />
+
     <!-- Fake drop zone -->
 
     <div
@@ -123,6 +127,7 @@ import { Vec2 } from 'src/code/pages/static/vec2';
 import { inject, onMounted, ref } from 'vue';
 
 import DisplayArrow from '../../../DisplayArrows/DisplayArrow.vue';
+import DisplayBoxSelection from '../../../DisplayBoxSelection.vue';
 import DisplayNote from '../../DisplayNote.vue';
 
 const page = inject<AppPage>('page')!;
@@ -143,8 +148,14 @@ function onPointerOut() {
   pointerOver.value = false;
 }
 
-function onLeftPointerDown() {
-  page.selection.clear(note);
+function onLeftPointerDown(event: PointerEvent) {
+  page.editing.stop();
+
+  if (!event.ctrlKey && !event.shiftKey) {
+    page.selection.clear(note);
+  }
+
+  page.boxSelection.start(event, note);
 }
 async function onLeftPointerUp() {
   if (!page.dragging.react.active) {

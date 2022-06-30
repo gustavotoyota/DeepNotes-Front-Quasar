@@ -78,7 +78,7 @@
         />
       </DOMDisplay>
 
-      <DisplayBoxSelection />
+      <DisplayBoxSelection :region="page"/>
 
       <DisplayBtns />
     </template>

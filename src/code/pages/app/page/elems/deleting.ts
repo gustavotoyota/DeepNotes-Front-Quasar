@@ -39,7 +39,9 @@ export class PageDeleting {
       for (const arrow of sortedArrows) {
         arrow.removeFromLayer();
 
-        delete this.page.collab.store.arrows[arrow.id];
+        if (this.page.collab.store.arrows[arrow.id] != null) {
+          delete this.page.collab.store.arrows[arrow.id];
+        }
       }
 
       // Delete notes

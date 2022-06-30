@@ -30,7 +30,7 @@ export class PageClickSelection {
     // And the clicked element is not selected
 
     if (!event.ctrlKey && !event.shiftKey && !elem.react.selected) {
-      this.page.selection.clear(elem.react.region.id);
+      this.page.selection.clear(elem.react.region);
     }
 
     // Remove element if selected and holding Ctrl

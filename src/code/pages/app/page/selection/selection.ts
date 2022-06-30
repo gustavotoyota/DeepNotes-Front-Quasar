@@ -46,7 +46,7 @@ export class PageSelection {
     return elem.id in this.react[`${elem.type}Set`];
   }
 
-  clear(activeRegionId?: string | null) {
+  clear(region?: AppPage | PageNote) {
     for (const elem of this.react.elems) {
       this.remove(elem);
     }
@@ -56,8 +56,8 @@ export class PageSelection {
 
     this.page.activeElem.clear();
 
-    if (activeRegionId !== undefined) {
-      this.page.activeRegion.react.id = activeRegionId;
+    if (region !== undefined) {
+      this.page.activeRegion.react.id = region.id;
     }
   }
 
@@ -68,7 +68,7 @@ export class PageSelection {
       }
 
       if (elem.react.region !== this.page.activeRegion.react.region) {
-        this.clear(elem.react.region.id);
+        this.clear(elem.react.region);
       }
 
       elem.react.selected = true;

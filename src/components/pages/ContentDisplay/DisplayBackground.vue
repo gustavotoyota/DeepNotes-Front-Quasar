@@ -19,7 +19,7 @@ function onLeftPointerDown(event: PointerEvent) {
   page.editing.stop();
 
   if (!event.ctrlKey && !event.shiftKey) {
-    page.selection.clear(null);
+    page.selection.clear(page);
   }
 
   page.boxSelection.start(event);

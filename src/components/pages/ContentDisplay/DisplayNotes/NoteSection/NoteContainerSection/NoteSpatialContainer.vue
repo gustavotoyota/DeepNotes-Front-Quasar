@@ -7,6 +7,7 @@
     }"
     @pointerover.stop="onPointerOver"
     @pointerout.stop="onPointerOut"
+    @pointerdown.left.stop="onLeftPointerDown"
     @pointerup.left="onLeftPointerUp"
   >
     <!-- Background -->
@@ -142,6 +143,9 @@ function onPointerOut() {
   pointerOver.value = false;
 }
 
+function onLeftPointerDown() {
+  page.selection.clear(note);
+}
 async function onLeftPointerUp() {
   if (!page.dragging.react.active) {
     return;

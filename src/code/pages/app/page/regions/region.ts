@@ -32,6 +32,8 @@ export interface IRegionReact {
 
   layers: ComputedRef<PageLayer[]>;
 
+  topLayer: ComputedRef<PageLayer>;
+
   activeLayerId?: string;
   activeLayer: ComputedRef<PageLayer>;
 

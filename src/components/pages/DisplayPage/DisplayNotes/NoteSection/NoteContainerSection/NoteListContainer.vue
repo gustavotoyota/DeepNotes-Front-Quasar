@@ -19,7 +19,7 @@
     <!-- Background -->
 
     <div
-      v-if="note.react.notes.length === 0"
+      v-if="note.react.topLayer.react.notes.length === 0"
       class="note-container-background"
     >
       <!-- Placeholder -->
@@ -40,8 +40,7 @@
     <!-- Children -->
 
     <template
-      v-for="(childNoteId, index) in note.react.activeLayer.react.collab
-        .noteIds"
+      v-for="(childNoteId, index) in note.react.topLayer.react.collab.noteIds"
       :key="childNoteId"
     >
       <template
@@ -72,7 +71,7 @@
 
           <div style="position: relative">
             <NoteDropZone
-              v-if="index < note.react.notes.length - 1"
+              v-if="index < note.react.topLayer.react.notes.length - 1"
               :parent-note="note"
               :always-visible="true"
               :index="index + 1"
@@ -128,7 +127,7 @@ async function onLeftDoubleClick(event: MouseEvent, destIndex?: number) {
   ).topLeft;
   const worldPos = page.sizes.screenToWorld2D(clientPos.sub(clientTopLeft));
 
-  await page.notes.create(note.react.activeLayer, worldPos, false, destIndex);
+  await page.notes.create(note.react.topLayer, worldPos, false, destIndex);
 }
 </script>
 

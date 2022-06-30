@@ -154,10 +154,12 @@ export class AppPage implements IPageRegion {
 
       layers: computed(() => this.layers.fromIds(this.react.collab.layerIds)),
 
+      topLayer: computed(() => this.react.layers.at(-1)!),
+
       activeLayer: computed(
         () =>
           this.layers.fromId(this.react.activeLayerId ?? null) ??
-          this.react.layers.at(-1)!
+          this.react.topLayer
       ),
 
       noteIds: computed(() => {

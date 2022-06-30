@@ -27,7 +27,7 @@
     <!-- Layers -->
 
     <template
-      v-for="(layerId, layerIndex) in note.react.collab.layerIds"
+      v-for="layerId in note.react.collab.layerIds"
       :key="layerId"
     >
       <template
@@ -37,9 +37,6 @@
         <div
           class="note-spatial-layer"
           v-if="layer != null"
-          :style="{
-            'z-index': layerIndex,
-          }"
         >
           <!-- Arrows -->
 
@@ -188,6 +185,8 @@ async function onLeftDoubleClick(event: MouseEvent) {
   inset: 0;
 
   pointer-events: none;
+
+  isolation: isolate;
 }
 
 .note-spatial-container {

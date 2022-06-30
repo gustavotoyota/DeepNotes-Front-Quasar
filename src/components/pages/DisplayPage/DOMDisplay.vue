@@ -41,5 +41,7 @@ const page = inject<AppPage>('page')!;
   height: 0;
 
   pointer-events: auto;
+
+  isolation: isolate;
 }
 </style>

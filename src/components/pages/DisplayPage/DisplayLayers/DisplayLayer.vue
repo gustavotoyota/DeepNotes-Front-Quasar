@@ -29,5 +29,7 @@ provide('layer', props.layer);
   inset: 0;
 
   pointer-events: none;
+
+  isolation: isolate;
 }
 </style>

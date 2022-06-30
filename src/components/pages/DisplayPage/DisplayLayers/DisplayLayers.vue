@@ -1,6 +1,7 @@
 <template>
-  <template
-    v-for="(layerId, index) of page.react.collab.layerIds"
+  <div
+    style="isolation: isolate"
+    v-for="layerId of page.react.collab.layerIds"
     :key="layerId"
   >
     <template
@@ -10,11 +11,9 @@
       <DisplayLayer
         v-if="layer != null"
         :layer="layer"
-        :style="{
-          'z-index': index,
-        }"
-    /></template>
-  </template>
+      />
+    </template>
+  </div>
 </template>
 
 <script

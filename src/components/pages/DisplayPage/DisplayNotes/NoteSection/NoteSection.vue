@@ -12,9 +12,10 @@
       :style="{
         height: note.react[section].height,
         'min-height':
-          section === 'container' &&
-          note.react.activeLayer.react.notes.length === 0
-            ? '72px'
+          section === 'container'
+            ? note.react.activeLayer.react.notes.length === 0
+              ? '72px'
+              : '52.5px'
             : '36.45px',
       }"
     >

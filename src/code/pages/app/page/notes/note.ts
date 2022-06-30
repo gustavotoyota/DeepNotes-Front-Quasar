@@ -390,7 +390,6 @@ export class PageNote extends PageElem implements IPageRegion {
         min: computed(() => {
           if (
             // Is empty container with unpinned width:
-            !this.react.width.pinned &&
             this.react.collab.container.enabled &&
             this.react.notes.length === 0
           ) {

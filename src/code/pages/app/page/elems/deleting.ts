@@ -1,4 +1,5 @@
 import { PageArrow } from '../arrows/arrow';
+import { PageLayer } from '../layers/layer';
 import { PageNote } from '../notes/note';
 import { AppPage } from '../page';
 
@@ -48,7 +49,7 @@ export class PageDeleting {
       notes.sort((a, b) => b.react.index - a.react.index);
 
       for (const note of notes) {
-        this._deleteNote(note);
+        this.deleteNote(note);
 
         note.removeFromLayer();
       }
@@ -56,10 +57,11 @@ export class PageDeleting {
 
     this.page.selection.clear();
   }
-  private _deleteNote(note: PageNote) {
-    for (const layer of note.react.layers) {
+
+  deleteLayer(layer: PageLayer) {
+    this.page.collab.doc.transact(() => {
       for (const note of layer.react.notes) {
-        this._deleteNote(note);
+        this.deleteNote(note);
       }
 
       for (const arrow of layer.react.arrows) {
@@ -71,10 +73,18 @@ export class PageDeleting {
       if (this.page.collab.store.layers[layer.id] != null) {
         delete this.page.collab.store.layers[layer.id];
       }
-    }
+    });
+  }
 
-    if (this.page.collab.store.notes[note.id] != null) {
-      delete this.page.collab.store.notes[note.id];
-    }
+  deleteNote(note: PageNote) {
+    this.page.collab.doc.transact(() => {
+      for (const layer of note.react.layers) {
+        this.deleteLayer(layer);
+      }
+
+      if (this.page.collab.store.notes[note.id] != null) {
+        delete this.page.collab.store.notes[note.id];
+      }
+    });
   }
 }

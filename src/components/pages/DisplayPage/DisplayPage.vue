@@ -60,6 +60,8 @@
 
       <DisplayLayers />
 
+      <!-- Arrow creation -->
+
       <SVGDisplay
         v-if="
           page.arrowCreation.react.active &&
@@ -68,6 +70,8 @@
       >
         <DisplayArrow :arrow="page.arrowCreation.fakeArrow" />
       </SVGDisplay>
+
+      <!-- Note resizing ghosts -->
 
       <DOMDisplay v-if="page.resizing.react.active">
         <DisplayNote
@@ -78,7 +82,9 @@
         />
       </DOMDisplay>
 
-      <DisplayBoxSelection :region="page"/>
+      <!-- Box selection -->
+
+      <DisplayBoxSelection :region="page" />
 
       <DisplayBtns />
     </template>

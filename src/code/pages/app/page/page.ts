@@ -157,7 +157,7 @@ export class AppPage implements IPageRegion {
       activeLayer: computed(
         () =>
           this.layers.fromId(this.react.activeLayerId ?? null) ??
-          this.react.layers[0]
+          this.react.layers.at(-1)!
       ),
 
       noteIds: computed(() => {

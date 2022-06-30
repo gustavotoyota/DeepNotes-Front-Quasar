@@ -247,7 +247,7 @@ export class PageNote extends PageElem implements IPageRegion {
       activeLayer: computed(
         () =>
           this.page.layers.fromId(this.react.activeLayerId ?? null) ??
-          this.react.layers[0]
+          this.react.layers.at(-1)!
       ),
 
       noteIds: computed(() => {

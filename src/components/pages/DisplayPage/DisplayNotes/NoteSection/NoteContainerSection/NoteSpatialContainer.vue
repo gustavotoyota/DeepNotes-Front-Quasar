@@ -27,18 +27,24 @@
     <!-- Layers -->
 
     <template
-      v-for="layerId in note.react.collab.layerIds"
+      v-for="(layerId, layerIndex) in note.react.collab.layerIds"
       :key="layerId"
     >
       <template
         v-for="layer in [page.layers.fromId(layerId)]"
         :key="layer?.id ?? layerId"
       >
-        <template v-if="layer != null">
+        <div
+          class="note-spatial-layer"
+          v-if="layer != null"
+          :style="{
+            'z-index': layerIndex,
+          }"
+        >
           <!-- Arrows -->
 
           <svg
-            style="position: absolute; pointer-events: none"
+            style="position: absolute"
             left="0"
             top="0"
             width="100%"
@@ -63,24 +69,26 @@
 
           <!-- Notes -->
 
-          <template
-            v-for="(childNoteId, index) in layer.react.collab.noteIds"
-            :key="childNoteId"
-          >
+          <div style="pointer-events: auto; width: 0; height: 0">
             <template
-              v-for="childNote in [page.notes.fromId(childNoteId)]"
-              :key="childNote?.id ?? childNoteId"
+              v-for="(childNoteId, index) in layer.react.collab.noteIds"
+              :key="childNoteId"
             >
-              <DisplayNote
-                v-if="
-                  childNote != null &&
-                  (childNote.react.region === note || note.react.ghost)
-                "
-                :note="childNote"
-                :index="index"
-            /></template>
-          </template>
-        </template>
+              <template
+                v-for="childNote in [page.notes.fromId(childNoteId)]"
+                :key="childNote?.id ?? childNoteId"
+              >
+                <DisplayNote
+                  v-if="
+                    childNote != null &&
+                    (childNote.react.region === note || note.react.ghost)
+                  "
+                  :note="childNote"
+                  :index="index"
+              /></template>
+            </template>
+          </div>
+        </div>
       </template>
     </template>
 
@@ -174,6 +182,14 @@ async function onLeftDoubleClick(event: MouseEvent) {
 </script>
 
 <style scoped>
+.note-spatial-layer {
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+}
+
 .note-spatial-container {
   flex: 1;
 

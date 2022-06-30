@@ -37,10 +37,7 @@
 
     <q-separator />
 
-    <div
-      v-if="page != null"
-      style="flex: 1; display: flex; flex-direction: column"
-    >
+    <div style="flex: 1; display: flex; flex-direction: column">
       <q-toolbar style="width: 299px">
         <q-avatar
           icon="mdi-layers-triple"
@@ -61,7 +58,9 @@
 
       <q-list style="flex: 1">
         <template
-          v-for="(layerId, layerIndex) in page.react.collab.layerIds"
+          v-for="(layerId, layerIndex) in region.react.collab.layerIds
+            .slice()
+            .reverse()"
           :key="layerId"
         >
           <template
@@ -70,9 +69,9 @@
           >
             <q-item
               v-if="layer != null"
-              :active="layer.id == page.react.activeLayer.id"
+              :active="layer.id == region.react.activeLayer.id"
               clickable
-              @click="page.react.activeLayerId = layer.id"
+              @click="region.react.activeLayerId = layer.id"
             >
               <q-item-section avatar>
                 <q-icon name="mdi-layers" />
@@ -97,12 +96,12 @@
                     width: 32px;
                     height: 32px;
                   "
-                  @click="swapLayers(layerIndex - 1)"
+                  @click="swapLayers(invertLayerIndex(layerIndex))"
                 />
               </q-item-section>
 
               <q-item-section
-                v-if="layerIndex < page.react.collab.layerIds.length - 1"
+                v-if="layerIndex < region.react.collab.layerIds.length - 1"
                 side
                 style="padding: 0"
               >
@@ -116,7 +115,7 @@
                     width: 32px;
                     height: 32px;
                   "
-                  @click="swapLayers(layerIndex)"
+                  @click="swapLayers(invertLayerIndex(layerIndex + 1))"
                 />
               </q-item-section>
 
@@ -134,7 +133,7 @@
                     width: 32px;
                     height: 32px;
                   "
-                  @click="deleteLayer(layerIndex)"
+                  @click="deleteLayer(invertLayerIndex(layerIndex))"
                 />
               </q-item-section>
             </q-item>
@@ -151,6 +150,7 @@
 >
 import { computed } from '@vue/reactivity';
 import { Dialog, Notify } from 'quasar';
+import { ILayerCollab } from 'src/code/pages/app/page/layers/layer';
 import { useUI } from 'src/stores/pages/ui';
 import { v4 } from 'uuid';
 
@@ -160,17 +160,23 @@ const ui = useUI();
 
 const page = computed(() => $pages.react.page);
 
+const region = computed(() => page.value.activeRegion.react.region);
+
+function invertLayerIndex(layerIndex: number): number {
+  return region.value.react.collab.layerIds.length - 1 - layerIndex;
+}
+
 function swapLayers(layerIndex: number) {
-  page.value.react.collab.layerIds.splice(
+  region.value.react.collab.layerIds.splice(
     layerIndex,
     2,
-    page.value.react.collab.layerIds[layerIndex + 1],
-    page.value.react.collab.layerIds[layerIndex]
+    region.value.react.collab.layerIds[layerIndex + 1],
+    region.value.react.collab.layerIds[layerIndex]
   );
 }
 
 function deleteLayer(layerIndex: number) {
-  if (page.value.react.collab.layerIds.length <= 1) {
+  if (region.value.react.collab.layerIds.length <= 1) {
     Notify.create({
       message: 'You must have at least one layer.',
       color: 'negative',
@@ -180,9 +186,13 @@ function deleteLayer(layerIndex: number) {
   }
 
   page.value.collab.doc.transact(() => {
-    const layerId = page.value.react.collab.layerIds.splice(layerIndex, 1)[0];
+    const layerId = region.value.react.collab.layerIds.splice(layerIndex, 1)[0];
 
-    delete page.value.layers.react.collab[layerId];
+    const layer = page.value.layers.fromId(layerId);
+
+    if (layer != null) {
+      page.value.deleting.deleteLayer(layer);
+    }
   });
 }
 
@@ -198,18 +208,15 @@ function createLayer() {
     },
     cancel: true,
   }).onOk((name) => {
-    const layerId = v4();
+    page.value.collab.doc.transact(() => {
+      const layerId = v4();
 
-    page.value.react.collab.layerIds.push(layerId);
+      page.value.layers.react.collab[layerId] = ILayerCollab.parse({
+        name,
+      });
 
-    page.value.layers.react.collab[layerId] = {
-      name,
-
-      noteIds: [],
-      arrowIds: [],
-
-      nextZIndex: 0,
-    };
+      region.value.react.collab.layerIds.splice(0, 0, layerId);
+    });
   });
 }
 </script>

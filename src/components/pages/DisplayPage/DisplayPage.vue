@@ -56,6 +56,14 @@
     </template>
 
     <template v-if="page.react.status === 'success'">
+      <div
+        v-if="page.react.notes.length === 0"
+        style="color: #e0e0e0; text-align: center"
+      >
+        <div>Double-click anywhere</div>
+        <div>to create a note.</div>
+      </div>
+
       <DisplayBackground />
 
       <DisplayLayers />

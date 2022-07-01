@@ -406,10 +406,10 @@ export class PageNote extends PageElem implements IPageRegion {
             this.react.collapsing.collapsed &&
             this.react.collab.width.collapsed === 'auto'
           ) {
-            return this.react.collab.width.expanded ?? 'auto';
+            return this.react.collab.width.expanded;
           }
 
-          return this.react.collab.width[this.react.sizeProp] ?? 'auto';
+          return this.react.collab.width[this.react.sizeProp];
         }),
         final: computed(() => {
           if (this.react.width.stretched) {

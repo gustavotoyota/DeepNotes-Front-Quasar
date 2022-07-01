@@ -4,7 +4,14 @@
     :label="label"
     :options="options"
     :model-value="modelValue"
-    @input-value="$emit('update:model-value', $event)"
+    @input-value="
+      (event) => {
+        if (event !== modelValue) {
+          console.log('Input');
+          $emit('update:model-value', event);
+        }
+      }
+    "
     :disable="disable"
     filled
     dense
@@ -35,7 +42,7 @@
 >
 import { ref } from 'vue';
 
-defineProps<{
+const props = defineProps<{
   label: string;
   options: any;
   modelValue: any;

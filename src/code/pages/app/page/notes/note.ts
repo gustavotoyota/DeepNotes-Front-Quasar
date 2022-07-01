@@ -573,13 +573,6 @@ export class PageNote extends PageElem implements IPageRegion {
   }
 
   bringToTop() {
-    if (
-      this.react.collab.zIndex ===
-      this.react.parentLayer.react.collab.nextZIndex - 1
-    ) {
-      return;
-    }
-
     this.react.collab.zIndex = this.react.parentLayer.react.collab.nextZIndex++;
   }
 
@@ -652,7 +645,7 @@ export class PageNote extends PageElem implements IPageRegion {
         this.id
       );
 
-      this.react.collab.zIndex = layer.react.collab.nextZIndex++;
+      this.bringToTop();
     });
   }
 }

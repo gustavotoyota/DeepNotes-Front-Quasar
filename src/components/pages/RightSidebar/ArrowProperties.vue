@@ -136,10 +136,14 @@ import { to_base64 } from 'libsodium-wrappers';
 import { Notify } from 'quasar';
 import { PageArrow } from 'src/code/pages/app/page/arrows/arrow';
 import { AppPage } from 'src/code/pages/app/page/page';
-import { ISerialArrow } from 'src/code/pages/app/serialization';
+import {
+  ISerialArrow,
+  ISerialArrowInput,
+} from 'src/code/pages/app/serialization';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
 import { inject, Ref, toRef } from 'vue';
+import { yXmlFragmentToProsemirrorJSON } from 'y-prosemirror';
 
 import Checkbox from '../misc/Checkbox.vue';
 import MiniSidebarBtn from '../misc/MiniSidebarBtn.vue';
@@ -163,11 +167,16 @@ async function setAsDefault() {
     return;
   }
 
-  $pages.react.defaultArrow = ISerialArrow.parse(
-    $pages.serialization.serializeArrow(
-      $pages.react.page.activeElem.react.elem.react.collab
-    )
-  );
+  $pages.react.defaultArrow = ISerialArrow.parse({
+    ...arrow.value.react.collab,
+
+    label: {
+      enabled: arrow.value.react.collab.label.enabled,
+      value: yXmlFragmentToProsemirrorJSON(
+        arrow.value.react.collab.label.value
+      ),
+    },
+  } as ISerialArrowInput);
 
   try {
     await $api.post<{

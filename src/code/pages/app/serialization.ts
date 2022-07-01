@@ -105,10 +105,10 @@ export const ISerialObject = z.object({
 export type ISerialObjectInput = z.input<typeof ISerialObject>;
 export type ISerialObjectOutput = z.output<typeof ISerialObject>;
 
-export interface ISerializationMaps {
-  layers: Map<string, number>;
-  notes: Map<string, number>;
-  arrows: Map<string, number>;
+export class SerializationMaps {
+  layers = new Map<string, number>();
+  notes = new Map<string, number>();
+  arrows = new Map<string, number>();
 }
 
 export class AppSerialization {
@@ -118,17 +118,9 @@ export class AppSerialization {
   // Output: flat serialized representation of input
 
   serialize(input: IRegionElemIdsInput): ISerialObjectOutput {
-    const result: ISerialObjectOutput = {
-      layers: [],
-      notes: [],
-      arrows: [],
-    };
+    const result = ISerialObject.parse({});
 
-    const maps: ISerializationMaps = {
-      layers: new Map<string, number>(),
-      notes: new Map<string, number>(),
-      arrows: new Map<string, number>(),
-    };
+    const maps = new SerializationMaps();
 
     this._serializeLayer(
       {
@@ -146,9 +138,9 @@ export class AppSerialization {
   }
   private _serializeLayer(
     layer: PageLayer,
-    maps: ISerializationMaps,
+    maps: SerializationMaps,
     result: ISerialObjectOutput
-  ): number | null {
+  ): number {
     let layerIndex = maps.layers.get(layer.id);
 
     if (layerIndex != null) {
@@ -172,13 +164,11 @@ export class AppSerialization {
     for (const note of layer.react.notes) {
       const noteIndex = this._serializeNote(note, maps, result);
 
-      if (noteIndex != null) {
-        serialLayer.noteIndexes.push(noteIndex);
-      }
+      serialLayer.noteIndexes.push(noteIndex);
     }
 
     for (const arrow of layer.react.arrows) {
-      const arrowIndex = this._serializeArrow(arrow, maps, result);
+      const arrowIndex = this.serializeArrow(arrow, maps, result);
 
       if (arrowIndex != null) {
         serialLayer.arrowIndexes.push(arrowIndex);
@@ -189,9 +179,9 @@ export class AppSerialization {
   }
   private _serializeNote(
     note: PageNote,
-    maps: ISerializationMaps,
+    maps: SerializationMaps,
     result: ISerialObjectOutput
-  ): number | null {
+  ): number {
     let noteIndex = maps.notes.get(note.id);
 
     if (noteIndex != null) {
@@ -225,16 +215,14 @@ export class AppSerialization {
     for (const layer of note.react.layers) {
       const layerIndex = this._serializeLayer(layer, maps, result);
 
-      if (layerIndex != null) {
-        serialNote.layerIndexes.push(layerIndex);
-      }
+      serialNote.layerIndexes.push(layerIndex);
     }
 
     return noteIndex;
   }
-  private _serializeArrow(
+  serializeArrow(
     arrow: PageArrow,
-    maps: ISerializationMaps,
+    maps: SerializationMaps,
     result: ISerialObjectOutput
   ): number | null {
     let arrowIndex = maps.arrows.get(arrow.id);
@@ -243,13 +231,18 @@ export class AppSerialization {
       return arrowIndex;
     }
 
+    if (
+      maps.notes.get(arrow.react.collab.sourceId!) == null ||
+      maps.notes.get(arrow.react.collab.targetId!) == null
+    ) {
+      return null;
+    }
+
     const serialArrow = ISerialArrow.parse({
       ...arrow.react.collab,
 
-      sourceIndex:
-        this._serializeNote(arrow.react.sourceNote, maps, result) ?? undefined,
-      targetIndex:
-        this._serializeNote(arrow.react.targetNote, maps, result) ?? undefined,
+      sourceIndex: maps.notes.get(arrow.react.collab.sourceId!),
+      targetIndex: maps.notes.get(arrow.react.collab.targetId!),
 
       label: {
         enabled: arrow.react.collab.label.enabled,

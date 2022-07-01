@@ -4,6 +4,9 @@
     :class="{
       'padding-fix': paddingFix,
       'no-wrap': !note.react.collab[props.section].wrap,
+      'can-overflow':
+        note.react[section].height.endsWith('px') ||
+        (note.react.width.pinned && !note.react.collab[section].wrap),
     }"
   />
 </template>
@@ -133,8 +136,6 @@ $note-padding: 9px;
 
 div :deep(.ProseMirror) {
   outline: none;
-
-  overflow: auto;
 
   padding: $note-padding;
   padding-bottom: $note-padding - 1px;
@@ -325,6 +326,8 @@ div :deep(.ProseMirror) {
     transform: translateY(-100%);
 
     font-size: 12px;
+
+    z-index: 2147483647;
   }
 }
 div.padding-fix :deep(.ProseMirror) {
@@ -332,5 +335,8 @@ div.padding-fix :deep(.ProseMirror) {
 }
 div.no-wrap :deep(.ProseMirror) {
   white-space: nowrap;
+}
+div.can-overflow :deep(.ProseMirror) {
+  overflow: auto;
 }
 </style>

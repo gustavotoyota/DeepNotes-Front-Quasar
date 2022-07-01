@@ -14,6 +14,11 @@
       'flex-wrap': note.react.collab.container.wrapChildren
         ? 'wrap'
         : undefined,
+      overflow:
+        note.react.container.height.endsWith('px') ||
+        (note.react.collab.container.horizontal && note.react.width.pinned)
+          ? 'auto'
+          : 'visible',
     }"
   >
     <!-- Background -->
@@ -139,8 +144,6 @@ async function onLeftDoubleClick(event: MouseEvent, destIndex?: number) {
 
   display: flex;
   align-content: flex-start;
-
-  overflow: auto;
 
   touch-action: pan-x pan-y !important;
 }

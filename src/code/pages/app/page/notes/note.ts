@@ -136,16 +136,16 @@ export interface INoteReact extends IRegionReact, IElemReact {
   head: {
     editor: ShallowRef<Editor | null>;
     visible: ComputedRef<boolean>;
-    height: ComputedRef<string | undefined>;
+    height: ComputedRef<string>;
   };
   body: {
     editor: ShallowRef<Editor | null>;
     visible: ComputedRef<boolean>;
-    height: ComputedRef<string | undefined>;
+    height: ComputedRef<string>;
   };
   container: {
     visible: ComputedRef<boolean>;
-    height: ComputedRef<string | undefined>;
+    height: ComputedRef<string>;
   };
 
   collapsing: {

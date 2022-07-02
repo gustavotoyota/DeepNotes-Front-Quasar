@@ -84,8 +84,8 @@
       <DOMDisplay v-if="page.resizing.react.active">
         <DisplayNote
           v-for="ghost in page.resizing.react.ghosts"
-          :key="ghost.id"
-          :note="ghost"
+          :key="(ghost as PageNote).id"
+          :note="(ghost as PageNote)"
           style="opacity: 0.7"
         />
       </DOMDisplay>
@@ -104,6 +104,7 @@
   lang="ts"
 >
 import { Notify } from 'quasar';
+import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { isMouseOverScrollbar } from 'src/code/pages/static/dom';
 import Gap from 'src/components/misc/Gap.vue';

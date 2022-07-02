@@ -35,7 +35,18 @@ export class PageElem {
   ) {
     this.react = reactive({
       regionId,
-      region: computed(() => this.page.regions.fromId(this.react.regionId)),
+      region: computed(() => {
+        if (this.page.resizing.react.active) {
+          const ghostRegion =
+            this.page.resizing.react.ghosts[this.react.regionId!];
+
+          if (ghostRegion != null) {
+            return ghostRegion;
+          }
+        }
+
+        return this.page.regions.fromId(this.react.regionId);
+      }),
 
       parentLayerId: layerId,
       parentLayer: computed(

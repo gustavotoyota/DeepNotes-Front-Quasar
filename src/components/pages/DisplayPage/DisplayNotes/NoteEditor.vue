@@ -105,15 +105,23 @@ const editor = tiptap.useEditor({
   ],
 
   onCreate({ editor }) {
-    // @ts-ignore
-    note.react[props.section].editor = editor;
+    if (!note.react.rootNote.react.ghost) {
+      // @ts-ignore
+      note.react[props.section].editor = editor;
 
-    editor.setEditable(note.react.editing);
+      editor.setEditable(note.react.editing);
+
+      console.log('Created editor');
+    }
 
     finishLoading();
   },
   onDestroy() {
-    note.react[props.section].editor = null;
+    if (!note.react.rootNote.react.ghost) {
+      note.react[props.section].editor = null;
+
+      console.log('destroyed');
+    }
 
     finishLoading();
   },

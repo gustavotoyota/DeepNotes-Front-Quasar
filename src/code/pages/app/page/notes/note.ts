@@ -128,6 +128,8 @@ export interface INoteTextSectionReact extends INoteSectionReact {
 export interface INoteReact extends IRegionReact, IElemReact {
   collab: ComputedRef<INoteCollabOutput>;
 
+  rootNote: ComputedRef<PageNote>;
+
   editing: boolean;
   dragging: boolean;
   resizing: boolean;
@@ -242,6 +244,14 @@ export class PageNote extends PageElem implements IPageRegion {
       collab: computed(
         () => this.collab ?? this.page.notes.react.collab[this.id]
       ),
+
+      rootNote: computed(() => {
+        if (this.react.region instanceof PageNote) {
+          return this.react.region.react.rootNote;
+        } else {
+          return this;
+        }
+      }),
 
       layers: computed(() => page.layers.fromIds(this.react.collab.layerIds)),
 

@@ -19,7 +19,7 @@ import { INoteCollabOutput, NoteSection, NoteSide, PageNote } from './note';
 export interface IResizingReact {
   active: boolean;
 
-  ghosts: ShallowReactive<PageNote[]>;
+  ghosts: ShallowReactive<Record<string, PageNote>>;
 }
 
 export class PageResizing {
@@ -33,7 +33,7 @@ export class PageResizing {
     this.react = refProp<IResizingReact>(this, 'react', {
       active: false,
 
-      ghosts: shallowReactive([]),
+      ghosts: shallowReactive({}),
     });
   }
 
@@ -50,7 +50,7 @@ export class PageResizing {
     this.react = {
       active: true,
 
-      ghosts: [],
+      ghosts: {},
     };
 
     this.page.activeElem.set(note);
@@ -108,7 +108,7 @@ export class PageResizing {
         ghost.react.active = true;
       }
 
-      this.react.ghosts.push(ghost);
+      this.react.ghosts[ghost.id] = ghost;
     }
 
     this.activeGhost.react.collab.zIndex = nextZIndex++;
@@ -168,7 +168,7 @@ export class PageResizing {
 
     const posDelta = newSectionRect.topLeft.sub(oldSectionRect.topLeft);
 
-    for (const ghost of this.react.ghosts) {
+    for (const ghost of Object.values(this.react.ghosts)) {
       const note = this.page.notes.fromId(ghost.id);
 
       if (note == null) {
@@ -194,7 +194,7 @@ export class PageResizing {
 
   private _finish = () => {
     this.page.collab.doc.transact(() => {
-      for (const ghost of this.react.ghosts) {
+      for (const ghost of Object.values(this.react.ghosts)) {
         const note = this.page.notes.fromId(ghost.id);
 
         if (note == null) {

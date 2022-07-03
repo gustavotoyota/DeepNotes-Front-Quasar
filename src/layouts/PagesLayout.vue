@@ -303,6 +303,16 @@ onBeforeUnmount(() => {
 });
 </script>
 
+<style>
+* {
+  user-select: none;
+}
+
+body {
+  overscroll-behavior-y: contain; /* Prevent pull-to-refresh */
+}
+</style>
+
 <style scoped>
 .pages-layout :deep(.q-drawer) {
   transition: width 0.2s ease;

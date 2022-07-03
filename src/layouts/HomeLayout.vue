@@ -5,73 +5,78 @@
       class="bg-grey-10"
     >
       <q-toolbar style="height: 64px">
-        <q-toolbar-title>DeepNotes</q-toolbar-title>
-
-        <q-btn
-          label="Home"
-          flat
-          to="/"
-        />
-
-        <template v-if="!auth.loggedIn">
-          <q-btn
-            label="Login"
-            flat
-            to="/login"
-          />
-          <q-btn
-            label="Sign up"
-            flat
-            to="/register"
-          />
-        </template>
-
-        <template v-else>
-          <q-btn
-            label="Pages"
-            color="primary"
-            to="/pages"
-          />
-
-          <Gap style="width: 12px" />
-
-          <ToolbarBtn
-            tooltip="Account"
-            icon="mdi-account-circle"
-            icon-size="42px"
-            btn-size="44px"
-            round
-          >
-            <q-menu
-              anchor="bottom right"
-              self="top right"
+        <div
+          class="container"
+          style="display: flex; align-items: center"
+        >
+          <q-toolbar-title>
+            <a
+              href="/"
+              @click.prevent="router.push('/')"
+              >DeepNotes</a
             >
-              <q-list>
-                <q-item
-                  clickable
-                  v-close-popup
-                  to="/account/general"
-                >
-                  <q-item-section avatar>
-                    <q-icon name="mdi-account" />
-                  </q-item-section>
-                  <q-item-section>Account</q-item-section>
-                </q-item>
+          </q-toolbar-title>
 
-                <q-item
-                  clickable
-                  v-close-popup
-                  @click="logout()"
-                >
-                  <q-item-section avatar>
-                    <q-icon name="mdi-logout" />
-                  </q-item-section>
-                  <q-item-section>Logout</q-item-section>
-                </q-item>
-              </q-list>
-            </q-menu>
-          </ToolbarBtn>
-        </template>
+          <template v-if="!auth.loggedIn">
+            <q-btn
+              label="Login"
+              flat
+              to="/login"
+            />
+            <q-btn
+              label="Sign up"
+              flat
+              to="/register"
+            />
+          </template>
+
+          <template v-else>
+            <q-btn
+              label="Pages"
+              color="primary"
+              to="/pages"
+            />
+
+            <Gap style="width: 12px" />
+
+            <ToolbarBtn
+              tooltip="Account"
+              icon="mdi-account-circle"
+              icon-size="42px"
+              btn-size="44px"
+              round
+            >
+              <q-menu
+                anchor="bottom right"
+                self="top right"
+              >
+                <q-list>
+                  <q-item
+                    clickable
+                    v-close-popup
+                    to="/account/general"
+                  >
+                    <q-item-section avatar>
+                      <q-icon name="mdi-account" />
+                    </q-item-section>
+                    <q-item-section>Account</q-item-section>
+                  </q-item>
+
+                  <q-item
+                    clickable
+                    v-close-popup
+                    @click="logout()"
+                  >
+                    <q-item-section avatar>
+                      <q-icon name="mdi-logout" />
+                    </q-item-section>
+                    <q-item-section>Logout</q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
+            </ToolbarBtn>
+          </template>
+        </div>
       </q-toolbar>
     </q-header>
 
@@ -87,6 +92,8 @@ import { logout } from 'src/code/auth';
 import Gap from 'src/components/misc/Gap.vue';
 import ToolbarBtn from 'src/components/pages/misc/ToolbarBtn.vue';
 import { useAuth } from 'src/stores/auth';
+import { useRouter } from 'vue-router';
 
 const auth = useAuth();
+const router = useRouter();
 </script>

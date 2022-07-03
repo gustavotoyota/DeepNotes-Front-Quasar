@@ -33,14 +33,6 @@ onMounted(async () => {
 </script>
 
 <style>
-* {
-  user-select: none;
-}
-
-body {
-  overscroll-behavior-y: contain; /* Prevent pull-to-refresh */
-}
-
 .q-tooltip {
   font-size: 12px;
 }

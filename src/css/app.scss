@@ -1,1 +1,75 @@
 // app global css in SCSS form
+
+.container {
+  width: 100%;
+
+  margin-right: auto;
+  margin-left: auto;
+
+  @media (min-width: $breakpoint-sm-min) {
+    max-width: $container-xs;
+  }
+  @media (min-width: $breakpoint-md-min) {
+    max-width: $container-sm;
+  }
+  @media (min-width: $breakpoint-lg-min) {
+    max-width: $container-md;
+  }
+  @media (min-width: $breakpoint-xl-min) {
+    max-width: $container-lg;
+  }
+}
+
+.d-block {
+  display: block;
+}
+.d-flex {
+  display: flex;
+}
+.d-none {
+  display: none;
+}
+@media (min-width: $breakpoint-sm-min) {
+  .d-sm-block {
+    display: block;
+  }
+  .d-sm-flex {
+    display: flex;
+  }
+  .d-sm-none {
+    display: none;
+  }
+}
+@media (min-width: $breakpoint-md-min) {
+  .d-md-block {
+    display: block;
+  }
+  .d-md-flex {
+    display: flex;
+  }
+  .d-md-none {
+    display: none;
+  }
+}
+@media (min-width: $breakpoint-lg-min) {
+  .d-lg-block {
+    display: block;
+  }
+  .d-lg-flex {
+    display: flex;
+  }
+  .d-lg-none {
+    display: none;
+  }
+}
+@media (min-width: $breakpoint-xl-min) {
+  .d-xl-block {
+    display: block;
+  }
+  .d-xl-flex {
+    display: flex;
+  }
+  .d-xl-none {
+    display: none;
+  }
+}

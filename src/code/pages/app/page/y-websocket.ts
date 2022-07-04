@@ -29,8 +29,6 @@ export class WebsocketProvider extends ClientSocket {
 
   size = 0;
 
-  private _updateBuffer: Uint8Array | null = null;
-
   constructor(
     readonly host: string,
     readonly roomname: string,
@@ -58,6 +56,7 @@ export class WebsocketProvider extends ClientSocket {
 
     this.connect();
   }
+
   connect() {
     super.connect();
 
@@ -84,6 +83,10 @@ export class WebsocketProvider extends ClientSocket {
     });
   }
 
+  // Document update handling
+
+  private _updateBuffer: Uint8Array | null = null;
+
   private _handleDocumentUpdate = (update: Uint8Array, origin: any) => {
     if (origin === this) {
       return;
@@ -97,27 +100,74 @@ export class WebsocketProvider extends ClientSocket {
 
     this._sendSyncSingleUpdateMessage();
   };
+
+  private _sendSyncSingleUpdateMessage = throttle(
+    () => {
+      if (this.socket?.readyState !== WebSocket.OPEN) {
+        return;
+      }
+
+      console.log('Sync single update message sent');
+
+      const encoder = encoding.createEncoder();
+
+      encoding.writeVarUint(encoder, MESSAGE_SYNC);
+      encoding.writeVarUint(encoder, MESSAGE_SYNC_SINGLE_UPDATE);
+
+      // Send encrypted update
+      const encryptedUpdate = this.symmetricKey.encrypt(this._updateBuffer!);
+      this._updateBuffer = null;
+
+      encoding.writeVarUint8Array(encoder, encryptedUpdate);
+
+      this.socket.send(encoding.toUint8Array(encoder));
+    },
+    200,
+    { leading: false }
+  );
+
+  // Awareness update handling
+
+  private _changedClients = new Set<number>();
+
   private _handleAwarenessUpdate = ({
     added,
     updated,
     removed,
   }: IAwarenessChanges) => {
-    if (this.socket?.readyState !== WebSocket.OPEN) {
-      return;
+    for (const clientID of added.concat(updated).concat(removed)) {
+      this._changedClients.add(clientID);
     }
 
-    const changedClients = added.concat(updated).concat(removed);
-
-    const encoder = encoding.createEncoder();
-
-    encoding.writeVarUint(encoder, MESSAGE_AWARENESS);
-    encoding.writeVarUint8Array(
-      encoder,
-      awarenessProtocol.encodeAwarenessUpdate(this.awareness, changedClients)
-    );
-
-    this.socket.send(encoding.toUint8Array(encoder));
+    this._sendAwarenessMessage();
   };
+
+  private _sendAwarenessMessage = throttle(
+    () => {
+      if (this.socket?.readyState !== WebSocket.OPEN) {
+        return;
+      }
+
+      const encoder = encoding.createEncoder();
+
+      encoding.writeVarUint(encoder, MESSAGE_AWARENESS);
+      encoding.writeVarUint8Array(
+        encoder,
+        awarenessProtocol.encodeAwarenessUpdate(
+          this.awareness,
+          Array.from(this._changedClients)
+        )
+      );
+
+      this.socket.send(encoding.toUint8Array(encoder));
+
+      this._changedClients.clear();
+    },
+    200,
+    { leading: false }
+  );
+
+  // Message handling
 
   private _handleMessage(message: Uint8Array) {
     const decoder = decoding.createDecoder(message);
@@ -158,6 +208,8 @@ export class WebsocketProvider extends ClientSocket {
     );
   }
 
+  // Sync request message handling
+
   private _sendSyncRequestMessage() {
     if (this.socket?.readyState !== WebSocket.OPEN) {
       return;
@@ -172,6 +224,8 @@ export class WebsocketProvider extends ClientSocket {
 
     this.socket.send(encoding.toUint8Array(encoder));
   }
+
+  // Update message handling
 
   private _handleSyncAllUpdatesUnmergedMessage(decoder: decoding.Decoder) {
     const updateEndIndex = decoding.readVarUint(decoder);
@@ -217,37 +271,14 @@ export class WebsocketProvider extends ClientSocket {
     this.size = decryptedUpdate.length;
   }
 
-  private _sendSyncSingleUpdateMessage = throttle(
-    () => {
-      if (this.socket?.readyState !== WebSocket.OPEN) {
-        return;
-      }
-
-      console.log('Sync single update message sent');
-
-      const encoder = encoding.createEncoder();
-
-      encoding.writeVarUint(encoder, MESSAGE_SYNC);
-      encoding.writeVarUint(encoder, MESSAGE_SYNC_SINGLE_UPDATE);
-
-      // Send encrypted update
-      const encryptedUpdate = this.symmetricKey.encrypt(this._updateBuffer!);
-      this._updateBuffer = null;
-
-      encoding.writeVarUint8Array(encoder, encryptedUpdate);
-
-      this.socket.send(encoding.toUint8Array(encoder));
-    },
-    200,
-    { leading: false }
-  );
-
   private _handleSyncSingleUpdateMessage(decoder: decoding.Decoder) {
     // Apply decrypted update
     const encryptedUpdate = decoding.readVarUint8Array(decoder);
     const decryptedUpdate = this.symmetricKey.decrypt(encryptedUpdate);
     Y.applyUpdateV2(this.doc, decryptedUpdate, this);
   }
+
+  // Destruction
 
   private _clearAwareness = () => {
     awarenessProtocol.removeAwarenessStates(

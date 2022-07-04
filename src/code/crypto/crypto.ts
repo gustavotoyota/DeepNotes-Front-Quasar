@@ -2,8 +2,10 @@ import './argon2';
 
 import sodium, { from_base64, to_base64 } from 'libsodium-wrappers';
 
+import { DICT_GROUP_SYMMETRIC_KEY } from '../pages/app/app';
 import { concatUint8Array } from '../utils';
 import { privateKey } from './private-key';
+import { wrapSymmetricKey } from './symmetric-key';
 
 export function encryptAssymetric(
   plaintext: Uint8Array | string,
@@ -201,4 +203,19 @@ export function reencryptSymmetricKey(
   );
 
   return reencryptedSymmetricKey;
+}
+
+export function saveGroupSymmetricKey(
+  groupId: string,
+  encryptedSymmetricKey: string,
+  encryptersPublicKey: string
+) {
+  const decryptedGroupSymmetricKey = privateKey.decrypt(
+    from_base64(encryptedSymmetricKey),
+    from_base64(encryptersPublicKey)
+  );
+  const wrappedGroupSymmetricKey = wrapSymmetricKey(decryptedGroupSymmetricKey);
+
+  $pages.react.dict[`${DICT_GROUP_SYMMETRIC_KEY}:${groupId}`] =
+    wrappedGroupSymmetricKey;
 }

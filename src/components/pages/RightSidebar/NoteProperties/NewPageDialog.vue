@@ -74,6 +74,7 @@ import { privateKey } from 'src/code/crypto/private-key';
 import { wrapSymmetricKey } from 'src/code/crypto/symmetric-key';
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
+import { encodeText } from 'src/code/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import { inject, nextTick, Ref, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
@@ -141,6 +142,7 @@ async function createPage() {
   try {
     let groupSymmetricKey;
     let encryptedGroupSymmetricKey;
+    let encryptedGroupName;
 
     let encryptedPageTitle;
 
@@ -152,30 +154,32 @@ async function createPage() {
         $pages.react.publicKey
       );
 
+      const wrappedGroupSymmetricKey = wrapSymmetricKey(groupSymmetricKey);
+
+      encryptedGroupName = to_base64(
+        wrappedGroupSymmetricKey.encrypt(encodeText(groupName.value))
+      );
+
       encryptedPageTitle = to_base64(
-        wrapSymmetricKey(groupSymmetricKey).encrypt(
-          new TextEncoder().encode(pageTitle.value)
-        )
+        wrappedGroupSymmetricKey.encrypt(encodeText(pageTitle.value))
       );
     } else {
       encryptedPageTitle = to_base64(
-        page.value.react.symmetricKey.encrypt(
-          new TextEncoder().encode(pageTitle.value)
-        )
+        page.value.react.symmetricKey.encrypt(encodeText(pageTitle.value))
       );
     }
 
     const response = await $api.post<{
       pageId: string;
     }>('/api/pages/create', {
-      parentPageId: page.value.id,
-      encryptedPageTitle,
-
       createGroup: createGroup.value,
-      groupName: groupName.value,
       encryptedGroupSymmetricKey: encryptedGroupSymmetricKey
         ? to_base64(encryptedGroupSymmetricKey)
         : null,
+      encryptedGroupName: encryptedGroupName,
+
+      parentPageId: page.value.id,
+      encryptedPageTitle,
     });
 
     page.value.collab.doc.transact(() => {

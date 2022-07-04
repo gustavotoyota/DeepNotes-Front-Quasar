@@ -35,7 +35,6 @@
   lang="ts"
 >
 import { DICT_PAGE_GROUP_ID } from 'src/code/pages/app/app';
-import { REALTIME_GROUP_NAME } from 'src/code/pages/app/realtime';
 import { useUI } from 'src/stores/pages/ui';
 import { computed } from 'vue';
 
@@ -45,10 +44,10 @@ const props = defineProps<{
 
 const ui = useUI();
 
-const groupName = computed(() =>
-  $pages.realtime.get(
-    REALTIME_GROUP_NAME,
-    $pages.react.dict[`${DICT_PAGE_GROUP_ID}:${props.pageId}`]
-  )
+const groupName = computed(
+  () =>
+    $pages.react.groupNames[
+      $pages.react.dict[`${DICT_PAGE_GROUP_ID}:${props.pageId}`]
+    ]
 );
 </script>

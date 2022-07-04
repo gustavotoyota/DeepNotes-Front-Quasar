@@ -1,9 +1,5 @@
-import { from_base64 } from 'libsodium-wrappers';
-import { privateKey } from 'src/code/crypto/private-key';
-import {
-  SymmetricKey,
-  wrapSymmetricKey as wrapSymmetricKey,
-} from 'src/code/crypto/symmetric-key';
+import { saveGroupSymmetricKey } from 'src/code/crypto/crypto';
+import { SymmetricKey } from 'src/code/crypto/symmetric-key';
 import {
   computed,
   ComputedRef,
@@ -27,7 +23,7 @@ import {
   DICT_PAGE_GROUP_ID,
   PagesApp,
 } from '../app';
-import { REALTIME_GROUP_NAME, REALTIME_USER_DISPLAY_NAME } from '../realtime';
+import { REALTIME_USER_DISPLAY_NAME } from '../realtime';
 import { PageArrowCreation } from './arrows/arrow-creation';
 import { PageArrows } from './arrows/arrows';
 import { ICameraData, PageCamera } from './camera/camera';
@@ -205,10 +201,9 @@ export class AppPage implements IPageRegion {
         },
       }),
       groupName: computed({
-        get: () =>
-          this.app.realtime.get(REALTIME_GROUP_NAME, this.react.groupId) ?? '',
+        get: () => this.app.react.groupNames[this.react.groupId],
         set: (value) => {
-          this.app.realtime.set(REALTIME_GROUP_NAME, this.react.groupId, value);
+          this.app.react.groupNames[this.react.groupId] = value;
         },
       }),
       ownerId: computed({
@@ -317,16 +312,13 @@ export class AppPage implements IPageRegion {
       return;
     }
 
-    // Decrypt, wrap and save symmetric key
+    // Save symmetric key
 
-    const symmetricKey = wrapSymmetricKey(
-      privateKey.decrypt(
-        from_base64(response.data.encryptedSymmetricKey),
-        from_base64(response.data.encryptersPublicKey)
-      )
+    saveGroupSymmetricKey(
+      response.data.groupId,
+      response.data.encryptedSymmetricKey,
+      response.data.encryptersPublicKey
     );
-
-    this.react.symmetricKey = symmetricKey;
 
     // Synchronize collaboration
 

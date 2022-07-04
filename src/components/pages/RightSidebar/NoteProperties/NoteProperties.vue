@@ -113,10 +113,9 @@
           <q-item-section>
             <q-item-label>{{ scope.opt.label }}</q-item-label>
             <q-item-label caption>{{
-              $pages.realtime.get(
-                REALTIME_GROUP_NAME,
+              $pages.react.groupNames[
                 $pages.react.dict[`${DICT_PAGE_GROUP_ID}:${scope.opt.value}`]
-              )
+              ]
             }}</q-item-label>
           </q-item-section>
         </template>
@@ -645,7 +644,7 @@ import { Notify } from 'quasar';
 import { DICT_PAGE_GROUP_ID } from 'src/code/pages/app/app';
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
-import { REALTIME_GROUP_NAME } from 'src/code/pages/app/realtime';
+import { encodeText } from 'src/code/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
 import { inject, Ref } from 'vue';
@@ -681,7 +680,7 @@ async function setAsDefault() {
     }>('/api/users/save-default-note', {
       encryptedDefaultNote: to_base64(
         $pages.react.symmetricKey.encrypt(
-          new TextEncoder().encode(JSON.stringify($pages.react.defaultNote))
+          encodeText(JSON.stringify($pages.react.defaultNote))
         )
       ),
     });

@@ -2,14 +2,16 @@ import * as decoding from 'lib0/decoding';
 import * as encoding from 'lib0/encoding';
 import { throttle } from 'lodash';
 import { Notify } from 'quasar';
+import { saveGroupSymmetricKey } from 'src/code/crypto/crypto';
 import { Resolvable } from 'src/code/utils';
 import { nextTick, reactive } from 'vue';
 
 import { ClientSocket } from '../static/client-socket';
 import { rolesMap } from '../static/roles';
+import { DICT_GROUP_SYMMETRIC_KEY } from './app';
 
 export const REALTIME_USER_NOTIFICATION = 'user-notification';
-export const REALTIME_GROUP_NAME = 'group-name';
+export const REALTIME_ENCRYPTED_GROUP_NAME = 'encrypted-group-name';
 export const REALTIME_ENCRYPTED_PAGE_TITLE = 'encrypted-page-title';
 export const REALTIME_USER_DISPLAY_NAME = 'user-display-name';
 
@@ -272,10 +274,29 @@ export class AppRealtime extends ClientSocket {
               notifObj.data.agentId
             ),
             $pages.realtime.getAsync(
-              REALTIME_GROUP_NAME,
+              REALTIME_ENCRYPTED_GROUP_NAME,
               notifObj.data.groupId
             ),
-          ]).then(([agentDisplayName, groupName]) => {
+          ]).then(([agentDisplayName]) => {
+            // Save group symmetric key
+
+            if (
+              notifObj.data.encryptedSymmetricKey != null &&
+              notifObj.data.encryptersPublicKey != null
+            ) {
+              saveGroupSymmetricKey(
+                notifObj.data.groupId,
+                notifObj.data.encryptedSymmetricKey,
+                notifObj.data.encryptersPublicKey
+              );
+            }
+
+            // Get group name
+
+            const groupName = $pages.react.groupNames[notifObj.data.groupId];
+
+            // Process notification
+
             if (notifObj.type === NOTIFICATION_GROUP_REQUEST_ACCEPTED) {
               for (const page of $pages.pageCache.react.cache) {
                 if (page.react.groupId === notifObj.data.groupId) {
@@ -322,6 +343,10 @@ export class AppRealtime extends ClientSocket {
                 }
               }
 
+              $pages.react.dict[
+                `${DICT_GROUP_SYMMETRIC_KEY}:${notifObj.data.groupId}`
+              ] = null;
+
               Notify.create({
                 message: `${agentDisplayName} has cancelled your access invitation to the group "${groupName}".`,
                 type: 'negative',
@@ -346,6 +371,10 @@ export class AppRealtime extends ClientSocket {
                   page.react.userStatus = undefined;
                 }
               }
+
+              $pages.react.dict[
+                `${DICT_GROUP_SYMMETRIC_KEY}:${notifObj.data.groupId}`
+              ] = null;
 
               Notify.create({
                 message: `${agentDisplayName} has removed you from the group "${groupName}".`,

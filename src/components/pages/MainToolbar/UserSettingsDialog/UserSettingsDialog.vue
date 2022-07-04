@@ -83,6 +83,9 @@ export interface IGroupData {
   ownerId: string;
   roleId: string;
   mainPageId: string;
+
+  encryptedSymmetricKey: string | null;
+  encryptersPublicKey: string | null;
 }
 
 export function initialSettings() {
@@ -118,6 +121,7 @@ export function initialSettings() {
   lang="ts"
 >
 import { Notify } from 'quasar';
+import { saveGroupSymmetricKey } from 'src/code/crypto/crypto';
 import { DICT_GROUP_OWNER_ID } from 'src/code/pages/app/app';
 import { REALTIME_USER_DISPLAY_NAME } from 'src/code/pages/app/realtime';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
@@ -165,6 +169,17 @@ watch(visible, async () => {
       .forEach((group) => {
         $pages.react.dict[`${DICT_GROUP_OWNER_ID}:${group.groupId}`] =
           group.ownerId;
+
+        if (
+          group.encryptedSymmetricKey != null &&
+          group.encryptersPublicKey != null
+        ) {
+          saveGroupSymmetricKey(
+            group.groupId,
+            group.encryptedSymmetricKey,
+            group.encryptersPublicKey
+          );
+        }
       });
 
     settings.value.loaded = true;

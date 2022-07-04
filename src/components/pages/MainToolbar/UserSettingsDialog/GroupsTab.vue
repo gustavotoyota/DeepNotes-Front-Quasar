@@ -35,7 +35,7 @@
         >
           <q-item-section>
             <q-item-label>
-              {{ $pages.realtime.get(REALTIME_GROUP_NAME, group.groupId) }}
+              {{ $pages.react.groupNames[group.groupId] }}
             </q-item-label>
             <q-item-label caption>
               {{ rolesMap[group.roleId].name }}
@@ -74,7 +74,6 @@
   lang="ts"
 >
 import { Notify } from 'quasar';
-import { REALTIME_GROUP_NAME } from 'src/code/pages/app/realtime';
 import { rolesMap } from 'src/code/pages/static/roles';
 import Gap from 'src/components/misc/Gap.vue';
 import { computed, inject, Ref } from 'vue';

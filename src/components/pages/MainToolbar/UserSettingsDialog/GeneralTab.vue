@@ -20,12 +20,15 @@ const settings = inject<Ref<ReturnType<typeof initialSettings>>>('settings')!;
 
 watch(
   () => settings.value.general.displayName,
-  () => {
+  (displayName) => {
     $pages.realtime.set(
       REALTIME_USER_DISPLAY_NAME,
       $pages.react.userId,
-      settings.value.general.displayName
+      displayName
     );
+    $pages.react.groupNames[
+      $pages.react.mainGroupId
+    ] = `${displayName}'s Group`;
   }
 );
 </script>

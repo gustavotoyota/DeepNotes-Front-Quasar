@@ -2,12 +2,13 @@ import axios from 'axios';
 import { from_base64, to_base64 } from 'libsodium-wrappers';
 import { pull } from 'lodash';
 import { logout } from 'src/code/auth';
+import { saveGroupSymmetricKey } from 'src/code/crypto/crypto';
 import { privateKey } from 'src/code/crypto/private-key';
 import {
   SymmetricKey,
   wrapSymmetricKey as wrapSymmetricKey,
 } from 'src/code/crypto/symmetric-key';
-import { Resolvable } from 'src/code/utils';
+import { decodeText, encodeText, Resolvable } from 'src/code/utils';
 import {
   computed,
   ComputedRef,
@@ -24,6 +25,7 @@ import { AppPage } from './page/page';
 import { AppPageCache } from './page-cache';
 import {
   AppRealtime,
+  REALTIME_ENCRYPTED_GROUP_NAME,
   REALTIME_ENCRYPTED_PAGE_TITLE,
   REALTIME_USER_NOTIFICATION,
 } from './realtime';
@@ -66,6 +68,7 @@ export interface IPageData {
 export interface IGroupData {
   groupId: string;
   ownerId: string | null;
+
   encryptedSymmetricKey: string | null;
   encryptersPublicKey: string | null;
 }
@@ -84,9 +87,12 @@ export interface IAppReact {
   defaultNote: ShallowRef<ISerialObjectInput>;
   defaultArrow: ShallowRef<ISerialArrowInput>;
 
+  mainGroupId: string;
+
   dict: Record<string, any>;
 
   pageTitles: Record<string, string>;
+  groupNames: Record<string, string>;
 }
 
 export class PagesApp {
@@ -128,6 +134,8 @@ export class PagesApp {
         targetIndex: null as any,
       }),
 
+      mainGroupId: null as any,
+
       dict: {},
 
       pageTitles: createComputedDict({
@@ -150,7 +158,7 @@ export class PagesApp {
             return '';
           }
 
-          return new TextDecoder().decode(
+          return decodeText(
             symmetricKey.decrypt(from_base64(encryptedPageTitle))
           );
         },
@@ -165,13 +173,54 @@ export class PagesApp {
           }
 
           const encryptedPageTitle = to_base64(
-            symmetricKey.encrypt(new TextEncoder().encode(value))
+            symmetricKey.encrypt(encodeText(value))
           );
 
           this.realtime.set(
             REALTIME_ENCRYPTED_PAGE_TITLE,
             pageId,
             encryptedPageTitle
+          );
+        },
+      }),
+      groupNames: createComputedDict({
+        get: (groupId: string) => {
+          const symmetricKey: SymmetricKey =
+            this.react.dict[`${DICT_GROUP_SYMMETRIC_KEY}:${groupId}`];
+
+          if (symmetricKey == null) {
+            return `[Group ${groupId}]`;
+          }
+
+          const encryptedGroupName = this.realtime.get(
+            REALTIME_ENCRYPTED_GROUP_NAME,
+            groupId
+          );
+
+          if (encryptedGroupName == null) {
+            return '';
+          }
+
+          return decodeText(
+            symmetricKey.decrypt(from_base64(encryptedGroupName))
+          );
+        },
+        set: (groupId: string, value: string) => {
+          const symmetricKey: SymmetricKey =
+            this.react.dict[`${DICT_GROUP_SYMMETRIC_KEY}:${groupId}`];
+
+          if (symmetricKey == null) {
+            return;
+          }
+
+          const encryptedGroupName = to_base64(
+            symmetricKey.encrypt(encodeText(value))
+          );
+
+          this.realtime.set(
+            REALTIME_ENCRYPTED_GROUP_NAME,
+            groupId,
+            encryptedGroupName
           );
         },
       }),
@@ -197,6 +246,8 @@ export class PagesApp {
 
       encryptedDefaultNote: string;
       encryptedDefaultArrow: string;
+
+      mainGroupId: string;
     }>('/api/users/data');
 
     // Load user data
@@ -211,19 +262,21 @@ export class PagesApp {
     );
 
     this.react.defaultNote = JSON.parse(
-      new TextDecoder().decode(
+      decodeText(
         this.react.symmetricKey.decrypt(
           from_base64(response.data.encryptedDefaultNote)
         )
       )
     );
     this.react.defaultArrow = JSON.parse(
-      new TextDecoder().decode(
+      decodeText(
         this.react.symmetricKey.decrypt(
           from_base64(response.data.encryptedDefaultArrow)
         )
       )
     );
+
+    this.react.mainGroupId = response.data.mainGroupId;
 
     this.realtime.subscribe(
       `${REALTIME_USER_NOTIFICATION}:${this.react.userId}`
@@ -265,13 +318,11 @@ export class PagesApp {
         group.encryptedSymmetricKey != null &&
         group.encryptersPublicKey != null
       ) {
-        this.react.dict[`${DICT_GROUP_SYMMETRIC_KEY}:${group.groupId}`] =
-          wrapSymmetricKey(
-            privateKey.decrypt(
-              from_base64(group.encryptedSymmetricKey),
-              from_base64(group.encryptersPublicKey)
-            )
-          );
+        saveGroupSymmetricKey(
+          group.groupId,
+          group.encryptedSymmetricKey,
+          group.encryptersPublicKey
+        );
       }
     });
   }

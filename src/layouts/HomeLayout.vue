@@ -13,8 +13,9 @@
             <a
               href="/"
               @click.prevent="router.push('/')"
-              >DeepNotes</a
             >
+              DeepNotes
+            </a>
           </q-toolbar-title>
 
           <template v-if="!auth.loggedIn">
@@ -32,12 +33,12 @@
 
           <template v-else>
             <q-btn
-              label="Pages"
-              color="primary"
+              label="Go to Pages"
+              color="secondary"
               to="/pages"
             />
 
-            <Gap style="width: 12px" />
+            <Gap style="width: 20px" />
 
             <ToolbarBtn
               tooltip="Account"

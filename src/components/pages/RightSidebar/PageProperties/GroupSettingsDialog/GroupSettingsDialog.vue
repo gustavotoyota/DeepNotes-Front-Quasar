@@ -118,7 +118,6 @@ export function initialSettings() {
   lang="ts"
 >
 import { AppPage } from 'src/code/pages/app/page/page';
-import { REALTIME_GROUP_NAME } from 'src/code/pages/app/realtime';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import TabBtn from 'src/components/pages/misc/TabBtn.vue';
 import { inject, provide, Ref, ref, watch } from 'vue';
@@ -152,7 +151,7 @@ watch(visible, async (value) => {
       groupId: page.value.react.groupId,
     }),
 
-    $pages.realtime.getAsync(REALTIME_GROUP_NAME, page.value.react.groupId),
+    $pages.react.groupNames[page.value.react.groupId],
   ]);
 
   settings.value.general.groupName = groupName ?? '';

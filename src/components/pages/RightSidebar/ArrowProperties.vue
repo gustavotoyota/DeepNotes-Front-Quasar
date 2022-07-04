@@ -141,6 +141,7 @@ import {
   ISerialArrow,
   ISerialArrowInput,
 } from 'src/code/pages/app/serialization';
+import { encodeText } from 'src/code/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
 import { inject, Ref } from 'vue';
@@ -185,7 +186,7 @@ async function setAsDefault() {
     }>('/api/users/save-default-arrow', {
       encryptedDefaultArrow: to_base64(
         $pages.react.symmetricKey.encrypt(
-          new TextEncoder().encode(JSON.stringify($pages.react.defaultArrow))
+          encodeText(JSON.stringify($pages.react.defaultArrow))
         )
       ),
     });

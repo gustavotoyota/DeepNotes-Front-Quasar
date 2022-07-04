@@ -103,6 +103,8 @@
   setup
   lang="ts"
 >
+/* eslint-disable vue/no-mutating-props */
+
 import { Notify } from 'quasar';
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
@@ -192,8 +194,8 @@ async function rejectInvitation() {
       groupId: props.page.react.groupId,
     });
 
-    // eslint-disable-next-line vue/no-mutating-props
     props.page.react.userStatus = undefined;
+    props.page.react.symmetricKey = null as any;
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',

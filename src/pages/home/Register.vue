@@ -84,6 +84,7 @@ import { Notify } from 'quasar';
 import { computeDerivedKeys, generateRandomKeys } from 'src/code/crypto/crypto';
 import { wrapSymmetricKey } from 'src/code/crypto/symmetric-key';
 import { ISerialObjectInput } from 'src/code/pages/app/serialization';
+import { encodeText } from 'src/code/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import { useAuth } from 'src/stores/auth';
 import { reactive } from 'vue';
@@ -116,7 +117,7 @@ async function register() {
   const userSymmetricKey = wrapSymmetricKey(randomKeys.userSymmetricKey);
 
   const encryptedDefaultNote = userSymmetricKey.encrypt(
-    new TextEncoder().encode(
+    encodeText(
       JSON.stringify({
         layers: [
           {
@@ -129,8 +130,10 @@ async function register() {
     )
   );
   const encryptedDefaultArrow = userSymmetricKey.encrypt(
-    new TextEncoder().encode(JSON.stringify({}))
+    encodeText(JSON.stringify({}))
   );
+
+  const groupSymmetricKey = wrapSymmetricKey(randomKeys.groupSymmetricKey);
 
   try {
     await $api.post('/auth/register', {
@@ -152,10 +155,12 @@ async function register() {
       encryptedDefaultNote: to_base64(encryptedDefaultNote),
       encryptedDefaultArrow: to_base64(encryptedDefaultArrow),
 
+      encryptedGroupName: to_base64(
+        groupSymmetricKey.encrypt(encodeText(`${data.displayName}'s Group`))
+      ),
+
       encryptedMainPageTitle: to_base64(
-        wrapSymmetricKey(randomKeys.groupSymmetricKey).encrypt(
-          new TextEncoder().encode('Main page')
-        )
+        groupSymmetricKey.encrypt(encodeText('Main page'))
       ),
     });
 

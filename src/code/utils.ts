@@ -1,4 +1,5 @@
 import Color from 'color';
+import { from_base64, to_base64 } from 'libsodium-wrappers';
 
 export function concatUint8Array(...arrays: Uint8Array[]) {
   let totalLength = 0;
@@ -96,4 +97,29 @@ export function lightenByAmount(color: Color, amount: number) {
 export function darkenByAmount(color: Color, amount: number) {
   const lightness = color.lightness();
   return color.lightness(lightness - amount);
+}
+
+const textEncoder = new TextEncoder();
+export function encodeText(text: string): Uint8Array {
+  return textEncoder.encode(text);
+}
+
+const textDecoder = new TextDecoder();
+export function decodeText(bytes: Uint8Array): string {
+  return textDecoder.decode(bytes);
+}
+
+export function base64ToBytes(input: string | null): Uint8Array | null {
+  if (input == null) {
+    return null;
+  } else {
+    return from_base64(input);
+  }
+}
+export function bytesToBase64(input: Uint8Array | null): string | null {
+  if (input == null) {
+    return null;
+  } else {
+    return to_base64(input);
+  }
 }

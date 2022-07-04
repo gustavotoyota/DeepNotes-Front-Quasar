@@ -324,14 +324,14 @@ div :deep(.ProseMirror) {
     white-space: nowrap;
 
     border-radius: 3px;
-    border-bottom-left-radius: 0px;
+    border-top-left-radius: 0px;
 
     padding: 0px 3px;
 
     left: -1px;
-    top: 0px;
+    bottom: 0px;
 
-    transform: translateY(-100%);
+    transform: translateY(100%);
 
     font-size: 12px;
 

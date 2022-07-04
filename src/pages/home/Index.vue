@@ -6,9 +6,22 @@
     <div style="display: flex; margin: 20px 0px; align-items: center">
       <a
         href="/"
-        style="font-size: 27px; font-weight: bold"
-        >DeepNotes</a
+        style="
+          font-size: 27px;
+          font-weight: bold;
+          display: flex;
+          align-items: center;
+        "
       >
+        <img
+          src="icons/favicon-96x96.png"
+          style="margin-top: -3px; width: 46px; height: 46px"
+        />
+
+        <div style="width: 16px"></div>
+
+        DeepNotes
+      </a>
 
       <div style="width: 32px"></div>
 

@@ -23,7 +23,9 @@ export class PageClipboard {
     const worldRect = this.page.regions.getWorldRect(this.page.selection.react);
     const worldCenter = worldRect.center;
 
-    for (const clipboardNote of clipboardRegion.notes) {
+    for (const noteIndex of clipboardRegion.layers[0].noteIndexes) {
+      const clipboardNote = clipboardRegion.notes[noteIndex];
+
       clipboardNote.pos.x -= worldCenter.x;
       clipboardNote.pos.y -= worldCenter.y;
     }
@@ -55,7 +57,9 @@ export class PageClipboard {
 
       const destCenter = worldRect.center.add(new Vec2(8, 8));
 
-      for (const clipboardNote of clipboardObjectOutput.notes) {
+      for (const noteIndex of clipboardObjectOutput.layers[0].noteIndexes) {
+        const clipboardNote = clipboardObjectOutput.notes[noteIndex];
+
         clipboardNote.pos.x += destCenter.x;
         clipboardNote.pos.y += destCenter.y;
       }

@@ -88,6 +88,8 @@ export type ISerialNoteOutput = z.output<typeof ISerialNote>;
 export const ISerialLayer = ILayerCollab.omit({
   noteIds: true,
   arrowIds: true,
+
+  nextZIndex: true,
 }).extend({
   noteIndexes: z.number().array().default([]),
   arrowIndexes: z.number().array().default([]),
@@ -152,8 +154,6 @@ export class AppSerialization {
 
       noteIndexes: [],
       arrowIndexes: [],
-
-      nextZIndex: layer.react.collab?.nextZIndex,
     } as ISerialLayerInput);
 
     layerIndex = result.layers.length;

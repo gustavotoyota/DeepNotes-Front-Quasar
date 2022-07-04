@@ -56,7 +56,10 @@
         />
       </q-toolbar>
 
-      <q-list style="flex: 1">
+      <q-list
+        style="flex: 1"
+        v-if="region.react.collab.layerIds != null"
+      >
         <template
           v-for="(layerId, layerIndex) in region.react.collab.layerIds
             .slice()

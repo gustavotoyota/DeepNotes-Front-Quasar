@@ -154,6 +154,10 @@ div :deep(.ProseMirror) {
 
   touch-action: pan-x pan-y !important;
 
+  &[contenteditable='false'] img {
+    -webkit-user-drag: none;
+  }
+
   p {
     margin-bottom: 0;
   }

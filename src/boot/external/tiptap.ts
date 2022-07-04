@@ -53,7 +53,10 @@ const extensions = [
     openOnClick: false,
   }),
 
-  Image,
+  Image.configure({
+    inline: true,
+    allowBase64: true,
+  }),
 
   TaskList,
   TaskItem.configure({

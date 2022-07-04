@@ -497,18 +497,18 @@
   lang="ts"
 >
 import type { ChainedCommands } from '@tiptap/vue-3';
+import { computed } from '@vue/reactivity';
 import { logout } from 'src/code/auth';
 import { NoteTextSection } from 'src/code/pages/app/page/notes/note';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
-import { toRef } from 'vue';
 
 import ToolbarBtn from '../misc/ToolbarBtn.vue';
 import UserSettingsDialog from './UserSettingsDialog/UserSettingsDialog.vue';
 
 const ui = useUI();
 
-const page = toRef($pages.react, 'page');
+const page = computed(() => $pages.react.page);
 
 function format(func: (chain: ChainedCommands) => void) {
   if (page.value.editing.react.active) {

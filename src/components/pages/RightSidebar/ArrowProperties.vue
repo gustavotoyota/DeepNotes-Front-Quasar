@@ -132,6 +132,7 @@
   setup
   lang="ts"
 >
+import { computed } from '@vue/reactivity';
 import { to_base64 } from 'libsodium-wrappers';
 import { Notify } from 'quasar';
 import { PageArrow } from 'src/code/pages/app/page/arrows/arrow';
@@ -142,7 +143,7 @@ import {
 } from 'src/code/pages/app/serialization';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
-import { inject, Ref, toRef } from 'vue';
+import { inject, Ref } from 'vue';
 import { yXmlFragmentToProsemirrorJSON } from 'y-prosemirror';
 
 import Checkbox from '../misc/Checkbox.vue';
@@ -152,7 +153,7 @@ const ui = useUI();
 
 const page = inject<Ref<AppPage>>('page')!;
 
-const arrow = toRef(page.value.activeElem.react, 'elem') as Ref<PageArrow>;
+const arrow = computed(() => page.value.activeElem.react.elem as PageArrow);
 
 function changeProp(value: any, func: (arrow: PageArrow, value: any) => void) {
   page.value.collab.doc.transact(() => {

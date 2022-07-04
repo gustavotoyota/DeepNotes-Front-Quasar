@@ -31,6 +31,7 @@
   setup
   lang="ts"
 >
+import { computed } from '@vue/reactivity';
 import { useMeta } from 'quasar';
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
@@ -42,12 +43,11 @@ import MainToolbar from 'src/components/pages/MainToolbar/MainToolbar.vue';
 import RightSidebar from 'src/components/pages/RightSidebar/RightSidebar.vue';
 import { useApp } from 'src/stores/app';
 import {
+  ComputedRef,
   getCurrentInstance,
   onBeforeUnmount,
   onMounted,
-  Ref,
   ref,
-  toRef,
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -57,13 +57,13 @@ const router = useRouter();
 
 const mounted = ref(false);
 
-let page: Ref<AppPage>;
+let page: ComputedRef<AppPage>;
 
 if (process.env.CLIENT) {
   globalThis.$pages = factory.makeApp();
   getCurrentInstance()!.appContext.config.globalProperties.$pages = $pages;
 
-  page = toRef($pages.react, 'page');
+  page = computed(() => $pages.react.page);
 }
 
 useMeta(() => {

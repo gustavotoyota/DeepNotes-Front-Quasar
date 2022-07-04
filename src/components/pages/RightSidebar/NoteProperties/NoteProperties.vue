@@ -639,6 +639,7 @@
   setup
   lang="ts"
 >
+import { computed } from '@vue/reactivity';
 import { to_base64 } from 'libsodium-wrappers';
 import { Notify } from 'quasar';
 import { DICT_PAGE_GROUP_ID } from 'src/code/pages/app/app';
@@ -647,7 +648,7 @@ import { AppPage } from 'src/code/pages/app/page/page';
 import { REALTIME_GROUP_NAME } from 'src/code/pages/app/realtime';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
-import { inject, Ref, toRef } from 'vue';
+import { inject, Ref } from 'vue';
 
 import Checkbox from '../../misc/Checkbox.vue';
 import Combobox from '../../misc/Combobox.vue';
@@ -658,7 +659,7 @@ const ui = useUI();
 
 const page = inject<Ref<AppPage>>('page')!;
 
-const note = toRef(page.value.activeElem.react, 'elem') as Ref<PageNote>;
+const note = computed(() => page.value.activeElem.react.elem as PageNote);
 
 function changeProp(value: any, func: (note: PageNote, value: any) => void) {
   page.value.collab.doc.transact(() => {

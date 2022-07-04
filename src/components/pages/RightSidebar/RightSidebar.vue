@@ -40,9 +40,10 @@
   setup
   lang="ts"
 >
+import { computed } from '@vue/reactivity';
 import { ElemType } from 'src/code/pages/app/page/elems/elem';
 import { useUI } from 'src/stores/pages/ui';
-import { provide, toRef } from 'vue';
+import { provide } from 'vue';
 
 import ArrowProperties from './ArrowProperties.vue';
 import NoteProperties from './NoteProperties/NoteProperties.vue';
@@ -50,7 +51,7 @@ import PageProperties from './PageProperties/PageProperties.vue';
 
 const ui = useUI();
 
-const page = toRef($pages.react, 'page');
+const page = computed(() => $pages.react.page);
 
 provide('page', page);
 </script>

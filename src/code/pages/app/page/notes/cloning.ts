@@ -17,6 +17,15 @@ export class PageCloning {
       this.page.selection.react
     );
 
+    // Shift notes before deserialization
+
+    for (const noteIndex of serialObject.layers[0].noteIndexes) {
+      const serialNote = serialObject.notes[noteIndex];
+
+      serialNote.pos.x += 8;
+      serialNote.pos.y += 8;
+    }
+
     // Deserialize into structure
 
     let destIndex;
@@ -29,19 +38,12 @@ export class PageCloning {
       destIndex
     );
 
-    // Select and reposition clones
+    // Select clones
 
     const notes = this.page.notes.fromIds(noteIds);
     const arrows = this.page.arrows.fromIds(arrowIds);
 
     this.page.selection.set(...(notes as PageElem[]).concat(arrows));
-
-    this.page.collab.doc.transact(() => {
-      for (const note of notes) {
-        note.react.collab.pos.x += 8;
-        note.react.collab.pos.y += 8;
-      }
-    });
 
     // Scroll into view
 

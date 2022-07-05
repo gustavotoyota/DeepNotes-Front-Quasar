@@ -21,6 +21,7 @@ import { Router } from 'vue-router';
 
 import { Factory, factory } from '../static/composition-root';
 import { createComputedDict } from '../static/computed-dict';
+import { Vec2 } from '../static/vec2';
 import { AppPage } from './page/page';
 import { AppPageCache } from './page-cache';
 import {
@@ -93,6 +94,9 @@ export interface IAppReact {
 
   pageTitles: Record<string, string>;
   groupNames: Record<string, string>;
+
+  tableContextMenu: boolean;
+  tableContextMenuPos: Vec2;
 }
 
 export class PagesApp {
@@ -224,6 +228,9 @@ export class PagesApp {
           );
         },
       }),
+
+      tableContextMenu: false,
+      tableContextMenuPos: new Vec2(),
     });
 
     globalThis.__DEEP_NOTES__ = {

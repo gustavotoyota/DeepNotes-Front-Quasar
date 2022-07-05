@@ -42,7 +42,7 @@
 >
 import { ref } from 'vue';
 
-const props = defineProps<{
+defineProps<{
   label: string;
   options: any;
   modelValue: any;

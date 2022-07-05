@@ -25,6 +25,8 @@
   </q-layout>
 
   <loading-overlay v-if="!mounted" />
+
+  <TableContextMenu v-if="mounted" />
 </template>
 
 <script
@@ -36,6 +38,7 @@ import { useMeta } from 'quasar';
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { factory } from 'src/code/pages/static/composition-root';
+import { Vec2 } from 'src/code/pages/static/vec2';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import DisplayPage from 'src/components/pages/DisplayPage/DisplayPage.vue';
 import LeftSidebar from 'src/components/pages/LeftSidebar/LeftSidebar.vue';
@@ -50,6 +53,8 @@ import {
   ref,
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+
+import TableContextMenu from '../components/pages/TableContextMenu.vue';
 
 const app = useApp();
 const route = useRoute();
@@ -300,6 +305,42 @@ async function onClick(event: MouseEvent) {
 
 onBeforeUnmount(() => {
   document.removeEventListener('click', onClick);
+});
+
+// Context menu
+
+onMounted(() => {
+  document.addEventListener('contextmenu', onContextMenu);
+});
+
+function onContextMenu(event: MouseEvent) {
+  let elem = event.target as HTMLElement | null;
+
+  if (!elem?.isContentEditable) {
+    return;
+  }
+
+  while (elem != null) {
+    if (elem.nodeName === 'TD' || elem.nodeName === 'TH') {
+      event.preventDefault();
+
+      $pages.react.tableContextMenu = true;
+      $pages.react.tableContextMenuPos = new Vec2(
+        Math.min(event.clientX, document.body.clientWidth - 400),
+        Math.min(event.clientY, document.body.clientHeight - 192)
+      );
+
+      return;
+    }
+
+    elem = elem.parentElement;
+  }
+
+  $pages.react.tableContextMenu = false;
+}
+
+onBeforeUnmount(() => {
+  document.removeEventListener('contextmenu', onContextMenu);
 });
 </script>
 

@@ -3,13 +3,12 @@ import { Factory } from 'src/code/pages/static/composition-root';
 import { listenPointerEvents } from 'src/code/pages/static/dom';
 import { Rect } from 'src/code/pages/static/rect';
 import { Vec2 } from 'src/code/pages/static/vec2';
-import { refProp } from 'src/code/pages/static/vue';
 import {
   nextTick,
   reactive,
   ShallowReactive,
   shallowReactive,
-  UnwrapRef,
+  UnwrapNestedRefs,
 } from 'vue';
 import { yXmlFragmentToProsemirrorJSON } from 'y-prosemirror';
 
@@ -23,14 +22,22 @@ export interface IResizingReact {
 }
 
 export class PageResizing {
-  react: UnwrapRef<IResizingReact>;
+  readonly react: UnwrapNestedRefs<IResizingReact>;
 
   side!: NoteSide;
   section!: NoteSection | null;
   activeGhost!: PageNote;
 
+  oldRects!: Record<
+    string,
+    {
+      frame: Rect;
+      area: Rect;
+    }
+  >;
+
   constructor(readonly factory: Factory, readonly page: AppPage) {
-    this.react = refProp<IResizingReact>(this, 'react', {
+    this.react = reactive({
       active: false,
 
       ghosts: shallowReactive({}),
@@ -47,21 +54,19 @@ export class PageResizing {
       return;
     }
 
-    this.react = {
-      active: true,
-
-      ghosts: {},
-    };
-
-    this.page.activeElem.set(note);
+    this.react.ghosts = {};
 
     this.side = side;
     this.section = section ?? null;
 
+    this.oldRects = {};
+
+    this.page.activeElem.set(note);
+
     let nextZIndex = 0;
 
     for (const note of this.page.selection.react.notes) {
-      note.react.resizing = true;
+      this.oldRects[note.id] = this._getNoteRects(note);
 
       const collab: INoteCollabOutput = (
         syncedstore.getYjsValue(note.react.collab) as Y.Map<any>
@@ -109,9 +114,13 @@ export class PageResizing {
       }
 
       this.react.ghosts[ghost.id] = ghost;
+
+      note.react.resizing = true;
     }
 
     this.activeGhost.react.collab.zIndex = nextZIndex++;
+
+    this.react.active = true;
 
     await nextTick();
 
@@ -122,51 +131,52 @@ export class PageResizing {
   }
 
   private _update = (event: PointerEvent) => {
-    if (!(this.page.activeElem.react.elem instanceof PageNote)) {
-      return;
-    }
-
     const worldPos = this.page.pos.eventToWorld(event);
 
-    const oldSectionRect = this._getSectionRect(
-      this.page.activeElem.react.elem
-    );
-
-    const newSectionRect = new Rect(oldSectionRect);
+    const oldActiveRects = this.oldRects[this.activeGhost.id];
+    const newActiveAreaRect = new Rect(oldActiveRects.area);
 
     if (this.side.includes('w')) {
-      newSectionRect.topLeft.x = worldPos.x;
+      newActiveAreaRect.topLeft.x = worldPos.x;
     }
     if (this.side.includes('n')) {
-      newSectionRect.topLeft.y = worldPos.y;
+      newActiveAreaRect.topLeft.y = worldPos.y;
     }
     if (this.side.includes('e')) {
-      newSectionRect.bottomRight.x = worldPos.x;
+      newActiveAreaRect.bottomRight.x = worldPos.x;
     }
     if (this.side.includes('s')) {
-      newSectionRect.bottomRight.y = worldPos.y;
+      newActiveAreaRect.bottomRight.y = worldPos.y;
     }
 
     if (event.ctrlKey) {
       if (this.side.includes('w')) {
-        newSectionRect.bottomRight.x =
-          oldSectionRect.center.x + oldSectionRect.center.x - worldPos.x;
+        newActiveAreaRect.bottomRight.x =
+          oldActiveRects.area.center.x +
+          oldActiveRects.area.center.x -
+          worldPos.x;
       }
       if (this.side.includes('n')) {
-        newSectionRect.bottomRight.y =
-          oldSectionRect.center.y + oldSectionRect.center.y - worldPos.y;
+        newActiveAreaRect.bottomRight.y =
+          oldActiveRects.area.center.y +
+          oldActiveRects.area.center.y -
+          worldPos.y;
       }
       if (this.side.includes('e')) {
-        newSectionRect.topLeft.x =
-          oldSectionRect.center.x + oldSectionRect.center.x - worldPos.x;
+        newActiveAreaRect.topLeft.x =
+          oldActiveRects.area.center.x +
+          oldActiveRects.area.center.x -
+          worldPos.x;
       }
       if (this.side.includes('s')) {
-        newSectionRect.topLeft.y =
-          oldSectionRect.center.y + oldSectionRect.center.y - worldPos.y;
+        newActiveAreaRect.topLeft.y =
+          oldActiveRects.area.center.y +
+          oldActiveRects.area.center.y -
+          worldPos.y;
       }
     }
 
-    const posDelta = newSectionRect.topLeft.sub(oldSectionRect.topLeft);
+    const posDelta = newActiveAreaRect.topLeft.sub(oldActiveRects.area.topLeft);
 
     for (const ghost of Object.values(this.react.ghosts)) {
       const note = this.page.notes.fromId(ghost.id);
@@ -177,18 +187,18 @@ export class PageResizing {
 
       ghost.react.collab.width[
         ghost.react.sizeProp
-      ] = `${newSectionRect.size.x}px`;
+      ] = `${newActiveAreaRect.size.x}px`;
 
       if (this.section != null) {
         ghost.react.collab[this.section].height[
           ghost.react.sizeProp
-        ] = `${newSectionRect.size.y}px`;
+        ] = `${newActiveAreaRect.size.y}px`;
       }
 
-      const frameRect = note.getWorldRect('note-frame');
+      const oldRects = this.oldRects[note.id];
 
-      ghost.react.collab.pos.x = frameRect.topLeft.x + posDelta.x;
-      ghost.react.collab.pos.y = frameRect.topLeft.y + posDelta.y;
+      ghost.react.collab.pos.x = oldRects.frame.topLeft.x + posDelta.x;
+      ghost.react.collab.pos.y = oldRects.frame.topLeft.y + posDelta.y;
     }
   };
 
@@ -240,19 +250,26 @@ export class PageResizing {
     this.react.active = false;
   };
 
-  private _getSectionRect(note: PageNote) {
+  private _getNoteRects(note: PageNote) {
     const frameRect = note.getWorldRect('note-frame');
 
-    let verticalRect;
+    let sectionRect = null;
     if (this.section != null && note.react.collab[this.section].enabled) {
-      verticalRect = note.getWorldRect(`note-${this.section}-section`);
-    } else {
-      verticalRect = frameRect;
+      sectionRect = note.getWorldRect(`note-${this.section}-section`);
     }
 
-    return new Rect(
-      new Vec2(frameRect.topLeft.x, verticalRect.topLeft.y),
-      new Vec2(frameRect.bottomRight.x, verticalRect.bottomRight.y)
-    );
+    return {
+      frame: frameRect,
+      area: new Rect(
+        new Vec2(
+          frameRect.topLeft.x,
+          sectionRect?.topLeft.y ?? frameRect.topLeft.y
+        ),
+        new Vec2(
+          frameRect.bottomRight.x,
+          sectionRect?.bottomRight.y ?? frameRect.bottomRight.y
+        )
+      ),
+    };
   }
 }

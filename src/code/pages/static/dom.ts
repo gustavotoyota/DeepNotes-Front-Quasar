@@ -23,9 +23,13 @@ export function isTouchOverScrollbar(event: TouchEvent, zoom?: number) {
   const offsetX = (event.targetTouches[0].clientX - clientRect.x) / zoom;
   const offsetY = (event.targetTouches[0].clientY - clientRect.y) / zoom;
 
-  if (hasVertScrollbar(elem) && offsetX > elem.clientWidth) return true;
+  if (hasVertScrollbar(elem) && offsetX > elem.clientWidth) {
+    return true;
+  }
 
-  if (hasHorizScrollbar(elem) && offsetY > elem.clientHeight) return true;
+  if (hasHorizScrollbar(elem) && offsetY > elem.clientHeight) {
+    return true;
+  }
 
   return false;
 }
@@ -33,9 +37,13 @@ export function isTouchOverScrollbar(event: TouchEvent, zoom?: number) {
 export function isMouseOverScrollbar(event: PointerEvent) {
   const elem = event.target as HTMLElement;
 
-  if (hasVertScrollbar(elem) && event.offsetX > elem.clientWidth) return true;
+  if (hasVertScrollbar(elem) && event.offsetX > elem.clientWidth) {
+    return true;
+  }
 
-  if (hasHorizScrollbar(elem) && event.offsetY > elem.clientHeight) return true;
+  if (hasHorizScrollbar(elem) && event.offsetY > elem.clientHeight) {
+    return true;
+  }
 
   return false;
 }
@@ -47,16 +55,24 @@ export function listenPointerEvents(
     up?: (event: PointerEvent) => void;
   }
 ) {
-  if (options.move) document.addEventListener('pointermove', options.move);
+  if (options.move) {
+    document.addEventListener('pointermove', options.move);
+  }
 
   document.addEventListener('pointerup', pointerUpListener);
+  document.addEventListener('pointercancel', pointerUpListener);
 
   function pointerUpListener(upEvent: PointerEvent) {
-    if (upEvent.pointerId !== downEvent.pointerId) return;
+    if (upEvent.pointerId !== downEvent.pointerId) {
+      return;
+    }
 
-    if (options.move) document.removeEventListener('pointermove', options.move);
+    if (options.move) {
+      document.removeEventListener('pointermove', options.move);
+    }
 
     document.removeEventListener('pointerup', pointerUpListener);
+    document.removeEventListener('pointercancel', pointerUpListener);
 
     options.up?.(upEvent);
   }

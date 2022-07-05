@@ -122,17 +122,14 @@
         style="display: flex; flex-direction: column; justify-content: center"
       >
         <div class="main-text">
-          <div
-            class="big-main-text"
-            style="font-weight: bold"
-          >
+          <div class="big-text">
             The ultimate<br />
             note-taking app
           </div>
 
           <div style="height: 12px"></div>
 
-          <div class="small-main-text">
+          <div class="small-text">
             Organize your notes however you like. Cluster, group, drag, expand,
             collapse, resize, link, colorize. Super simple, but extremely
             powerful.
@@ -153,7 +150,10 @@
         </div>
       </div>
 
-      <div class="col-12 col-md-6 main-image">
+      <div
+        class="col-12 col-md-6"
+        style="text-align: center"
+      >
         <div
           class="d-block d-md-none"
           style="height: 110px"
@@ -210,16 +210,54 @@
           <div style="height: 16px"></div>
 
           <div>
-            Break your text into small manageable blocks. Use containers to
-            organize your notes or even create your own collaborative Kanban
-            boards.
+            Your ideas don't need to be constrained to a big wall of text. Use
+            containers to organize your notes or even create your own
+            collaborative Kanban boards.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height: 100px"></div>
+
+    <div class="row">
+      <div
+        class="col-12 col-md-6"
+        style="text-align: center"
+      >
+        <img
+          src="/page-navigation.png"
+          style="max-width: 100%"
+        />
+
+        <div
+          class="d-block d-md-none"
+          style="height: 100px"
+        ></div>
+      </div>
+      <div
+        class="col-12 col-md-6"
+        style="display: flex; flex-direction: column; justify-content: center"
+      >
+        <div class="secondary-text">
+          <div class="big-text">
+            Graph-based<br />
+            page navigation
+          </div>
+
+          <div style="height: 12px"></div>
+
+          <div class="small-text">
+            Your pages aren't tied to a pre-determined index structure. You
+            navigate by linking your pages through your notes. You create your
+            own index, in your own style.
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div style="height: 130px"></div>
+  <div style="height: 140px"></div>
 
   <div style="padding: 80px 0px; background-color: #202020">
     <div
@@ -247,7 +285,7 @@ const auth = useAuth();
 a {
   text-decoration: none;
 
-  color: white;
+  color: unset;
 }
 
 body {
@@ -267,8 +305,20 @@ body {
     text-align: left;
   }
 }
-.big-main-text {
-  font-size: 36px;
+.secondary-text {
+  @extend .main-text;
+
+  @media (min-width: $breakpoint-md-min) {
+    margin-left: 40px;
+    margin-top: -16px;
+  }
+  @media (min-width: $breakpoint-lg-min) {
+    margin-top: -30px;
+  }
+}
+.big-text {
+  font-weight: bold;
+  font-size: 42px;
 
   @media (min-width: $breakpoint-sm-min) {
     font-size: 46px;
@@ -283,7 +333,7 @@ body {
     font-size: 56px;
   }
 }
-.small-main-text {
+.small-text {
   margin: auto;
 
   font-size: 16px;
@@ -299,18 +349,15 @@ body {
   }
 }
 
-.main-image {
-  text-align: center;
-}
-
 .cta-btn {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: bold;
 
   @media (min-width: $breakpoint-lg-min) {
-    font-size: 24px;
-    width: 220px;
-    height: 70px;
+    font-size: 26px;
+
+    padding-left: 20px;
+    padding-right: 20px;
   }
 }
 

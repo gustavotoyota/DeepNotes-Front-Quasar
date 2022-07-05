@@ -85,6 +85,7 @@
         <DisplayNote
           v-for="ghost in page.resizing.react.ghosts"
           :key="(ghost as PageNote).id"
+          :region="page"
           :note="(ghost as PageNote)"
           style="opacity: 0.7"
         />

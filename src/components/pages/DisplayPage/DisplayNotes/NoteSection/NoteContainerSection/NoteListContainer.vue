@@ -53,10 +53,7 @@
         :key="childNote?.id ?? childNoteId"
       >
         <div
-          v-if="
-            childNote != null &&
-            (childNote.react.region === note || note.react.ghost)
-          "
+          v-if="childNote != null"
           class="note-container-child"
           :style="{
             'flex-direction': note.react.collab.container.horizontal
@@ -70,6 +67,7 @@
           }"
         >
           <DisplayNote
+            :region="note"
             :note="childNote"
             :index="index"
           />

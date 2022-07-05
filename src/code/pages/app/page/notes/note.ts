@@ -207,6 +207,8 @@ export class PageNote extends PageElem implements IPageRegion {
 
   originElem!: Element;
 
+  occurrences: Record<string, Set<number>> = {};
+
   get originClientPos(): Vec2 {
     return this.page.rects.fromDOM(this.originElem.getBoundingClientRect())
       .topLeft;
@@ -635,16 +637,32 @@ export class PageNote extends PageElem implements IPageRegion {
     return this.page.rects.clientToWorld(this.getClientRect(part));
   }
 
-  removeFromLayer() {
-    if (
-      this.react.parentLayer.react.collab.noteIds[this.react.index] === this.id
-    ) {
-      this.react.parentLayer.react.collab.noteIds.splice(this.react.index, 1);
-    }
+  removeFromLayers() {
+    this.page.collab.doc.transact(() => {
+      for (const [layerId, indexesSet] of Object.entries(this.occurrences)) {
+        const layer = this.page.layers.fromId(layerId);
+
+        if (layer == null) {
+          continue;
+        }
+
+        const sortedIndexes = Array.from(indexesSet).sort();
+
+        for (let i = sortedIndexes.length - 1; i >= 0; i--) {
+          const index = sortedIndexes[i];
+
+          if (layer.react.collab.noteIds[index] === this.id) {
+            layer.react.collab.noteIds.splice(index, 1);
+          }
+        }
+      }
+    });
+
+    this.occurrences = {};
   }
   moveToLayer(layer: PageLayer, insertIndex?: number) {
     this.page.collab.doc.transact(() => {
-      this.removeFromLayer();
+      this.removeFromLayers();
 
       this.react.regionId = layer.react.regionId;
       this.react.parentLayerId = layer.id;

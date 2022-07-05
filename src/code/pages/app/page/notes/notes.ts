@@ -52,6 +52,9 @@ export class PageNotes {
       note.react.parentLayerId = layerId;
       note.react.index = index;
 
+      note.occurrences[layerId] ??= new Set();
+      note.occurrences[layerId].add(index);
+
       note.react.initialized = false;
     }
   }

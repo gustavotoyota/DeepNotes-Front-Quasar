@@ -1,5 +1,10 @@
 <template>
-  <NoteAnchor v-show="note.react.index === index || note.react.ghost">
+  <NoteAnchor
+    v-show="
+      (note.react.region === region && note.react.index === index) ||
+      note.react.ghost
+    "
+  >
     <NoteDropZones />
 
     <NoteFrame>
@@ -28,7 +33,10 @@
   setup
   lang="ts"
 >
+/* eslint-disable vue/no-mutating-props */
+
 import { PageNote } from 'src/code/pages/app/page/notes/note';
+import { AppPage } from 'src/code/pages/app/page/page';
 import { onUnmounted, provide, watchEffect } from 'vue';
 
 import NoteAnchor from './NoteAnchor.vue';
@@ -43,6 +51,7 @@ import NoteContainerSection from './NoteSection/NoteContainerSection/NoteContain
 import NoteTextSection from './NoteSection/NoteTextSection.vue';
 
 const props = defineProps<{
+  region: AppPage | PageNote;
   note: PageNote;
   index?: number;
 }>();
@@ -50,8 +59,16 @@ const props = defineProps<{
 provide('note', props.note);
 
 const unwatch = watchEffect(() => {
-  // eslint-disable-next-line vue/no-mutating-props
-  props.note.react.index = props.index ?? 0;
+  const index = props.index ?? 0;
+
+  props.note.react.index = index;
+
+  if (props.note.react.parentLayer == null || props.note.react.ghost) {
+    return;
+  }
+
+  props.note.occurrences[props.note.react.parentLayer.id] ??= new Set();
+  props.note.occurrences[props.note.react.parentLayer.id].add(index);
 });
 
 onUnmounted(() => {

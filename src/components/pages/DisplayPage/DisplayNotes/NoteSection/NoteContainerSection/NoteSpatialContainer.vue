@@ -76,10 +76,8 @@
                 :key="childNote?.id ?? childNoteId"
               >
                 <DisplayNote
-                  v-if="
-                    childNote != null &&
-                    (childNote.react.region === note || note.react.ghost)
-                  "
+                  v-if="childNote != null"
+                  :region="note"
                   :note="childNote"
                   :index="index"
               /></template>

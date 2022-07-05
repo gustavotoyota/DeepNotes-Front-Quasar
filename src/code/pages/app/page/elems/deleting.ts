@@ -53,7 +53,7 @@ export class PageDeleting {
       for (const note of notes) {
         this.deleteNote(note);
 
-        note.removeFromLayer();
+        note.removeFromLayers();
       }
     });
 

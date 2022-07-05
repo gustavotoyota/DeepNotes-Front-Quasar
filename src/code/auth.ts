@@ -162,10 +162,6 @@ export function logout() {
 
   deleteTokens();
 
-  // Clear e-mail
-
-  localStorage.removeItem('email');
-
   // Clear private key
 
   localStorage.removeItem('encrypted-private-key');

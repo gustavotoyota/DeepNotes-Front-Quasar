@@ -132,6 +132,7 @@ import {
   encryptSymmetric,
   reencryptSessionPrivateKey,
 } from 'src/code/crypto/crypto';
+import { bytesToBase64 } from 'src/code/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { useApp } from 'src/stores/app';
@@ -158,6 +159,8 @@ interface IDevice {
 }
 
 const data = reactive({
+  email: '',
+
   oldPassword: '',
   newPassword: '',
   confirmNewPassword: '',
@@ -169,9 +172,12 @@ onMounted(async () => {
   await app.ready;
 
   const response = await $api.post<{
+    email: string;
+
     devices: IDevice[];
   }>('/api/users/account/security/load');
 
+  data.email = response.data.email;
   data.devices = response.data.devices;
 
   mounted.value = true;
@@ -188,12 +194,16 @@ async function changePassword() {
   }
 
   try {
-    const email = localStorage.getItem('email')!;
-
     // Compute derived keys
 
-    const oldDerivedKeys = await computeDerivedKeys(email, data.oldPassword);
-    const newDerivedKeys = await computeDerivedKeys(email, data.newPassword);
+    const oldDerivedKeys = await computeDerivedKeys(
+      data.email,
+      data.oldPassword
+    );
+    const newDerivedKeys = await computeDerivedKeys(
+      data.email,
+      data.newPassword
+    );
 
     // Reencrypt derived keys
 
@@ -225,7 +235,7 @@ async function changePassword() {
     await $api.post('/api/users/account/security/change-password', {
       oldPasswordHash: oldDerivedKeys.passwordHash,
       newPasswordHash: newDerivedKeys.passwordHash,
-      reencryptedPrivateKey,
+      reencryptedPrivateKey: bytesToBase64(reencryptedPrivateKey),
     });
 
     Notify.create({

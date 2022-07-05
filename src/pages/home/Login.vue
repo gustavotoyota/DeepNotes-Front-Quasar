@@ -95,10 +95,6 @@ async function login() {
       from_base64(response.data.sessionKey)
     );
 
-    // Store e-mail
-
-    localStorage.setItem('email', data.email);
-
     auth.loggedIn = true;
 
     Notify.create({

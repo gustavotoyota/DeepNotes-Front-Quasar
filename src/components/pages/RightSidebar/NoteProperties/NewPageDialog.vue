@@ -175,8 +175,8 @@ async function createPage() {
       createGroup: createGroup.value,
       encryptedGroupSymmetricKey: encryptedGroupSymmetricKey
         ? to_base64(encryptedGroupSymmetricKey)
-        : null,
-      encryptedGroupName: encryptedGroupName,
+        : undefined,
+      encryptedGroupName,
 
       parentPageId: page.value.id,
       encryptedPageTitle,

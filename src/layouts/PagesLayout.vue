@@ -118,84 +118,123 @@ onMounted(() => {
 });
 
 async function onKeyDown(event: KeyboardEvent) {
+  if (event.ctrlKey && event.code === 'KeyD') {
+    event.preventDefault();
+  }
+
   if (page.value == null) {
     return;
   }
 
+  // If currently editing a note
+
   const target = event.target as HTMLElement;
-
-  if (target.isContentEditable && event.code === 'Escape') {
-    page.value.editing.stop();
-  }
-
-  if (event.ctrlKey && event.code === 'KeyD') {
-    event.preventDefault();
-  }
 
   if (
     target.nodeName === 'INPUT' ||
     target.nodeName === 'TEXTAREA' ||
     target.isContentEditable
   ) {
+    if (event.code === 'Escape') {
+      page.value.editing.stop();
+      return;
+    }
+
     return;
   }
 
-  if (event.code === 'Delete') {
-    page.value.deleting.perform();
-  }
-
-  if (event.ctrlKey && event.code === 'KeyA') {
-    page.value.selection.selectAll();
-  }
-
-  if (event.ctrlKey && event.code === 'KeyD') {
-    await page.value.cloning.perform();
-  }
-
-  if (event.ctrlKey && event.code === 'KeyC') {
-    await page.value.clipboard.copy();
-  }
-  if (event.ctrlKey && event.code === 'KeyV' && window.clipboardData) {
-    await page.value.clipboard.paste();
-  }
-  if (event.ctrlKey && event.code === 'KeyX') {
-    await page.value.clipboard.cut();
-  }
-
-  if (event.ctrlKey && event.code === 'KeyZ') {
-    page.value.undoRedo.undo();
-  }
-  if (event.ctrlKey && event.code === 'KeyY') {
-    page.value.undoRedo.redo();
-  }
-
-  if (event.code === 'ArrowLeft') {
-    page.value.selection.shift(-1, 0);
-  }
-  if (event.code === 'ArrowRight') {
-    page.value.selection.shift(1, 0);
-  }
-  if (event.code === 'ArrowUp') {
-    page.value.selection.shift(0, -1);
-  }
-  if (event.code === 'ArrowDown') {
-    page.value.selection.shift(0, 1);
-  }
+  // If there are notes selected
 
   const activeElem = page.value.activeElem.react.elem;
 
   if (activeElem instanceof PageNote) {
     if (event.code === 'F2') {
       await page.value.editing.start(activeElem);
+      return;
     }
 
     if (event.code === 'Backspace') {
       await page.value.editing.start(activeElem);
 
-      const editor = activeElem.react[page.value.editing.react.section!].editor;
+      activeElem.react.editor?.commands.deleteSelection();
 
-      editor?.commands.deleteSelection();
+      return;
     }
+
+    if (event.ctrlKey && event.code === 'KeyB') {
+      page.value.selection.toggleMark('bold');
+      return;
+    }
+    if (event.ctrlKey && event.code === 'KeyI') {
+      page.value.selection.toggleMark('italic');
+      return;
+    }
+    if (event.ctrlKey && event.code === 'KeyU') {
+      page.value.selection.toggleMark('underline');
+      return;
+    }
+    if (event.ctrlKey && event.code === 'KeyE') {
+      page.value.selection.toggleMark('code');
+      return;
+    }
+    if (event.ctrlKey && event.shiftKey && event.code === 'KeyX') {
+      page.value.selection.toggleMark('strike');
+      return;
+    }
+  }
+
+  if (event.code === 'Delete') {
+    page.value.deleting.perform();
+    return;
+  }
+
+  if (event.ctrlKey && event.code === 'KeyA') {
+    page.value.selection.selectAll();
+    return;
+  }
+
+  if (event.ctrlKey && event.code === 'KeyD') {
+    await page.value.cloning.perform();
+    return;
+  }
+
+  if (event.ctrlKey && event.code === 'KeyC') {
+    await page.value.clipboard.copy();
+    return;
+  }
+  if (event.ctrlKey && event.code === 'KeyV' && window.clipboardData) {
+    await page.value.clipboard.paste();
+    return;
+  }
+  if (event.ctrlKey && event.code === 'KeyX') {
+    await page.value.clipboard.cut();
+    return;
+  }
+
+  if (event.ctrlKey && event.code === 'KeyZ') {
+    page.value.undoRedo.undo();
+    return;
+  }
+  if (event.ctrlKey && event.code === 'KeyY') {
+    page.value.undoRedo.redo();
+    return;
+  }
+
+  if (event.code === 'ArrowLeft') {
+    page.value.selection.shift(-1, 0);
+    return;
+  }
+  if (event.code === 'ArrowRight') {
+    page.value.selection.shift(1, 0);
+    return;
+  }
+  if (event.code === 'ArrowUp') {
+    page.value.selection.shift(0, -1);
+    return;
+  }
+  if (event.code === 'ArrowDown') {
+    page.value.selection.shift(0, 1);
+    return;
   }
 }
 
@@ -210,6 +249,10 @@ onMounted(() => {
 });
 
 async function onKeyPress(event: KeyboardEvent) {
+  if (event.ctrlKey) {
+    return;
+  }
+
   if (page.value == null) {
     return;
   }
@@ -229,9 +272,15 @@ async function onKeyPress(event: KeyboardEvent) {
   if (activeElem instanceof PageNote) {
     await page.value.editing.start(activeElem);
 
-    const editor = activeElem.react[page.value.editing.react.section!].editor;
+    let chain = activeElem.react.editor!.chain().deleteSelection();
 
-    editor?.chain().deleteSelection().insertContent(event.key).run();
+    if (event.key === 'Enter') {
+      chain = chain.insertContent('<p></p><p></p>');
+    } else {
+      chain = chain.insertContent(event.key);
+    }
+
+    chain.run();
   }
 }
 

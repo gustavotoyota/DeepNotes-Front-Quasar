@@ -1,3 +1,5 @@
+import { ChainedCommands } from '@tiptap/vue-3';
+import { MarkName } from 'src/code/pages/static/tiptap';
 import { computed, ComputedRef, reactive, UnwrapNestedRefs } from 'vue';
 
 import { PageArrow } from '../arrows/arrow';
@@ -116,5 +118,39 @@ export class PageSelection {
         note.react.collab.pos.y += shiftY;
       }
     });
+  }
+
+  format(chainFunc: (chain: ChainedCommands) => ChainedCommands) {
+    for (const selectionNote of this.page.selection.react.notes) {
+      selectionNote.format(chainFunc);
+    }
+  }
+
+  isMarkActive(name: MarkName) {
+    for (const selectionNote of this.page.selection.react.notes) {
+      if (!selectionNote.isMarkActive(name)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  setMark(name: MarkName, attribs?: Record<string, any>) {
+    for (const selectionNote of this.page.selection.react.notes) {
+      selectionNote.setMark(name, attribs);
+    }
+  }
+  unsetMark(name: MarkName) {
+    for (const selectionNote of this.page.selection.react.notes) {
+      selectionNote.unsetMark(name);
+    }
+  }
+  toggleMark(name: MarkName, attribs?: Record<string, any>) {
+    if (this.isMarkActive(name)) {
+      this.unsetMark(name);
+    } else {
+      this.setMark(name, attribs);
+    }
   }
 }

@@ -106,28 +106,28 @@
             icon="mdi-format-bold"
             icon-size="25px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.toggleBold())"
+            @click="page.selection.toggleMark('bold')"
           />
           <ToolbarBtn
             tooltip="Italic"
             icon="mdi-format-italic"
             icon-size="25px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.toggleItalic())"
+            @click="page.selection.toggleMark('italic')"
           />
           <ToolbarBtn
             tooltip="Strike"
             icon="mdi-format-strikethrough"
             icon-size="25px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.toggleStrike())"
+            @click="page.selection.toggleMark('strike')"
           />
           <ToolbarBtn
-            tooltip="Strike"
+            tooltip="Underline"
             icon="mdi-format-underline"
             icon-size="25px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.toggleUnderline())"
+            @click="page.selection.toggleMark('underline')"
           />
 
           <q-separator
@@ -140,28 +140,36 @@
             icon="mdi-format-align-left"
             icon-size="21px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.setTextAlign('left'))"
+            @click="
+              page.selection.format((chain) => chain.setTextAlign('left'))
+            "
           />
           <ToolbarBtn
             tooltip="Align center"
             icon="mdi-format-align-center"
             icon-size="21px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.setTextAlign('center'))"
+            @click="
+              page.selection.format((chain) => chain.setTextAlign('center'))
+            "
           />
           <ToolbarBtn
             tooltip="Align right"
             icon="mdi-format-align-right"
             icon-size="21px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.setTextAlign('right'))"
+            @click="
+              page.selection.format((chain) => chain.setTextAlign('right'))
+            "
           />
           <ToolbarBtn
             tooltip="Justify"
             icon="mdi-format-align-justify"
             icon-size="21px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.setTextAlign('justify'))"
+            @click="
+              page.selection.format((chain) => chain.setTextAlign('justify'))
+            "
           />
 
           <q-separator
@@ -174,21 +182,27 @@
             icon="mdi-format-header-1"
             icon-size="24px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.setHeading({ level: 1 }))"
+            @click="
+              page.selection.format((chain) => chain.setHeading({ level: 1 }))
+            "
           />
           <ToolbarBtn
             tooltip="Header 2"
             icon="mdi-format-header-2"
             icon-size="24px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.setHeading({ level: 2 }))"
+            @click="
+              page.selection.format((chain) => chain.setHeading({ level: 2 }))
+            "
           />
           <ToolbarBtn
             tooltip="Header 3"
             icon="mdi-format-header-3"
             icon-size="24px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.setHeading({ level: 3 }))"
+            @click="
+              page.selection.format((chain) => chain.setHeading({ level: 3 }))
+            "
           />
 
           <q-separator
@@ -201,14 +215,14 @@
             icon="mdi-format-subscript"
             icon-size="23px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.toggleSubscript())"
+            @click="page.selection.toggleMark('subscript')"
           />
           <ToolbarBtn
             tooltip="Superscript"
             icon="mdi-format-superscript"
             icon-size="23px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.toggleSuperscript())"
+            @click="page.selection.toggleMark('superscript')"
           />
 
           <q-separator
@@ -221,21 +235,21 @@
             icon="mdi-format-list-bulleted"
             icon-size="24px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.toggleBulletList())"
+            @click="page.selection.format((chain) => chain.toggleBulletList())"
           />
           <ToolbarBtn
             tooltip="Ordered list"
             icon="mdi-format-list-numbered"
             icon-size="24px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.toggleOrderedList())"
+            @click="page.selection.format((chain) => chain.toggleOrderedList())"
           />
           <ToolbarBtn
             tooltip="Task list"
             icon="mdi-checkbox-marked-outline"
             icon-size="22px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.toggleTaskList())"
+            @click="page.selection.format((chain) => chain.toggleTaskList())"
           />
 
           <q-separator
@@ -248,21 +262,21 @@
             icon="mdi-format-quote-close"
             icon-size="23px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.toggleBlockquote())"
+            @click="page.selection.format((chain) => chain.toggleBlockquote())"
           />
           <ToolbarBtn
             tooltip="Code"
             icon="mdi-code-tags"
             icon-size="23px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.toggleCode())"
+            @click="page.selection.toggleMark('code')"
           />
           <ToolbarBtn
             tooltip="Codeblock"
             icon="mdi-code-braces"
             icon-size="23px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.toggleCodeBlock())"
+            @click="page.selection.format((chain) => chain.toggleCodeBlock())"
           />
 
           <q-separator
@@ -287,7 +301,7 @@
                 },
                 cancel: true,
               }).onOk((url) => {
-                format((chain) => chain.setLink({ href: url }));
+                page.selection.setMark('link', { href: url });
               })
             "
           />
@@ -296,7 +310,7 @@
             icon="mdi-link-off"
             icon-size="24px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.unsetLink())"
+            @click="page.selection.unsetMark('link')"
           />
 
           <q-separator
@@ -309,7 +323,11 @@
             icon="mdi-format-clear"
             icon-size="24px"
             :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="format((chain) => chain.clearNodes().unsetAllMarks())"
+            @click="
+              page.selection.format((chain) =>
+                chain.clearNodes().unsetAllMarks()
+              )
+            "
           />
 
           <q-separator
@@ -322,7 +340,7 @@
             icon="mdi-minus"
             icon-size="23px"
             :disable="page.react.readonly || !page.editing.react.active"
-            @click="format((chain) => chain.setHorizontalRule())"
+            @click="page.selection.format((chain) => chain.setHorizontalRule())"
           />
 
           <q-separator
@@ -336,7 +354,7 @@
             icon-size="23px"
             :disable="page.react.readonly || !page.editing.react.active"
             @click="
-              format((chain) =>
+              page.selection.format((chain) =>
                 chain.insertTable({ rows: 3, cols: 3, withHeaderRow: false })
               )
             "
@@ -346,63 +364,63 @@
             icon="mdi-table-large-remove"
             icon-size="23px"
             :disable="page.react.readonly || !page.editing.react.active"
-            @click="format((chain) => chain.deleteTable())"
+            @click="page.selection.format((chain) => chain.deleteTable())"
           />
           <ToolbarBtn
             tooltip="Insert column before"
             icon="mdi-table-column-plus-before"
             icon-size="23px"
             :disable="page.react.readonly || !page.editing.react.active"
-            @click="format((chain) => chain.addColumnBefore())"
+            @click="page.selection.format((chain) => chain.addColumnBefore())"
           />
           <ToolbarBtn
             tooltip="Insert column after"
             icon="mdi-table-column-plus-after"
             icon-size="23px"
             :disable="page.react.readonly || !page.editing.react.active"
-            @click="format((chain) => chain.addColumnAfter())"
+            @click="page.selection.format((chain) => chain.addColumnAfter())"
           />
           <ToolbarBtn
             tooltip="Remove column"
             icon="mdi-table-column-remove"
             icon-size="23px"
             :disable="page.react.readonly || !page.editing.react.active"
-            @click="format((chain) => chain.deleteColumn())"
+            @click="page.selection.format((chain) => chain.deleteColumn())"
           />
           <ToolbarBtn
             tooltip="Insert row before"
             icon="mdi-table-row-plus-before"
             icon-size="23px"
             :disable="page.react.readonly || !page.editing.react.active"
-            @click="format((chain) => chain.addRowBefore())"
+            @click="page.selection.format((chain) => chain.addRowBefore())"
           />
           <ToolbarBtn
             tooltip="Insert row after"
             icon="mdi-table-row-plus-after"
             icon-size="23px"
             :disable="page.react.readonly || !page.editing.react.active"
-            @click="format((chain) => chain.addRowAfter())"
+            @click="page.selection.format((chain) => chain.addRowAfter())"
           />
           <ToolbarBtn
             tooltip="Remove row"
             icon="mdi-table-row-remove"
             icon-size="23px"
             :disable="page.react.readonly || !page.editing.react.active"
-            @click="format((chain) => chain.deleteRow())"
+            @click="page.selection.format((chain) => chain.deleteRow())"
           />
           <ToolbarBtn
             tooltip="Merge cells"
             icon="mdi-table-merge-cells"
             icon-size="23px"
             :disable="page.react.readonly || !page.editing.react.active"
-            @click="format((chain) => chain.mergeCells())"
+            @click="page.selection.format((chain) => chain.mergeCells())"
           />
           <ToolbarBtn
             tooltip="Split cell"
             icon="mdi-table-split-cell"
             icon-size="23px"
             :disable="page.react.readonly || !page.editing.react.active"
-            @click="format((chain) => chain.splitCell())"
+            @click="page.selection.format((chain) => chain.splitCell())"
           />
         </div>
 
@@ -494,10 +512,8 @@
   setup
   lang="ts"
 >
-import type { ChainedCommands } from '@tiptap/vue-3';
 import { computed } from '@vue/reactivity';
 import { logout } from 'src/code/auth';
-import { NoteTextSection } from 'src/code/pages/app/page/notes/note';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
 
@@ -507,22 +523,6 @@ import UserSettingsDialog from './UserSettingsDialog/UserSettingsDialog.vue';
 const ui = useUI();
 
 const page = computed(() => $pages.react.page);
-
-function format(func: (chain: ChainedCommands) => ChainedCommands) {
-  if (page.value.editing.react.active) {
-    func(page.value.editing.react.editor!.chain().focus()).run();
-  } else {
-    for (const selectionNote of page.value.selection.react.notes) {
-      for (const section of ['head', 'body'] as NoteTextSection[]) {
-        const editor = selectionNote.react[section].editor;
-
-        if (editor != null) {
-          func(editor.chain().selectAll()).run();
-        }
-      }
-    }
-  }
-}
 </script>
 
 <style scoped>

@@ -1,7 +1,8 @@
-import type { Editor } from '@tiptap/vue-3';
+import { ChainedCommands, Editor, isMarkActive } from '@tiptap/vue-3';
 import Color from 'color';
 import { hasVertScrollbar } from 'src/code/pages/static/dom';
 import { Rect } from 'src/code/pages/static/rect';
+import { MarkName } from 'src/code/pages/static/tiptap';
 import { IVec2, Vec2 } from 'src/code/pages/static/vec2';
 import {
   darkenByRatio,
@@ -197,6 +198,9 @@ export interface INoteReact extends IRegionReact, IElemReact {
   link: {
     external: ComputedRef<boolean>;
   };
+
+  editors: ComputedRef<Editor[]>;
+  editor: ComputedRef<Editor | null>;
 
   numEditorsLoading: number;
   allEditorsLoaded: boolean;
@@ -570,6 +574,22 @@ export class PageNote extends PageElem implements IPageRegion {
         }),
       },
 
+      editors: computed(() => {
+        const result = [];
+
+        if (this.react.head.editor != null) {
+          result.push(this.react.head.editor);
+        }
+        if (this.react.body.editor != null) {
+          result.push(this.react.body.editor);
+        }
+
+        return result;
+      }),
+      editor: computed(() =>
+        this.react.editing ? this.page.editing.react.editor : null
+      ),
+
       numEditorsLoading: 0,
       allEditorsLoaded: true,
       loaded: computed(() => {
@@ -682,5 +702,56 @@ export class PageNote extends PageElem implements IPageRegion {
 
       this.bringToTop();
     });
+  }
+
+  isMarkActive(name: MarkName) {
+    for (const editor of this.react.editors) {
+      if (!isMarkActive(editor.state, name)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+  setMark(name: MarkName, attribs?: Record<string, any>) {
+    if (this.react.editing) {
+      if (this.react.editor != null) {
+        this.react.editor.chain().focus().setMark(name, attribs).run();
+      }
+    } else {
+      for (const editor of this.react.editors) {
+        editor.chain().selectAll().setMark(name, attribs).run();
+      }
+    }
+  }
+  unsetMark(name: MarkName) {
+    if (this.react.editing) {
+      if (this.react.editor != null) {
+        this.react.editor.chain().focus().unsetMark(name).run();
+      }
+    } else {
+      for (const editor of this.react.editors) {
+        editor.chain().selectAll().unsetMark(name).run();
+      }
+    }
+  }
+  toggleMark(name: MarkName, attribs?: Record<string, any>) {
+    if (this.isMarkActive(name)) {
+      this.unsetMark(name);
+    } else {
+      this.setMark(name, attribs);
+    }
+  }
+
+  format(chainFunc: (chain: ChainedCommands) => ChainedCommands) {
+    if (this.react.editing) {
+      if (this.react.editor != null) {
+        chainFunc(this.react.editor.chain().focus()).run();
+      }
+    } else {
+      for (const editor of this.react.editors) {
+        chainFunc(editor.chain().selectAll()).run();
+      }
+    }
   }
 }

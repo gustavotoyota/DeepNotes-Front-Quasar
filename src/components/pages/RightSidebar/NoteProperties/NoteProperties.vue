@@ -218,55 +218,91 @@
 
     <!-- Anchor -->
 
-    <div style="padding: 20px; display: flex">
-      <div style="flex: 1">
-        <q-select
-          label="X anchor"
-          :disable="page.react.readonly"
-          :model-value="note.react.collab.anchor.x"
-          @update:model-value="
-            changeProp($event, (note, value) => {
-              note.react.collab.pos.x +=
-                (value - note.react.collab.anchor.x) * note.react.worldSize.x;
-              note.react.collab.anchor.x = value;
-            })
-          "
-          :options="[
-            { label: 'Left', value: 0 },
-            { label: 'Center', value: 0.5 },
-            { label: 'Right', value: 1 },
-          ]"
-          filled
-          dense
-          emit-value
-          map-options
-        />
+    <div style="padding: 20px; display: flex; flex-direction: column">
+      <div class="display: flex">
+        <div style="flex: 1">
+          <q-input
+            label="X position"
+            :model-value="note.react.collab.pos.x"
+            @update:model-value="
+              changeProp(parseFloat($event as any), (note, value) => {
+                note.react.collab.pos.x = value;
+              })
+            "
+            filled
+            dense
+          />
+        </div>
+
+        <Gap style="width: 16px" />
+
+        <div style="flex: 1">
+          <q-input
+            label="Y position"
+            :model-value="note.react.collab.pos.y"
+            @update:model-value="
+              changeProp(parseFloat($event as any), (note, value) => {
+                note.react.collab.pos.y = value;
+              })
+            "
+            filled
+            dense
+          />
+        </div>
       </div>
 
-      <Gap style="width: 16px" />
+      <Gap style="height: 16px" />
 
-      <div style="flex: 1">
-        <q-select
-          label="Y anchor"
-          :disable="page.react.readonly"
-          :model-value="note.react.collab.anchor.y"
-          @update:model-value="
-            changeProp($event, (note, value) => {
-              note.react.collab.pos.y +=
-                (value - note.react.collab.anchor.y) * note.react.worldSize.y;
-              note.react.collab.anchor.y = value;
-            })
-          "
-          :options="[
-            { label: 'Top', value: 0 },
-            { label: 'Center', value: 0.5 },
-            { label: 'Bottom', value: 1 },
-          ]"
-          filled
-          dense
-          emit-value
-          map-options
-        />
+      <div class="display: flex">
+        <div style="flex: 1">
+          <q-select
+            label="X anchor"
+            :disable="page.react.readonly"
+            :model-value="note.react.collab.anchor.x"
+            @update:model-value="
+              changeProp($event, (note, value) => {
+                note.react.collab.pos.x +=
+                  (value - note.react.collab.anchor.x) * note.react.worldSize.x;
+                note.react.collab.anchor.x = value;
+              })
+            "
+            :options="[
+              { label: 'Left', value: 0 },
+              { label: 'Center', value: 0.5 },
+              { label: 'Right', value: 1 },
+            ]"
+            filled
+            dense
+            emit-value
+            map-options
+          />
+        </div>
+
+        <Gap style="width: 16px" />
+
+        <div style="flex: 1">
+          <q-select
+            label="Y anchor"
+            :disable="page.react.readonly"
+            :model-value="note.react.collab.anchor.y"
+            @update:model-value="
+              changeProp($event, (note, value) => {
+                note.react.collab.pos.y +=
+                  (value - note.react.collab.anchor.y) * note.react.worldSize.y;
+                note.react.collab.anchor.y = value;
+              })
+            "
+            :options="[
+              { label: 'Top', value: 0 },
+              { label: 'Center', value: 0.5 },
+              { label: 'Bottom', value: 1 },
+            ]"
+            filled
+            dense
+            emit-value
+            map-options
+          />
+        </div>
       </div>
     </div>
 

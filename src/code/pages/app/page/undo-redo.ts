@@ -24,20 +24,25 @@ export class PageUndoRedo {
   }
 
   setup() {
-    this.undoManager = new Y.UndoManager([
-      syncedstore.getYjsValue(
-        this.page.collab.store.page
-      ) as Y.AbstractType<any>,
-      syncedstore.getYjsValue(
-        this.page.collab.store.layers
-      ) as Y.AbstractType<any>,
-      syncedstore.getYjsValue(
-        this.page.collab.store.notes
-      ) as Y.AbstractType<any>,
-      syncedstore.getYjsValue(
-        this.page.collab.store.arrows
-      ) as Y.AbstractType<any>,
-    ]);
+    this.undoManager = new Y.UndoManager(
+      [
+        syncedstore.getYjsValue(
+          this.page.collab.store.page
+        ) as Y.AbstractType<any>,
+        syncedstore.getYjsValue(
+          this.page.collab.store.layers
+        ) as Y.AbstractType<any>,
+        syncedstore.getYjsValue(
+          this.page.collab.store.notes
+        ) as Y.AbstractType<any>,
+        syncedstore.getYjsValue(
+          this.page.collab.store.arrows
+        ) as Y.AbstractType<any>,
+      ],
+      {
+        trackedOrigins: new Set([null, tiptap.ySyncPluginKey]),
+      }
+    );
 
     this.undoManager.on('stack-cleared', this.updateReactiveData);
     this.undoManager.on('stack-item-added', this.updateReactiveData);

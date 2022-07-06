@@ -272,7 +272,11 @@ async function onKeyPress(event: KeyboardEvent) {
   if (activeElem instanceof PageNote) {
     await page.value.editing.start(activeElem);
 
-    let chain = activeElem.react.editor!.chain().deleteSelection();
+    if (activeElem.react.editor == null) {
+      return;
+    }
+
+    let chain = activeElem.react.editor.chain().deleteSelection();
 
     if (event.key === 'Enter') {
       chain = chain.insertContent('<p></p><p></p>');

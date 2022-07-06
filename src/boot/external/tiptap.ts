@@ -1,3 +1,4 @@
+import { Y } from '@syncedstore/core';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import Collaboration from '@tiptap/extension-collaboration';
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
@@ -17,6 +18,11 @@ import StarterKit from '@tiptap/starter-kit';
 import { EditorContent, Extension, getSchema, useEditor } from '@tiptap/vue-3';
 import { columnResizing } from 'prosemirror-tables';
 import { EditorView } from 'prosemirror-view';
+import {
+  prosemirrorJSONToYXmlFragment,
+  ySyncPluginKey,
+  yXmlFragmentToProsemirrorJSON,
+} from 'y-prosemirror';
 
 // Prosemirror fix
 
@@ -82,12 +88,6 @@ const extensions = [
   }),
 ];
 
-import { Y } from '@syncedstore/core';
-import {
-  prosemirrorJSONToYXmlFragment,
-  yXmlFragmentToProsemirrorJSON,
-} from 'y-prosemirror';
-
 export function swapXmlFragments(frag1: Y.XmlFragment, frag2: Y.XmlFragment) {
   const json1 = yXmlFragmentToProsemirrorJSON(frag1);
   const json2 = yXmlFragmentToProsemirrorJSON(frag2);
@@ -106,6 +106,8 @@ const _tiptap = {
   useEditor,
 
   swapXmlFragments,
+
+  ySyncPluginKey,
 };
 
 declare global {

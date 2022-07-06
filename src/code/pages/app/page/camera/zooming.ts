@@ -1,4 +1,5 @@
 import { hasVertScrollbar } from 'src/code/pages/static/dom';
+import { Vec2 } from 'src/code/pages/static/vec2';
 
 import { AppPage } from '../page';
 
@@ -22,10 +23,18 @@ export class PageZooming {
       }
     }
 
-    // Apply zoom
+    const worldPos = this.page.pos.eventToWorld(event);
 
     const multiplier = event.deltaY > 0 ? 1 / 1.2 : 1.2;
 
-    this.page.camera.react.zoom = this.page.camera.react.zoom * multiplier;
+    // Update camera zoom
+
+    this.page.camera.react.zoom *= multiplier;
+
+    // Update camera position
+
+    this.page.camera.react.pos = worldPos.add(
+      this.page.camera.react.pos.sub(worldPos).div(new Vec2(multiplier))
+    );
   }
 }

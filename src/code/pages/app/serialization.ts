@@ -1,4 +1,3 @@
-import { cloneDeep } from 'lodash';
 import { v4 } from 'uuid';
 import {
   prosemirrorJSONToYXmlFragment,
@@ -192,16 +191,14 @@ export class AppSerialization {
       ...note.react.collab,
 
       head: {
-        enabled: note.react.collab.head.enabled,
+        ...note.react.collab.head,
+
         value: yXmlFragmentToProsemirrorJSON(note.react.collab.head.value),
-        wrap: note.react.collab.head.wrap,
-        height: cloneDeep(note.react.collab.head.height),
       },
       body: {
-        enabled: note.react.collab.body.enabled,
+        ...note.react.collab.body,
+
         value: yXmlFragmentToProsemirrorJSON(note.react.collab.body.value),
-        wrap: note.react.collab.body.wrap,
-        height: cloneDeep(note.react.collab.body.height),
       },
 
       layerIndexes: [],
@@ -245,7 +242,8 @@ export class AppSerialization {
       targetIndex: maps.notes.get(arrow.react.collab.targetId!),
 
       label: {
-        enabled: arrow.react.collab.label.enabled,
+        ...arrow.react.collab.label,
+
         value: yXmlFragmentToProsemirrorJSON(arrow.react.collab.label.value),
       },
     });
@@ -333,22 +331,20 @@ export class AppSerialization {
       ...serialNote,
 
       head: {
-        enabled: serialNote.head.enabled,
+        ...serialNote.head,
+
         value: prosemirrorJSONToYXmlFragment(
           tiptap.schema,
           serialNote.head.value
         ),
-        wrap: serialNote.head.wrap,
-        height: cloneDeep(serialNote.head.height),
       },
       body: {
-        enabled: serialNote.body.enabled,
+        ...serialNote.body,
+
         value: prosemirrorJSONToYXmlFragment(
           tiptap.schema,
           serialNote.body.value
         ),
-        wrap: serialNote.body.wrap,
-        height: cloneDeep(serialNote.body.height),
       },
 
       zIndex: layerCollab.nextZIndex++,
@@ -384,7 +380,8 @@ export class AppSerialization {
       targetId: noteMap.get(serialArrow.targetIndex!),
 
       label: {
-        enabled: serialArrow.label.enabled,
+        ...serialArrow.label,
+
         value: prosemirrorJSONToYXmlFragment(
           tiptap.schema,
           serialArrow.label.value

@@ -557,6 +557,7 @@
           :disable="
             page.react.readonly ||
             !note.react.collab.container.enabled ||
+            note.react.collab.container.horizontal ||
             note.react.collab.container.spatial
           "
         />

@@ -300,6 +300,10 @@ div :deep(.ProseMirror) {
     background-color: rgba(255, 255, 255, 0.35);
   }
 
+  a {
+    color: #81d4fa !important;
+  }
+
   blockquote {
     margin: 4px 0;
 

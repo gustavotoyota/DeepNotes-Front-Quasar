@@ -224,10 +224,10 @@ async function rejectInvitation() {
   justify-content: center;
 }
 
-.display-page :deep(a[target='_blank']) {
-  text-decoration: none !important;
+.display-page :deep(a) {
+  text-decoration: none;
 
-  color: #81d4fa;
+  color: unset;
 }
 
 .display-page :deep(*) {

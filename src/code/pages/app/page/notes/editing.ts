@@ -60,10 +60,10 @@ export class PageEditing {
       this.react.section = note.react.topSection;
     }
 
-    this.page.selection.set(note);
-
     await nextTick();
     await watchUntilTrue(() => note.react.loaded);
+
+    this.page.selection.set(note);
 
     if (this.react.note != null) {
       for (const editor of this.react.note.react.editors) {

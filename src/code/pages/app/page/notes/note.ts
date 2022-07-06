@@ -407,7 +407,9 @@ export class PageNote extends PageElem implements IPageRegion {
           );
         }),
         selfPinned: computed(() => {
-          return isNumeric(this.react.width.self);
+          return (
+            !this.react.width.stretched && isNumeric(this.react.width.self)
+          );
         }),
         pinned: computed(() => {
           return this.react.width.parentPinned || this.react.width.selfPinned;

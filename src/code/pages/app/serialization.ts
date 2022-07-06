@@ -56,8 +56,8 @@ export const ISerialTextSection = z.object({
   wrap: z.boolean().default(true),
   height: z
     .object({
-      expanded: z.string().default('auto'),
-      collapsed: z.string().default('auto'),
+      expanded: z.string().default('Auto'),
+      collapsed: z.string().default('Auto'),
     })
     .default({}),
 });

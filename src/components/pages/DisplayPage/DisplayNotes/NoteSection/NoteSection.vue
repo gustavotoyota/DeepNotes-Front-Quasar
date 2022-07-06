@@ -10,7 +10,7 @@
       :class="`note-${section}-section`"
       style="display: flex"
       :style="{
-        height: note.react[section].height,
+        height: note.react[section].heightCSS,
         'min-height':
           section === 'container'
             ? note.react.activeLayer.react.notes.length === 0

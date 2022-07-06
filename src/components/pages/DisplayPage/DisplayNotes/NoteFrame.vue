@@ -3,8 +3,8 @@
     class="note-frame"
     ref="frameElem"
     :style="{
-      'min-width': note.react.width.min,
-      width: note.react.width.final,
+      'min-width': note.react.width.minCSS,
+      width: note.react.width.finalCSS,
 
       position: note.react.spatial ? 'absolute' : 'relative',
       transform: note.react.spatial

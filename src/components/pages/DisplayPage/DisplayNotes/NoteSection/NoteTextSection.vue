@@ -2,7 +2,7 @@
   <NoteSection :section="section">
     <div
       style="flex: 1"
-      :style="{ width: note.react.width.target }"
+      :style="{ width: note.react.width.targetCSS }"
       @dblclick.left="page.editing.start(note, section)"
     >
       <NoteEditor :section="section" />

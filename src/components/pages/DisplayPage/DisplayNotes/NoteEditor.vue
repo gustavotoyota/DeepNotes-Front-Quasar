@@ -5,7 +5,7 @@
       'padding-fix': paddingFix,
       'no-wrap': !note.react.collab[props.section].wrap,
       'can-overflow':
-        note.react[section].height.endsWith('px') ||
+        note.react[section].heightCSS.endsWith('px') ||
         (note.react.width.pinned && !note.react.collab[section].wrap),
     }"
   />

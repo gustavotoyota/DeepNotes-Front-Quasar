@@ -3,7 +3,12 @@ import Color from 'color';
 import { hasVertScrollbar } from 'src/code/pages/static/dom';
 import { Rect } from 'src/code/pages/static/rect';
 import { IVec2, Vec2 } from 'src/code/pages/static/vec2';
-import { darkenByRatio, lightenByRatio } from 'src/code/utils';
+import {
+  darkenByRatio,
+  isNumeric,
+  lightenByRatio,
+  sizeToCSS,
+} from 'src/code/utils';
 import {
   computed,
   ComputedRef,
@@ -25,8 +30,8 @@ export type NoteSide = 'nw' | 'n' | 'ne' | 'w' | 'e' | 'sw' | 's' | 'se';
 
 export const INoteCollabSize = z
   .object({
-    expanded: z.string().default('auto'),
-    collapsed: z.string().default('auto'),
+    expanded: z.string().default('Auto'),
+    collapsed: z.string().default('Auto'),
   })
   .default({});
 export type INoteCollabSizeInput = z.input<typeof INoteCollabSize>;
@@ -138,16 +143,16 @@ export interface INoteReact extends IRegionReact, IElemReact {
   head: {
     editor: ShallowRef<Editor | null>;
     visible: ComputedRef<boolean>;
-    height: ComputedRef<string>;
+    heightCSS: ComputedRef<string>;
   };
   body: {
     editor: ShallowRef<Editor | null>;
     visible: ComputedRef<boolean>;
-    height: ComputedRef<string>;
+    heightCSS: ComputedRef<string>;
   };
   container: {
     visible: ComputedRef<boolean>;
-    height: ComputedRef<string>;
+    heightCSS: ComputedRef<string>;
   };
 
   collapsing: {
@@ -165,10 +170,10 @@ export interface INoteReact extends IRegionReact, IElemReact {
     selfPinned: ComputedRef<boolean>;
     pinned: ComputedRef<boolean>;
 
-    min: ComputedRef<string | undefined>;
     self: ComputedRef<string>;
-    final: ComputedRef<string | undefined>;
-    target: ComputedRef<string | undefined>;
+    minCSS: ComputedRef<string | undefined>;
+    finalCSS: ComputedRef<string | undefined>;
+    targetCSS: ComputedRef<string | undefined>;
   };
 
   topSection: ComputedRef<NoteSection>;
@@ -224,20 +229,22 @@ export class PageNote extends PageElem implements IPageRegion {
   ) {
     super(page, id, ElemType.NOTE, regionId, layerId, index);
 
-    const makeSectionHeight = (section: NoteSection) =>
+    const makeSectionHeightCSS = (section: NoteSection) =>
       computed(() => {
         if (
           this.react.collapsing.collapsed &&
-          this.react.collab[section].height.collapsed === 'auto'
+          !isNumeric(this.react.collab[section].height.collapsed)
         ) {
           if (this.react.numEnabledSections === 1) {
             return '0px';
           } else {
-            return this.react.collab[section].height.expanded;
+            return sizeToCSS(this.react.collab[section].height.expanded);
           }
         }
 
-        return this.react.collab[section].height[this.react.sizeProp];
+        return sizeToCSS(
+          this.react.collab[section].height[this.react.sizeProp]
+        );
       });
 
     const react: Omit<INoteReact, keyof IElemReact> = {
@@ -316,7 +323,7 @@ export class PageNote extends PageElem implements IPageRegion {
       head: {
         editor: shallowRef(null),
         visible: computed(() => this.react.collab.head.enabled),
-        height: makeSectionHeight('head'),
+        heightCSS: makeSectionHeightCSS('head'),
       },
       body: {
         editor: shallowRef(null),
@@ -326,7 +333,7 @@ export class PageNote extends PageElem implements IPageRegion {
             (!this.react.collapsing.collapsed ||
               this.react.topSection === 'body')
         ),
-        height: makeSectionHeight('body'),
+        heightCSS: makeSectionHeightCSS('body'),
       },
       container: {
         visible: computed(
@@ -335,7 +342,7 @@ export class PageNote extends PageElem implements IPageRegion {
             (!this.react.collapsing.collapsed ||
               this.react.topSection === 'container')
         ),
-        height: makeSectionHeight('container'),
+        heightCSS: makeSectionHeightCSS('container'),
       },
 
       collapsing: {
@@ -396,13 +403,23 @@ export class PageNote extends PageElem implements IPageRegion {
           );
         }),
         selfPinned: computed(() => {
-          return this.react.width.self.endsWith('px');
+          return isNumeric(this.react.width.self);
         }),
         pinned: computed(() => {
           return this.react.width.parentPinned || this.react.width.selfPinned;
         }),
 
-        min: computed(() => {
+        self: computed(() => {
+          if (
+            this.react.collapsing.collapsed &&
+            !isNumeric(this.react.collab.width.collapsed)
+          ) {
+            return this.react.collab.width.expanded;
+          }
+
+          return this.react.collab.width[this.react.sizeProp];
+        }),
+        minCSS: computed(() => {
           if (
             // Is empty container with unpinned width:
             this.react.collab.container.enabled &&
@@ -413,28 +430,18 @@ export class PageNote extends PageElem implements IPageRegion {
             return undefined;
           }
         }),
-        self: computed(() => {
-          if (
-            this.react.collapsing.collapsed &&
-            this.react.collab.width.collapsed === 'auto'
-          ) {
-            return this.react.collab.width.expanded;
-          }
-
-          return this.react.collab.width[this.react.sizeProp];
-        }),
-        final: computed(() => {
+        finalCSS: computed(() => {
           if (this.react.width.stretched) {
             return undefined;
           }
 
-          if (this.react.width.self.endsWith('px')) {
-            return this.react.width.self;
+          if (isNumeric(this.react.width.self)) {
+            return `${this.react.width.self}px`;
           }
 
           return 'max-content';
         }),
-        target: computed(() => {
+        targetCSS: computed(() => {
           return this.react.width.pinned ? '0px' : undefined;
         }),
       },

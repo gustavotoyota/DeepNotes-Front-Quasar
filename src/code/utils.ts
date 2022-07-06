@@ -123,3 +123,15 @@ export function bytesToBase64(input: Uint8Array | null): string | null {
     return to_base64(input);
   }
 }
+
+export function isNumeric(n: any): n is number {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+export function sizeToCSS(size: string): string {
+  if (isNumeric(size)) {
+    return `${size}px`;
+  } else {
+    return 'auto';
+  }
+}

@@ -85,12 +85,13 @@ export class PageResizing {
 
       collab.pos = frameRect.topLeft;
 
-      collab.width[note.react.sizeProp] = `${frameRect.size.x}px`;
+      collab.width[note.react.sizeProp] = frameRect.size.x.toString();
 
       if (section != null && collab[section].enabled) {
         const sectionRect = note.getWorldRect(`note-${section}-section`);
 
-        collab[section].height[note.react.sizeProp] = `${sectionRect.size.y}px`;
+        collab[section].height[note.react.sizeProp] =
+          sectionRect.size.y.toString();
       }
 
       collab.zIndex = nextZIndex++;
@@ -185,14 +186,12 @@ export class PageResizing {
         continue;
       }
 
-      ghost.react.collab.width[
-        ghost.react.sizeProp
-      ] = `${newActiveAreaRect.size.x}px`;
+      ghost.react.collab.width[ghost.react.sizeProp] =
+        newActiveAreaRect.size.x.toString();
 
       if (this.section != null) {
-        ghost.react.collab[this.section].height[
-          ghost.react.sizeProp
-        ] = `${newActiveAreaRect.size.y}px`;
+        ghost.react.collab[this.section].height[ghost.react.sizeProp] =
+          newActiveAreaRect.size.y.toString();
       }
 
       const oldRects = this.oldRects[note.id];

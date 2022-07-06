@@ -7,7 +7,7 @@
   <div
     class="note-container-content"
     :style="{
-      width: note.react.width.target,
+      width: note.react.width.targetCSS,
       'flex-direction': note.react.collab.container.horizontal
         ? 'row'
         : 'column',
@@ -15,7 +15,7 @@
         ? 'wrap'
         : undefined,
       overflow:
-        note.react.container.height.endsWith('px') ||
+        note.react.container.heightCSS.endsWith('px') ||
         (note.react.collab.container.horizontal && note.react.width.pinned)
           ? 'auto'
           : 'visible',

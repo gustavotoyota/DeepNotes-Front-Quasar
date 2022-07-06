@@ -277,7 +277,7 @@
         <Combobox
           label="Width"
           :disable="page.react.readonly"
-          :options="[{ label: 'Auto', value: 'auto' }]"
+          :options="[{ label: 'Auto', value: 'Auto' }]"
           :model-value="note.react.collab.width[note.react.sizeProp]"
           @update:model-value="
             changeProp($event, (note, value) => {
@@ -292,7 +292,7 @@
         <Combobox
           label="Head height"
           :disable="page.react.readonly"
-          :options="[{ label: 'Auto', value: 'auto' }]"
+          :options="[{ label: 'Auto', value: 'Auto' }]"
           :model-value="note.react.collab.head.height[note.react.sizeProp]"
           @update:model-value="
             changeProp($event, (note, value) => {
@@ -309,7 +309,7 @@
         <Combobox
           label="Body height"
           :disable="page.react.readonly"
-          :options="[{ label: 'Auto', value: 'auto' }]"
+          :options="[{ label: 'Auto', value: 'Auto' }]"
           :model-value="note.react.collab.body.height[note.react.sizeProp]"
           @update:model-value="
             changeProp($event, (note, value) => {
@@ -324,7 +324,7 @@
         <Combobox
           label="Container height"
           :disable="page.react.readonly"
-          :options="[{ label: 'Auto', value: 'auto' }]"
+          :options="[{ label: 'Auto', value: 'Auto' }]"
           :model-value="note.react.collab.container.height[note.react.sizeProp]"
           @update:model-value="
             changeProp($event, (note, value) => {

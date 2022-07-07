@@ -8,13 +8,14 @@ import {
   UnwrapNestedRefs,
 } from 'vue';
 
+import { PageArrow } from '../arrows/arrow';
 import { AppPage } from '../page';
 import { NoteTextSection, PageNote } from './note';
 
 export interface IEditingReact {
-  noteId: string | null;
+  elemId: string | null;
 
-  note: ComputedRef<PageNote | null>;
+  elem: ComputedRef<PageNote | PageArrow | null>;
   section?: NoteTextSection;
   editor: ComputedRef<Editor | null>;
 
@@ -26,19 +27,29 @@ export class PageEditing {
 
   constructor(readonly page: AppPage) {
     this.react = reactive({
-      noteId: null,
+      elemId: null,
 
-      note: computed(() => this.page.notes.fromId(this.react.noteId)),
-      editor: computed(
-        () => this.react.note?.react[this.react.section!].editor ?? null
+      elem: computed(
+        () =>
+          this.page.notes.fromId(this.react.elemId) ??
+          this.page.arrows.fromId(this.react.elemId)
       ),
+      editor: computed(() => {
+        if (this.react.elem == null) {
+          return null;
+        } else if (this.react.elem instanceof PageNote) {
+          return this.react.elem.react[this.react.section!].editor;
+        } else {
+          return this.react.elem.react.editor;
+        }
+      }),
 
-      active: computed(() => this.react.note != null),
+      active: computed(() => this.react.elem != null),
     });
   }
 
-  async start(note: PageNote, section?: NoteTextSection) {
-    if (this.react.noteId === note.id) {
+  async start(elem: PageNote | PageArrow, section?: NoteTextSection) {
+    if (this.react.elemId === elem.id) {
       return;
     }
 
@@ -46,45 +57,45 @@ export class PageEditing {
       this.stop();
     }
 
-    if (this.page.react.readonly || note.react.collab.readOnly) {
+    if (this.page.react.readonly || elem.react.collab.readOnly) {
       return;
     }
 
-    note.react.editing = true;
+    elem.react.editing = true;
 
-    this.react.noteId = note.id;
+    this.react.elemId = elem.id;
 
-    if (section != null) {
-      this.react.section = section;
-    } else if (note.react.topSection !== 'container') {
-      this.react.section = note.react.topSection;
+    if (elem instanceof PageNote) {
+      if (section != null) {
+        this.react.section = section;
+      } else if (elem.react.topSection !== 'container') {
+        this.react.section = elem.react.topSection;
+      }
     }
 
     await nextTick();
-    await watchUntilTrue(() => note.react.loaded);
+    await watchUntilTrue(() => elem.react.loaded);
 
-    this.page.selection.set(note);
+    this.page.selection.set(elem);
 
-    if (this.react.note != null) {
-      for (const editor of this.react.note.react.editors) {
-        editor.setEditable(true);
-      }
+    for (const editor of elem.react.editors) {
+      editor.setEditable(true);
     }
 
     this.react.editor?.commands.focus('all');
   }
 
   stop() {
-    if (this.react.note == null) {
+    if (this.react.elem == null) {
       return;
     }
 
-    for (const editor of this.react.note.react.editors) {
+    for (const editor of this.react.elem.react.editors) {
       editor.setEditable(false);
     }
 
-    this.react.note.react.editing = false;
+    this.react.elem.react.editing = false;
 
-    this.react.noteId = null;
+    this.react.elemId = null;
   }
 }

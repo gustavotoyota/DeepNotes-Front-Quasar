@@ -20,6 +20,25 @@
       </template>
     </SVGDisplay>
 
+    <!-- Arrow labels -->
+
+    <DOMDisplay :root="region === page">
+      <template
+        v-for="arrowId in layer.react.collab.arrowIds"
+        :key="arrowId"
+      >
+        <template
+          v-for="arrow in [page.arrows.fromId(arrowId)]"
+          :key="arrow?.id ?? arrowId"
+        >
+          <ArrowLabel
+            v-if="arrow != null"
+            :arrow="arrow"
+          />
+        </template>
+      </template>
+    </DOMDisplay>
+
     <!-- Notes -->
 
     <DOMDisplay :root="region === page">
@@ -52,6 +71,7 @@ import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { inject, provide } from 'vue';
 
+import ArrowLabel from './ArrowLabel.vue';
 import DisplayArrow from './DisplayArrow.vue';
 import DisplayNote from './DisplayNote/DisplayNote.vue';
 import DOMDisplay from './DOMDisplay.vue';

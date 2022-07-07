@@ -136,7 +136,6 @@ export interface INoteReact extends IRegionReact, IElemReact {
 
   rootNote: ComputedRef<PageNote>;
 
-  editing: boolean;
   dragging: boolean;
   resizing: boolean;
   ghost: boolean;
@@ -314,12 +313,11 @@ export class PageNote extends PageElem implements IPageRegion {
         return result;
       }),
       elems: computed(() =>
-        (this.react.notes as PageElem[]).concat(this.react.arrows)
+        (this.react.notes as (PageNote | PageArrow)[]).concat(this.react.arrows)
       ),
 
       // Note
 
-      editing: false,
       dragging: false,
       resizing: false,
       ghost: false,

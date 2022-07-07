@@ -83,7 +83,7 @@ const editor = tiptap.useEditor({
   editable: false,
 
   extensions: [
-    ...tiptap.extensions,
+    ...tiptap.noteExtensions,
 
     ...(value instanceof Y.XmlFragment
       ? [

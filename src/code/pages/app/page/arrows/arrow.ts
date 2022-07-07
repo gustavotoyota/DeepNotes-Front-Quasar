@@ -1,9 +1,18 @@
+import { ChainedCommands, Editor, isMarkActive } from '@tiptap/vue-3';
 import Color from 'color';
 import { getLineRectIntersection } from 'src/code/pages/static/geometry';
 import { Line } from 'src/code/pages/static/line';
+import { MarkName } from 'src/code/pages/static/tiptap';
 import { Vec2 } from 'src/code/pages/static/vec2';
 import { lightenByRatio } from 'src/code/utils';
-import { computed, ComputedRef, nextTick, UnwrapNestedRefs } from 'vue';
+import {
+  computed,
+  ComputedRef,
+  nextTick,
+  ShallowRef,
+  shallowRef,
+  UnwrapNestedRefs,
+} from 'vue';
 import * as Y from 'yjs';
 import { z } from 'zod';
 
@@ -15,14 +24,7 @@ export const IArrowCollab = z.object({
   sourceId: z.string().uuid().optional(),
   targetId: z.string().uuid().optional(),
 
-  label: z
-    .object({
-      enabled: z.boolean().default(false),
-      value: z
-        .any()
-        .default(() => new Y.XmlFragment()) as z.ZodType<Y.XmlFragment>,
-    })
-    .default({ value: undefined as any }),
+  label: z.any().default(() => new Y.XmlFragment()) as z.ZodType<Y.XmlFragment>,
 
   backward: z.boolean().default(false),
   forward: z.boolean().default(true),
@@ -30,6 +32,8 @@ export const IArrowCollab = z.object({
   dashed: z.boolean().default(false),
 
   color: z.string().default('#b0b0b0'),
+
+  readOnly: z.boolean().default(false),
 });
 export type IArrowCollabInput = z.input<typeof IArrowCollab>;
 export type IArrowCollabOutput = z.output<typeof IArrowCollab>;
@@ -59,6 +63,11 @@ export interface IArrowReact extends IElemReact {
     light: ComputedRef<string>;
     final: ComputedRef<string>;
   };
+
+  editor: ShallowRef<Editor | null>;
+  editors: ComputedRef<Editor[]>;
+
+  loaded: boolean;
 }
 
 export class PageArrow extends PageElem {
@@ -163,6 +172,13 @@ export class PageArrow extends PageElem {
           }
         }),
       },
+
+      editor: shallowRef(null),
+      editors: computed(() =>
+        this.react.editor != null ? [this.react.editor] : []
+      ),
+
+      loaded: true,
     };
 
     Object.assign(this.react, react);
@@ -191,5 +207,56 @@ export class PageArrow extends PageElem {
     }
 
     this.react.parentLayer.react.collab.arrowIds.splice(this.react.index, 1);
+  }
+
+  isMarkActive(name: MarkName) {
+    for (const editor of this.react.editors) {
+      if (!isMarkActive(editor.state, name)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+  setMark(name: MarkName, attribs?: Record<string, any>) {
+    if (this.react.editing) {
+      if (this.react.editor != null) {
+        this.react.editor.chain().focus().setMark(name, attribs).run();
+      }
+    } else {
+      for (const editor of this.react.editors) {
+        editor.chain().selectAll().setMark(name, attribs).run();
+      }
+    }
+  }
+  unsetMark(name: MarkName) {
+    if (this.react.editing) {
+      if (this.react.editor != null) {
+        this.react.editor.chain().focus().unsetMark(name).run();
+      }
+    } else {
+      for (const editor of this.react.editors) {
+        editor.chain().selectAll().unsetMark(name).run();
+      }
+    }
+  }
+  toggleMark(name: MarkName, attribs?: Record<string, any>) {
+    if (this.isMarkActive(name)) {
+      this.unsetMark(name);
+    } else {
+      this.setMark(name, attribs);
+    }
+  }
+
+  format(chainFunc: (chain: ChainedCommands) => ChainedCommands) {
+    if (this.react.editing) {
+      if (this.react.editor != null) {
+        chainFunc(this.react.editor.chain().focus()).run();
+      }
+    } else {
+      for (const editor of this.react.editors) {
+        chainFunc(editor.chain().selectAll()).run();
+      }
+    }
   }
 }

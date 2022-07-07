@@ -17,7 +17,7 @@ export interface ISelectionReact {
   notes: ComputedRef<PageNote[]>;
   arrows: ComputedRef<PageArrow[]>;
 
-  elems: ComputedRef<PageElem[]>;
+  elems: ComputedRef<(PageNote | PageArrow)[]>;
 }
 
 export class PageSelection {
@@ -35,7 +35,7 @@ export class PageSelection {
       arrows: computed(() => this.page.arrows.fromIds(this.react.arrowIds)),
 
       elems: computed(() =>
-        (this.react.notes as PageElem[]).concat(this.react.arrows)
+        (this.react.notes as (PageNote | PageArrow)[]).concat(this.react.arrows)
       ),
     });
   }
@@ -120,30 +120,23 @@ export class PageSelection {
     });
   }
 
-  format(chainFunc: (chain: ChainedCommands) => ChainedCommands) {
-    for (const selectionNote of this.page.selection.react.notes) {
-      selectionNote.format(chainFunc);
-    }
-  }
-
   isMarkActive(name: MarkName) {
-    for (const selectionNote of this.page.selection.react.notes) {
-      if (!selectionNote.isMarkActive(name)) {
+    for (const elem of this.page.selection.react.elems) {
+      if (!elem.isMarkActive(name)) {
         return false;
       }
     }
 
     return true;
   }
-
   setMark(name: MarkName, attribs?: Record<string, any>) {
-    for (const selectionNote of this.page.selection.react.notes) {
-      selectionNote.setMark(name, attribs);
+    for (const elem of this.page.selection.react.elems) {
+      elem.setMark(name, attribs);
     }
   }
   unsetMark(name: MarkName) {
-    for (const selectionNote of this.page.selection.react.notes) {
-      selectionNote.unsetMark(name);
+    for (const elem of this.page.selection.react.elems) {
+      elem.unsetMark(name);
     }
   }
   toggleMark(name: MarkName, attribs?: Record<string, any>) {
@@ -151,6 +144,12 @@ export class PageSelection {
       this.unsetMark(name);
     } else {
       this.setMark(name, attribs);
+    }
+  }
+
+  format(chainFunc: (chain: ChainedCommands) => ChainedCommands) {
+    for (const elem of this.page.selection.react.elems) {
+      elem.format(chainFunc);
     }
   }
 }

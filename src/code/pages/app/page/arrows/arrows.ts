@@ -15,8 +15,8 @@ export class PageArrows {
 
   constructor(readonly factory: Factory, readonly page: AppPage) {}
 
-  fromId(arrowId: string): PageArrow | null {
-    return this.react.map[arrowId] ?? null;
+  fromId(arrowId: string | null): PageArrow | null {
+    return this.react.map[arrowId!] ?? null;
   }
   toId(arrow: PageArrow): string {
     return arrow.id;

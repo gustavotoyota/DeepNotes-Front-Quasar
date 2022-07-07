@@ -40,7 +40,39 @@ EditorView.prototype.updateState = function (state) {
 
 // Tiptap stuff
 
-const extensions = [
+const arrowExtensions = [
+  StarterKit.configure({
+    history: false,
+
+    blockquote: false,
+
+    code: false,
+    codeBlock: false,
+
+    bulletList: false,
+    orderedList: false,
+    listItem: false,
+
+    horizontalRule: false,
+
+    heading: false,
+  }),
+
+  Underline,
+
+  TextAlign.configure({
+    types: ['paragraph'],
+  }),
+
+  Subscript,
+  Superscript,
+
+  Link.configure({
+    openOnClick: false,
+  }),
+];
+
+const noteExtensions = [
   StarterKit.configure({
     history: false,
     codeBlock: false,
@@ -92,13 +124,16 @@ export function swapXmlFragments(frag1: Y.XmlFragment, frag2: Y.XmlFragment) {
   const json1 = yXmlFragmentToProsemirrorJSON(frag1);
   const json2 = yXmlFragmentToProsemirrorJSON(frag2);
 
-  prosemirrorJSONToYXmlFragment(tiptap.schema, json2, frag1);
-  prosemirrorJSONToYXmlFragment(tiptap.schema, json1, frag2);
+  prosemirrorJSONToYXmlFragment(tiptap.noteSchema, json2, frag1);
+  prosemirrorJSONToYXmlFragment(tiptap.noteSchema, json1, frag2);
 }
 
 const _tiptap = {
-  extensions,
-  schema: getSchema(extensions),
+  arrowExtensions,
+  noteExtensions,
+
+  arrowSchema: getSchema(arrowExtensions),
+  noteSchema: getSchema(noteExtensions),
 
   Collaboration,
   CollaborationCursor,

@@ -1,5 +1,6 @@
 import { computed, ComputedRef, reactive, UnwrapNestedRefs } from 'vue';
 
+import { PageArrow } from '../arrows/arrow';
 import { ElemType, PageElem } from '../elems/elem';
 import { PageNote } from '../notes/note';
 import { AppPage } from '../page';
@@ -8,7 +9,7 @@ export interface IActiveElemReact {
   id?: string;
   type?: ElemType;
 
-  elem: ComputedRef<PageElem | null>;
+  elem: ComputedRef<PageNote | PageArrow | null>;
 
   exists: ComputedRef<boolean>;
 }
@@ -18,7 +19,7 @@ export class PageActiveElem {
 
   constructor(readonly page: AppPage) {
     this.react = reactive({
-      elem: computed((): PageElem | null => {
+      elem: computed((): PageNote | PageArrow | null => {
         if (this.react.id == null || this.react.type == null) {
           return null;
         }
@@ -29,8 +30,9 @@ export class PageActiveElem {
         if (
           activeElem == null ||
           activeElem.react.region !== this.page.activeRegion.react.region
-        )
+        ) {
           return null;
+        }
 
         return activeElem;
       }),

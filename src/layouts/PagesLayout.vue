@@ -35,7 +35,6 @@
 >
 import { computed } from '@vue/reactivity';
 import { useMeta } from 'quasar';
-import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { factory } from 'src/code/pages/static/composition-root';
 import { Vec2 } from 'src/code/pages/static/vec2';
@@ -143,11 +142,11 @@ async function onKeyDown(event: KeyboardEvent) {
     return;
   }
 
-  // If there are notes selected
+  // If there is an element selected
 
   const activeElem = page.value.activeElem.react.elem;
 
-  if (activeElem instanceof PageNote) {
+  if (activeElem != null) {
     if (event.code === 'F2') {
       await page.value.editing.start(activeElem);
       return;
@@ -269,7 +268,7 @@ async function onKeyPress(event: KeyboardEvent) {
 
   const activeElem = page.value.activeElem.react.elem;
 
-  if (activeElem instanceof PageNote) {
+  if (activeElem != null) {
     await page.value.editing.start(activeElem);
 
     if (activeElem.react.editor == null) {

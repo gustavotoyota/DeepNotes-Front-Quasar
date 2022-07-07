@@ -32,15 +32,10 @@ export const ISerialArrow = IArrowCollab.omit({
   sourceIndex: z.number().optional(),
   targetIndex: z.number().optional(),
 
-  label: z
-    .object({
-      enabled: z.boolean().default(false),
-      value: z.any().default({
-        type: 'doc',
-        content: [],
-      }),
-    })
-    .default({}),
+  label: z.any().default({
+    type: 'doc',
+    content: [],
+  }),
 });
 export type ISerialArrowInput = z.input<typeof ISerialArrow>;
 export type ISerialArrowOutput = z.output<typeof ISerialArrow>;
@@ -241,11 +236,7 @@ export class AppSerialization {
       sourceIndex: maps.notes.get(arrow.react.collab.sourceId!),
       targetIndex: maps.notes.get(arrow.react.collab.targetId!),
 
-      label: {
-        ...arrow.react.collab.label,
-
-        value: yXmlFragmentToProsemirrorJSON(arrow.react.collab.label.value),
-      },
+      label: yXmlFragmentToProsemirrorJSON(arrow.react.collab.label),
     });
 
     arrowIndex = result.arrows.length;
@@ -334,7 +325,7 @@ export class AppSerialization {
         ...serialNote.head,
 
         value: prosemirrorJSONToYXmlFragment(
-          tiptap.schema,
+          tiptap.noteSchema,
           serialNote.head.value
         ),
       },
@@ -342,7 +333,7 @@ export class AppSerialization {
         ...serialNote.body,
 
         value: prosemirrorJSONToYXmlFragment(
-          tiptap.schema,
+          tiptap.noteSchema,
           serialNote.body.value
         ),
       },
@@ -379,14 +370,10 @@ export class AppSerialization {
       sourceId: noteMap.get(serialArrow.sourceIndex!),
       targetId: noteMap.get(serialArrow.targetIndex!),
 
-      label: {
-        ...serialArrow.label,
-
-        value: prosemirrorJSONToYXmlFragment(
-          tiptap.schema,
-          serialArrow.label.value
-        ),
-      },
+      label: prosemirrorJSONToYXmlFragment(
+        tiptap.arrowSchema,
+        serialArrow.label
+      ),
     } as IArrowCollabInput);
   }
 }

@@ -93,7 +93,7 @@ export class PageArrowCreation {
 
     const newCollab = cloneDeep(this.fakeArrow.react.collab);
 
-    newCollab.label.value = new Y.XmlFragment();
+    newCollab.label = new Y.XmlFragment();
 
     // Insert arrow into document
 

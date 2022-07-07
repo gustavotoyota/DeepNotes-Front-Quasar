@@ -172,12 +172,7 @@ async function setAsDefault() {
   $pages.react.defaultArrow = ISerialArrow.parse({
     ...arrow.value.react.collab,
 
-    label: {
-      enabled: arrow.value.react.collab.label.enabled,
-      value: yXmlFragmentToProsemirrorJSON(
-        arrow.value.react.collab.label.value
-      ),
-    },
+    label: yXmlFragmentToProsemirrorJSON(arrow.value.react.collab.label),
   } as ISerialArrowInput);
 
   try {

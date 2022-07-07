@@ -18,6 +18,7 @@ export interface IElemReact {
 
   active: boolean;
   selected: boolean;
+  editing: boolean;
 
   index: number;
 }
@@ -57,6 +58,7 @@ export class PageElem {
 
       active: this.page.activeElem.is(this.id),
       selected: this.page.selection.has(this),
+      editing: this.page.editing.react.elemId === this.id,
     });
   }
 }

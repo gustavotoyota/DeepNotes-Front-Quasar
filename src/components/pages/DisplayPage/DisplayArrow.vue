@@ -14,6 +14,7 @@
       :x2="arrow.react.targetPos.x"
       :y2="arrow.react.targetPos.y"
       @pointerdown.left.stop="onLeftPointerDown"
+      @dblclick.left="onLeftDoubleClick"
     />
 
     <line
@@ -74,6 +75,10 @@ const page = inject<AppPage>('page')!;
 
 function onLeftPointerDown(event: PointerEvent) {
   page.clickSelection.perform(props.arrow, event);
+}
+
+async function onLeftDoubleClick() {
+  await page.editing.start(props.arrow);
 }
 
 watchEffect(() => {

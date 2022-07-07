@@ -115,13 +115,9 @@ export class PageResizing {
       }
 
       this.react.ghosts[ghost.id] = ghost;
-
-      note.react.resizing = true;
     }
 
     this.activeGhost.react.collab.zIndex = nextZIndex++;
-
-    this.react.active = true;
 
     await nextTick();
 
@@ -132,6 +128,8 @@ export class PageResizing {
   }
 
   private _update = (event: PointerEvent) => {
+    this.react.active = true;
+
     const worldPos = this.page.pos.eventToWorld(event);
 
     const oldActiveRects = this.oldRects[this.activeGhost.id];
@@ -185,6 +183,8 @@ export class PageResizing {
       if (note == null) {
         continue;
       }
+
+      note.react.resizing = true;
 
       ghost.react.collab.width[ghost.react.sizeProp] =
         newActiveAreaRect.size.x.toString();

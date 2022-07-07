@@ -7,6 +7,7 @@
     height="100%"
   >
     <svg
+      v-if="root"
       x="50%"
       y="50%"
       style="overflow: visible"
@@ -26,6 +27,8 @@
         <slot></slot>
       </g>
     </svg>
+
+    <slot v-else></slot>
   </svg>
 </template>
 
@@ -35,6 +38,10 @@
 >
 import { AppPage } from 'src/code/pages/app/page/page';
 import { inject } from 'vue';
+
+defineProps<{
+  root: boolean;
+}>();
 
 const page = inject<AppPage>('page')!;
 </script>

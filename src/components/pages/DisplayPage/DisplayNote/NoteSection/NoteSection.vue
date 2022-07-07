@@ -33,7 +33,7 @@
 import { NoteSection, PageNote } from 'src/code/pages/app/page/notes/note';
 import { inject } from 'vue';
 
-import NoteCollapseBtn from '../NoteCollapseBtn.vue';
+import NoteCollapseBtn from './NoteCollapseBtn.vue';
 
 defineProps<{
   section: NoteSection;

@@ -26,82 +26,19 @@
 
     <!-- Layers -->
 
-    <template
-      v-for="layerId in note.react.collab.layerIds"
-      :key="layerId"
-    >
-      <template
-        v-for="layer in [page.layers.fromId(layerId)]"
-        :key="layer?.id ?? layerId"
-      >
-        <div
-          class="note-spatial-layer"
-          v-if="layer != null"
-        >
-          <!-- Arrows -->
-
-          <svg
-            style="position: absolute"
-            left="0"
-            top="0"
-            width="100%"
-            height="100%"
-          >
-            <template
-              v-for="(arrowId, index) in layer.react.collab.arrowIds"
-              :key="arrowId"
-            >
-              <template
-                v-for="arrow in [page.arrows.fromId(arrowId)]"
-                :key="arrow?.id ?? arrowId"
-              >
-                <DisplayArrow
-                  v-if="arrow != null"
-                  :arrow="arrow"
-                  :index="index"
-                />
-              </template>
-            </template>
-          </svg>
-
-          <!-- Notes -->
-
-          <div style="pointer-events: auto; width: 0; height: 0">
-            <template
-              v-for="(childNoteId, index) in layer.react.collab.noteIds"
-              :key="childNoteId"
-            >
-              <template
-                v-for="childNote in [page.notes.fromId(childNoteId)]"
-                :key="childNote?.id ?? childNoteId"
-              >
-                <DisplayNote
-                  v-if="childNote != null"
-                  :region="note"
-                  :note="childNote"
-                  :index="index"
-              /></template>
-            </template>
-          </div>
-        </div>
-      </template>
-    </template>
+    <DisplayLayers :region="note" />
 
     <!-- Arrow creation -->
 
-    <svg
+    <SVGDisplay
       v-if="
         page.arrowCreation.react.active &&
         page.arrowCreation.fakeArrow.react.region === note
       "
-      style="position: absolute; pointer-events: none"
-      left="0"
-      top="0"
-      width="100%"
-      height="100%"
+      :root="false"
     >
       <DisplayArrow :arrow="page.arrowCreation.fakeArrow" />
-    </svg>
+    </SVGDisplay>
 
     <!-- Box selection -->
 
@@ -129,9 +66,10 @@ import { AppPage } from 'src/code/pages/app/page/page';
 import { Vec2 } from 'src/code/pages/static/vec2';
 import { inject, onMounted, ref } from 'vue';
 
-import DisplayArrow from '../../../DisplayArrows/DisplayArrow.vue';
+import DisplayArrow from '../../../DisplayArrow.vue';
 import DisplayBoxSelection from '../../../DisplayBoxSelection.vue';
-import DisplayNote from '../../DisplayNote.vue';
+import DisplayLayers from '../../../DisplayLayers.vue';
+import SVGDisplay from '../../../SVGDisplay.vue';
 
 const page = inject<AppPage>('page')!;
 const note = inject<PageNote>('note')!;

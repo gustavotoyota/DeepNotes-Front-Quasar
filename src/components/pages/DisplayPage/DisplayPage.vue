@@ -66,14 +66,15 @@
 
       <DisplayBackground />
 
-      <DisplayLayers />
+      <DisplayLayers :region="page" />
 
       <!-- Arrow creation -->
 
       <SVGDisplay
+        :root="true"
         v-if="
           page.arrowCreation.react.active &&
-          page.arrowCreation.fakeArrow.react.region instanceof AppPage
+          page.arrowCreation.fakeArrow.react.region === page
         "
       >
         <DisplayArrow :arrow="page.arrowCreation.fakeArrow" />
@@ -81,7 +82,10 @@
 
       <!-- Note resizing ghosts -->
 
-      <DOMDisplay v-if="page.resizing.react.active">
+      <DOMDisplay
+        v-if="page.resizing.react.active"
+        :root="true"
+      >
         <DisplayNote
           v-for="ghost in page.resizing.react.ghosts"
           :key="(ghost as PageNote).id"
@@ -114,12 +118,12 @@ import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { onMounted, provide } from 'vue';
 
-import DisplayArrow from './DisplayArrows/DisplayArrow.vue';
+import DisplayArrow from './DisplayArrow.vue';
 import DisplayBackground from './DisplayBackground.vue';
 import DisplayBoxSelection from './DisplayBoxSelection.vue';
 import DisplayBtns from './DisplayBtns.vue';
-import DisplayLayers from './DisplayLayers/DisplayLayers.vue';
-import DisplayNote from './DisplayNotes/DisplayNote.vue';
+import DisplayLayers from './DisplayLayers.vue';
+import DisplayNote from './DisplayNote/DisplayNote.vue';
 import DOMDisplay from './DOMDisplay.vue';
 import RequestAccessDialog from './RequestAccessDialog.vue';
 import SVGDisplay from './SVGDisplay.vue';

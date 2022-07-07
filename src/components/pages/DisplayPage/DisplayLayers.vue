@@ -1,7 +1,7 @@
 <template>
   <div
     style="isolation: isolate"
-    v-for="layerId of page.react.collab.layerIds"
+    v-for="layerId of region.react.collab.layerIds"
     :key="layerId"
   >
     <template
@@ -10,6 +10,7 @@
     >
       <DisplayLayer
         v-if="layer != null"
+        :region="region"
         :layer="layer"
       />
     </template>
@@ -20,10 +21,15 @@
   setup
   lang="ts"
 >
+import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { inject } from 'vue';
 
 import DisplayLayer from './DisplayLayer.vue';
+
+defineProps<{
+  region: AppPage | PageNote;
+}>();
 
 const page = inject<AppPage>('page')!;
 </script>

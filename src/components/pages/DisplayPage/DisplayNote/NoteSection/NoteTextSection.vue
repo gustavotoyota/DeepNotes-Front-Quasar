@@ -18,7 +18,7 @@ import { NoteTextSection, PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { inject } from 'vue';
 
-import NoteEditor from '../NoteEditor.vue';
+import NoteEditor from './NoteEditor.vue';
 import NoteSection from './NoteSection.vue';
 
 defineProps<{

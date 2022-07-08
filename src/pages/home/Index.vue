@@ -29,6 +29,7 @@
         class="d-none d-md-flex"
         style="flex: 1; align-items: center"
       >
+        <!--
         <q-btn
           label="Features"
           flat
@@ -42,6 +43,7 @@
           flat
           class="toolbar-btn"
         />
+        -->
 
         <q-space />
 

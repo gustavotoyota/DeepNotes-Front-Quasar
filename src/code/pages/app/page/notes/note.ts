@@ -210,8 +210,8 @@ export interface INoteReact extends IRegionReact, IElemReact {
 export class PageNote extends PageElem implements IPageRegion {
   declare readonly react: UnwrapNestedRefs<INoteReact>;
 
-  readonly incomingArrows: PageArrow[] = [];
-  readonly outgoingArrows: PageArrow[] = [];
+  readonly incomingArrowIds = new Set<string>();
+  readonly outgoingArrowIds = new Set<string>();
 
   originElem!: Element;
 

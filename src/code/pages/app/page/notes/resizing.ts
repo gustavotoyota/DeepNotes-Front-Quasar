@@ -65,32 +65,34 @@ export class PageResizing {
 
     let nextZIndex = 0;
 
-    for (const note of this.page.selection.react.notes) {
-      this.oldRects[note.id] = this._getNoteRects(note);
+    for (const selectedNote of this.page.selection.react.notes) {
+      this.oldRects[selectedNote.id] = this._getNoteRects(selectedNote);
 
       const collab: INoteCollabOutput = (
-        syncedstore.getYjsValue(note.react.collab) as Y.Map<any>
+        syncedstore.getYjsValue(selectedNote.react.collab) as Y.Map<any>
       ).toJSON() as INoteCollabOutput;
 
       collab.head.value = yXmlFragmentToProsemirrorJSON(
-        note.react.collab.head.value
+        selectedNote.react.collab.head.value
       ) as any;
       collab.body.value = yXmlFragmentToProsemirrorJSON(
-        note.react.collab.body.value
+        selectedNote.react.collab.body.value
       ) as any;
 
       collab.anchor = new Vec2();
 
-      const frameRect = note.getWorldRect('note-frame');
+      const frameRect = selectedNote.getWorldRect('note-frame');
 
       collab.pos = frameRect.topLeft;
 
-      collab.width[note.react.sizeProp] = frameRect.size.x.toString();
+      collab.width[selectedNote.react.sizeProp] = frameRect.size.x.toString();
 
       if (section != null && collab[section].enabled) {
-        const sectionRect = note.getWorldRect(`note-${section}-section`);
+        const sectionRect = selectedNote.getWorldRect(
+          `note-${section}-section`
+        );
 
-        collab[section].height[note.react.sizeProp] =
+        collab[section].height[selectedNote.react.sizeProp] =
           sectionRect.size.y.toString();
       }
 
@@ -98,7 +100,7 @@ export class PageResizing {
 
       const ghost = this.factory.makeNote(
         this.page,
-        note.id,
+        selectedNote.id,
         null as any,
         null as any,
         -1,
@@ -108,7 +110,7 @@ export class PageResizing {
       ghost.react.selected = true;
       ghost.react.ghost = true;
 
-      if (this.page.activeElem.is(note.id)) {
+      if (this.page.activeElem.is(selectedNote.id)) {
         this.activeGhost = ghost;
 
         ghost.react.active = true;

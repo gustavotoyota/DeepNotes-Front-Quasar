@@ -4,7 +4,7 @@ import { PageNote } from '../notes/note';
 import { AppPage } from '../page';
 
 export interface IActiveRegionReact {
-  id: string | null;
+  id: string;
 
   region: ComputedRef<AppPage | PageNote>;
 }
@@ -14,7 +14,7 @@ export class PageActiveRegion {
 
   constructor(readonly page: AppPage) {
     this.react = reactive({
-      id: null,
+      id: this.page.id,
 
       region: computed(() => this.page.regions.fromId(this.react.id)),
     });

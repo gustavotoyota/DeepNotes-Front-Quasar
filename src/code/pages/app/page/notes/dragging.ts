@@ -116,9 +116,9 @@ export class PageDragging {
     // Move selected notes
 
     this.page.collab.doc.transact(() => {
-      for (const note of this.page.selection.react.notes) {
-        note.react.collab.pos.x += worldDelta.x;
-        note.react.collab.pos.y += worldDelta.y;
+      for (const selectedNote of this.page.selection.react.notes) {
+        selectedNote.react.collab.pos.x += worldDelta.x;
+        selectedNote.react.collab.pos.y += worldDelta.y;
       }
     });
   };
@@ -137,40 +137,24 @@ export class PageDragging {
 
     // Move notes to page region
 
-    const selectedNotes = this.page.selection.react.notes.slice();
+    const oldRegion = this.page.activeRegion.react.region;
 
-    selectedNotes.sort(
-      (a: PageNote, b: PageNote) => b.react.index - a.react.index
-    );
-
-    const insertIndex = this.page.react.activeLayer.react.collab.noteIds.length;
-
-    this.page.collab.doc.transact(() => {
-      for (const selectedNote of selectedNotes) {
-        selectedNote.moveToLayer(this.page.react.activeLayer, insertIndex);
-      }
-    });
+    this.page.selection.moveToLayer(this.page.react.activeLayer);
 
     // Obtain active region
 
-    const region = this.page.activeRegion.react.region;
-
-    if (!(region instanceof PageNote)) {
+    if (!(oldRegion instanceof PageNote)) {
       return;
     }
-
-    // Clear active region
-
-    this.page.activeRegion.react.id = null;
 
     // Adjust note positions and sizes
     // With mouse in the center of the active element
 
-    if (region.react.collab.container.spatial) {
+    if (oldRegion.react.collab.container.spatial) {
       // Drag out of spatial container
 
       const containerClientRect = this.page.rects.fromDOM(
-        region.originElem.getBoundingClientRect()
+        oldRegion.originElem.getBoundingClientRect()
       );
       const containerWorldTopLeft = this.page.pos.clientToWorld(
         containerClientRect.topLeft

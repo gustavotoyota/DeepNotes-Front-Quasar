@@ -17,6 +17,7 @@ import * as Y from 'yjs';
 import { z } from 'zod';
 
 import { ElemType, IElemReact, PageElem } from '../elems/elem';
+import { PageLayer } from '../layers/layer';
 import { PageNote } from '../notes/note';
 import { AppPage } from '../page';
 
@@ -189,11 +190,11 @@ export class PageArrow extends PageElem {
         // nextTick is necessary because the arrow may be created before the notes
 
         if (this.react.sourceNote != null) {
-          this.react.sourceNote.outgoingArrows.push(this);
+          this.react.sourceNote.outgoingArrowIds.add(this.id);
         }
 
         if (this.react.targetNote != null) {
-          this.react.targetNote.incomingArrows.push(this);
+          this.react.targetNote.incomingArrowIds.add(this.id);
         }
       });
     }
@@ -207,6 +208,16 @@ export class PageArrow extends PageElem {
     }
 
     this.react.parentLayer.react.collab.arrowIds.splice(this.react.index, 1);
+  }
+  moveToLayer(layer: PageLayer) {
+    this.page.collab.doc.transact(() => {
+      this.removeFromLayer();
+
+      this.react.regionId = layer.react.regionId;
+      this.react.parentLayerId = layer.id;
+
+      layer.react.collab.arrowIds.push(this.id);
+    });
   }
 
   isMarkActive(name: MarkName) {

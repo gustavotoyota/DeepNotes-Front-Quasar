@@ -1,5 +1,4 @@
 import type { Y } from '@syncedstore/core';
-import { pull } from 'lodash';
 import { Factory } from 'src/code/pages/static/composition-root';
 import { computed, reactive, shallowReactive } from 'vue';
 
@@ -75,8 +74,6 @@ export class PageArrows {
           continue;
         }
 
-        const arrow = this.react.map[arrowId];
-
         // Remove arrow from outgoing arrows
 
         const sourceNoteId =
@@ -86,7 +83,7 @@ export class PageArrows {
           const note = this.page.notes.fromId(sourceNoteId);
 
           if (note != null) {
-            pull(note.outgoingArrows, arrow);
+            note.outgoingArrowIds.delete(arrowId);
           }
         }
 
@@ -99,7 +96,7 @@ export class PageArrows {
           const note = this.page.notes.fromId(targetNoteId);
 
           if (note != null) {
-            pull(note.incomingArrows, arrow);
+            note.incomingArrowIds.delete(arrowId);
           }
         }
 

@@ -26,22 +26,14 @@ export class PageDropping {
     const containerWorldRect =
       this.page.rects.clientToWorld(containerClientRect);
 
-    const selectedNotes = this.page.selection.react.notes.slice();
-
-    selectedNotes.sort(
-      (a: PageNote, b: PageNote) => b.react.index - a.react.index
-    );
-
     this.page.collab.doc.transact(() => {
-      for (const selectedNote of selectedNotes) {
+      for (const selectedNote of this.page.selection.react.notes) {
         selectedNote.react.collab.pos.x -= containerWorldRect.topLeft.x;
         selectedNote.react.collab.pos.y -= containerWorldRect.topLeft.y;
-
-        selectedNote.moveToLayer(destLayer, dropIndex);
       }
-    });
 
-    this.page.activeRegion.react.id = parentNote.id;
+      this.page.selection.moveToLayer(destLayer, dropIndex);
+    });
 
     this.page.dragging.cancel();
 

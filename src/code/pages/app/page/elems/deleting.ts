@@ -20,14 +20,18 @@ export class PageDeleting {
 
       const arrowSet = new Set<PageArrow>(this.page.selection.react.arrows);
 
-      for (const note of this.page.selection.react.notes) {
-        for (const arrow of note.incomingArrows) {
+      for (const selectedNote of this.page.selection.react.notes) {
+        for (const arrow of this.page.arrows.fromIds(
+          Array.from(selectedNote.incomingArrowIds)
+        )) {
           arrowSet.add(arrow);
         }
-        for (const arrow of note.outgoingArrows) {
+        for (const arrow of this.page.arrows.fromIds(
+          Array.from(selectedNote.outgoingArrowIds)
+        )) {
           arrowSet.add(arrow);
         }
-        for (const arrow of note.react.arrows) {
+        for (const arrow of selectedNote.react.arrows) {
           arrowSet.add(arrow);
         }
       }
@@ -46,14 +50,14 @@ export class PageDeleting {
 
       // Delete notes
 
-      const notes = this.page.selection.react.notes.slice();
+      const selectedNotes = this.page.selection.react.notes.slice();
 
-      notes.sort((a, b) => b.react.index - a.react.index);
+      selectedNotes.sort((a, b) => b.react.index - a.react.index);
 
-      for (const note of notes) {
-        this.deleteNote(note);
+      for (const selectedNote of selectedNotes) {
+        this.deleteNote(selectedNote);
 
-        note.removeFromLayers();
+        selectedNote.removeFromLayers();
       }
     });
 

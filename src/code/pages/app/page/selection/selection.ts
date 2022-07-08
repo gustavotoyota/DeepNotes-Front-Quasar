@@ -4,6 +4,7 @@ import { computed, ComputedRef, reactive, UnwrapNestedRefs } from 'vue';
 
 import { PageArrow } from '../arrows/arrow';
 import { PageElem } from '../elems/elem';
+import { PageLayer } from '../layers/layer';
 import { PageNote } from '../notes/note';
 import { AppPage } from '../page';
 
@@ -121,7 +122,7 @@ export class PageSelection {
   }
 
   isMarkActive(name: MarkName) {
-    for (const elem of this.page.selection.react.elems) {
+    for (const elem of this.react.elems) {
       if (!elem.isMarkActive(name)) {
         return false;
       }
@@ -130,12 +131,12 @@ export class PageSelection {
     return true;
   }
   setMark(name: MarkName, attribs?: Record<string, any>) {
-    for (const elem of this.page.selection.react.elems) {
+    for (const elem of this.react.elems) {
       elem.setMark(name, attribs);
     }
   }
   unsetMark(name: MarkName) {
-    for (const elem of this.page.selection.react.elems) {
+    for (const elem of this.react.elems) {
       elem.unsetMark(name);
     }
   }
@@ -148,8 +149,51 @@ export class PageSelection {
   }
 
   format(chainFunc: (chain: ChainedCommands) => ChainedCommands) {
-    for (const elem of this.page.selection.react.elems) {
+    for (const elem of this.react.elems) {
       elem.format(chainFunc);
     }
+  }
+
+  moveToLayer(layer: PageLayer, insertIndex?: number) {
+    const notesSet = new Set(this.react.notes);
+    const arrowsSet = new Set<PageArrow>();
+
+    for (const note of this.react.notes) {
+      for (const arrow of this.page.arrows.fromIds(
+        Array.from(note.incomingArrowIds)
+      )) {
+        if (notesSet.has(arrow.react.sourceNote)) {
+          arrowsSet.add(arrow);
+        }
+      }
+
+      for (const arrow of this.page.arrows.fromIds(
+        Array.from(note.outgoingArrowIds)
+      )) {
+        if (notesSet.has(arrow.react.targetNote)) {
+          arrowsSet.add(arrow);
+        }
+      }
+    }
+
+    const notesArray = Array.from(notesSet);
+    const arrowsArray = Array.from(arrowsSet);
+
+    notesArray.sort((a, b) => b.react.index - a.react.index);
+    arrowsArray.sort((a, b) => b.react.index - a.react.index);
+
+    insertIndex ??= layer.react.collab.noteIds.length;
+
+    this.page.collab.doc.transact(() => {
+      for (const note of notesArray) {
+        note.moveToLayer(layer, insertIndex);
+      }
+
+      for (const arrow of arrowsArray) {
+        arrow.moveToLayer(layer);
+      }
+    });
+
+    this.page.activeRegion.react.id = layer.react.region.id;
   }
 }

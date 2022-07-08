@@ -69,6 +69,9 @@ const arrowExtensions = [
 
   Link.configure({
     openOnClick: false,
+    HTMLAttributes: {
+      draggable: false,
+    },
   }),
 ];
 
@@ -89,6 +92,9 @@ const noteExtensions = [
 
   Link.configure({
     openOnClick: false,
+    HTMLAttributes: {
+      draggable: false,
+    },
   }),
 
   Image.configure({

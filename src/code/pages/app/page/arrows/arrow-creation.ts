@@ -3,7 +3,7 @@ import { Factory } from 'src/code/pages/static/composition-root';
 import { listenPointerEvents } from 'src/code/pages/static/dom';
 import { v4 } from 'uuid';
 import { reactive } from 'vue';
-import * as Y from 'yjs';
+import { prosemirrorJSONToYXmlFragment } from 'y-prosemirror';
 
 import { ISerialArrow } from '../../serialization';
 import { PageNote } from '../notes/note';
@@ -44,6 +44,8 @@ export class PageArrowCreation {
     const arrowCollab = $pages.serialization.deserializeArrow(serialArrow);
 
     merge(this.fakeArrow.react.collab, arrowCollab);
+
+    this.fakeArrow.react.collab.label = serialArrow.label;
 
     this.fakeArrow.react.collab.sourceId = sourceNote.id;
     this.fakeArrow.react.collab.targetId = null as any;
@@ -93,7 +95,10 @@ export class PageArrowCreation {
 
     const newCollab = cloneDeep(this.fakeArrow.react.collab);
 
-    newCollab.label = new Y.XmlFragment();
+    newCollab.label = prosemirrorJSONToYXmlFragment(
+      tiptap.arrowSchema,
+      this.fakeArrow.react.collab.label
+    );
 
     // Insert arrow into document
 

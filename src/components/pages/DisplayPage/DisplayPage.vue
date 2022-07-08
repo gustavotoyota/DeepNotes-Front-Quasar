@@ -70,15 +70,7 @@
 
       <!-- Arrow creation -->
 
-      <SVGDisplay
-        :root="true"
-        v-if="
-          page.arrowCreation.react.active &&
-          page.arrowCreation.fakeArrow.react.region === page
-        "
-      >
-        <DisplayArrow :arrow="page.arrowCreation.fakeArrow" />
-      </SVGDisplay>
+      <ArrowCreation :region="page" />
 
       <!-- Note resizing ghosts -->
 
@@ -118,7 +110,7 @@ import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { onMounted, provide } from 'vue';
 
-import DisplayArrow from './DisplayArrow.vue';
+import ArrowCreation from './ArrowCreation.vue';
 import DisplayBackground from './DisplayBackground.vue';
 import DisplayBoxSelection from './DisplayBoxSelection.vue';
 import DisplayBtns from './DisplayBtns.vue';
@@ -126,7 +118,6 @@ import DisplayLayers from './DisplayLayers.vue';
 import DisplayNote from './DisplayNote/DisplayNote.vue';
 import DOMDisplay from './DOMDisplay.vue';
 import RequestAccessDialog from './RequestAccessDialog.vue';
-import SVGDisplay from './SVGDisplay.vue';
 
 const props = defineProps<{
   page: AppPage;

@@ -30,15 +30,7 @@
 
     <!-- Arrow creation -->
 
-    <SVGDisplay
-      v-if="
-        page.arrowCreation.react.active &&
-        page.arrowCreation.fakeArrow.react.region === note
-      "
-      :root="false"
-    >
-      <DisplayArrow :arrow="page.arrowCreation.fakeArrow" />
-    </SVGDisplay>
+    <ArrowCreation :region="note" />
 
     <!-- Box selection -->
 
@@ -66,10 +58,9 @@ import { AppPage } from 'src/code/pages/app/page/page';
 import { Vec2 } from 'src/code/pages/static/vec2';
 import { inject, onMounted, ref } from 'vue';
 
-import DisplayArrow from '../../../DisplayArrow.vue';
+import ArrowCreation from '../../../ArrowCreation.vue';
 import DisplayBoxSelection from '../../../DisplayBoxSelection.vue';
 import DisplayLayers from '../../../DisplayLayers.vue';
-import SVGDisplay from '../../../SVGDisplay.vue';
 
 const page = inject<AppPage>('page')!;
 const note = inject<PageNote>('note')!;

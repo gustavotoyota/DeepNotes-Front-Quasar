@@ -99,7 +99,7 @@ export class PageResizing {
       const ghost = this.factory.makeNote(
         this.page,
         note.id,
-        null,
+        null as any,
         null as any,
         -1,
         reactive(collab)

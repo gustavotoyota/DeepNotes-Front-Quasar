@@ -10,7 +10,7 @@ export enum ElemType {
 }
 
 export interface IElemReact {
-  regionId: string | null;
+  regionId: string;
   region: ComputedRef<AppPage | PageNote>;
 
   parentLayerId: string;
@@ -30,7 +30,7 @@ export class PageElem {
     readonly page: AppPage,
     readonly id: string,
     readonly type: ElemType,
-    regionId: string | null,
+    regionId: string,
     layerId: string,
     index: number
   ) {
@@ -39,7 +39,7 @@ export class PageElem {
       region: computed(() => {
         if (this.page.resizing.react.active) {
           const ghostRegion =
-            this.page.resizing.react.ghosts[this.react.regionId!];
+            this.page.resizing.react.ghosts[this.react.regionId];
 
           if (ghostRegion != null) {
             return ghostRegion;

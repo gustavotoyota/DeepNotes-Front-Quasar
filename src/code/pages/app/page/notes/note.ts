@@ -225,7 +225,7 @@ export class PageNote extends PageElem implements IPageRegion {
   constructor(
     page: AppPage,
     id: string,
-    regionId: string | null,
+    regionId: string,
     layerId: string,
     index: number,
     readonly collab?: INoteCollabOutput

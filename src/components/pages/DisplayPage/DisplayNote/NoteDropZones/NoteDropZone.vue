@@ -51,8 +51,8 @@ function onPointerOut() {
     return;
   }
 
-  page.dragging.react.dropRegionId = null;
-  page.dragging.react.dropIndex = null;
+  page.dragging.react.dropRegionId = undefined;
+  page.dragging.react.dropIndex = undefined;
 }
 
 async function onLeftPointerUp() {

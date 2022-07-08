@@ -78,7 +78,7 @@ export class PageArrow extends PageElem {
   constructor(
     page: AppPage,
     id: string,
-    regionId: string | null,
+    regionId: string,
     layerId: string,
     index: number,
     readonly collab?: IArrowCollabOutput

@@ -31,12 +31,7 @@ export class PageArrows {
     return arrows.map((arrow) => arrow.id);
   }
 
-  create(
-    arrowId: string,
-    regionId: string | null,
-    layerId: string,
-    index: number
-  ) {
+  create(arrowId: string, regionId: string, layerId: string, index: number) {
     const arrow = this.factory.makeArrow(
       this.page,
       arrowId,
@@ -49,11 +44,7 @@ export class PageArrows {
 
     this.react.map[arrow.id] = arrow;
   }
-  createAndObserveIds(
-    arrowIds: string[],
-    regionId: string | null,
-    layerId: string
-  ) {
+  createAndObserveIds(arrowIds: string[], regionId: string, layerId: string) {
     for (let index = 0; index < arrowIds.length; index++) {
       this.create(arrowIds[index], regionId, layerId, index);
     }

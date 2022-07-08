@@ -17,7 +17,7 @@ export type ILayerCollabOutput = z.output<typeof ILayerCollab>;
 export interface ILayerReact {
   collab: ComputedRef<ILayerCollabOutput>;
 
-  regionId: string | null;
+  regionId: string;
   region: ComputedRef<AppPage | PageNote>;
 
   notes: ComputedRef<PageNote[]>;
@@ -27,11 +27,7 @@ export interface ILayerReact {
 export class PageLayer {
   declare readonly react: UnwrapNestedRefs<ILayerReact>;
 
-  constructor(
-    readonly page: AppPage,
-    readonly id: string,
-    regionId: string | null
-  ) {
+  constructor(readonly page: AppPage, readonly id: string, regionId: string) {
     this.react = reactive({
       collab: computed(() => this.page.layers.react.collab[this.id]),
 

@@ -64,7 +64,7 @@ export const container = new Container({
   boxSelection: () => (page: AppPage) => new PageBoxSelection(page),
 
   layers: (factory: any) => (page: AppPage) => new PageLayers(factory, page),
-  layer: () => (page: AppPage, id: string, regionId: string | null) =>
+  layer: () => (page: AppPage, id: string, regionId: string) =>
     new PageLayer(page, id, regionId),
 
   regions: () => (page: AppPage) => new PageRegions(page),
@@ -79,7 +79,7 @@ export const container = new Container({
     (
       page: AppPage,
       id: string,
-      regionId: string | null,
+      regionId: string,
       layerId: string,
       index: number,
       collab?: INoteCollabOutput
@@ -98,7 +98,7 @@ export const container = new Container({
     (
       page: AppPage,
       id: string,
-      regionId: string | null,
+      regionId: string,
       layerId: string,
       index: number,
       collab?: IArrowCollabOutput

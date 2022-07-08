@@ -1,5 +1,6 @@
 import { nextTick } from 'vue';
 
+import { PageLayer } from '../layers/layer';
 import { AppPage } from '../page';
 import { PageNote } from './note';
 
@@ -7,12 +8,23 @@ export class PageDropping {
   constructor(readonly page: AppPage) {}
 
   async perform(parentNote: PageNote, dropIndex?: number) {
+    // Check drop-back
+
+    let destLayer: PageLayer;
+
+    if (this.page.dragging.sourceRegionId === parentNote.id) {
+      destLayer =
+        this.page.layers.fromId(this.page.dragging.sourceLayerId) ??
+        parentNote.react.activeLayer;
+    } else {
+      destLayer = parentNote.react.activeLayer;
+    }
+
     const containerClientRect = this.page.rects.fromDOM(
       parentNote.originElem.getBoundingClientRect()
     );
-    const containerWorldTopLeft = this.page.pos.clientToWorld(
-      containerClientRect.topLeft
-    );
+    const containerWorldRect =
+      this.page.rects.clientToWorld(containerClientRect);
 
     const selectedNotes = this.page.selection.react.notes.slice();
 
@@ -22,10 +34,10 @@ export class PageDropping {
 
     this.page.collab.doc.transact(() => {
       for (const selectedNote of selectedNotes) {
-        selectedNote.react.collab.pos.x -= containerWorldTopLeft.x;
-        selectedNote.react.collab.pos.y -= containerWorldTopLeft.y;
+        selectedNote.react.collab.pos.x -= containerWorldRect.topLeft.x;
+        selectedNote.react.collab.pos.y -= containerWorldRect.topLeft.y;
 
-        selectedNote.moveToLayer(parentNote.react.activeLayer, dropIndex);
+        selectedNote.moveToLayer(destLayer, dropIndex);
       }
     });
 

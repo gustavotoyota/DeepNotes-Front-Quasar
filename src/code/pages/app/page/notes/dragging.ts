@@ -12,14 +12,17 @@ export interface IDraggingReact {
   startPos: Vec2;
   currentPos: Vec2;
 
-  dropRegionId?: string | null;
-  dropIndex?: number | null;
+  dropRegionId?: string;
+  dropIndex?: number;
 }
 
 export class PageDragging {
   static readonly MIN_DISTANCE = 5;
 
   react: UnwrapRef<IDraggingReact>;
+
+  sourceRegionId!: string;
+  sourceLayerId!: string;
 
   constructor(readonly page: AppPage) {
     this.react = refProp<IDraggingReact>(this, 'react', {
@@ -54,6 +57,9 @@ export class PageDragging {
       startPos: this.page.pos.eventToClient(event),
       currentPos: this.page.pos.eventToClient(event),
     };
+
+    this.sourceRegionId = this.page.activeElem.react.elem.react.regionId;
+    this.sourceLayerId = this.page.activeElem.react.elem.react.parentLayerId;
 
     listenPointerEvents(event, {
       move: this._update,

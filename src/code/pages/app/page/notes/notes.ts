@@ -27,7 +27,7 @@ export class PageNotes {
 
   createAndObserveChildren(
     noteId: string,
-    regionId: string | null,
+    regionId: string,
     layerId: string,
     index: number
   ): void {
@@ -58,11 +58,7 @@ export class PageNotes {
       note.react.initialized = false;
     }
   }
-  createAndObserveIds(
-    noteIds: string[],
-    regionId: string | null,
-    layerId: string
-  ) {
+  createAndObserveIds(noteIds: string[], regionId: string, layerId: string) {
     for (let index = 0; index < noteIds.length; index++) {
       this.createAndObserveChildren(noteIds[index], regionId, layerId, index);
     }

@@ -21,7 +21,7 @@ export class PageArrowCreation {
     this.fakeArrow = factory.makeArrow(
       this.page,
       null as any,
-      null,
+      null as any,
       null as any,
       -1,
       reactive(

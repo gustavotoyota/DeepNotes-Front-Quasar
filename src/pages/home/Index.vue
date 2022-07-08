@@ -124,17 +124,21 @@
         style="display: flex; flex-direction: column; justify-content: center"
       >
         <div class="main-text">
-          <div class="big-text">
+          <div class="big-main-text">
             The ultimate<br />
             note-taking app
           </div>
 
           <div style="height: 12px"></div>
 
-          <div class="small-text">
-            Organize your notes however you like. Cluster, group, drag, expand,
-            collapse, resize, link, colorize. Super simple, but extremely
-            powerful.
+          <div class="d-block d-sm-none small-main-text">
+            Organize your notes however you like. Move, resize, expand,
+            collapse, link, colorize. Super simple, but extremely powerful.
+          </div>
+          <div class="d-none d-sm-block small-main-text">
+            Organize your notes however you like.<br />
+            Move, resize, expand, collapse, link, colorize.<br />
+            Super simple, but extremely powerful.
           </div>
 
           <template v-if="!auth.loggedIn">
@@ -242,17 +246,22 @@
         style="display: flex; flex-direction: column; justify-content: center"
       >
         <div class="secondary-text">
-          <div class="big-text">
+          <div class="big-secondary-text">
             Graph-based<br />
             page navigation
           </div>
 
           <div style="height: 12px"></div>
 
-          <div class="small-text">
-            Your pages aren't tied to a pre-determined index structure. You
-            navigate by linking your pages through your notes. You create your
-            own index, in your own style.
+          <div class="d-block d-xl-none small-secondary-text">
+            Your pages aren't tied to a pre-determined index structure. Navigate
+            by linking your pages through your notes. You create your own index,
+            in your own style.
+          </div>
+          <div class="d-none d-xl-block small-secondary-text">
+            Your pages aren't tied to a pre-determined index structure. Navigate
+            by linking your pages through your notes.<br />
+            You create your own index, in your own style.
           </div>
         </div>
       </div>
@@ -307,18 +316,7 @@ body {
     text-align: left;
   }
 }
-.secondary-text {
-  @extend .main-text;
-
-  @media (min-width: $breakpoint-md-min) {
-    margin-left: 40px;
-    margin-top: -16px;
-  }
-  @media (min-width: $breakpoint-lg-min) {
-    margin-top: -30px;
-  }
-}
-.big-text {
+.big-main-text {
   font-weight: bold;
   font-size: 42px;
 
@@ -335,7 +333,7 @@ body {
     font-size: 56px;
   }
 }
-.small-text {
+.small-main-text {
   margin: auto;
 
   font-size: 16px;
@@ -345,6 +343,29 @@ body {
     margin: 0;
     max-width: 300px;
   }
+  @media (min-width: $breakpoint-lg-min) {
+    margin: 0;
+    max-width: 360px;
+  }
+}
+
+.secondary-text {
+  @extend .main-text;
+
+  @media (min-width: $breakpoint-md-min) {
+    margin-left: 40px;
+    margin-top: -16px;
+  }
+  @media (min-width: $breakpoint-lg-min) {
+    margin-top: -30px;
+  }
+}
+.big-secondary-text {
+  @extend .big-main-text;
+}
+.small-secondary-text {
+  @extend .small-main-text;
+
   @media (min-width: $breakpoint-lg-min) {
     margin: 0;
     max-width: 410px;

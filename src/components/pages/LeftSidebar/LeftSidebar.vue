@@ -9,7 +9,7 @@
     no-swipe-backdrop
     behavior="desktop"
   >
-    <div style="flex: 1; display: flex; flex-direction: column">
+    <div style="flex: 1; display: flex; flex-direction: column; height: 0">
       <q-toolbar style="width: 299px">
         <q-avatar
           icon="mdi-animation"
@@ -24,7 +24,7 @@
         :class="{
           mini: ui.leftSidebarMini,
         }"
-        style="flex: 1"
+        style="flex: 1; height: 0; overflow-y: auto"
       >
         <MiniSidebarPage
           v-for="pathPageId in $pages.react.pathPageIds"
@@ -37,7 +37,7 @@
 
     <q-separator />
 
-    <div style="flex: 1; display: flex; flex-direction: column">
+    <div style="flex: 1; display: flex; flex-direction: column; height: 0">
       <q-toolbar style="width: 299px">
         <q-avatar
           icon="mdi-layers-triple"
@@ -57,8 +57,8 @@
       </q-toolbar>
 
       <q-list
-        style="flex: 1"
         v-if="region.react.collab.layerIds != null"
+        style="flex: 1; height: 0; overflow-y: auto"
       >
         <template
           v-for="(layerId, layerIndex) in region.react.collab.layerIds

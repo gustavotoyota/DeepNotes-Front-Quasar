@@ -1,11 +1,13 @@
 export function hasVertScrollbar(elem: HTMLElement) {
   return (
-    elem.scrollHeight > elem.clientHeight && elem.offsetWidth > elem.clientWidth
+    elem.scrollHeight > (elem.clientHeight || elem.offsetHeight) &&
+    elem.offsetWidth > (elem.clientWidth || elem.offsetWidth)
   );
 }
 export function hasHorizScrollbar(elem: HTMLElement) {
   return (
-    elem.scrollWidth > elem.clientWidth && elem.offsetHeight > elem.clientHeight
+    elem.scrollWidth > (elem.clientWidth || elem.offsetWidth) &&
+    elem.offsetHeight > (elem.clientHeight || elem.offsetHeight)
   );
 }
 

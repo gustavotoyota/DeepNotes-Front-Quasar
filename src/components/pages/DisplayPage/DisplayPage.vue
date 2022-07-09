@@ -55,44 +55,7 @@
       </template>
     </template>
 
-    <template v-if="page.react.status === 'success'">
-      <div
-        v-if="page.react.notes.length === 0"
-        style="color: #e0e0e0; text-align: center"
-      >
-        <div>Double-click anywhere</div>
-        <div>to create a note.</div>
-      </div>
-
-      <DisplayBackground />
-
-      <DisplayLayers :region="page" />
-
-      <!-- Arrow creation -->
-
-      <ArrowCreation :region="page" />
-
-      <!-- Note resizing ghosts -->
-
-      <DOMDisplay
-        v-if="page.resizing.react.active"
-        :root="true"
-      >
-        <DisplayNote
-          v-for="ghost in page.resizing.react.ghosts"
-          :key="(ghost as PageNote).id"
-          :region="page"
-          :note="(ghost as PageNote)"
-          style="opacity: 0.7"
-        />
-      </DOMDisplay>
-
-      <!-- Box selection -->
-
-      <DisplayBoxSelection :region="page" />
-
-      <DisplayBtns />
-    </template>
+    <DisplayContent v-if="page.react.status === 'success'" />
   </div>
 </template>
 
@@ -103,20 +66,13 @@
 /* eslint-disable vue/no-mutating-props */
 
 import { Notify } from 'quasar';
-import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { isMouseOverScrollbar } from 'src/code/pages/static/dom';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { onMounted, provide } from 'vue';
 
-import ArrowCreation from './ArrowCreation.vue';
-import DisplayBackground from './DisplayBackground.vue';
-import DisplayBoxSelection from './DisplayBoxSelection.vue';
-import DisplayBtns from './DisplayBtns.vue';
-import DisplayLayers from './DisplayLayers.vue';
-import DisplayNote from './DisplayNote/DisplayNote.vue';
-import DOMDisplay from './DOMDisplay.vue';
+import DisplayContent from './DisplayContent.vue';
 import RequestAccessDialog from './RequestAccessDialog.vue';
 
 const props = defineProps<{
@@ -203,7 +159,10 @@ async function rejectInvitation() {
 }
 </script>
 
-<style scoped>
+<style
+  lang="scss"
+  scoped
+>
 .display-page {
   position: absolute;
 
@@ -217,15 +176,17 @@ async function rejectInvitation() {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
 
-.display-page :deep(a) {
-  text-decoration: none;
+  isolation: isolate;
 
-  color: unset;
-}
+  :deep(a) {
+    text-decoration: none;
 
-.display-page :deep(*) {
-  touch-action: none;
+    color: unset;
+  }
+
+  :deep(*) {
+    touch-action: none;
+  }
 }
 </style>

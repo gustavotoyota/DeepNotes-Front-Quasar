@@ -73,6 +73,8 @@ export class PageEditing {
       }
     }
 
+    this.page.selection.set(elem);
+
     await nextTick();
     await watchUntilTrue(() => elem.react.loaded);
 

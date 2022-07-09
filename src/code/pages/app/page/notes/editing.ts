@@ -91,6 +91,8 @@ export class PageEditing {
     }
 
     for (const editor of this.react.elem.react.editors) {
+      editor.commands.blur();
+
       editor.setEditable(false);
     }
 

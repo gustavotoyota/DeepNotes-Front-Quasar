@@ -1,12 +1,14 @@
 <template>
   <editor-content
     :editor="editor"
+    class="note-editor"
     :class="{
       'padding-fix': paddingFix,
       'no-wrap': !note.react.collab[props.section].wrap,
       'can-overflow':
         note.react[section].heightCSS.endsWith('px') ||
         (note.react.width.pinned && !note.react.collab[section].wrap),
+      editing: note.react.editing,
     }"
   />
 </template>
@@ -128,223 +130,228 @@ const editor = tiptap.useEditor({
   scoped
   lang="scss"
 >
-div {
-  height: 100%;
-}
-
 $note-padding: 9px;
 
-div :deep(.ProseMirror) {
-  outline: none;
-
-  padding: $note-padding;
-  padding-bottom: $note-padding - 1px;
-
-  width: max-content;
-  min-width: MAX(100%, 1px + $note-padding * 2);
-  max-width: 100%;
-
+.note-editor {
   height: 100%;
 
-  font-size: 13px;
+  :deep(.ProseMirror) {
+    outline: none;
 
-  touch-action: pan-x pan-y !important;
+    padding: $note-padding;
+    padding-bottom: $note-padding - 1px;
 
-  &[contenteditable='false'] img {
-    -webkit-user-drag: none;
-  }
+    width: max-content;
+    min-width: MAX(100%, 1px + $note-padding * 2);
+    max-width: 100%;
 
-  p {
-    margin-bottom: 0;
-  }
+    height: 100%;
 
-  table {
-    margin: 7px 0;
+    font-size: 13px;
 
-    border-collapse: collapse;
+    touch-action: pan-x pan-y !important;
 
-    td,
-    th {
-      border: 1px solid #ccc;
-
-      padding: 2px 5px;
-
-      vertical-align: top;
-
-      position: relative;
-    }
-    th {
-      font-weight: unset;
-      text-align: unset;
+    &[contenteditable='false'] img {
+      -webkit-user-drag: none;
     }
 
-    .selectedCell:after {
-      background: rgba(200, 200, 255, 0.4);
-      content: '';
-      left: 0;
-      right: 0;
-      top: 0;
-      bottom: 0;
-      pointer-events: none;
-      position: absolute;
-      z-index: 2;
+    p {
+      margin-bottom: 0;
     }
 
-    .column-resize-handle {
-      background-color: #adf;
-      bottom: -2px;
-      position: absolute;
-      right: -2px;
-      pointer-events: none;
-      top: 0;
-      width: 4px;
+    table {
+      margin: 7px 0;
+
+      border-collapse: collapse;
+
+      td,
+      th {
+        border: 1px solid #ccc;
+
+        padding: 2px 5px;
+
+        vertical-align: top;
+
+        position: relative;
+      }
+      th {
+        font-weight: unset;
+        text-align: unset;
+      }
+
+      .selectedCell:after {
+        background: rgba(200, 200, 255, 0.4);
+        content: '';
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        pointer-events: none;
+        position: absolute;
+        z-index: 2;
+      }
+
+      .column-resize-handle {
+        background-color: #adf;
+        bottom: -2px;
+        position: absolute;
+        right: -2px;
+        pointer-events: none;
+        top: 0;
+        width: 4px;
+      }
     }
-  }
 
-  &.resize-cursor {
-    cursor: ew-resize;
-    cursor: col-resize;
-  }
-
-  ul,
-  ol {
-    margin: 0;
-  }
-  ul:not([data-type]) {
-    padding-inline-start: 21px;
-
-    > li > * {
-      margin-left: -3px;
+    &.resize-cursor {
+      cursor: ew-resize;
+      cursor: col-resize;
     }
-  }
-  ol {
-    padding-inline-start: 18px;
-  }
 
-  ul[data-type='taskList'] {
-    padding-inline-start: 22px;
+    ul,
+    ol {
+      margin: 0;
+    }
+    ul:not([data-type]) {
+      padding-inline-start: 21px;
 
-    padding: 0;
+      > li > * {
+        margin-left: -3px;
+      }
+    }
+    ol {
+      padding-inline-start: 18px;
+    }
 
-    li {
-      display: flex;
+    ul[data-type='taskList'] {
+      padding-inline-start: 22px;
 
-      > label {
-        flex: 0 0 auto;
-        margin-right: 5px;
-        user-select: none;
+      padding: 0;
 
-        > input {
-          position: relative;
-          top: 2px;
+      li {
+        display: flex;
+
+        > label {
+          flex: 0 0 auto;
+          margin-right: 5px;
+          user-select: none;
+
+          > input {
+            position: relative;
+            top: 2px;
+          }
+        }
+
+        > div {
+          flex: 1 1 auto;
         }
       }
+    }
 
-      > div {
-        flex: 1 1 auto;
-      }
+    code:not(pre > code) {
+      border-radius: 0.3em;
+
+      box-decoration-break: clone;
+
+      padding: 0.25em;
+
+      color: #fff;
+
+      background: #181818;
+    }
+
+    pre {
+      margin: 5px 0;
+      border-radius: 0.4rem;
+      padding: 0.4rem 0.5rem;
+
+      background: #181818;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-weight: 700;
+
+      line-height: unset;
+
+      margin-block-start: 0;
+      margin-block-end: 0;
+
+      letter-spacing: unset;
+    }
+    h1 {
+      font-size: 2em;
+    }
+    h2 {
+      font-size: 1.5em;
+    }
+    h3 {
+      font-size: 1.17em;
+    }
+
+    hr {
+      margin: 9px 0;
+
+      border: none;
+      height: 1px;
+      background-color: rgba(255, 255, 255, 0.35);
+    }
+
+    a {
+      color: #81d4fa !important;
+    }
+
+    blockquote {
+      margin: 4px 0;
+
+      border-left: 5px solid rgba(#fff, 0.5);
+
+      padding-left: 1.3rem;
+    }
+
+    .collaboration-cursor__caret {
+      position: relative;
+
+      border-left: 1px solid #ffa500;
+      border-right: 1px solid #ffa500;
+
+      margin-left: -1px;
+      margin-right: -1px;
+
+      pointer-events: none;
+    }
+    .collaboration-cursor__label {
+      position: absolute;
+      white-space: nowrap;
+
+      border-radius: 3px;
+      border-top-left-radius: 0px;
+
+      padding: 0px 3px;
+
+      left: -1px;
+      bottom: 0px;
+
+      transform: translateY(100%);
+
+      font-size: 12px;
+
+      z-index: 2147483647;
     }
   }
 
-  code:not(pre > code) {
-    border-radius: 0.3em;
-
-    box-decoration-break: clone;
-
-    padding: 0.25em;
-
-    color: #fff;
-
-    background: #181818;
+  &.padding-fix :deep(.ProseMirror) {
+    padding-right: 0;
   }
-
-  pre {
-    margin: 5px 0;
-    border-radius: 0.4rem;
-    padding: 0.4rem 0.5rem;
-
-    background: #181818;
-  }
-
-  h1,
-  h2,
-  h3 {
-    font-weight: 700;
-
-    line-height: unset;
-
-    margin-block-start: 0;
-    margin-block-end: 0;
-
-    letter-spacing: unset;
-  }
-  h1 {
-    font-size: 2em;
-  }
-  h2 {
-    font-size: 1.5em;
-  }
-  h3 {
-    font-size: 1.17em;
-  }
-
-  hr {
-    margin: 9px 0;
-
-    border: none;
-    height: 1px;
-    background-color: rgba(255, 255, 255, 0.35);
-  }
-
-  a {
-    color: #81d4fa !important;
-  }
-
-  blockquote {
-    margin: 4px 0;
-
-    border-left: 5px solid rgba(#fff, 0.5);
-
-    padding-left: 1.3rem;
-  }
-
-  .collaboration-cursor__caret {
-    position: relative;
-
-    border-left: 1px solid #ffa500;
-    border-right: 1px solid #ffa500;
-
-    margin-left: -1px;
-    margin-right: -1px;
-
-    pointer-events: none;
-  }
-  .collaboration-cursor__label {
-    position: absolute;
+  &.no-wrap :deep(.ProseMirror) {
     white-space: nowrap;
-
-    border-radius: 3px;
-    border-top-left-radius: 0px;
-
-    padding: 0px 3px;
-
-    left: -1px;
-    bottom: 0px;
-
-    transform: translateY(100%);
-
-    font-size: 12px;
-
-    z-index: 2147483647;
   }
-}
-div.padding-fix :deep(.ProseMirror) {
-  padding-right: 0;
-}
-div.no-wrap :deep(.ProseMirror) {
-  white-space: nowrap;
-}
-div.can-overflow :deep(.ProseMirror) {
-  overflow: auto;
+  &.can-overflow :deep(.ProseMirror) {
+    overflow: auto;
+  }
+
+  &.editing :deep(*) {
+    user-select: auto;
+  }
 }
 </style>

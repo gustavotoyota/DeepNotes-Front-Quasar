@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "firefox",
+      "type": "pwa-chrome",
       "request": "launch",
       "name": "Launch Chrome against localhost",
       "url": "http://192.168.1.4:60379",

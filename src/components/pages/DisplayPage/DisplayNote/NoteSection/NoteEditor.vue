@@ -154,6 +154,9 @@ $note-padding: 9px;
     &[contenteditable='false'] img {
       -webkit-user-drag: none;
     }
+    &[contenteditable='false'] hr {
+      -webkit-user-drag: none;
+    }
 
     p {
       margin-bottom: 0;

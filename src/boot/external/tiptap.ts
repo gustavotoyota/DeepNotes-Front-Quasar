@@ -2,6 +2,7 @@ import { Y } from '@syncedstore/core';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import Collaboration from '@tiptap/extension-collaboration';
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
+import HorizontalRule from '@tiptap/extension-horizontal-rule';
 import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import Subscript from '@tiptap/extension-subscript';
@@ -79,6 +80,16 @@ const noteExtensions = [
   StarterKit.configure({
     history: false,
     codeBlock: false,
+
+    horizontalRule: false,
+  }),
+
+  HorizontalRule.extend({
+    draggable: false,
+  }).configure({
+    HTMLAttributes: {
+      draggable: false,
+    },
   }),
 
   Underline,
@@ -97,9 +108,14 @@ const noteExtensions = [
     },
   }),
 
-  Image.configure({
+  Image.extend({
+    draggable: false,
+  }).configure({
     inline: true,
     allowBase64: true,
+    HTMLAttributes: {
+      draggable: false,
+    },
   }),
 
   TaskList,

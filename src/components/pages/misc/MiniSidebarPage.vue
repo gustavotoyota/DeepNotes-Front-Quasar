@@ -15,7 +15,7 @@
     </q-item-section>
 
     <q-tooltip
-      v-if="ui.leftSidebarMini"
+      v-if="!ui.leftSidebarExpanded"
       anchor="center right"
       self="center left"
       max-width="200px"

@@ -1,5 +1,5 @@
 <template>
-  <q-list v-if="ui.rightSidebarMini">
+  <q-list v-if="!ui.rightSidebarExpanded">
     <MiniSidebarBtn
       tooltip="Head"
       icon="mdi-page-layout-header"

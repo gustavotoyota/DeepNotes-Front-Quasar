@@ -44,6 +44,7 @@ import LeftSidebar from 'src/components/pages/LeftSidebar/LeftSidebar.vue';
 import MainToolbar from 'src/components/pages/MainToolbar/MainToolbar.vue';
 import RightSidebar from 'src/components/pages/RightSidebar/RightSidebar.vue';
 import { useApp } from 'src/stores/app';
+import { useUI } from 'src/stores/pages/ui';
 import {
   ComputedRef,
   getCurrentInstance,
@@ -58,6 +59,7 @@ import TableContextMenu from '../components/pages/TableContextMenu.vue';
 const app = useApp();
 const route = useRoute();
 const router = useRouter();
+const ui = useUI();
 
 const mounted = ref(false);
 
@@ -393,6 +395,33 @@ function onContextMenu(event: MouseEvent) {
 
 onBeforeUnmount(() => {
   document.removeEventListener('contextmenu', onContextMenu);
+});
+
+// Resize
+
+onMounted(() => {
+  onResize();
+
+  window.addEventListener('resize', onResize);
+});
+
+function onResize() {
+  ui.leftSidebarVisible = window.innerWidth >= 576;
+  ui.rightSidebarVisible = window.innerWidth >= 576;
+
+  if (
+    window.innerWidth < 992 &&
+    ui.leftSidebarExpanded &&
+    ui.rightSidebarExpanded
+  ) {
+    ui.rightSidebarExpanded = false;
+  }
+
+  ui.width = window.innerWidth;
+}
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', onResize);
 });
 </script>
 

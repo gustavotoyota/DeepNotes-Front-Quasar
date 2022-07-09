@@ -1,5 +1,8 @@
 <template>
-  <q-header elevated>
+  <q-header
+    elevated
+    class="d-none d-md-block"
+  >
     <q-toolbar
       class="bg-grey-10"
       style="padding: 0; justify-content: center; overflow: hidden"
@@ -17,7 +20,9 @@
       >
         <q-icon
           style="position: relative; left: -2px"
-          :name="ui.leftSidebarMini ? 'mdi-chevron-right' : 'mdi-chevron-left'"
+          :name="
+            ui.leftSidebarExpanded ? 'mdi-chevron-left' : 'mdi-chevron-right'
+          "
         />
       </q-btn>
 
@@ -102,108 +107,381 @@
           />
 
           <ToolbarBtn
-            tooltip="Bold"
-            icon="mdi-format-bold"
-            icon-size="25px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="page.selection.toggleMark('bold')"
-          />
-          <ToolbarBtn
-            tooltip="Italic"
-            icon="mdi-format-italic"
-            icon-size="25px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="page.selection.toggleMark('italic')"
-          />
-          <ToolbarBtn
-            tooltip="Strike"
-            icon="mdi-format-strikethrough"
-            icon-size="25px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="page.selection.toggleMark('strike')"
-          />
-          <ToolbarBtn
-            tooltip="Underline"
-            icon="mdi-format-underline"
-            icon-size="25px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="page.selection.toggleMark('underline')"
-          />
-
-          <q-separator
-            vertical
-            style="margin: 6px 7px"
-          />
-
-          <ToolbarBtn
-            tooltip="Align left"
-            icon="mdi-format-align-left"
-            icon-size="21px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="
-              page.selection.format((chain) => chain.setTextAlign('left'))
-            "
-          />
-          <ToolbarBtn
-            tooltip="Align center"
-            icon="mdi-format-align-center"
-            icon-size="21px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="
-              page.selection.format((chain) => chain.setTextAlign('center'))
-            "
-          />
-          <ToolbarBtn
-            tooltip="Align right"
-            icon="mdi-format-align-right"
-            icon-size="21px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="
-              page.selection.format((chain) => chain.setTextAlign('right'))
-            "
-          />
-          <ToolbarBtn
-            tooltip="Justify"
-            icon="mdi-format-align-justify"
-            icon-size="21px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="
-              page.selection.format((chain) => chain.setTextAlign('justify'))
-            "
-          />
-
-          <q-separator
-            vertical
-            style="margin: 6px 7px"
-          />
-
-          <ToolbarBtn
-            tooltip="Header 1"
-            icon="mdi-format-header-1"
+            tooltip="Formatting"
+            icon="mdi-format-color-text"
             icon-size="24px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="
-              page.selection.format((chain) => chain.setHeading({ level: 1 }))
-            "
-          />
-          <ToolbarBtn
-            tooltip="Header 2"
-            icon="mdi-format-header-2"
-            icon-size="24px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="
-              page.selection.format((chain) => chain.setHeading({ level: 2 }))
-            "
-          />
-          <ToolbarBtn
-            tooltip="Header 3"
-            icon="mdi-format-header-3"
-            icon-size="24px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="
-              page.selection.format((chain) => chain.setHeading({ level: 3 }))
-            "
-          />
+            class="d-flex d-xl-none"
+          >
+            <q-menu
+              style="padding: 0px 4px"
+              :offset="[0, 4]"
+            >
+              <div>
+                <ToolbarBtn
+                  tooltip="Bold"
+                  icon="mdi-format-bold"
+                  icon-size="25px"
+                  :disable="
+                    page.react.readonly || !page.activeElem.react.exists
+                  "
+                  @click="page.selection.toggleMark('bold')"
+                />
+                <ToolbarBtn
+                  tooltip="Italic"
+                  icon="mdi-format-italic"
+                  icon-size="25px"
+                  :disable="
+                    page.react.readonly || !page.activeElem.react.exists
+                  "
+                  @click="page.selection.toggleMark('italic')"
+                />
+                <ToolbarBtn
+                  tooltip="Strike"
+                  icon="mdi-format-strikethrough"
+                  icon-size="25px"
+                  :disable="
+                    page.react.readonly || !page.activeElem.react.exists
+                  "
+                  @click="page.selection.toggleMark('strike')"
+                />
+                <ToolbarBtn
+                  tooltip="Underline"
+                  icon="mdi-format-underline"
+                  icon-size="25px"
+                  :disable="
+                    page.react.readonly || !page.activeElem.react.exists
+                  "
+                  @click="page.selection.toggleMark('underline')"
+                />
+              </div>
+
+              <div>
+                <ToolbarBtn
+                  tooltip="Align left"
+                  icon="mdi-format-align-left"
+                  icon-size="21px"
+                  :disable="
+                    page.react.readonly || !page.activeElem.react.exists
+                  "
+                  @click="
+                    page.selection.format((chain) => chain.setTextAlign('left'))
+                  "
+                />
+                <ToolbarBtn
+                  tooltip="Align center"
+                  icon="mdi-format-align-center"
+                  icon-size="21px"
+                  :disable="
+                    page.react.readonly || !page.activeElem.react.exists
+                  "
+                  @click="
+                    page.selection.format((chain) =>
+                      chain.setTextAlign('center')
+                    )
+                  "
+                />
+                <ToolbarBtn
+                  tooltip="Align right"
+                  icon="mdi-format-align-right"
+                  icon-size="21px"
+                  :disable="
+                    page.react.readonly || !page.activeElem.react.exists
+                  "
+                  @click="
+                    page.selection.format((chain) =>
+                      chain.setTextAlign('right')
+                    )
+                  "
+                />
+                <ToolbarBtn
+                  tooltip="Justify"
+                  icon="mdi-format-align-justify"
+                  icon-size="21px"
+                  :disable="
+                    page.react.readonly || !page.activeElem.react.exists
+                  "
+                  @click="
+                    page.selection.format((chain) =>
+                      chain.setTextAlign('justify')
+                    )
+                  "
+                />
+              </div>
+
+              <div style="display: flex">
+                <ToolbarBtn
+                  tooltip="Subscript"
+                  icon="mdi-format-subscript"
+                  icon-size="23px"
+                  :disable="
+                    page.react.readonly || !page.activeElem.react.exists
+                  "
+                  @click="page.selection.toggleMark('subscript')"
+                />
+                <ToolbarBtn
+                  tooltip="Superscript"
+                  icon="mdi-format-superscript"
+                  icon-size="23px"
+                  :disable="
+                    page.react.readonly || !page.activeElem.react.exists
+                  "
+                  @click="page.selection.toggleMark('superscript')"
+                />
+                <ToolbarBtn
+                  tooltip="Link"
+                  icon="mdi-link"
+                  icon-size="24px"
+                  :disable="
+                    page.react.readonly || !page.activeElem.react.exists
+                  "
+                  @click="
+                    Dialog.create({
+                      title: 'Insert link',
+                      message: 'URL:',
+                      prompt: {
+                        model: '',
+                      },
+                      style: {
+                        width: '300px',
+                      },
+                      cancel: true,
+                    }).onOk((url) => {
+                      page.selection.setMark('link', { href: url });
+                    })
+                  "
+                />
+                <ToolbarBtn
+                  tooltip="Remove link"
+                  icon="mdi-link-off"
+                  icon-size="24px"
+                  :disable="
+                    page.react.readonly || !page.activeElem.react.exists
+                  "
+                  @click="page.selection.unsetMark('link')"
+                />
+              </div>
+
+              <div>
+                <ToolbarBtn
+                  tooltip="Header 1"
+                  icon="mdi-format-header-1"
+                  icon-size="24px"
+                  :disable="
+                    page.react.readonly || !page.activeElem.react.exists
+                  "
+                  @click="
+                    page.selection.format((chain) =>
+                      chain.setHeading({ level: 1 })
+                    )
+                  "
+                />
+                <ToolbarBtn
+                  tooltip="Header 2"
+                  icon="mdi-format-header-2"
+                  icon-size="24px"
+                  :disable="
+                    page.react.readonly || !page.activeElem.react.exists
+                  "
+                  @click="
+                    page.selection.format((chain) =>
+                      chain.setHeading({ level: 2 })
+                    )
+                  "
+                />
+                <ToolbarBtn
+                  tooltip="Header 3"
+                  icon="mdi-format-header-3"
+                  icon-size="24px"
+                  :disable="
+                    page.react.readonly || !page.activeElem.react.exists
+                  "
+                  @click="
+                    page.selection.format((chain) =>
+                      chain.setHeading({ level: 3 })
+                    )
+                  "
+                />
+                <ToolbarBtn
+                  tooltip="Clear formatting"
+                  icon="mdi-format-clear"
+                  icon-size="24px"
+                  :disable="
+                    page.react.readonly || !page.activeElem.react.exists
+                  "
+                  @click="
+                    page.selection.format((chain) =>
+                      chain.clearNodes().unsetAllMarks()
+                    )
+                  "
+                />
+              </div>
+            </q-menu>
+          </ToolbarBtn>
+
+          <template v-if="ui.width >= 1200">
+            <ToolbarBtn
+              tooltip="Bold"
+              icon="mdi-format-bold"
+              icon-size="25px"
+              :disable="page.react.readonly || !page.activeElem.react.exists"
+              @click="page.selection.toggleMark('bold')"
+            />
+            <ToolbarBtn
+              tooltip="Italic"
+              icon="mdi-format-italic"
+              icon-size="25px"
+              :disable="page.react.readonly || !page.activeElem.react.exists"
+              @click="page.selection.toggleMark('italic')"
+            />
+            <ToolbarBtn
+              tooltip="Strike"
+              icon="mdi-format-strikethrough"
+              icon-size="25px"
+              :disable="page.react.readonly || !page.activeElem.react.exists"
+              @click="page.selection.toggleMark('strike')"
+            />
+            <ToolbarBtn
+              tooltip="Underline"
+              icon="mdi-format-underline"
+              icon-size="25px"
+              :disable="page.react.readonly || !page.activeElem.react.exists"
+              @click="page.selection.toggleMark('underline')"
+            />
+
+            <q-separator
+              vertical
+              style="margin: 6px 7px"
+            />
+
+            <ToolbarBtn
+              tooltip="Align left"
+              icon="mdi-format-align-left"
+              icon-size="21px"
+              :disable="page.react.readonly || !page.activeElem.react.exists"
+              @click="
+                page.selection.format((chain) => chain.setTextAlign('left'))
+              "
+            />
+            <ToolbarBtn
+              tooltip="Align center"
+              icon="mdi-format-align-center"
+              icon-size="21px"
+              :disable="page.react.readonly || !page.activeElem.react.exists"
+              @click="
+                page.selection.format((chain) => chain.setTextAlign('center'))
+              "
+            />
+            <ToolbarBtn
+              tooltip="Align right"
+              icon="mdi-format-align-right"
+              icon-size="21px"
+              :disable="page.react.readonly || !page.activeElem.react.exists"
+              @click="
+                page.selection.format((chain) => chain.setTextAlign('right'))
+              "
+            />
+            <ToolbarBtn
+              tooltip="Justify"
+              icon="mdi-format-align-justify"
+              icon-size="21px"
+              :disable="page.react.readonly || !page.activeElem.react.exists"
+              @click="
+                page.selection.format((chain) => chain.setTextAlign('justify'))
+              "
+            />
+
+            <q-separator
+              vertical
+              style="margin: 6px 7px"
+            />
+
+            <ToolbarBtn
+              tooltip="Subscript"
+              icon="mdi-format-subscript"
+              icon-size="23px"
+              :disable="page.react.readonly || !page.activeElem.react.exists"
+              @click="page.selection.toggleMark('subscript')"
+            />
+            <ToolbarBtn
+              tooltip="Superscript"
+              icon="mdi-format-superscript"
+              icon-size="23px"
+              :disable="page.react.readonly || !page.activeElem.react.exists"
+              @click="page.selection.toggleMark('superscript')"
+            />
+            <ToolbarBtn
+              tooltip="Link"
+              icon="mdi-link"
+              icon-size="24px"
+              :disable="page.react.readonly || !page.activeElem.react.exists"
+              @click="
+                Dialog.create({
+                  title: 'Insert link',
+                  message: 'URL:',
+                  prompt: {
+                    model: '',
+                  },
+                  style: {
+                    width: '300px',
+                  },
+                  cancel: true,
+                }).onOk((url) => {
+                  page.selection.setMark('link', { href: url });
+                })
+              "
+            />
+            <ToolbarBtn
+              tooltip="Remove link"
+              icon="mdi-link-off"
+              icon-size="24px"
+              :disable="page.react.readonly || !page.activeElem.react.exists"
+              @click="page.selection.unsetMark('link')"
+            />
+
+            <q-separator
+              vertical
+              style="margin: 6px 7px"
+            />
+
+            <ToolbarBtn
+              tooltip="Header 1"
+              icon="mdi-format-header-1"
+              icon-size="24px"
+              :disable="page.react.readonly || !page.activeElem.react.exists"
+              @click="
+                page.selection.format((chain) => chain.setHeading({ level: 1 }))
+              "
+            />
+            <ToolbarBtn
+              tooltip="Header 2"
+              icon="mdi-format-header-2"
+              icon-size="24px"
+              :disable="page.react.readonly || !page.activeElem.react.exists"
+              @click="
+                page.selection.format((chain) => chain.setHeading({ level: 2 }))
+              "
+            />
+            <ToolbarBtn
+              tooltip="Header 3"
+              icon="mdi-format-header-3"
+              icon-size="24px"
+              :disable="page.react.readonly || !page.activeElem.react.exists"
+              @click="
+                page.selection.format((chain) => chain.setHeading({ level: 3 }))
+              "
+            />
+            <ToolbarBtn
+              tooltip="Clear formatting"
+              icon="mdi-format-clear"
+              icon-size="24px"
+              :disable="page.react.readonly || !page.activeElem.react.exists"
+              @click="
+                page.selection.format((chain) =>
+                  chain.clearNodes().unsetAllMarks()
+                )
+              "
+            />
+          </template>
 
           <q-separator
             vertical
@@ -211,217 +489,186 @@
           />
 
           <ToolbarBtn
-            tooltip="Subscript"
-            icon="mdi-format-subscript"
-            icon-size="23px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="page.selection.toggleMark('subscript')"
-          />
-          <ToolbarBtn
-            tooltip="Superscript"
-            icon="mdi-format-superscript"
-            icon-size="23px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="page.selection.toggleMark('superscript')"
-          />
-
-          <q-separator
-            vertical
-            style="margin: 6px 7px"
-          />
-
-          <ToolbarBtn
-            tooltip="Bullet list"
+            tooltip="Objects"
             icon="mdi-format-list-bulleted"
             icon-size="24px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="page.selection.format((chain) => chain.toggleBulletList())"
-          />
-          <ToolbarBtn
-            tooltip="Ordered list"
-            icon="mdi-format-list-numbered"
-            icon-size="24px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="page.selection.format((chain) => chain.toggleOrderedList())"
-          />
-          <ToolbarBtn
-            tooltip="Task list"
-            icon="mdi-checkbox-marked-outline"
-            icon-size="22px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="page.selection.format((chain) => chain.toggleTaskList())"
-          />
+          >
+            <q-menu
+              style="padding: 0px 4px"
+              :offset="[0, 4]"
+            >
+              <div>
+                <ToolbarBtn
+                  tooltip="Bullet list"
+                  icon="mdi-format-list-bulleted"
+                  icon-size="24px"
+                  :disable="
+                    page.react.readonly || !page.activeElem.react.exists
+                  "
+                  @click="
+                    page.selection.format((chain) => chain.toggleBulletList())
+                  "
+                />
+                <ToolbarBtn
+                  tooltip="Ordered list"
+                  icon="mdi-format-list-numbered"
+                  icon-size="24px"
+                  :disable="
+                    page.react.readonly || !page.activeElem.react.exists
+                  "
+                  @click="
+                    page.selection.format((chain) => chain.toggleOrderedList())
+                  "
+                />
+                <ToolbarBtn
+                  tooltip="Task list"
+                  icon="mdi-checkbox-marked-outline"
+                  icon-size="22px"
+                  :disable="
+                    page.react.readonly || !page.activeElem.react.exists
+                  "
+                  @click="
+                    page.selection.format((chain) => chain.toggleTaskList())
+                  "
+                />
+              </div>
 
-          <q-separator
-            vertical
-            style="margin: 6px 7px"
-          />
+              <div>
+                <ToolbarBtn
+                  tooltip="Blockquote"
+                  icon="mdi-format-quote-close"
+                  icon-size="23px"
+                  :disable="
+                    page.react.readonly || !page.activeElem.react.exists
+                  "
+                  @click="
+                    page.selection.format((chain) => chain.toggleBlockquote())
+                  "
+                />
+                <ToolbarBtn
+                  tooltip="Code"
+                  icon="mdi-code-tags"
+                  icon-size="23px"
+                  :disable="
+                    page.react.readonly || !page.activeElem.react.exists
+                  "
+                  @click="page.selection.toggleMark('code')"
+                />
+                <ToolbarBtn
+                  tooltip="Codeblock"
+                  icon="mdi-code-braces"
+                  icon-size="23px"
+                  :disable="
+                    page.react.readonly || !page.activeElem.react.exists
+                  "
+                  @click="
+                    page.selection.format((chain) => chain.toggleCodeBlock())
+                  "
+                />
+                <ToolbarBtn
+                  tooltip="Rule"
+                  icon="mdi-minus"
+                  icon-size="23px"
+                  :disable="page.react.readonly || !page.editing.react.active"
+                  @click="
+                    page.selection.format((chain) => chain.setHorizontalRule())
+                  "
+                />
+              </div>
 
-          <ToolbarBtn
-            tooltip="Blockquote"
-            icon="mdi-format-quote-close"
-            icon-size="23px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="page.selection.format((chain) => chain.toggleBlockquote())"
-          />
-          <ToolbarBtn
-            tooltip="Code"
-            icon="mdi-code-tags"
-            icon-size="23px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="page.selection.toggleMark('code')"
-          />
-          <ToolbarBtn
-            tooltip="Codeblock"
-            icon="mdi-code-braces"
-            icon-size="23px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="page.selection.format((chain) => chain.toggleCodeBlock())"
-          />
+              <div>
+                <ToolbarBtn
+                  tooltip="Insert table"
+                  icon="mdi-table-large-plus"
+                  icon-size="23px"
+                  :disable="page.react.readonly || !page.editing.react.active"
+                  @click="
+                    page.selection.format((chain) =>
+                      chain.insertTable({
+                        rows: 3,
+                        cols: 3,
+                        withHeaderRow: false,
+                      })
+                    )
+                  "
+                />
+                <ToolbarBtn
+                  tooltip="Remove table"
+                  icon="mdi-table-large-remove"
+                  icon-size="23px"
+                  :disable="page.react.readonly || !page.editing.react.active"
+                  @click="page.selection.format((chain) => chain.deleteTable())"
+                />
+                <ToolbarBtn
+                  tooltip="Insert column before"
+                  icon="mdi-table-column-plus-before"
+                  icon-size="23px"
+                  :disable="page.react.readonly || !page.editing.react.active"
+                  @click="
+                    page.selection.format((chain) => chain.addColumnBefore())
+                  "
+                />
+                <ToolbarBtn
+                  tooltip="Insert column after"
+                  icon="mdi-table-column-plus-after"
+                  icon-size="23px"
+                  :disable="page.react.readonly || !page.editing.react.active"
+                  @click="
+                    page.selection.format((chain) => chain.addColumnAfter())
+                  "
+                />
+                <ToolbarBtn
+                  tooltip="Remove column"
+                  icon="mdi-table-column-remove"
+                  icon-size="23px"
+                  :disable="page.react.readonly || !page.editing.react.active"
+                  @click="
+                    page.selection.format((chain) => chain.deleteColumn())
+                  "
+                />
+              </div>
 
-          <q-separator
-            vertical
-            style="margin: 6px 7px"
-          />
-
-          <ToolbarBtn
-            tooltip="Link"
-            icon="mdi-link"
-            icon-size="24px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="
-              Dialog.create({
-                title: 'Insert link',
-                message: 'URL:',
-                prompt: {
-                  model: '',
-                },
-                style: {
-                  width: '300px',
-                },
-                cancel: true,
-              }).onOk((url) => {
-                page.selection.setMark('link', { href: url });
-              })
-            "
-          />
-          <ToolbarBtn
-            tooltip="Remove link"
-            icon="mdi-link-off"
-            icon-size="24px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="page.selection.unsetMark('link')"
-          />
-
-          <q-separator
-            vertical
-            style="margin: 6px 7px"
-          />
-
-          <ToolbarBtn
-            tooltip="Clear formatting"
-            icon="mdi-format-clear"
-            icon-size="24px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
-            @click="
-              page.selection.format((chain) =>
-                chain.clearNodes().unsetAllMarks()
-              )
-            "
-          />
-
-          <q-separator
-            vertical
-            style="margin: 6px 7px"
-          />
-
-          <ToolbarBtn
-            tooltip="Rule"
-            icon="mdi-minus"
-            icon-size="23px"
-            :disable="page.react.readonly || !page.editing.react.active"
-            @click="page.selection.format((chain) => chain.setHorizontalRule())"
-          />
-
-          <q-separator
-            vertical
-            style="margin: 6px 7px"
-          />
-
-          <ToolbarBtn
-            tooltip="Insert table"
-            icon="mdi-table-large-plus"
-            icon-size="23px"
-            :disable="page.react.readonly || !page.editing.react.active"
-            @click="
-              page.selection.format((chain) =>
-                chain.insertTable({ rows: 3, cols: 3, withHeaderRow: false })
-              )
-            "
-          />
-          <ToolbarBtn
-            tooltip="Remove table"
-            icon="mdi-table-large-remove"
-            icon-size="23px"
-            :disable="page.react.readonly || !page.editing.react.active"
-            @click="page.selection.format((chain) => chain.deleteTable())"
-          />
-          <ToolbarBtn
-            tooltip="Insert column before"
-            icon="mdi-table-column-plus-before"
-            icon-size="23px"
-            :disable="page.react.readonly || !page.editing.react.active"
-            @click="page.selection.format((chain) => chain.addColumnBefore())"
-          />
-          <ToolbarBtn
-            tooltip="Insert column after"
-            icon="mdi-table-column-plus-after"
-            icon-size="23px"
-            :disable="page.react.readonly || !page.editing.react.active"
-            @click="page.selection.format((chain) => chain.addColumnAfter())"
-          />
-          <ToolbarBtn
-            tooltip="Remove column"
-            icon="mdi-table-column-remove"
-            icon-size="23px"
-            :disable="page.react.readonly || !page.editing.react.active"
-            @click="page.selection.format((chain) => chain.deleteColumn())"
-          />
-          <ToolbarBtn
-            tooltip="Insert row before"
-            icon="mdi-table-row-plus-before"
-            icon-size="23px"
-            :disable="page.react.readonly || !page.editing.react.active"
-            @click="page.selection.format((chain) => chain.addRowBefore())"
-          />
-          <ToolbarBtn
-            tooltip="Insert row after"
-            icon="mdi-table-row-plus-after"
-            icon-size="23px"
-            :disable="page.react.readonly || !page.editing.react.active"
-            @click="page.selection.format((chain) => chain.addRowAfter())"
-          />
-          <ToolbarBtn
-            tooltip="Remove row"
-            icon="mdi-table-row-remove"
-            icon-size="23px"
-            :disable="page.react.readonly || !page.editing.react.active"
-            @click="page.selection.format((chain) => chain.deleteRow())"
-          />
-          <ToolbarBtn
-            tooltip="Merge cells"
-            icon="mdi-table-merge-cells"
-            icon-size="23px"
-            :disable="page.react.readonly || !page.editing.react.active"
-            @click="page.selection.format((chain) => chain.mergeCells())"
-          />
-          <ToolbarBtn
-            tooltip="Split cell"
-            icon="mdi-table-split-cell"
-            icon-size="23px"
-            :disable="page.react.readonly || !page.editing.react.active"
-            @click="page.selection.format((chain) => chain.splitCell())"
-          />
+              <div>
+                <ToolbarBtn
+                  tooltip="Merge cells"
+                  icon="mdi-table-merge-cells"
+                  icon-size="23px"
+                  :disable="page.react.readonly || !page.editing.react.active"
+                  @click="page.selection.format((chain) => chain.mergeCells())"
+                />
+                <ToolbarBtn
+                  tooltip="Split cell"
+                  icon="mdi-table-split-cell"
+                  icon-size="23px"
+                  :disable="page.react.readonly || !page.editing.react.active"
+                  @click="page.selection.format((chain) => chain.splitCell())"
+                />
+                <ToolbarBtn
+                  tooltip="Insert row before"
+                  icon="mdi-table-row-plus-before"
+                  icon-size="23px"
+                  :disable="page.react.readonly || !page.editing.react.active"
+                  @click="
+                    page.selection.format((chain) => chain.addRowBefore())
+                  "
+                />
+                <ToolbarBtn
+                  tooltip="Insert row after"
+                  icon="mdi-table-row-plus-after"
+                  icon-size="23px"
+                  :disable="page.react.readonly || !page.editing.react.active"
+                  @click="page.selection.format((chain) => chain.addRowAfter())"
+                />
+                <ToolbarBtn
+                  tooltip="Remove row"
+                  icon="mdi-table-row-remove"
+                  icon-size="23px"
+                  :disable="page.react.readonly || !page.editing.react.active"
+                  @click="page.selection.format((chain) => chain.deleteRow())"
+                />
+              </div>
+            </q-menu>
+          </ToolbarBtn>
         </div>
 
         <Gap style="width: 6px" />
@@ -500,7 +747,9 @@
         @click="ui.toggleRightSidebar()"
       >
         <q-icon
-          :name="ui.rightSidebarMini ? 'mdi-chevron-left' : 'mdi-chevron-right'"
+          :name="
+            ui.rightSidebarExpanded ? 'mdi-chevron-right' : 'mdi-chevron-left'
+          "
           style="position: relative; right: -2px"
         />
       </q-btn>

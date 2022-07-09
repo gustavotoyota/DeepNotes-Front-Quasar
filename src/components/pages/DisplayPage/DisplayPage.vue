@@ -56,6 +56,55 @@
     </template>
 
     <DisplayContent v-if="page.react.status === 'success'" />
+
+    <q-btn
+      v-if="!ui.rightSidebarExpanded || ui.leftSidebarVisible"
+      round
+      style="
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        min-height: 50px;
+        min-width: 50px;
+        pointer-events: auto;
+      "
+      class="d-flex d-md-none bg-grey-9"
+      @click="ui.toggleLeftSidebar()"
+    >
+      <q-icon
+        style="position: relative; left: -2px"
+        :name="
+          ui.leftSidebarExpanded ? 'mdi-chevron-left' : 'mdi-chevron-right'
+        "
+      />
+    </q-btn>
+
+    <q-btn
+      v-if="!ui.leftSidebarExpanded || ui.rightSidebarVisible"
+      dense
+      round
+      style="
+        position: absolute;
+        right: 0px;
+        top: 0px;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        min-height: 50px;
+        min-width: 50px;
+        pointer-events: auto;
+      "
+      class="d-flex d-md-none bg-grey-9"
+      @click="ui.toggleRightSidebar()"
+    >
+      <q-icon
+        :name="
+          ui.rightSidebarExpanded ? 'mdi-chevron-right' : 'mdi-chevron-left'
+        "
+        style="position: relative; right: -2px"
+      />
+    </q-btn>
   </div>
 </template>
 
@@ -70,6 +119,7 @@ import { AppPage } from 'src/code/pages/app/page/page';
 import { isMouseOverScrollbar } from 'src/code/pages/static/dom';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
+import { useUI } from 'src/stores/pages/ui';
 import { onMounted, provide } from 'vue';
 
 import DisplayContent from './DisplayContent.vue';
@@ -80,6 +130,8 @@ const props = defineProps<{
 }>();
 
 provide('page', props.page);
+
+const ui = useUI();
 
 onMounted(() => {
   // eslint-disable-next-line vue/no-mutating-props

@@ -1,7 +1,7 @@
 <template>
   <q-drawer
-    show-if-above
-    :mini="ui.leftSidebarMini"
+    :mini="!ui.leftSidebarExpanded"
+    :model-value="ui.leftSidebarVisible || ui.leftSidebarExpanded"
     side="left"
     bordered
     no-swipe-open
@@ -22,7 +22,7 @@
 
       <q-list
         :class="{
-          mini: ui.leftSidebarMini,
+          mini: !ui.leftSidebarExpanded,
         }"
         style="flex: 1; height: 0; overflow-y: auto"
       >

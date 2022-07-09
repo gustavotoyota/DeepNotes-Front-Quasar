@@ -1,7 +1,7 @@
 <template>
   <q-drawer
-    :mini="ui.rightSidebarMini"
-    show-if-above
+    :mini="!ui.rightSidebarExpanded"
+    :model-value="ui.rightSidebarVisible || ui.rightSidebarExpanded"
     side="right"
     bordered
     no-swipe-open
@@ -18,7 +18,7 @@
       />
 
       <q-toolbar-title
-        v-if="!ui.rightSidebarMini"
+        v-if="ui.rightSidebarExpanded"
         style="margin-left: 6px"
       >
         Properties

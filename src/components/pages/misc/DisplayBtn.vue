@@ -6,14 +6,7 @@
     dense
     @click="$emit('click', $event)"
   >
-    <q-tooltip
-      anchor="center left"
-      self="center right"
-      transition-show="jump-right"
-      transition-hide="jump-left"
-    >
-      {{ tooltip }}
-    </q-tooltip>
+    <slot></slot>
   </q-btn>
 </template>
 
@@ -23,7 +16,6 @@
 >
 defineProps<{
   icon: string;
-  tooltip: string;
 }>();
 </script>
 
@@ -33,5 +25,7 @@ defineProps<{
   height: 36px;
 
   padding: 0;
+
+  pointer-events: auto;
 }
 </style>

@@ -3,7 +3,7 @@
     <q-input
       label="Display name"
       v-model="data.displayName"
-      style="width: 300px"
+      style="max-width: 300px"
       filled
     />
 
@@ -12,7 +12,7 @@
     <q-btn
       label="Save"
       color="primary"
-      style="width: 300px; height: 40px"
+      style="max-width: 300px; height: 40px"
       @click="save()"
     />
   </template>

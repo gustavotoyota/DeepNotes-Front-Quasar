@@ -318,7 +318,7 @@
             </q-menu>
           </ToolbarBtn>
 
-          <template v-if="ui.width >= 1200">
+          <template v-if="ui.width >= BREAKPOINT_XL_MIN">
             <ToolbarBtn
               tooltip="Bold"
               icon="mdi-format-bold"
@@ -763,6 +763,7 @@
 >
 import { computed } from '@vue/reactivity';
 import { logout } from 'src/code/auth';
+import { BREAKPOINT_XL_MIN } from 'src/code/pages/static/responsive';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
 

@@ -1,20 +1,10 @@
 <template>
-  <q-page-container>
-    <q-page style="display: flex; justify-content: center; align-items: center">
-      <q-form
-        style="
-          width: 270px;
-          padding: 24px;
-          background-color: #303030;
-          border-radius: 5px;
-          display: flex;
-          flex-direction: column;
-        "
-      >
+  <q-page style="min-height: initial">
+    <ResponsiveContainer style="margin: 100px auto">
+      <q-form style="margin: 0px auto; max-width: 270px">
         <q-input
           label="E-mail"
           filled
-          dense
           label-color="grey-5"
           v-model="data.email"
         />
@@ -24,7 +14,6 @@
         <q-input
           label="Display name"
           filled
-          dense
           label-color="grey-5"
           v-model="data.displayName"
         />
@@ -35,7 +24,6 @@
           label="Password"
           type="password"
           filled
-          dense
           label-color="grey-5"
           v-model="data.password"
         />
@@ -46,7 +34,6 @@
           label="Repeat password"
           type="password"
           filled
-          dense
           label-color="grey-5"
           v-model="data.repeatPassword"
         />
@@ -57,11 +44,12 @@
           label="Create account"
           type="submit"
           color="primary"
+          style="width: 100%; font-size: 16px; padding: 12px 0px"
           @click.prevent="register()"
         />
       </q-form>
-    </q-page>
-  </q-page-container>
+    </ResponsiveContainer>
+  </q-page>
 </template>
 
 <script lang="ts">
@@ -86,6 +74,7 @@ import { wrapSymmetricKey } from 'src/code/crypto/symmetric-key';
 import { ISerialObjectInput } from 'src/code/pages/app/serialization';
 import { encodeText } from 'src/code/utils';
 import Gap from 'src/components/misc/Gap.vue';
+import ResponsiveContainer from 'src/components/misc/ResponsiveContainer.vue';
 import { useAuth } from 'src/stores/auth';
 import { reactive } from 'vue';
 import { useRouter } from 'vue-router';

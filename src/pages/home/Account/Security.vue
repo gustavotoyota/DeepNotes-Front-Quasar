@@ -8,12 +8,15 @@
 
     <Gap style="height: 24px" />
 
-    <q-form ref="passwordChangeForm">
+    <q-form
+      ref="passwordChangeForm"
+      style="display: flex; flex-direction: column"
+    >
       <q-input
         label="Old password"
         type="password"
         v-model="data.oldPassword"
-        style="width: 300px"
+        style="max-width: 300px"
         filled
         dense
       />
@@ -24,7 +27,7 @@
         label="New password"
         type="password"
         v-model="data.newPassword"
-        style="width: 300px"
+        style="max-width: 300px"
         filled
         dense
       />
@@ -35,7 +38,7 @@
         label="Confirm new password"
         type="password"
         v-model="data.confirmNewPassword"
-        style="width: 300px"
+        style="max-width: 300px"
         filled
         dense
       />
@@ -46,7 +49,7 @@
         label="Change password"
         type="submit"
         color="primary"
-        style="width: 300px"
+        style="max-width: 300px"
         @click.prevent="changePassword()"
       />
     </q-form>
@@ -66,7 +69,7 @@
     <q-btn
       label="Enable two-factor authentication"
       color="primary"
-      style="width: 300px"
+      style="max-width: 300px"
     />
 
     <Gap style="height: 48px" />

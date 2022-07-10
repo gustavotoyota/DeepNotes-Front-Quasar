@@ -37,6 +37,10 @@ import { computed } from '@vue/reactivity';
 import { useMeta } from 'quasar';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { factory } from 'src/code/pages/static/composition-root';
+import {
+  BREAKPOINT_LG_MIN,
+  BREAKPOINT_SM_MIN,
+} from 'src/code/pages/static/responsive';
 import { Vec2 } from 'src/code/pages/static/vec2';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import DisplayPage from 'src/components/pages/DisplayPage/DisplayPage.vue';
@@ -406,11 +410,11 @@ onMounted(() => {
 });
 
 function onResize() {
-  ui.leftSidebarVisible = window.innerWidth >= 576;
-  ui.rightSidebarVisible = window.innerWidth >= 576;
+  ui.leftSidebarVisible = window.innerWidth >= BREAKPOINT_SM_MIN;
+  ui.rightSidebarVisible = window.innerWidth >= BREAKPOINT_SM_MIN;
 
   if (
-    window.innerWidth < 992 &&
+    window.innerWidth < BREAKPOINT_LG_MIN &&
     ui.leftSidebarExpanded &&
     ui.rightSidebarExpanded
   ) {
@@ -435,43 +439,48 @@ body {
 }
 </style>
 
-<style scoped>
-.pages-layout :deep(.q-drawer) {
-  transition: width 0.2s ease;
-  overflow-x: hidden;
-}
-.pages-layout :deep(.q-drawer__content) {
-  overflow-x: hidden;
-}
-.pages-layout :deep(.q-drawer:not(.q-drawer--mini) .q-drawer__content) {
-  width: 299px !important;
-}
-.pages-layout :deep(.q-drawer.q-drawer--mini .q-item) {
-  justify-content: normal !important;
-  padding-left: 16px !important;
-}
-.pages-layout :deep(.q-drawer .q-item) {
-  justify-content: normal !important;
-  padding-left: 16px !important;
-}
+<style
+  lang="scss"
+  scoped
+>
+.pages-layout {
+  :deep(.q-drawer) {
+    transition: width 0.2s ease;
+    overflow-x: hidden;
+  }
+  :deep(.q-drawer__content) {
+    overflow-x: hidden;
+  }
+  :deep(.q-drawer:not(.q-drawer--mini) .q-drawer__content) {
+    width: 299px !important;
+  }
+  :deep(.q-drawer.q-drawer--mini .q-item) {
+    justify-content: normal !important;
+    padding-left: 16px !important;
+  }
+  :deep(.q-drawer .q-item) {
+    justify-content: normal !important;
+    padding-left: 16px !important;
+  }
 
-.pages-layout :deep(.q-page-container) {
-  transition: padding-left 0.2s ease, padding-right 0.2s ease;
-}
+  :deep(.q-page-container) {
+    transition: padding-left 0.2s ease, padding-right 0.2s ease;
+  }
 
-/* Scrollbars */
+  /* Scrollbars */
 
-.pages-layout :deep(::-webkit-scrollbar) {
-  width: 15px;
-}
-.pages-layout :deep(::-webkit-scrollbar-track) {
-  background: #202020;
-}
-.pages-layout :deep(::-webkit-scrollbar-thumb) {
-  background: #303030;
-  border: solid 1px #404040;
-}
-.pages-layout :deep(::-webkit-scrollbar-thumb:hover) {
-  background: #404040;
+  :deep(::-webkit-scrollbar) {
+    width: 15px;
+  }
+  :deep(::-webkit-scrollbar-track) {
+    background: #202020;
+  }
+  :deep(::-webkit-scrollbar-thumb) {
+    background: #303030;
+    border: solid 1px #404040;
+  }
+  :deep(::-webkit-scrollbar-thumb:hover) {
+    background: #404040;
+  }
 }
 </style>

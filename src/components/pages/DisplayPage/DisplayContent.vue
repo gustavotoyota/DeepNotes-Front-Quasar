@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="page.react.notes.length === 0"
-    style="color: #e0e0e0; text-align: center"
+    style="color: #e0e0e0; text-align: center; white-space: nowrap"
   >
     <div>Double-click anywhere</div>
     <div>to create a note.</div>

@@ -49,6 +49,14 @@ export class Rect {
     );
   }
 
+  intersectsRect(rect: Rect) {
+    return (
+      this.topLeft.x <= rect.bottomRight.x &&
+      this.topLeft.y <= rect.bottomRight.y &&
+      this.bottomRight.x >= rect.topLeft.x &&
+      this.bottomRight.y >= rect.topLeft.y
+    );
+  }
   containsRect(rect: Rect) {
     return (
       rect.topLeft.x >= this.topLeft.x &&

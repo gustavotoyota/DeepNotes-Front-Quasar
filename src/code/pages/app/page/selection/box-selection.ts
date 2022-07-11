@@ -123,7 +123,7 @@ export class PageBoxSelection {
       noteRect.topLeft = noteRect.topLeft.sub(originClientPos);
       noteRect.bottomRight = noteRect.bottomRight.sub(originClientPos);
 
-      if (!boxRect.containsRect(noteRect)) {
+      if (!boxRect.intersectsRect(noteRect)) {
         continue;
       }
 

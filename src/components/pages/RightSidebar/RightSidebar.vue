@@ -40,9 +40,9 @@
   setup
   lang="ts"
 >
-import { computed } from '@vue/reactivity';
 import { ElemType } from 'src/code/pages/app/page/elems/elem';
 import { useUI } from 'src/stores/pages/ui';
+import { computed } from 'vue';
 import { provide } from 'vue';
 
 import ArrowProperties from './ArrowProperties.vue';

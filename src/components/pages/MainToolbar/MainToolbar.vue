@@ -761,11 +761,11 @@
   setup
   lang="ts"
 >
-import { computed } from '@vue/reactivity';
 import { logout } from 'src/code/auth';
 import { BREAKPOINT_XL_MIN } from 'src/code/pages/static/responsive';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
+import { computed } from 'vue';
 
 import ToolbarBtn from '../misc/ToolbarBtn.vue';
 import UserSettingsDialog from './UserSettingsDialog/UserSettingsDialog.vue';

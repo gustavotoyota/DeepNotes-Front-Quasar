@@ -33,12 +33,6 @@
   <!-- Box selection -->
 
   <DisplayBoxSelection :region="page" />
-
-  <DisplayBtns />
-
-  <!-- Mobile buttons -->
-
-  <DisplayMobileButtons />
 </template>
 
 <script
@@ -52,9 +46,7 @@ import { inject } from 'vue';
 import ArrowCreation from './ArrowCreation.vue';
 import DisplayBackground from './DisplayBackground.vue';
 import DisplayBoxSelection from './DisplayBoxSelection.vue';
-import DisplayBtns from './DisplayBtns.vue';
 import DisplayLayers from './DisplayLayers.vue';
-import DisplayMobileButtons from './DisplayMobileButtons.vue';
 import DisplayNote from './DisplayNote/DisplayNote.vue';
 import DOMDisplay from './DOMDisplay.vue';
 

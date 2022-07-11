@@ -36,13 +36,12 @@
   setup
   lang="ts"
 >
-import { AppPage } from 'src/code/pages/app/page/page';
 import Gap from 'src/components/misc/Gap.vue';
-import { inject } from 'vue';
+import { computed } from 'vue';
 
 import DisplayBtn from '../misc/DisplayBtn.vue';
 
-const page = inject<AppPage>('page')!;
+const page = computed(() => $pages.react.page);
 </script>
 
 <style

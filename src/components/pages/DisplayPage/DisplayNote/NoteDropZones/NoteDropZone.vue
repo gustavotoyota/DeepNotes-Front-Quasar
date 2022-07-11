@@ -18,9 +18,9 @@
   setup
   lang="ts"
 >
-import { computed } from '@vue/reactivity';
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
+import { computed } from 'vue';
 import { inject } from 'vue';
 
 const props = defineProps<{

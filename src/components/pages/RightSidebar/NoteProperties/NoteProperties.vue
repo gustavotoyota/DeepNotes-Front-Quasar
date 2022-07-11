@@ -675,7 +675,6 @@
   setup
   lang="ts"
 >
-import { computed } from '@vue/reactivity';
 import { to_base64 } from 'libsodium-wrappers';
 import { Notify } from 'quasar';
 import { DICT_PAGE_GROUP_ID } from 'src/code/pages/app/app';
@@ -684,6 +683,7 @@ import { AppPage } from 'src/code/pages/app/page/page';
 import { encodeText } from 'src/code/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
+import { computed } from 'vue';
 import { inject, Ref } from 'vue';
 
 import Checkbox from '../../misc/Checkbox.vue';

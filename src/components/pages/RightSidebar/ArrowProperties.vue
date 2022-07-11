@@ -132,7 +132,6 @@
   setup
   lang="ts"
 >
-import { computed } from '@vue/reactivity';
 import { to_base64 } from 'libsodium-wrappers';
 import { Notify } from 'quasar';
 import { PageArrow } from 'src/code/pages/app/page/arrows/arrow';
@@ -144,6 +143,7 @@ import {
 import { encodeText } from 'src/code/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
+import { computed } from 'vue';
 import { inject, Ref } from 'vue';
 import { yXmlFragmentToProsemirrorJSON } from 'y-prosemirror';
 

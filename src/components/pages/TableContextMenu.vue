@@ -185,7 +185,7 @@
   lang="ts"
 >
 import { ChainedCommands } from '@tiptap/core';
-import { computed } from '@vue/reactivity';
+import { computed } from 'vue';
 
 import QMenuHover from './misc/QMenuHover.vue';
 

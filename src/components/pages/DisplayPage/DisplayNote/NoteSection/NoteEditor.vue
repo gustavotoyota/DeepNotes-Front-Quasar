@@ -17,11 +17,11 @@
   setup
   lang="ts"
 >
-import { computed } from '@vue/reactivity';
 import { NoteTextSection, PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { REALTIME_USER_DISPLAY_NAME } from 'src/code/pages/app/realtime';
 import { watchUntilTrue } from 'src/code/pages/static/vue';
+import { computed } from 'vue';
 import { inject } from 'vue';
 import * as Y from 'yjs';
 

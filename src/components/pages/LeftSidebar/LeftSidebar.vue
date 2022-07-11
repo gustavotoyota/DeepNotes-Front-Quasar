@@ -151,11 +151,11 @@
   setup
   lang="ts"
 >
-import { computed } from '@vue/reactivity';
 import { Dialog, Notify } from 'quasar';
 import { ILayerCollab } from 'src/code/pages/app/page/layers/layer';
 import { useUI } from 'src/stores/pages/ui';
 import { v4 } from 'uuid';
+import { computed } from 'vue';
 
 import MiniSidebarPage from '../misc/MiniSidebarPage.vue';
 

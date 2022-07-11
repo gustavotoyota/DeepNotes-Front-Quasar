@@ -49,6 +49,18 @@
           @click.prevent="register()"
         />
       </q-form>
+
+      <Gap style="height: 16px" />
+
+      <div style="text-align: center">
+        Already registered?
+        <router-link
+          to="/login"
+          style="color: #29b6f6"
+        >
+          Log in
+        </router-link>
+      </div>
     </ResponsiveContainer>
   </q-page>
 </template>

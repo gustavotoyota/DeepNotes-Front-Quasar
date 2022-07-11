@@ -1,35 +1,49 @@
 <template>
   <q-page style="min-height: initial">
     <ResponsiveContainer style="margin: 150px auto">
-      <q-form style="margin: 0px auto; max-width: 250px">
-        <q-input
-          label="E-mail"
-          filled
-          label-color="grey-5"
-          v-model="data.email"
-        />
+      <div style="margin: 0px auto; max-width: 270px">
+        <q-form>
+          <q-input
+            label="E-mail"
+            filled
+            label-color="grey-5"
+            v-model="data.email"
+          />
 
-        <Gap style="height: 12px" />
+          <Gap style="height: 12px" />
 
-        <q-input
-          label="Password"
-          type="password"
-          filled
-          label-color="grey-5"
-          v-model="data.password"
-        />
+          <q-input
+            label="Password"
+            type="password"
+            filled
+            label-color="grey-5"
+            v-model="data.password"
+          />
 
-        <Gap style="height: 20px" />
+          <Gap style="height: 20px" />
 
-        <q-btn
-          label="Login"
-          type="submit"
-          color="primary"
-          :loading="data.loading"
-          style="width: 100%; font-size: 16px; padding: 12px 0px"
-          @click.prevent="onSubmit()"
-        />
-      </q-form>
+          <q-btn
+            label="Login"
+            type="submit"
+            color="primary"
+            :loading="data.loading"
+            style="width: 100%; font-size: 16px; padding: 12px 0px"
+            @click.prevent="onSubmit()"
+          />
+        </q-form>
+
+        <Gap style="height: 16px" />
+
+        <div style="text-align: center">
+          Not registered yet?
+          <router-link
+            to="/register"
+            style="color: #29b6f6"
+          >
+            Sign up
+          </router-link>
+        </div>
+      </div>
     </ResponsiveContainer>
   </q-page>
 </template>

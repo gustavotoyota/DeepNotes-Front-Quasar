@@ -119,7 +119,7 @@ import { REALTIME_USER_DISPLAY_NAME } from 'src/code/pages/app/realtime';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { provide, ref, watch } from 'vue';
 
-import TabBtn from '../../misc/TabBtn.vue';
+import TabBtn from '../misc/TabBtn.vue';
 import GeneralTab from './GeneralTab.vue';
 import GroupsTab from './GroupsTab.vue';
 import InvitationsTab from './InvitationsTab.vue';

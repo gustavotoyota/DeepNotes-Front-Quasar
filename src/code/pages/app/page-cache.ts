@@ -37,7 +37,7 @@ export class AppPageCache {
       () => this.react.totalSize,
       () => {
         while (
-          this.react.cache.length > 1 &&
+          this.react.cache.length > 2 &&
           this.react.totalSize > 256 * 1024
         ) {
           const page = this.react.cache.shift();

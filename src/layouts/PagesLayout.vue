@@ -23,14 +23,14 @@
 
         <DisplayBtns />
 
-        <DisplayMobileButtons />
+        <DisplayMobileBtns />
 
-        <UserSettingsDialog />
+        <UserSettingsDialog v-if="mounted" />
       </q-page>
     </q-page-container>
   </q-layout>
 
-  <loading-overlay v-if="!mounted" />
+  <LoadingOverlay v-if="!mounted" />
 
   <TableContextMenu v-if="mounted" />
 </template>
@@ -49,12 +49,12 @@ import {
 import { Vec2 } from 'src/code/pages/static/vec2';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import DisplayBtns from 'src/components/pages/DisplayPage/DisplayBtns.vue';
-import DisplayMobileButtons from 'src/components/pages/DisplayPage/DisplayMobileButtons.vue';
+import DisplayMobileBtns from 'src/components/pages/DisplayPage/DisplayMobileBtns.vue';
 import DisplayPage from 'src/components/pages/DisplayPage/DisplayPage.vue';
 import LeftSidebar from 'src/components/pages/LeftSidebar/LeftSidebar.vue';
 import MainToolbar from 'src/components/pages/MainToolbar/MainToolbar.vue';
-import UserSettingsDialog from 'src/components/pages/MainToolbar/UserSettingsDialog/UserSettingsDialog.vue';
 import RightSidebar from 'src/components/pages/RightSidebar/RightSidebar.vue';
+import UserSettingsDialog from 'src/components/pages/UserSettingsDialog/UserSettingsDialog.vue';
 import { useApp } from 'src/stores/app';
 import { useUI } from 'src/stores/pages/ui';
 import { computed } from 'vue';

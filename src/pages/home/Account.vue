@@ -1,5 +1,5 @@
 <template>
-  <q-page style="min-height: initial; margin-top: 30px; margin-bottom: 150px">
+  <q-page style="min-height: initial; margin-top: 40px; margin-bottom: 150px">
     <ResponsiveContainer style="height: 100%">
       <div
         class="row"
@@ -31,15 +31,7 @@
           </q-list>
         </div>
 
-        <div
-          class="col-12 col-lg-9"
-          style="
-            position: relative;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-          "
-        >
+        <div class="col-12 col-lg-9 page-content">
           <router-view />
         </div>
       </div>
@@ -53,3 +45,22 @@
 >
 import ResponsiveContainer from 'src/components/misc/ResponsiveContainer.vue';
 </script>
+
+<style
+  lang="scss"
+  scoped
+>
+.page-content {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  padding-left: 20px;
+  padding-top: 20px;
+
+  @media (min-width: $breakpoint-sm-min) {
+    padding-left: 90px;
+  }
+}
+</style>

@@ -14,7 +14,7 @@
       <q-avatar
         icon="mdi-chart-box"
         size="50px"
-        style="margin-left: -9px"
+        style="margin-left: -9px; margin-top: -2px"
       />
 
       <q-toolbar-title

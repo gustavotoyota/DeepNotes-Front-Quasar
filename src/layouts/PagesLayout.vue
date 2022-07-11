@@ -21,58 +21,11 @@
           }"
         />
 
-        <q-btn
-          v-if="!ui.rightSidebarExpanded || ui.leftSidebarVisible"
-          round
-          style="
-            position: absolute;
-            left: 0px;
-            top: 0px;
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0;
-            min-height: 50px;
-            min-width: 50px;
-            pointer-events: auto;
-          "
-          class="d-flex d-md-none bg-grey-9"
-          @click="ui.toggleLeftSidebar()"
-        >
-          <q-icon
-            style="position: relative; left: -2px"
-            :name="
-              ui.leftSidebarExpanded ? 'mdi-chevron-left' : 'mdi-chevron-right'
-            "
-          />
-        </q-btn>
-
-        <q-btn
-          v-if="!ui.leftSidebarExpanded || ui.rightSidebarVisible"
-          dense
-          round
-          style="
-            position: absolute;
-            right: 0px;
-            top: 0px;
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 0;
-            min-height: 50px;
-            min-width: 50px;
-            pointer-events: auto;
-          "
-          class="d-flex d-md-none bg-grey-9"
-          @click="ui.toggleRightSidebar()"
-        >
-          <q-icon
-            :name="
-              ui.rightSidebarExpanded ? 'mdi-chevron-right' : 'mdi-chevron-left'
-            "
-            style="position: relative; right: -2px"
-          />
-        </q-btn>
+        <DisplayBtns />
 
         <DisplayMobileButtons />
 
-        <DisplayBtns />
+        <UserSettingsDialog />
       </q-page>
     </q-page-container>
   </q-layout>
@@ -100,6 +53,7 @@ import DisplayMobileButtons from 'src/components/pages/DisplayPage/DisplayMobile
 import DisplayPage from 'src/components/pages/DisplayPage/DisplayPage.vue';
 import LeftSidebar from 'src/components/pages/LeftSidebar/LeftSidebar.vue';
 import MainToolbar from 'src/components/pages/MainToolbar/MainToolbar.vue';
+import UserSettingsDialog from 'src/components/pages/MainToolbar/UserSettingsDialog/UserSettingsDialog.vue';
 import RightSidebar from 'src/components/pages/RightSidebar/RightSidebar.vue';
 import { useApp } from 'src/stores/app';
 import { useUI } from 'src/stores/pages/ui';

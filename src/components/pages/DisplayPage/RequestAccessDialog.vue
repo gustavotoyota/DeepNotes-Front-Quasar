@@ -54,6 +54,7 @@
             flat
             label="Ok"
             color="primary"
+            :loading="loading"
             @click.prevent="requestAccess(message)"
           />
         </q-card-actions>
@@ -73,6 +74,7 @@ import Gap from 'src/components/misc/Gap.vue';
 import { inject, ref, watch } from 'vue';
 
 const visible = ref(false);
+const loading = ref(false);
 
 const roleId = ref();
 const message = ref('');
@@ -99,6 +101,8 @@ async function requestAccess(message: string) {
   }
 
   try {
+    loading.value = true;
+
     await $api.post('/api/groups/access-requests/send', {
       groupId: page.react.groupId,
       roleId: roleId.value,
@@ -112,6 +116,8 @@ async function requestAccess(message: string) {
       message: 'Access request sent.',
       color: 'positive',
     });
+
+    visible.value = false;
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',
@@ -121,7 +127,7 @@ async function requestAccess(message: string) {
     console.error(err);
   }
 
-  visible.value = false;
+  loading.value = false;
 }
 </script>
 

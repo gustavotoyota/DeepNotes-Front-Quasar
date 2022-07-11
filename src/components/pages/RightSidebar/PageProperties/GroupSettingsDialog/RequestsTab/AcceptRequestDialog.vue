@@ -27,6 +27,7 @@
             flat
             label="Ok"
             color="primary"
+            :loading="loading"
             @click.prevent="acceptRequests()"
           />
         </q-card-actions>
@@ -48,6 +49,7 @@ import { computed, inject, Ref, ref } from 'vue';
 import { initialSettings } from '../GroupSettingsDialog.vue';
 
 const visible = ref(false);
+const loading = ref(false);
 
 const page = inject<Ref<AppPage>>('page')!;
 
@@ -56,11 +58,13 @@ const settings = inject<Ref<ReturnType<typeof initialSettings>>>('settings')!;
 const selectedIds = computed(() => settings.value.requests.selectedIds);
 
 async function acceptRequests() {
-  const selectedUsers = settings.value.requests.list.filter((user) =>
-    selectedIds.value.has(user.userId)
-  );
-
   try {
+    loading.value = true;
+
+    const selectedUsers = settings.value.requests.list.filter((user) =>
+      selectedIds.value.has(user.userId)
+    );
+
     const userKeys = await $api.post<{
       sessionKey: string;
       encryptedSymmetricKey: string;
@@ -104,5 +108,7 @@ async function acceptRequests() {
 
     console.error(err);
   }
+
+  loading.value = false;
 }
 </script>

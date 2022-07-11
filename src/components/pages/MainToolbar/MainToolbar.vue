@@ -692,24 +692,30 @@
 
         <Gap style="width: 2px" />
 
-        <UserSettingsDialog />
+        <ToolbarBtn
+          tooltip="Settings"
+          icon="mdi-cog"
+          icon-size="28px"
+          round
+          @click="$pages.react.userSettingsVisible = true"
+        />
 
         <Gap style="width: 2px" />
 
         <ToolbarBtn
           tooltip="Account"
-          icon="mdi-account-circle"
-          icon-size="28px"
+          icon="mdi-account"
+          icon-size="30px"
           round
         >
           <q-menu
             anchor="bottom right"
             self="top right"
+            auto-close
           >
             <q-list>
               <q-item
                 clickable
-                v-close-popup
                 href="/account/general"
               >
                 <q-item-section avatar>
@@ -719,7 +725,6 @@
               </q-item>
               <q-item
                 clickable
-                v-close-popup
                 @click="logout()"
               >
                 <q-item-section avatar>
@@ -768,7 +773,6 @@ import { useUI } from 'src/stores/pages/ui';
 import { computed } from 'vue';
 
 import ToolbarBtn from '../misc/ToolbarBtn.vue';
-import UserSettingsDialog from './UserSettingsDialog/UserSettingsDialog.vue';
 
 const ui = useUI();
 

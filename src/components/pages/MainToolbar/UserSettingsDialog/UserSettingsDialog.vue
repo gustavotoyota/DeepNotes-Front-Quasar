@@ -1,13 +1,5 @@
 <template>
-  <ToolbarBtn
-    tooltip="Settings"
-    icon="mdi-cog"
-    icon-size="28px"
-    round
-    @click="visible = true"
-  />
-
-  <q-dialog v-model="visible">
+  <q-dialog v-model="$pages.react.userSettingsVisible">
     <q-card
       style="
         display: flex;
@@ -125,7 +117,6 @@ import { saveGroupSymmetricKey } from 'src/code/crypto/crypto';
 import { DICT_GROUP_OWNER_ID } from 'src/code/pages/app/app';
 import { REALTIME_USER_DISPLAY_NAME } from 'src/code/pages/app/realtime';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
-import ToolbarBtn from 'src/components/pages/misc/ToolbarBtn.vue';
 import { provide, ref, watch } from 'vue';
 
 import TabBtn from '../../misc/TabBtn.vue';
@@ -134,62 +125,66 @@ import GroupsTab from './GroupsTab.vue';
 import InvitationsTab from './InvitationsTab.vue';
 import RequestsTab from './RequestsTab.vue';
 
-const visible = ref(false);
-
 const settings = ref(initialSettings());
 provide('settings', settings);
 
-watch(visible, async () => {
-  if (!visible.value) {
-    return;
-  }
+watch(
+  () => $pages.react.userSettingsVisible,
+  async () => {
+    if (!$pages.react.userSettingsVisible) {
+      return;
+    }
 
-  settings.value = initialSettings();
+    try {
+      settings.value = initialSettings();
 
-  try {
-    const [request, displayName] = await Promise.all([
-      $api.post<{
-        groups: IGroupData[];
-        invitations: IGroupData[];
-        requests: IGroupData[];
-      }>('/api/users/load-settings'),
+      const [request, displayName] = await Promise.all([
+        $api.post<{
+          groups: IGroupData[];
+          invitations: IGroupData[];
+          requests: IGroupData[];
+        }>('/api/users/load-settings'),
 
-      $pages.realtime.getAsync(REALTIME_USER_DISPLAY_NAME, $pages.react.userId),
-    ]);
+        $pages.realtime.getAsync(
+          REALTIME_USER_DISPLAY_NAME,
+          $pages.react.userId
+        ),
+      ]);
 
-    settings.value.general.displayName = displayName!;
+      settings.value.general.displayName = displayName!;
 
-    settings.value.groups.list = request.data.groups;
-    settings.value.invitations.list = request.data.invitations;
-    settings.value.requests.list = request.data.requests;
+      settings.value.groups.list = request.data.groups;
+      settings.value.invitations.list = request.data.invitations;
+      settings.value.requests.list = request.data.requests;
 
-    request.data.groups
-      .concat(request.data.invitations)
-      .concat(request.data.requests)
-      .forEach((group) => {
-        $pages.react.dict[`${DICT_GROUP_OWNER_ID}:${group.groupId}`] =
-          group.ownerId;
+      request.data.groups
+        .concat(request.data.invitations)
+        .concat(request.data.requests)
+        .forEach((group) => {
+          $pages.react.dict[`${DICT_GROUP_OWNER_ID}:${group.groupId}`] =
+            group.ownerId;
 
-        if (
-          group.encryptedSymmetricKey != null &&
-          group.encryptersPublicKey != null
-        ) {
-          saveGroupSymmetricKey(
-            group.groupId,
-            group.encryptedSymmetricKey,
-            group.encryptersPublicKey
-          );
-        }
+          if (
+            group.encryptedSymmetricKey != null &&
+            group.encryptersPublicKey != null
+          ) {
+            saveGroupSymmetricKey(
+              group.groupId,
+              group.encryptedSymmetricKey,
+              group.encryptersPublicKey
+            );
+          }
+        });
+
+      settings.value.loaded = true;
+    } catch (err: any) {
+      Notify.create({
+        message: err.response?.data.message ?? 'An error has occurred.',
+        color: 'negative',
       });
 
-    settings.value.loaded = true;
-  } catch (err: any) {
-    Notify.create({
-      message: err.response?.data.message ?? 'An error has occurred.',
-      color: 'negative',
-    });
-
-    console.error(err);
+      console.error(err);
+    }
   }
-});
+);
 </script>

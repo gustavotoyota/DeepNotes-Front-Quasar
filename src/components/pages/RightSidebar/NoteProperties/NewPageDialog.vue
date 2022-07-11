@@ -86,6 +86,7 @@ const router = useRouter();
 const page = inject<Ref<AppPage>>('page')!;
 
 const visible = ref(false);
+const loading = ref(false);
 
 const pageTitle = ref('');
 const pageTitleElem = ref<HTMLElement>();
@@ -93,8 +94,6 @@ const pageTitleElem = ref<HTMLElement>();
 const createGroup = ref(false);
 const groupName = ref('');
 const groupNameElem = ref<HTMLElement>();
-
-const loading = ref(false);
 
 watch(visible, async () => {
   if (!visible.value) {
@@ -195,12 +194,12 @@ async function createPage() {
 
     await $pages.goToPage(response.data.pageId, router, true);
 
-    visible.value = false;
-
     Notify.create({
       message: 'Page created successfully.',
       color: 'positive',
     });
+
+    visible.value = false;
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',

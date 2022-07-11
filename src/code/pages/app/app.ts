@@ -97,6 +97,8 @@ export interface IAppReact {
 
   tableContextMenu: boolean;
   tableContextMenuPos: Vec2;
+
+  userSettingsVisible: boolean;
 }
 
 export class PagesApp {
@@ -231,6 +233,8 @@ export class PagesApp {
 
       tableContextMenu: false,
       tableContextMenuPos: new Vec2(),
+
+      userSettingsVisible: false,
     });
 
     globalThis.__DEEP_NOTES__ = {

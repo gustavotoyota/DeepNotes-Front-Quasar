@@ -16,24 +16,24 @@
             <q-menu
               anchor="bottom left"
               self="top left"
+              auto-close
             >
               <q-list>
                 <q-item
                   clickable
-                  v-close-popup
                   to="/account/general"
-                  style="padding: 16px 24px; font-size: 16px"
+                  style="padding: 16px 20px; font-size: 16px"
                 >
                   <q-item-section avatar>
                     <q-icon name="mdi-cog" />
                   </q-item-section>
                   <q-item-section>General</q-item-section>
                 </q-item>
+
                 <q-item
                   clickable
-                  v-close-popup
                   to="/account/security"
-                  style="padding: 16px 24px; font-size: 16px"
+                  style="padding: 16px 20px; font-size: 16px"
                 >
                   <q-item-section avatar>
                     <q-icon name="mdi-shield" />
@@ -74,23 +74,29 @@
             <q-menu
               anchor="bottom right"
               self="top right"
+              auto-close
             >
               <q-list>
                 <template v-if="!auth.loggedIn">
                   <q-item
                     clickable
-                    v-close-popup
                     to="/login"
-                    style="padding: 16px 24px; font-size: 16px"
+                    style="padding: 16px 20px; font-size: 16px"
                   >
+                    <q-item-section avatar>
+                      <q-icon name="mdi-login" />
+                    </q-item-section>
                     <q-item-section>Login</q-item-section>
                   </q-item>
+
                   <q-item
                     clickable
-                    v-close-popup
                     to="/register"
-                    style="padding: 16px 24px; font-size: 16px"
+                    style="padding: 16px 20px; font-size: 16px"
                   >
+                    <q-item-section avatar>
+                      <q-icon name="mdi-account-plus" />
+                    </q-item-section>
                     <q-item-section>Register</q-item-section>
                   </q-item>
                 </template>
@@ -98,26 +104,34 @@
                 <template v-else>
                   <q-item
                     clickable
-                    v-close-popup
                     to="/pages"
-                    style="padding: 16px 24px; font-size: 16px"
+                    style="padding: 16px 20px; font-size: 16px"
                   >
+                    <q-item-section avatar>
+                      <q-icon name="mdi-note-multiple" />
+                    </q-item-section>
                     <q-item-section>Go to Pages</q-item-section>
                   </q-item>
+
                   <q-item
                     clickable
-                    v-close-popup
                     to="/account/general"
-                    style="padding: 16px 24px; font-size: 16px"
+                    style="padding: 16px 20px; font-size: 16px"
                   >
+                    <q-item-section avatar>
+                      <q-icon name="mdi-account" />
+                    </q-item-section>
                     <q-item-section>Account</q-item-section>
                   </q-item>
+
                   <q-item
                     clickable
-                    v-close-popup
                     @click="logout()"
-                    style="padding: 16px 24px; font-size: 16px"
+                    style="padding: 16px 20px; font-size: 16px"
                   >
+                    <q-item-section avatar>
+                      <q-icon name="mdi-logout" />
+                    </q-item-section>
                     <q-item-section>Logout</q-item-section>
                   </q-item>
                 </template>
@@ -165,11 +179,11 @@
                 <q-menu
                   anchor="bottom right"
                   self="top right"
+                  auto-close
                 >
                   <q-list>
                     <q-item
                       clickable
-                      v-close-popup
                       to="/account/general"
                     >
                       <q-item-section avatar>
@@ -180,7 +194,6 @@
 
                     <q-item
                       clickable
-                      v-close-popup
                       @click="logout()"
                     >
                       <q-item-section avatar>

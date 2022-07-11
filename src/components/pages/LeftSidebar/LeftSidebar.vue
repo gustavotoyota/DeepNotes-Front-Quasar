@@ -12,9 +12,9 @@
     <div style="flex: 1; display: flex; flex-direction: column; height: 0">
       <q-toolbar style="width: 299px">
         <q-avatar
-          icon="mdi-animation"
-          size="50px"
-          style="margin-left: -9px"
+          icon="mdi-note-multiple"
+          size="46px"
+          style="margin-left: -7px; margin-top: -2px"
         />
 
         <q-toolbar-title style="margin-left: 6px">Path</q-toolbar-title>

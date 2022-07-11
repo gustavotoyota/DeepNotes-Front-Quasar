@@ -26,11 +26,11 @@
             v-bind="menuAttr"
             anchor="top end"
             self="top start"
+            auto-close
           >
             <q-list>
               <q-item
                 clickable
-                v-close-popup
                 @click="format((chain) => chain.addColumnBefore())"
               >
                 <q-item-section avatar>
@@ -41,7 +41,6 @@
 
               <q-item
                 clickable
-                v-close-popup
                 @click="format((chain) => chain.addColumnAfter())"
               >
                 <q-item-section avatar>
@@ -52,7 +51,6 @@
 
               <q-item
                 clickable
-                v-close-popup
                 @click="format((chain) => chain.deleteColumn())"
               >
                 <q-item-section avatar>
@@ -82,11 +80,11 @@
             v-bind="menuAttr"
             anchor="top end"
             self="top start"
+            auto-close
           >
             <q-list>
               <q-item
                 clickable
-                v-close-popup
                 @click="format((chain) => chain.addRowBefore())"
               >
                 <q-item-section avatar>
@@ -97,7 +95,6 @@
 
               <q-item
                 clickable
-                v-close-popup
                 @click="format((chain) => chain.addRowAfter())"
               >
                 <q-item-section avatar>
@@ -108,7 +105,6 @@
 
               <q-item
                 clickable
-                v-close-popup
                 @click="format((chain) => chain.deleteRow())"
               >
                 <q-item-section avatar>
@@ -138,11 +134,11 @@
             v-bind="menuAttr"
             anchor="top end"
             self="top start"
+            auto-close
           >
             <q-list>
               <q-item
                 clickable
-                v-close-popup
                 @click="format((chain) => chain.mergeCells())"
               >
                 <q-item-section avatar>
@@ -153,7 +149,6 @@
 
               <q-item
                 clickable
-                v-close-popup
                 @click="format((chain) => chain.splitCell())"
               >
                 <q-item-section avatar>

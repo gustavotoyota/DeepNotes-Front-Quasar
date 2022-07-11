@@ -43,7 +43,7 @@
             flat
             label="Ok"
             color="primary"
-            v-close-popup
+            :loading="loading"
             @click.prevent="changeRole()"
           />
         </q-card-actions>
@@ -64,6 +64,7 @@ import { computed, inject, Ref, ref, watch } from 'vue';
 import { initialSettings } from '../GroupSettingsDialog.vue';
 
 const visible = ref(false);
+const loading = ref(false);
 
 const page = inject<Ref<AppPage>>('page')!;
 
@@ -91,6 +92,8 @@ async function changeRole() {
   }
 
   try {
+    loading.value = true;
+
     await Promise.all(
       Array.from(selectedIds.value).map((userId) =>
         $api.post('/api/groups/change-user-role', {
@@ -106,6 +109,8 @@ async function changeRole() {
         user.roleId = roleId.value;
       }
     }
+
+    visible.value = false;
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',
@@ -114,5 +119,7 @@ async function changeRole() {
 
     console.error(err);
   }
+
+  loading.value = false;
 }
 </script>

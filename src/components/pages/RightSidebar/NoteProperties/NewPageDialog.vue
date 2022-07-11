@@ -56,6 +56,7 @@
             flat
             label="Ok"
             color="primary"
+            :loading="loading"
             @click.prevent="createPage()"
           />
         </q-card-actions>
@@ -92,6 +93,8 @@ const pageTitleElem = ref<HTMLElement>();
 const createGroup = ref(false);
 const groupName = ref('');
 const groupNameElem = ref<HTMLElement>();
+
+const loading = ref(false);
 
 watch(visible, async () => {
   if (!visible.value) {
@@ -140,6 +143,8 @@ async function createPage() {
   }
 
   try {
+    loading.value = true;
+
     let groupSymmetricKey;
     let encryptedGroupSymmetricKey;
     let encryptedGroupName;
@@ -204,5 +209,7 @@ async function createPage() {
 
     console.error(err);
   }
+
+  loading.value = false;
 }
 </script>

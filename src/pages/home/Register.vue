@@ -44,6 +44,7 @@
           label="Create account"
           type="submit"
           color="primary"
+          :loading="data.loading"
           style="width: 100%; font-size: 16px; padding: 12px 0px"
           @click.prevent="register()"
         />
@@ -69,6 +70,7 @@ export default {
 import { PreFetchOptions } from '@quasar/app-vite';
 import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
+import { login } from 'src/code/auth';
 import { computeDerivedKeys, generateRandomKeys } from 'src/code/crypto/crypto';
 import { wrapSymmetricKey } from 'src/code/crypto/symmetric-key';
 import { ISerialObjectInput } from 'src/code/pages/app/serialization';
@@ -86,6 +88,8 @@ const data = reactive({
   displayName: '',
   password: '',
   repeatPassword: '',
+
+  loading: false,
 });
 
 async function register() {
@@ -100,31 +104,33 @@ async function register() {
     return;
   }
 
-  const derivedKeys = await computeDerivedKeys(data.email, data.password);
-  const randomKeys = await generateRandomKeys(derivedKeys.masterKey);
-
-  const userSymmetricKey = wrapSymmetricKey(randomKeys.userSymmetricKey);
-
-  const encryptedDefaultNote = userSymmetricKey.encrypt(
-    encodeText(
-      JSON.stringify({
-        layers: [
-          {
-            noteIndexes: [0],
-          },
-          {},
-        ],
-        notes: [{ layerIndexes: [1] }],
-      } as ISerialObjectInput)
-    )
-  );
-  const encryptedDefaultArrow = userSymmetricKey.encrypt(
-    encodeText(JSON.stringify({}))
-  );
-
-  const groupSymmetricKey = wrapSymmetricKey(randomKeys.groupSymmetricKey);
-
   try {
+    data.loading = true;
+
+    const derivedKeys = await computeDerivedKeys(data.email, data.password);
+    const randomKeys = await generateRandomKeys(derivedKeys.masterKey);
+
+    const userSymmetricKey = wrapSymmetricKey(randomKeys.userSymmetricKey);
+
+    const encryptedDefaultNote = userSymmetricKey.encrypt(
+      encodeText(
+        JSON.stringify({
+          layers: [
+            {
+              noteIndexes: [0],
+            },
+            {},
+          ],
+          notes: [{ layerIndexes: [1] }],
+        } as ISerialObjectInput)
+      )
+    );
+    const encryptedDefaultArrow = userSymmetricKey.encrypt(
+      encodeText(JSON.stringify({}))
+    );
+
+    const groupSymmetricKey = wrapSymmetricKey(randomKeys.groupSymmetricKey);
+
     await $api.post('/auth/register', {
       email: data.email,
 
@@ -153,12 +159,14 @@ async function register() {
       ),
     });
 
+    await login(data.email, data.password);
+
     Notify.create({
       message: 'Account created successfully.',
       color: 'positive',
     });
 
-    await router.push('/login');
+    await router.push('/pages');
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',
@@ -166,6 +174,8 @@ async function register() {
     });
 
     console.error(err);
+
+    data.loading = false;
   }
 }
 </script>

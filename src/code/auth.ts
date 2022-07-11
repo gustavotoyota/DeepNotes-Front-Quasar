@@ -3,9 +3,12 @@ import sodium from 'libsodium-wrappers';
 import { Cookies } from 'quasar';
 import { useAuth } from 'src/stores/auth';
 
-import { reencryptSessionPrivateKey } from './crypto/crypto';
+import {
+  computeDerivedKeys,
+  reencryptSessionPrivateKey,
+} from './crypto/crypto';
 import { privateKey } from './crypto/private-key';
-import { addDays } from './utils';
+import { addDays, bytesToBase64 } from './utils';
 
 export const apiBaseURL = process.env.DEV
   ? 'http://192.168.1.4:21733'
@@ -134,14 +137,36 @@ function storeToken(tokenName: string, token: string) {
   localStorage.setItem(`${tokenName}-exp`, `${decodedToken.exp * 1000}`);
 }
 
-export function deleteTokens() {
-  deleteToken('access-token');
-  deleteToken('refresh-token');
-}
-export function deleteToken(tokenName: string) {
-  Cookies.remove(tokenName);
-  localStorage.removeItem(`${tokenName}-iat`);
-  localStorage.removeItem(`${tokenName}-exp`);
+export async function login(email: string, password: string) {
+  const auth = useAuth();
+
+  const derivedKeys = await computeDerivedKeys(email, password);
+
+  const response = await $api.post<{
+    accessToken: string;
+    refreshToken: string;
+
+    encryptedPrivateKey: string;
+
+    sessionKey: string;
+  }>('/auth/login', {
+    email: email,
+    passwordHash: bytesToBase64(derivedKeys.passwordHash),
+  });
+
+  // Store tokens
+
+  storeTokens(response.data.accessToken, response.data.refreshToken);
+
+  // Process session private key
+
+  reencryptSessionPrivateKey(
+    sodium.from_base64(response.data.encryptedPrivateKey),
+    derivedKeys.masterKey,
+    sodium.from_base64(response.data.sessionKey)
+  );
+
+  auth.loggedIn = true;
 }
 
 export function logout() {
@@ -170,4 +195,13 @@ export function logout() {
   auth.loggedIn = false;
 
   enforceRouteRules();
+}
+export function deleteTokens() {
+  deleteToken('access-token');
+  deleteToken('refresh-token');
+}
+export function deleteToken(tokenName: string) {
+  Cookies.remove(tokenName);
+  localStorage.removeItem(`${tokenName}-iat`);
+  localStorage.removeItem(`${tokenName}-exp`);
 }

@@ -25,8 +25,9 @@
           label="Login"
           type="submit"
           color="primary"
+          :loading="data.loading"
           style="width: 100%; font-size: 16px; padding: 12px 0px"
-          @click.prevent="login()"
+          @click.prevent="onSubmit()"
         />
       </q-form>
     </ResponsiveContainer>
@@ -37,57 +38,27 @@
   setup
   lang="ts"
 >
-import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
-import { storeTokens } from 'src/code/auth';
-import {
-  computeDerivedKeys,
-  reencryptSessionPrivateKey,
-} from 'src/code/crypto/crypto';
-import { bytesToBase64 } from 'src/code/utils';
+import { login } from 'src/code/auth';
 import Gap from 'src/components/misc/Gap.vue';
 import ResponsiveContainer from 'src/components/misc/ResponsiveContainer.vue';
-import { useAuth } from 'src/stores/auth';
 import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
 
-const auth = useAuth();
 const router = useRouter();
 
 const data = reactive({
   email: '',
   password: '',
+
+  loading: false,
 });
 
-async function login() {
-  const derivedKeys = await computeDerivedKeys(data.email, data.password);
-
+async function onSubmit() {
   try {
-    const response = await $api.post<{
-      accessToken: string;
-      refreshToken: string;
+    data.loading = true;
 
-      encryptedPrivateKey: string;
-
-      sessionKey: string;
-    }>('/auth/login', {
-      email: data.email,
-      passwordHash: bytesToBase64(derivedKeys.passwordHash),
-    });
-
-    // Store tokens
-
-    storeTokens(response.data.accessToken, response.data.refreshToken);
-
-    // Process session private key
-
-    reencryptSessionPrivateKey(
-      sodium.from_base64(response.data.encryptedPrivateKey),
-      derivedKeys.masterKey,
-      sodium.from_base64(response.data.sessionKey)
-    );
-
-    auth.loggedIn = true;
+    await login(data.email, data.password);
 
     Notify.create({
       message: 'Login successful.',
@@ -102,6 +73,8 @@ async function login() {
     });
 
     console.error(err);
+
+    data.loading = false;
   }
 }
 </script>

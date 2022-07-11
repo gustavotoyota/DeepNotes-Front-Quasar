@@ -13,7 +13,9 @@
 
     <template v-if="page.react.status === 'unauthorized'">
       <template v-if="page.react.userStatus === 'invite'">
-        <div>You were invited to access this group.</div>
+        <div>
+          You were invited to access this group ({{ page.react.groupName }}).
+        </div>
 
         <Gap style="height: 12px" />
 

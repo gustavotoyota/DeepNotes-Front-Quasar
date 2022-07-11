@@ -118,6 +118,7 @@ export function initialSettings() {
   lang="ts"
 >
 import { AppPage } from 'src/code/pages/app/page/page';
+import { REALTIME_ENCRYPTED_GROUP_NAME } from 'src/code/pages/app/realtime';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import TabBtn from 'src/components/pages/misc/TabBtn.vue';
 import { inject, provide, Ref, ref, watch } from 'vue';
@@ -141,7 +142,7 @@ watch(visible, async (value) => {
 
   settings.value = initialSettings();
 
-  const [response, groupName] = await Promise.all([
+  const [response] = await Promise.all([
     $api.post<{
       requests: IGroupUser[];
       invitations: IGroupUser[];
@@ -151,10 +152,13 @@ watch(visible, async (value) => {
       groupId: page.value.react.groupId,
     }),
 
-    $pages.react.groupNames[page.value.react.groupId],
+    $pages.realtime.getAsync(
+      REALTIME_ENCRYPTED_GROUP_NAME,
+      page.value.react.groupId
+    ),
   ]);
 
-  settings.value.general.groupName = groupName ?? '';
+  settings.value.general.groupName = page.value.react.groupName ?? '';
 
   settings.value.requests.list = response.data.requests;
   settings.value.invitations.list = response.data.invitations;

@@ -132,7 +132,7 @@
   setup
   lang="ts"
 >
-import { to_base64 } from 'libsodium-wrappers';
+import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
 import { PageArrow } from 'src/code/pages/app/page/arrows/arrow';
 import { AppPage } from 'src/code/pages/app/page/page';
@@ -179,7 +179,7 @@ async function setAsDefault() {
     await $api.post<{
       templateId: string;
     }>('/api/users/save-default-arrow', {
-      encryptedDefaultArrow: to_base64(
+      encryptedDefaultArrow: sodium.to_base64(
         $pages.react.symmetricKey.encrypt(
           encodeText(JSON.stringify($pages.react.defaultArrow))
         )

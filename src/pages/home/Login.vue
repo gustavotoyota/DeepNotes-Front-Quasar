@@ -37,13 +37,14 @@
   setup
   lang="ts"
 >
-import { from_base64 } from 'libsodium-wrappers';
+import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
 import { storeTokens } from 'src/code/auth';
 import {
   computeDerivedKeys,
   reencryptSessionPrivateKey,
 } from 'src/code/crypto/crypto';
+import { bytesToBase64 } from 'src/code/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import ResponsiveContainer from 'src/components/misc/ResponsiveContainer.vue';
 import { useAuth } from 'src/stores/auth';
@@ -71,7 +72,7 @@ async function login() {
       sessionKey: string;
     }>('/auth/login', {
       email: data.email,
-      passwordHash: derivedKeys.passwordHash,
+      passwordHash: bytesToBase64(derivedKeys.passwordHash),
     });
 
     // Store tokens
@@ -81,9 +82,9 @@ async function login() {
     // Process session private key
 
     reencryptSessionPrivateKey(
-      from_base64(response.data.encryptedPrivateKey),
+      sodium.from_base64(response.data.encryptedPrivateKey),
       derivedKeys.masterKey,
-      from_base64(response.data.sessionKey)
+      sodium.from_base64(response.data.sessionKey)
     );
 
     auth.loggedIn = true;

@@ -64,7 +64,7 @@
   setup
   lang="ts"
 >
-import { from_base64, to_base64 } from 'libsodium-wrappers';
+import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
 import { reencryptSymmetricKey } from 'src/code/crypto/crypto';
 import { AppPage } from 'src/code/pages/app/page/page';
@@ -135,10 +135,10 @@ async function inviteUser() {
   ]);
 
   const reencryptedSymmetricKey = reencryptSymmetricKey(
-    from_base64(inviterKeys.data.sessionKey),
-    from_base64(inviterKeys.data.encryptedSymmetricKey),
-    from_base64(inviterKeys.data.encryptersPublicKey),
-    from_base64(inviteeInfos.data.publicKey)
+    sodium.from_base64(inviterKeys.data.sessionKey),
+    sodium.from_base64(inviterKeys.data.encryptedSymmetricKey),
+    sodium.from_base64(inviterKeys.data.encryptersPublicKey),
+    sodium.from_base64(inviteeInfos.data.publicKey)
   );
 
   try {
@@ -146,7 +146,7 @@ async function inviteUser() {
       groupId: page.value.react.groupId,
       userId: inviteeInfos.data.userId,
       roleId: roleId.value,
-      encryptedSymmetricKey: to_base64(reencryptedSymmetricKey),
+      encryptedSymmetricKey: sodium.to_base64(reencryptedSymmetricKey),
     });
 
     settings.value.invitations.list.push({

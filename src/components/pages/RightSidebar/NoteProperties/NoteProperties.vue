@@ -675,7 +675,7 @@
   setup
   lang="ts"
 >
-import { to_base64 } from 'libsodium-wrappers';
+import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
 import { DICT_PAGE_GROUP_ID } from 'src/code/pages/app/app';
 import { PageNote } from 'src/code/pages/app/page/notes/note';
@@ -715,7 +715,7 @@ async function setAsDefault() {
     await $api.post<{
       templateId: string;
     }>('/api/users/save-default-note', {
-      encryptedDefaultNote: to_base64(
+      encryptedDefaultNote: sodium.to_base64(
         $pages.react.symmetricKey.encrypt(
           encodeText(JSON.stringify($pages.react.defaultNote))
         )

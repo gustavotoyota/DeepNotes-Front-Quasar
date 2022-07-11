@@ -1,6 +1,4 @@
-import './argon2';
-
-import sodium, { from_base64, to_base64 } from 'libsodium-wrappers';
+import sodium from 'libsodium-wrappers';
 
 import { DICT_GROUP_SYMMETRIC_KEY } from '../pages/app/app';
 import { concatUint8Array } from '../utils';
@@ -78,25 +76,34 @@ export function decryptSymmetric(
 export async function computeDerivedKeys(email: string, password: string) {
   // Master key
 
-  const masterKey = (
-    await argon2.hash({
-      pass: password,
-      salt: email,
-      type: argon2.ArgonType.Argon2id,
-      hashLen: 32,
-    })
-  ).hash;
+  const masterKeySalt = sodium.crypto_generichash(
+    sodium.crypto_pwhash_SALTBYTES,
+    email
+  );
+
+  const masterKey = sodium.crypto_pwhash(
+    sodium.crypto_box_SEEDBYTES,
+    password,
+    masterKeySalt,
+    sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+    sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE,
+    sodium.crypto_pwhash_ALG_ARGON2ID13
+  );
 
   // Password hash
 
-  const passwordHash = sodium.to_base64(
-    (
-      await argon2.hash({
-        pass: masterKey,
-        salt: password,
-        type: argon2.ArgonType.Argon2id,
-      })
-    ).hash
+  const passwordSalt = sodium.crypto_generichash(
+    sodium.crypto_pwhash_SALTBYTES,
+    password
+  );
+
+  const passwordHash = sodium.crypto_pwhash(
+    sodium.crypto_box_SEEDBYTES,
+    masterKey,
+    passwordSalt,
+    sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+    sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE,
+    sodium.crypto_pwhash_ALG_ARGON2ID13
   );
 
   return {
@@ -173,7 +180,7 @@ export function reencryptSessionPrivateKey(
 
   localStorage.setItem(
     'encrypted-private-key',
-    to_base64(reencryptedPrivateKey)
+    sodium.to_base64(reencryptedPrivateKey)
   );
 
   return decryptedPrivateKey;
@@ -185,7 +192,7 @@ export function reencryptSymmetricKey(
   encryptersPublicKey: Uint8Array,
   recipientsPublicKey: Uint8Array
 ) {
-  const encryptedPrivateKey = from_base64(
+  const encryptedPrivateKey = sodium.from_base64(
     localStorage.getItem('encrypted-private-key')!
   );
 
@@ -211,8 +218,8 @@ export function saveGroupSymmetricKey(
   encryptersPublicKey: string
 ) {
   const decryptedGroupSymmetricKey = privateKey.decrypt(
-    from_base64(encryptedSymmetricKey),
-    from_base64(encryptersPublicKey)
+    sodium.from_base64(encryptedSymmetricKey),
+    sodium.from_base64(encryptersPublicKey)
   );
   const wrappedGroupSymmetricKey = wrapSymmetricKey(decryptedGroupSymmetricKey);
 

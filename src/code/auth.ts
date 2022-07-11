@@ -1,5 +1,5 @@
 import jwtDecode from 'jwt-decode';
-import { from_base64 } from 'libsodium-wrappers';
+import sodium from 'libsodium-wrappers';
 import { Cookies } from 'quasar';
 import { useAuth } from 'src/stores/auth';
 
@@ -62,7 +62,7 @@ export async function tryRefreshTokens(): Promise<void> {
       return;
     }
 
-    const encryptedPrivateKey = from_base64(
+    const encryptedPrivateKey = sodium.from_base64(
       localStorage.getItem('encrypted-private-key')!
     );
 
@@ -82,8 +82,8 @@ export async function tryRefreshTokens(): Promise<void> {
 
     reencryptSessionPrivateKey(
       encryptedPrivateKey,
-      from_base64(response.data.oldSessionKey),
-      from_base64(response.data.newSessionKey)
+      sodium.from_base64(response.data.oldSessionKey),
+      sodium.from_base64(response.data.newSessionKey)
     );
 
     auth.loggedIn = true;

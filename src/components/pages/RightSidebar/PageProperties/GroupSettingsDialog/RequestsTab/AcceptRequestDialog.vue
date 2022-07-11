@@ -39,7 +39,7 @@
   setup
   lang="ts"
 >
-import { from_base64, to_base64 } from 'libsodium-wrappers';
+import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
 import { reencryptSymmetricKey } from 'src/code/crypto/crypto';
 import { AppPage } from 'src/code/pages/app/page/page';
@@ -72,16 +72,16 @@ async function acceptRequests() {
     await Promise.all(
       selectedUsers.map((user) => {
         const reencryptedSymmetricKey = reencryptSymmetricKey(
-          from_base64(userKeys.data.sessionKey),
-          from_base64(userKeys.data.encryptedSymmetricKey),
-          from_base64(userKeys.data.encryptersPublicKey),
-          from_base64(user.publicKey!)
+          sodium.from_base64(userKeys.data.sessionKey),
+          sodium.from_base64(userKeys.data.encryptedSymmetricKey),
+          sodium.from_base64(userKeys.data.encryptersPublicKey),
+          sodium.from_base64(user.publicKey!)
         );
 
         return $api.post('/api/groups/access-requests/accept', {
           groupId: page.value.react.groupId,
           userId: user.userId,
-          encryptedSymmetricKey: to_base64(reencryptedSymmetricKey),
+          encryptedSymmetricKey: sodium.to_base64(reencryptedSymmetricKey),
         });
       })
     );

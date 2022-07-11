@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { from_base64, to_base64 } from 'libsodium-wrappers';
+import sodium from 'libsodium-wrappers';
 import { pull } from 'lodash';
 import { logout } from 'src/code/auth';
 import { saveGroupSymmetricKey } from 'src/code/crypto/crypto';
@@ -163,7 +163,7 @@ export class PagesApp {
           }
 
           return decodeText(
-            symmetricKey.decrypt(from_base64(encryptedPageTitle))
+            symmetricKey.decrypt(sodium.from_base64(encryptedPageTitle))
           );
         },
         set: (pageId: string, value: string) => {
@@ -176,7 +176,7 @@ export class PagesApp {
             return;
           }
 
-          const encryptedPageTitle = to_base64(
+          const encryptedPageTitle = sodium.to_base64(
             symmetricKey.encrypt(encodeText(value))
           );
 
@@ -206,7 +206,7 @@ export class PagesApp {
           }
 
           return decodeText(
-            symmetricKey.decrypt(from_base64(encryptedGroupName))
+            symmetricKey.decrypt(sodium.from_base64(encryptedGroupName))
           );
         },
         set: (groupId: string, value: string) => {
@@ -217,7 +217,7 @@ export class PagesApp {
             return;
           }
 
-          const encryptedGroupName = to_base64(
+          const encryptedGroupName = sodium.to_base64(
             symmetricKey.encrypt(encodeText(value))
           );
 
@@ -260,10 +260,10 @@ export class PagesApp {
     // Load user data
 
     this.react.userId = response.data.userId;
-    this.react.publicKey = from_base64(response.data.publicKey);
+    this.react.publicKey = sodium.from_base64(response.data.publicKey);
     this.react.symmetricKey = wrapSymmetricKey(
       privateKey.decrypt(
-        from_base64(response.data.encryptedSymmetricKey),
+        sodium.from_base64(response.data.encryptedSymmetricKey),
         this.react.publicKey
       )
     );
@@ -271,14 +271,14 @@ export class PagesApp {
     this.react.defaultNote = JSON.parse(
       decodeText(
         this.react.symmetricKey.decrypt(
-          from_base64(response.data.encryptedDefaultNote)
+          sodium.from_base64(response.data.encryptedDefaultNote)
         )
       )
     );
     this.react.defaultArrow = JSON.parse(
       decodeText(
         this.react.symmetricKey.decrypt(
-          from_base64(response.data.encryptedDefaultArrow)
+          sodium.from_base64(response.data.encryptedDefaultArrow)
         )
       )
     );

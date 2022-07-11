@@ -67,12 +67,12 @@ export default {
   lang="ts"
 >
 import { PreFetchOptions } from '@quasar/app-vite';
-import { to_base64 } from 'libsodium-wrappers';
+import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
 import { computeDerivedKeys, generateRandomKeys } from 'src/code/crypto/crypto';
 import { wrapSymmetricKey } from 'src/code/crypto/symmetric-key';
 import { ISerialObjectInput } from 'src/code/pages/app/serialization';
-import { encodeText } from 'src/code/utils';
+import { bytesToBase64, encodeText } from 'src/code/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import ResponsiveContainer from 'src/components/misc/ResponsiveContainer.vue';
 import { useAuth } from 'src/stores/auth';
@@ -130,25 +130,25 @@ async function register() {
 
       displayName: data.displayName,
 
-      passwordHash: derivedKeys.passwordHash,
+      passwordHash: bytesToBase64(derivedKeys.passwordHash),
 
-      publicKey: to_base64(randomKeys.publicKey),
-      encryptedPrivateKey: to_base64(randomKeys.encryptedPrivateKey),
-      encryptedUserSymmetricKey: to_base64(
+      publicKey: sodium.to_base64(randomKeys.publicKey),
+      encryptedPrivateKey: sodium.to_base64(randomKeys.encryptedPrivateKey),
+      encryptedUserSymmetricKey: sodium.to_base64(
         randomKeys.encryptedUserSymmetricKey
       ),
-      encryptedGroupSymmetricKey: to_base64(
+      encryptedGroupSymmetricKey: sodium.to_base64(
         randomKeys.encryptedGroupSymmetricKey
       ),
 
-      encryptedDefaultNote: to_base64(encryptedDefaultNote),
-      encryptedDefaultArrow: to_base64(encryptedDefaultArrow),
+      encryptedDefaultNote: sodium.to_base64(encryptedDefaultNote),
+      encryptedDefaultArrow: sodium.to_base64(encryptedDefaultArrow),
 
-      encryptedGroupName: to_base64(
+      encryptedGroupName: sodium.to_base64(
         groupSymmetricKey.encrypt(encodeText(`${data.displayName}'s Group`))
       ),
 
-      encryptedMainPageTitle: to_base64(
+      encryptedMainPageTitle: sodium.to_base64(
         groupSymmetricKey.encrypt(encodeText('Main page'))
       ),
     });

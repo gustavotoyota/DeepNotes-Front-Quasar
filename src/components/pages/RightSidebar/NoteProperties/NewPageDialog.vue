@@ -68,7 +68,7 @@
   setup
   lang="ts"
 >
-import { randombytes_buf, to_base64 } from 'libsodium-wrappers';
+import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
 import { privateKey } from 'src/code/crypto/private-key';
 import { wrapSymmetricKey } from 'src/code/crypto/symmetric-key';
@@ -147,7 +147,7 @@ async function createPage() {
     let encryptedPageTitle;
 
     if (createGroup.value) {
-      groupSymmetricKey = randombytes_buf(32);
+      groupSymmetricKey = sodium.randombytes_buf(32);
 
       encryptedGroupSymmetricKey = privateKey.encrypt(
         groupSymmetricKey,
@@ -156,15 +156,15 @@ async function createPage() {
 
       const wrappedGroupSymmetricKey = wrapSymmetricKey(groupSymmetricKey);
 
-      encryptedGroupName = to_base64(
+      encryptedGroupName = sodium.to_base64(
         wrappedGroupSymmetricKey.encrypt(encodeText(groupName.value))
       );
 
-      encryptedPageTitle = to_base64(
+      encryptedPageTitle = sodium.to_base64(
         wrappedGroupSymmetricKey.encrypt(encodeText(pageTitle.value))
       );
     } else {
-      encryptedPageTitle = to_base64(
+      encryptedPageTitle = sodium.to_base64(
         page.value.react.symmetricKey.encrypt(encodeText(pageTitle.value))
       );
     }
@@ -174,7 +174,7 @@ async function createPage() {
     }>('/api/pages/create', {
       createGroup: createGroup.value,
       encryptedGroupSymmetricKey: encryptedGroupSymmetricKey
-        ? to_base64(encryptedGroupSymmetricKey)
+        ? sodium.to_base64(encryptedGroupSymmetricKey)
         : undefined,
       encryptedGroupName,
 

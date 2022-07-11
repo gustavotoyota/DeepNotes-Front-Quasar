@@ -128,7 +128,7 @@
   setup
   lang="ts"
 >
-import { from_base64 } from 'libsodium-wrappers';
+import sodium from 'libsodium-wrappers';
 import { Notify, QForm, useMeta } from 'quasar';
 import {
   computeDerivedKeys,
@@ -214,16 +214,16 @@ async function changePassword() {
       encryptedPrivateKey: string;
       sessionKey: string;
     }>('/api/users/account/security/change-password', {
-      oldPasswordHash: oldDerivedKeys.passwordHash,
-      newPasswordHash: newDerivedKeys.passwordHash,
+      oldPasswordHash: bytesToBase64(oldDerivedKeys.passwordHash),
+      newPasswordHash: bytesToBase64(newDerivedKeys.passwordHash),
     });
 
     // Process session private key
 
     const decryptedPrivateKey = reencryptSessionPrivateKey(
-      from_base64(response.data.encryptedPrivateKey),
+      sodium.from_base64(response.data.encryptedPrivateKey),
       oldDerivedKeys.masterKey,
-      from_base64(response.data.sessionKey)
+      sodium.from_base64(response.data.sessionKey)
     );
 
     // Reencrypt private key with master key
@@ -236,8 +236,8 @@ async function changePassword() {
     // Request password change
 
     await $api.post('/api/users/account/security/change-password', {
-      oldPasswordHash: oldDerivedKeys.passwordHash,
-      newPasswordHash: newDerivedKeys.passwordHash,
+      oldPasswordHash: bytesToBase64(oldDerivedKeys.passwordHash),
+      newPasswordHash: bytesToBase64(newDerivedKeys.passwordHash),
       reencryptedPrivateKey: bytesToBase64(reencryptedPrivateKey),
     });
 

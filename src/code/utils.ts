@@ -1,5 +1,5 @@
 import Color from 'color';
-import { from_base64, to_base64 } from 'libsodium-wrappers';
+import sodium from 'libsodium-wrappers';
 
 export function concatUint8Array(...arrays: Uint8Array[]) {
   let totalLength = 0;
@@ -113,14 +113,14 @@ export function base64ToBytes(input: string | null): Uint8Array | null {
   if (input == null) {
     return null;
   } else {
-    return from_base64(input);
+    return sodium.from_base64(input);
   }
 }
 export function bytesToBase64(input: Uint8Array | null): string | null {
   if (input == null) {
     return null;
   } else {
-    return to_base64(input);
+    return sodium.to_base64(input);
   }
 }
 

@@ -75,7 +75,7 @@
               anchor="bottom right"
               self="top right"
             >
-              <q-list style="width: 150px">
+              <q-list>
                 <template v-if="!auth.loggedIn">
                   <q-item
                     clickable

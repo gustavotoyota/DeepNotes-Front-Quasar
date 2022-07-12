@@ -245,7 +245,11 @@ async function changePassword() {
       color: 'positive',
     });
 
-    passwordChangeForm.value.reset();
+    // Clear form data
+
+    data.oldPassword = '';
+    data.newPassword = '';
+    data.confirmNewPassword = '';
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',

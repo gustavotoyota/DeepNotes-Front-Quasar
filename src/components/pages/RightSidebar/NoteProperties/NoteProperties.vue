@@ -403,24 +403,24 @@
         no-footer
         :palette="[
           '#424242', // grey
-          '#37474F', // blue-grey
-          '#4E342E', // brown
-          '#BF360C', // deep-orange
-          '#E65100', // orange
-          '#FF6F00', // amber
-          '#f57f17', // yellow
-          '#9E9D24', // lime
-          '#558B2F', // light-green
-          '#2E7D32', // green
-          '#00695C', // teal
-          '#00838F', // cyan
-          '#0277BD', // light-blue
-          '#1565c0', // blue
-          '#283593', // indigo
-          '#4527a0', // deep-purple
-          '#6a1b9a', // purple
-          '#ad1457', // pink
-          '#b71c1c', // red
+          '#455A64', // blue-grey
+          '#5D4037', // brown
+          '#E64A19', // deep-orange
+          '#F57C00', // orange
+          '#FFA000', // amber
+          '#FBC02D', // yellow
+          '#AFB42B', // lime
+          '#689F38', // light-green
+          '#388E3C', // green
+          '#00796B', // teal
+          '#0097A7', // cyan
+          '#0288D1', // light-blue
+          '#1976D2', // blue
+          '#303F9F', // indigo
+          '#512DA8', // deep-purple
+          '#7B1FA2', // purple
+          '#C2185B', // pink
+          '#D32F2F', // red
         ]"
       />
     </div>

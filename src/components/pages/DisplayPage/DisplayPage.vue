@@ -7,11 +7,36 @@
   >
     <LoadingOverlay v-if="page.react.loading" />
 
-    <template v-if="page.react.status === 'error'">
+    <template v-else-if="page.react.status === 'error'">
       {{ page.react.errorMessage }}
     </template>
 
-    <template v-if="page.react.status === 'unauthorized'">
+    <template v-else-if="page.react.status === 'password'">
+      <div>This group is password protected.</div>
+
+      <Gap style="height: 16px" />
+
+      <q-form style="display: flex; flex-direction: column; width: 220px">
+        <q-input
+          label="Password"
+          type="password"
+          filled
+          v-model="password"
+        />
+
+        <Gap style="height: 16px" />
+
+        <q-btn
+          label="Enter"
+          type="submit"
+          color="primary"
+          style="font-size: 16px"
+          @click.prevent="onEnterPassword()"
+        />
+      </q-form>
+    </template>
+
+    <template v-else-if="page.react.status === 'unauthorized'">
       <template v-if="page.react.userStatus === 'invite'">
         <div>
           You were invited to access this group ({{ page.react.groupName }}).
@@ -57,7 +82,7 @@
       </template>
     </template>
 
-    <DisplayContent v-if="page.react.status === 'success'" />
+    <DisplayContent v-else-if="page.react.status === 'success'" />
   </div>
 </template>
 
@@ -67,12 +92,16 @@
 >
 /* eslint-disable vue/no-mutating-props */
 
+import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
+import { decryptSymmetric } from 'src/code/crypto/crypto';
+import { wrapSymmetricKey } from 'src/code/crypto/symmetric-key';
+import { DICT_GROUP_SYMMETRIC_KEY } from 'src/code/pages/app/app';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { isMouseOverScrollbar } from 'src/code/pages/static/dom';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
-import { onMounted, provide } from 'vue';
+import { onMounted, provide, ref } from 'vue';
 
 import DisplayContent from './DisplayContent.vue';
 import RequestAccessDialog from './RequestAccessDialog.vue';
@@ -82,6 +111,8 @@ const props = defineProps<{
 }>();
 
 provide('page', props.page);
+
+const password = ref('');
 
 onMounted(() => {
   // eslint-disable-next-line vue/no-mutating-props
@@ -157,6 +188,33 @@ async function rejectInvitation() {
     });
 
     console.error(err);
+  }
+}
+
+async function onEnterPassword() {
+  const groupPasswordHash = sodium.crypto_pwhash(
+    32,
+    password.value,
+    new Uint8Array(sodium.crypto_pwhash_SALTBYTES),
+    sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+    sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE,
+    sodium.crypto_pwhash_ALG_ARGON2ID13
+  );
+
+  const decryptedGroupSymmetricKey = decryptSymmetric(
+    props.page.encryptedGroupSymmetricKey,
+    groupPasswordHash
+  );
+
+  const wrappedGroupSymmetricKey = wrapSymmetricKey(decryptedGroupSymmetricKey);
+
+  $pages.react.dict[`${DICT_GROUP_SYMMETRIC_KEY}:${props.page.react.groupId}`] =
+    wrappedGroupSymmetricKey;
+
+  for (const page of $pages.pageCache.react.cache) {
+    if (page.react.groupId === props.page.react.groupId) {
+      await page.finishSetup();
+    }
   }
 }
 </script>

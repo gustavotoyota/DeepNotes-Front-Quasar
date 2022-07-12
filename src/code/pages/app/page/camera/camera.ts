@@ -53,15 +53,15 @@ export class PageCamera {
     });
   }
 
-  setup(cameraData: ICameraData) {
-    if (cameraData != null) {
+  setup(cameraData?: ICameraData) {
+    if (cameraData == null) {
+      this.fitToScreen();
+    } else {
       this.react.pos = new Vec2(cameraData.pos);
       this.react._zoom = cameraData.zoom;
 
       this.react.lockPos = cameraData.lockPos;
       this.react.lockZoom = cameraData.lockZoom;
-    } else {
-      setTimeout(() => this.fitToScreen(), 0);
     }
 
     this.watchUpdates();

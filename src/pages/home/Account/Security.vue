@@ -135,7 +135,6 @@ import {
   encryptSymmetric,
   reencryptSessionPrivateKey,
 } from 'src/code/crypto/crypto';
-import { bytesToBase64 } from 'src/code/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { useApp } from 'src/stores/app';
@@ -214,8 +213,8 @@ async function changePassword() {
       encryptedPrivateKey: string;
       sessionKey: string;
     }>('/api/users/account/security/change-password', {
-      oldPasswordHash: bytesToBase64(oldDerivedKeys.passwordHash),
-      newPasswordHash: bytesToBase64(newDerivedKeys.passwordHash),
+      oldPasswordHash: sodium.to_base64(oldDerivedKeys.passwordHash),
+      newPasswordHash: sodium.to_base64(newDerivedKeys.passwordHash),
     });
 
     // Process session private key
@@ -236,9 +235,9 @@ async function changePassword() {
     // Request password change
 
     await $api.post('/api/users/account/security/change-password', {
-      oldPasswordHash: bytesToBase64(oldDerivedKeys.passwordHash),
-      newPasswordHash: bytesToBase64(newDerivedKeys.passwordHash),
-      reencryptedPrivateKey: bytesToBase64(reencryptedPrivateKey),
+      oldPasswordHash: sodium.to_base64(oldDerivedKeys.passwordHash),
+      newPasswordHash: sodium.to_base64(newDerivedKeys.passwordHash),
+      reencryptedPrivateKey: sodium.to_base64(reencryptedPrivateKey),
     });
 
     Notify.create({

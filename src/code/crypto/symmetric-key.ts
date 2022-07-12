@@ -1,3 +1,5 @@
+import sodium from 'libsodium-wrappers';
+
 import { decryptSymmetric, encryptSymmetric } from './crypto';
 
 export function wrapSymmetricKey(value: Uint8Array | null = null) {
@@ -11,8 +13,11 @@ export function wrapSymmetricKey(value: Uint8Array | null = null) {
       this.set(null);
     }
 
-    exists(): boolean {
-      return _value != null;
+    get valid(): boolean {
+      return (
+        _value != null &&
+        _value.length === sodium.crypto_aead_xchacha20poly1305_IETF_KEYBYTES
+      );
     }
 
     encrypt(

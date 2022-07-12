@@ -9,13 +9,13 @@ export class PageElems {
     for (const layer of this.page.react.layers) {
       this.page.notes.createAndObserveIds(
         layer.react.collab.noteIds,
-        null,
+        null as any,
         layer.id
       );
 
       this.page.arrows.createAndObserveIds(
         layer.react.collab.arrowIds,
-        null,
+        null as any,
         layer.id
       );
     }

@@ -8,7 +8,7 @@ import {
   reencryptSessionPrivateKey,
 } from './crypto/crypto';
 import { privateKey } from './crypto/private-key';
-import { addDays, bytesToBase64 } from './utils';
+import { addDays } from './utils';
 
 export const apiBaseURL = process.env.DEV
   ? 'http://192.168.1.4:21733'
@@ -61,7 +61,7 @@ export async function tryRefreshTokens(): Promise<void> {
       return;
     }
 
-    if (privateKey.exists() && !areTokensExpiring()) {
+    if (privateKey.valid && !areTokensExpiring()) {
       return;
     }
 
@@ -151,7 +151,7 @@ export async function login(email: string, password: string) {
     sessionKey: string;
   }>('/auth/login', {
     email: email,
-    passwordHash: bytesToBase64(derivedKeys.passwordHash),
+    passwordHash: sodium.to_base64(derivedKeys.passwordHash),
   });
 
   // Store tokens

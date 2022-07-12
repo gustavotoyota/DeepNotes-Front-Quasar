@@ -148,10 +148,10 @@ export class PagesApp {
         get: (pageId: string) => {
           const groupId: string =
             this.react.dict[`${DICT_PAGE_GROUP_ID}:${pageId}`];
-          const symmetricKey: SymmetricKey =
+          const symmetricKey: SymmetricKey | undefined =
             this.react.dict[`${DICT_GROUP_SYMMETRIC_KEY}:${groupId}`];
 
-          if (symmetricKey == null) {
+          if (symmetricKey == null || !symmetricKey.valid) {
             return '[Encrypted page title]';
           }
 
@@ -171,10 +171,10 @@ export class PagesApp {
         set: (pageId: string, value: string) => {
           const groupId: string =
             this.react.dict[`${DICT_PAGE_GROUP_ID}:${pageId}`];
-          const symmetricKey: SymmetricKey =
+          const symmetricKey: SymmetricKey | undefined =
             this.react.dict[`${DICT_GROUP_SYMMETRIC_KEY}:${groupId}`];
 
-          if (symmetricKey == null) {
+          if (symmetricKey == null || !symmetricKey.valid) {
             return;
           }
 
@@ -191,10 +191,10 @@ export class PagesApp {
       }),
       groupNames: createComputedDict({
         get: (groupId: string) => {
-          const symmetricKey: SymmetricKey =
+          const symmetricKey: SymmetricKey | undefined =
             this.react.dict[`${DICT_GROUP_SYMMETRIC_KEY}:${groupId}`];
 
-          if (symmetricKey == null) {
+          if (symmetricKey == null || !symmetricKey.valid) {
             return `[Group ${groupId}]`;
           }
 
@@ -212,10 +212,10 @@ export class PagesApp {
           );
         },
         set: (groupId: string, value: string) => {
-          const symmetricKey: SymmetricKey =
+          const symmetricKey: SymmetricKey | undefined =
             this.react.dict[`${DICT_GROUP_SYMMETRIC_KEY}:${groupId}`];
 
-          if (symmetricKey == null) {
+          if (symmetricKey == null || !symmetricKey.valid) {
             return;
           }
 
@@ -341,6 +341,17 @@ export class PagesApp {
   async bumpPage(pageId: string) {
     // New page exists in path
 
+    this.bumpRecentPage(pageId);
+
+    const parentPageId = this.parentPageId;
+    this.parentPageId = null;
+
+    await $api.post('/api/pages/bump', {
+      pageId,
+      parentPageId,
+    });
+  }
+  bumpRecentPage(pageId: string) {
     const recentPageId = this.react.recentPageIds.find(
       (recentPageId) => recentPageId === pageId
     );
@@ -348,13 +359,6 @@ export class PagesApp {
     pull(this.react.recentPageIds, recentPageId);
 
     this.react.recentPageIds.unshift(pageId);
-
-    await $api.post('/api/pages/bump', {
-      pageId,
-      parentPageId: this.parentPageId,
-    });
-
-    this.parentPageId = null;
   }
 
   async updatePathPages(prevPageId: string | null, nextPageId: string) {

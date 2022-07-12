@@ -1,4 +1,6 @@
+import sodium from 'libsodium-wrappers';
 import { saveGroupSymmetricKey } from 'src/code/crypto/crypto';
+import { privateKey } from 'src/code/crypto/private-key';
 import { SymmetricKey } from 'src/code/crypto/symmetric-key';
 import {
   computed,
@@ -83,18 +85,6 @@ export interface IAppPageReact extends IRegionReact {
   loading: boolean;
 }
 
-export interface IPageData {
-  camera: ICameraData;
-
-  groupId: string;
-  ownerId: string;
-  userStatus: string;
-  roleId: string;
-
-  encryptedSymmetricKey: string;
-  encryptersPublicKey: string;
-}
-
 export class AppPage implements IPageRegion {
   readonly react: UnwrapNestedRefs<IAppPageReact>;
 
@@ -137,6 +127,8 @@ export class AppPage implements IPageRegion {
   unwatchUserDisplayName?: WatchStopHandle;
 
   originElem!: Element;
+  cameraData?: ICameraData;
+  encryptedGroupSymmetricKey!: Uint8Array;
 
   get originClientPos(): Vec2 {
     return this.rects.fromDOM(this.originElem.getBoundingClientRect()).topLeft;
@@ -282,17 +274,30 @@ export class AppPage implements IPageRegion {
   }
 
   async setup() {
+    this.app.bumpRecentPage(this.id);
+
     this.react.status = undefined;
     this.react.loading = true;
 
     // Request page data
 
-    const response = await $api.post<IPageData>('/api/pages/data', {
-      pageId: this.id,
-      parentPageId: this.app.parentPageId,
-    });
-
+    const parentPageId = this.app.parentPageId;
     this.app.parentPageId = null;
+
+    const response = await $api.post<{
+      groupId: string;
+      ownerId: string;
+      userStatus: string;
+      roleId: string;
+
+      camera?: ICameraData;
+
+      encryptedSymmetricKey: string | undefined;
+      encryptersPublicKey: string | undefined;
+    }>('/api/pages/data', {
+      pageId: this.id,
+      parentPageId,
+    });
 
     // Save reactive data
 
@@ -301,10 +306,15 @@ export class AppPage implements IPageRegion {
     this.react.roleId = response.data.roleId;
     this.react.userStatus = response.data.userStatus;
 
+    // Save camera data
+
+    this.cameraData = response.data.camera;
+
     // Check if user is authorized
 
     if (
       response.data.encryptedSymmetricKey == null ||
+      response.data.encryptersPublicKey == null ||
       this.react.userStatus === 'invite'
     ) {
       this.react.status = 'unauthorized';
@@ -312,14 +322,37 @@ export class AppPage implements IPageRegion {
       return;
     }
 
-    // Save symmetric key
+    // Check if group is password protected
 
-    saveGroupSymmetricKey(
-      response.data.groupId,
-      response.data.encryptedSymmetricKey,
-      response.data.encryptersPublicKey
-    );
+    const symmetricKey: SymmetricKey | undefined =
+      $pages.react.dict[`${DICT_GROUP_SYMMETRIC_KEY}:${response.data.groupId}`];
 
+    if (response.data.encryptedSymmetricKey.length > 96) {
+      if (symmetricKey == null || !symmetricKey.valid) {
+        this.encryptedGroupSymmetricKey = privateKey.decrypt(
+          sodium.from_base64(response.data.encryptedSymmetricKey),
+          sodium.from_base64(response.data.encryptersPublicKey)
+        );
+
+        this.react.status = 'password';
+        this.react.loading = false;
+
+        return;
+      }
+    } else {
+      // Save symmetric key
+
+      saveGroupSymmetricKey(
+        response.data.groupId,
+        response.data.encryptedSymmetricKey,
+        response.data.encryptersPublicKey
+      );
+    }
+
+    await this.finishSetup();
+  }
+
+  async finishSetup() {
     // Synchronize collaboration
 
     await this.collab.synchronize();
@@ -348,14 +381,14 @@ export class AppPage implements IPageRegion {
 
     this.elems.setup();
 
-    this.camera.setup(response.data.camera);
-
     this.undoRedo.setup();
 
     this.react.status = 'success';
 
     await nextTick();
     await watchUntilTrue(() => this.react.allEditorsLoaded);
+
+    this.camera.setup(this.cameraData);
 
     this.react.loading = false;
   }

@@ -7,7 +7,7 @@
   />
 
   <q-dialog v-model="visible">
-    <q-card style="width: 300px">
+    <q-card>
       <q-form>
         <q-card-section style="padding: 12px">
           <div class="text-h6">Create new page</div>
@@ -15,31 +15,85 @@
 
         <q-separator />
 
-        <q-card-section style="padding: 21px">
-          <q-input
-            label="Page title"
-            ref="pageTitleElem"
-            v-model="pageTitle"
-            filled
-          />
+        <q-card-section style="padding: 0">
+          <div
+            style="display: flex"
+            :style="{
+              'flex-direction': horizontal ? 'row' : 'column',
+            }"
+          >
+            <div style="padding: 21px; min-width: 258px">
+              <q-input
+                label="Page title"
+                ref="pageTitleElem"
+                v-model="pageTitle"
+                filled
+              />
 
-          <Gap style="height: 16px" />
+              <Gap style="height: 16px" />
 
-          <Checkbox
-            label="Create as main page of a new group"
-            v-model="createGroup"
-          />
+              <Checkbox
+                label="Create within a new group"
+                v-model="createGroup"
+                @update:model-value="
+                  async (value) => {
+                    if (value) {
+                      groupName = pageTitle;
+                      pageTitle = 'Main page';
 
-          <template v-if="createGroup">
-            <Gap style="height: 16px" />
+                      await $nextTick();
 
-            <q-input
-              label="Group name"
-              ref="groupNameElem"
-              filled
-              v-model="groupName"
-            />
-          </template>
+                      groupNameElem?.focus();
+                    } else {
+                      pageTitle = groupName;
+
+                      await $nextTick();
+
+                      pageTitleElem?.focus();
+                    }
+                  }
+                "
+              />
+            </div>
+
+            <template v-if="createGroup">
+              <q-separator :vertical="horizontal" />
+
+              <div style="padding: 21px">
+                <q-input
+                  label="Group name"
+                  ref="groupNameElem"
+                  filled
+                  v-model="groupName"
+                />
+
+                <Gap style="height: 16px" />
+
+                <Checkbox
+                  label="Make group public for viewing"
+                  v-model="publicGroup"
+                />
+
+                <Gap style="height: 16px" />
+
+                <Checkbox
+                  label="Password protect group"
+                  v-model="passwordProtectGroup"
+                />
+
+                <template v-if="passwordProtectGroup">
+                  <Gap style="height: 16px" />
+
+                  <q-input
+                    label="Group password"
+                    type="password"
+                    filled
+                    v-model="groupPassword"
+                  />
+                </template>
+              </div>
+            </template>
+          </div>
         </q-card-section>
 
         <q-separator />
@@ -71,18 +125,23 @@
 >
 import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
+import { encryptSymmetric } from 'src/code/crypto/crypto';
 import { privateKey } from 'src/code/crypto/private-key';
 import { wrapSymmetricKey } from 'src/code/crypto/symmetric-key';
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
-import { encodeText } from 'src/code/utils';
+import { BREAKPOINT_MD_MIN } from 'src/code/pages/static/responsive';
+import { bytesToBase64, encodeText } from 'src/code/utils';
 import Gap from 'src/components/misc/Gap.vue';
-import { inject, nextTick, Ref, ref, watch } from 'vue';
+import { useUI } from 'src/stores/pages/ui';
+import { computed, inject, Ref, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 import Checkbox from '../../misc/Checkbox.vue';
 
 const router = useRouter();
+const ui = useUI();
+
 const page = inject<Ref<AppPage>>('page')!;
 
 const visible = ref(false);
@@ -95,14 +154,27 @@ const createGroup = ref(false);
 const groupName = ref('');
 const groupNameElem = ref<HTMLElement>();
 
+const publicGroup = ref(false);
+
+const passwordProtectGroup = ref(false);
+const groupPassword = ref('');
+
+const horizontal = computed(() => ui.width >= BREAKPOINT_MD_MIN);
+
 watch(visible, async () => {
   if (!visible.value) {
     return;
   }
 
   pageTitle.value = '';
+
   createGroup.value = false;
   groupName.value = '';
+
+  publicGroup.value = false;
+
+  passwordProtectGroup.value = false;
+  groupPassword.value = '';
 
   setTimeout(() => {
     const activeElem = $pages.react.page.activeElem.react.elem;
@@ -119,16 +191,6 @@ watch(visible, async () => {
 
     pageTitleElem.value?.focus();
   });
-});
-
-watch(createGroup, async (value) => {
-  if (!value) {
-    return;
-  }
-
-  await nextTick();
-
-  groupNameElem.value?.focus();
 });
 
 async function createPage() {
@@ -153,23 +215,39 @@ async function createPage() {
     if (createGroup.value) {
       groupSymmetricKey = sodium.randombytes_buf(32);
 
+      const wrappedGroupSymmetricKey = wrapSymmetricKey(groupSymmetricKey);
+
+      if (passwordProtectGroup.value) {
+        const groupPasswordHash = sodium.crypto_pwhash(
+          32,
+          groupPassword.value,
+          new Uint8Array(sodium.crypto_pwhash_SALTBYTES),
+          sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+          sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE,
+          sodium.crypto_pwhash_ALG_ARGON2ID13
+        );
+
+        groupSymmetricKey = encryptSymmetric(
+          groupSymmetricKey,
+          groupPasswordHash
+        );
+      }
+
       encryptedGroupSymmetricKey = privateKey.encrypt(
         groupSymmetricKey,
         $pages.react.publicKey
       );
 
-      const wrappedGroupSymmetricKey = wrapSymmetricKey(groupSymmetricKey);
-
-      encryptedGroupName = sodium.to_base64(
-        wrappedGroupSymmetricKey.encrypt(encodeText(groupName.value))
+      encryptedGroupName = wrappedGroupSymmetricKey.encrypt(
+        encodeText(groupName.value)
       );
 
-      encryptedPageTitle = sodium.to_base64(
-        wrappedGroupSymmetricKey.encrypt(encodeText(pageTitle.value))
+      encryptedPageTitle = wrappedGroupSymmetricKey.encrypt(
+        encodeText(pageTitle.value)
       );
     } else {
-      encryptedPageTitle = sodium.to_base64(
-        page.value.react.symmetricKey.encrypt(encodeText(pageTitle.value))
+      encryptedPageTitle = page.value.react.symmetricKey.encrypt(
+        encodeText(pageTitle.value)
       );
     }
 
@@ -177,13 +255,13 @@ async function createPage() {
       pageId: string;
     }>('/api/pages/create', {
       createGroup: createGroup.value,
-      encryptedGroupSymmetricKey: encryptedGroupSymmetricKey
-        ? sodium.to_base64(encryptedGroupSymmetricKey)
-        : undefined,
-      encryptedGroupName,
+      encryptedGroupSymmetricKey: bytesToBase64(encryptedGroupSymmetricKey),
+      encryptedGroupName: bytesToBase64(encryptedGroupName),
+
+      publicGroup: publicGroup.value,
 
       parentPageId: page.value.id,
-      encryptedPageTitle,
+      encryptedPageTitle: bytesToBase64(encryptedPageTitle),
     });
 
     page.value.collab.doc.transact(() => {

@@ -86,7 +86,7 @@ import { login } from 'src/code/auth';
 import { computeDerivedKeys, generateRandomKeys } from 'src/code/crypto/crypto';
 import { wrapSymmetricKey } from 'src/code/crypto/symmetric-key';
 import { ISerialObjectInput } from 'src/code/pages/app/serialization';
-import { bytesToBase64, encodeText } from 'src/code/utils';
+import { encodeText } from 'src/code/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import ResponsiveContainer from 'src/components/misc/ResponsiveContainer.vue';
 import { useAuth } from 'src/stores/auth';
@@ -148,7 +148,7 @@ async function register() {
 
       displayName: data.displayName,
 
-      passwordHash: bytesToBase64(derivedKeys.passwordHash),
+      passwordHash: sodium.to_base64(derivedKeys.passwordHash),
 
       publicKey: sodium.to_base64(randomKeys.publicKey),
       encryptedPrivateKey: sodium.to_base64(randomKeys.encryptedPrivateKey),

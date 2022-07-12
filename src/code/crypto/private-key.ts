@@ -1,3 +1,5 @@
+import sodium from 'libsodium-wrappers';
+
 import { decryptAssymetric, encryptAssymetric } from './crypto';
 
 export function wrapPrivateKey(value: Uint8Array | null = null) {
@@ -11,8 +13,10 @@ export function wrapPrivateKey(value: Uint8Array | null = null) {
       this.set(null);
     }
 
-    exists(): boolean {
-      return _value != null;
+    get valid(): boolean {
+      return (
+        _value != null && _value.length === sodium.crypto_box_SECRETKEYBYTES
+      );
     }
 
     encrypt(

@@ -204,6 +204,10 @@ export class PageResizing {
   };
 
   private _finish = () => {
+    if (!this.react.active) {
+      return;
+    }
+
     this.page.collab.doc.transact(() => {
       for (const ghost of Object.values(this.react.ghosts)) {
         const note = this.page.notes.fromId(ghost.id);

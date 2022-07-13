@@ -318,7 +318,8 @@ async function onPaste(event: ClipboardEvent) {
   if (
     target.nodeName === 'INPUT' ||
     target.nodeName === 'TEXTAREA' ||
-    target.isContentEditable
+    target.isContentEditable ||
+    target.parentNode == null
   ) {
     return;
   }

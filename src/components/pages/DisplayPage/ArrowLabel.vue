@@ -6,7 +6,7 @@
       left: `${arrow.react.centerPos.x}px`,
       top: `${arrow.react.centerPos.y}px`,
     }"
-    @pointerdown.left="onLeftPointerDown"
+    @pointerdown.left.stop="onLeftPointerDown"
     @dblclick.left="onLeftDoubleClick"
   />
 </template>

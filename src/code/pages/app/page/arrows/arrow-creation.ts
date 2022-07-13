@@ -20,12 +20,12 @@ export class PageArrowCreation {
   constructor(factory: Factory, readonly page: AppPage) {
     this.fakeArrow = factory.makeArrow(
       this.page,
-      null as any,
-      null as any,
-      null as any,
+      '',
       -1,
       reactive(
         IArrowCollab.parse({
+          parentLayerId: v4(),
+
           sourceId: v4(),
           targetId: v4(),
         } as IArrowCollabInput)
@@ -41,7 +41,14 @@ export class PageArrowCreation {
     this.react.active = true;
 
     const serialArrow = ISerialArrow.parse($pages.react.defaultArrow);
-    const arrowCollab = $pages.serialization.deserializeArrow(serialArrow);
+    const arrowCollab = $pages.serialization.deserializeArrow(
+      serialArrow,
+      v4(),
+      new Map([
+        [serialArrow.sourceIndex!, v4()],
+        [serialArrow.targetIndex!, v4()],
+      ])
+    );
 
     merge(this.fakeArrow.react.collab, arrowCollab);
 
@@ -50,8 +57,8 @@ export class PageArrowCreation {
     this.fakeArrow.react.collab.sourceId = sourceNote.id;
     this.fakeArrow.react.collab.targetId = null as any;
 
-    this.fakeArrow.react.regionId = sourceNote.react.regionId;
-    this.fakeArrow.react.parentLayerId = sourceNote.react.parentLayerId;
+    this.fakeArrow.react.collab.parentLayerId =
+      sourceNote.react.collab.parentLayerId;
 
     listenPointerEvents(event, {
       move: this._update,

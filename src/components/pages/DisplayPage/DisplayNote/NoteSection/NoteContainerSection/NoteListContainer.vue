@@ -67,7 +67,7 @@
           }"
         >
           <DisplayNote
-            :region="note"
+            :parent-layer="note.react.topLayer"
             :note="childNote"
             :index="index"
           />

@@ -58,8 +58,9 @@ export class PageDragging {
       currentPos: this.page.pos.eventToClient(event),
     };
 
-    this.sourceRegionId = this.page.activeElem.react.elem.react.regionId;
-    this.sourceLayerId = this.page.activeElem.react.elem.react.parentLayerId;
+    this.sourceRegionId = this.page.activeElem.react.elem.react.region.id;
+    this.sourceLayerId =
+      this.page.activeElem.react.elem.react.collab.parentLayerId;
 
     listenPointerEvents(event, {
       move: this._update,

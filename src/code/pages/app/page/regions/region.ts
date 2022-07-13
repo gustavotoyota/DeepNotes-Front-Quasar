@@ -31,9 +31,7 @@ export interface IRegionReact {
   collab: ComputedRef<IRegionCollabOutput>;
 
   layers: ComputedRef<PageLayer[]>;
-
   topLayer: ComputedRef<PageLayer>;
-
   activeLayerId?: string;
   activeLayer: ComputedRef<PageLayer>;
 

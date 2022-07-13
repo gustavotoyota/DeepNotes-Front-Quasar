@@ -17,17 +17,16 @@ export class PageNotes {
   constructor(readonly factory: Factory, readonly page: AppPage) {}
 
   fromId(noteId: string | null): PageNote | null {
-    return this.react.map[noteId ?? ''] ?? null;
+    return this.react.map[noteId!] ?? null;
   }
   fromIds(noteIds: string[]): PageNote[] {
     return noteIds
-      .map((noteId) => this.react.map[noteId])
+      .map((noteId) => this.fromId(noteId) as PageNote)
       .filter((note) => note != null);
   }
 
   createAndObserveChildren(
     noteId: string,
-    regionId: string,
     layerId: string,
     index: number
   ): void {
@@ -38,18 +37,16 @@ export class PageNotes {
         return;
       }
 
-      note = this.factory.makeNote(this.page, noteId, regionId, layerId, index);
+      note = this.factory.makeNote(this.page, noteId, index);
 
       this.react.map[note.id] = note;
 
       this.page.layers.createAndObserveIds(note.react.collab.layerIds, note.id);
     } else {
-      if (note.react.parentLayerId != layerId) {
+      if (note.react.collab.parentLayerId !== layerId) {
         this.page.selection.remove(note);
       }
 
-      note.react.regionId = regionId;
-      note.react.parentLayerId = layerId;
       note.react.index = index;
 
       note.occurrences[layerId] ??= new Set();
@@ -58,9 +55,9 @@ export class PageNotes {
       note.react.initialized = false;
     }
   }
-  createAndObserveIds(noteIds: string[], regionId: string, layerId: string) {
+  createAndObserveIds(noteIds: string[], layerId: string) {
     for (let index = 0; index < noteIds.length; index++) {
-      this.createAndObserveChildren(noteIds[index], regionId, layerId, index);
+      this.createAndObserveChildren(noteIds[index], layerId, index);
     }
 
     (syncedstore.getYjsValue(noteIds) as Y.Array<string>).observe((event) => {
@@ -73,7 +70,7 @@ export class PageNotes {
 
         if (delta.insert != null) {
           for (const noteId of delta.insert) {
-            this.createAndObserveChildren(noteId, regionId, layerId, index);
+            this.createAndObserveChildren(noteId, layerId, index);
           }
         }
       }

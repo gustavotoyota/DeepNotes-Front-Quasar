@@ -76,15 +76,8 @@ export const container = new Container({
   notes: (factory: any) => (page: AppPage) => new PageNotes(factory, page),
   note:
     () =>
-    (
-      page: AppPage,
-      id: string,
-      regionId: string,
-      layerId: string,
-      index: number,
-      collab?: INoteCollabOutput
-    ) =>
-      new PageNote(page, id, regionId, layerId, index, collab),
+    (page: AppPage, id: string, index: number, collab?: INoteCollabOutput) =>
+      new PageNote(page, id, index, collab),
   editing: () => (page: AppPage) => new PageEditing(page),
   dragging: () => (page: AppPage) => new PageDragging(page),
   dropping: () => (page: AppPage) => new PageDropping(page),
@@ -95,15 +88,8 @@ export const container = new Container({
   arrows: (factory: any) => (page: AppPage) => new PageArrows(factory, page),
   arrow:
     () =>
-    (
-      page: AppPage,
-      id: string,
-      regionId: string,
-      layerId: string,
-      index: number,
-      collab?: IArrowCollabOutput
-    ) =>
-      new PageArrow(page, id, regionId, layerId, index, collab),
+    (page: AppPage, id: string, index: number, collab?: IArrowCollabOutput) =>
+      new PageArrow(page, id, index, collab),
   arrowCreation: (factory: any) => (page: AppPage) =>
     new PageArrowCreation(factory, page),
 });

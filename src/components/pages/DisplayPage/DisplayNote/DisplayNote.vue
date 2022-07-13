@@ -1,8 +1,8 @@
 <template>
   <NoteAnchor
     v-show="
-      (note.react.region === region && note.react.index === index) ||
-      note.react.ghost
+      parentLayer === undefined ||
+      (note.react.parentLayer === parentLayer && note.react.index === index)
     "
   >
     <NoteDropZones />
@@ -35,8 +35,8 @@
 >
 /* eslint-disable vue/no-mutating-props */
 
+import { PageLayer } from 'src/code/pages/app/page/layers/layer';
 import { PageNote } from 'src/code/pages/app/page/notes/note';
-import { AppPage } from 'src/code/pages/app/page/page';
 import { onUnmounted, provide, watchEffect } from 'vue';
 
 import NoteAnchor from './NoteAnchor.vue';
@@ -51,7 +51,7 @@ import NoteContainerSection from './NoteSection/NoteContainerSection/NoteContain
 import NoteTextSection from './NoteSection/NoteTextSection.vue';
 
 const props = defineProps<{
-  region: AppPage | PageNote;
+  parentLayer?: PageLayer;
   note: PageNote;
   index?: number;
 }>();

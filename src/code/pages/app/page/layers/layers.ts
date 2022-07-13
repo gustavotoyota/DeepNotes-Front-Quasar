@@ -15,33 +15,23 @@ export class PageLayers {
   constructor(readonly factory: Factory, readonly page: AppPage) {}
 
   fromId(id: string | null): PageLayer | null {
-    if (id == null) {
-      return null;
-    }
-
-    return this.react.map[id] ?? null;
+    return this.react.map[id!] ?? null;
   }
   fromIds(ids: string[]): PageLayer[] {
-    return ids.map((id) => this.react.map[id]).filter((item) => item != null);
+    return ids
+      .map((layerId) => this.fromId(layerId) as PageLayer)
+      .filter((layer) => layer != null);
   }
 
-  createAndObserveChildren(layerId: string, regionId: string | null) {
+  createAndObserveChildren(layerId: string, regionId: string) {
     const layer = this.factory.makeLayer(this.page, layerId, regionId);
 
     this.react.map[layer.id] = layer;
 
-    this.page.notes.createAndObserveIds(
-      layer.react.collab.noteIds,
-      regionId,
-      layer.id
-    );
-    this.page.arrows.createAndObserveIds(
-      layer.react.collab.arrowIds,
-      regionId,
-      layer.id
-    );
+    this.page.notes.createAndObserveIds(layer.react.collab.noteIds, layer.id);
+    this.page.arrows.createAndObserveIds(layer.react.collab.arrowIds);
   }
-  createAndObserveIds(layerIds: string[], regionId: string | null) {
+  createAndObserveIds(layerIds: string[], regionId: string) {
     for (const layerId of layerIds) {
       this.createAndObserveChildren(layerId, regionId);
     }

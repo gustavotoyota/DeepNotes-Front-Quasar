@@ -17,35 +17,20 @@ export class PageArrows {
   fromId(arrowId: string | null): PageArrow | null {
     return this.react.map[arrowId!] ?? null;
   }
-  toId(arrow: PageArrow): string {
-    return arrow.id;
-  }
-
   fromIds(arrowIds: string[]): PageArrow[] {
     return arrowIds
-      .map((arrowId) => this.react.map[arrowId])
+      .map((arrowId) => this.fromId(arrowId) as PageArrow)
       .filter((arrow) => arrow != null);
   }
-  toIds(arrows: PageArrow[]): string[] {
-    return arrows.map((arrow) => arrow.id);
-  }
 
-  create(arrowId: string, regionId: string, layerId: string, index: number) {
-    const arrow = this.factory.makeArrow(
-      this.page,
-      arrowId,
-      regionId,
-      layerId,
-      index
-    );
-
-    arrow.react.parentLayerId = layerId;
+  create(arrowId: string, index: number) {
+    const arrow = this.factory.makeArrow(this.page, arrowId, index);
 
     this.react.map[arrow.id] = arrow;
   }
-  createAndObserveIds(arrowIds: string[], regionId: string, layerId: string) {
+  createAndObserveIds(arrowIds: string[]) {
     for (let index = 0; index < arrowIds.length; index++) {
-      this.create(arrowIds[index], regionId, layerId, index);
+      this.create(arrowIds[index], index);
     }
 
     (syncedstore.getYjsValue(arrowIds) as Y.Array<string>).observe((event) => {
@@ -58,7 +43,7 @@ export class PageArrows {
 
         if (delta.insert != null) {
           for (const arrowId of delta.insert) {
-            this.create(arrowId, regionId, layerId, index);
+            this.create(arrowId, index);
           }
         }
       }

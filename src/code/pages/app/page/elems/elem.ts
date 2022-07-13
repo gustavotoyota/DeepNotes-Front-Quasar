@@ -1,4 +1,5 @@
 import { computed, ComputedRef, reactive, UnwrapNestedRefs } from 'vue';
+import { z } from 'zod';
 
 import { PageLayer } from '../layers/layer';
 import { PageNote } from '../notes/note';
@@ -9,11 +10,15 @@ export enum ElemType {
   ARROW = 'arrow',
 }
 
-export interface IElemReact {
-  regionId: string;
-  region: ComputedRef<AppPage | PageNote>;
+export const IElemCollab = z.object({
+  parentLayerId: z.string().uuid(),
+});
+export type IElemCollab = z.infer<typeof IElemCollab>;
 
-  parentLayerId: string;
+export interface IElemReact {
+  collab: ComputedRef<IElemCollab>;
+
+  region: ComputedRef<AppPage | PageNote>;
   parentLayer: ComputedRef<PageLayer>;
 
   active: boolean;
@@ -26,32 +31,39 @@ export interface IElemReact {
 export class PageElem {
   readonly react: UnwrapNestedRefs<IElemReact>;
 
+  protected readonly _collab?: IElemCollab;
+
   constructor(
     readonly page: AppPage,
     readonly id: string,
     readonly type: ElemType,
-    regionId: string,
-    layerId: string,
-    index: number
+    index: number,
+    collab?: IElemCollab
   ) {
+    this._collab = collab;
+
     this.react = reactive({
-      regionId,
+      collab: computed(
+        () => this._collab ?? this.page[`${this.type}s`].react.collab[this.id]
+      ),
+
       region: computed(() => {
         if (this.page.resizing.react.active) {
           const ghostRegion =
-            this.page.resizing.react.ghosts[this.react.regionId];
+            this.page.resizing.react.ghosts[
+              this.react.parentLayer?.react.regionId
+            ];
 
           if (ghostRegion != null) {
             return ghostRegion;
           }
         }
 
-        return this.page.regions.fromId(this.react.regionId);
+        return this.page.regions.fromId(this.react.parentLayer?.react.regionId);
       }),
 
-      parentLayerId: layerId,
       parentLayer: computed(
-        () => this.page.layers.fromId(this.react.parentLayerId)!
+        () => this.page.layers.fromId(this.react.collab?.parentLayerId)!
       ),
 
       index,

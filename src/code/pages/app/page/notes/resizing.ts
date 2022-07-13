@@ -72,6 +72,8 @@ export class PageResizing {
         syncedstore.getYjsValue(selectedNote.react.collab) as Y.Map<any>
       ).toJSON() as INoteCollabOutput;
 
+      collab.parentLayerId = this.page.react.activeLayer.id;
+
       collab.head.value = yXmlFragmentToProsemirrorJSON(
         selectedNote.react.collab.head.value
       ) as any;
@@ -101,8 +103,6 @@ export class PageResizing {
       const ghost = this.factory.makeNote(
         this.page,
         selectedNote.id,
-        null as any,
-        null as any,
         -1,
         reactive(collab)
       );

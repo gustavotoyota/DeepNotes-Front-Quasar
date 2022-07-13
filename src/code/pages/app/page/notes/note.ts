@@ -22,7 +22,7 @@ import * as Y from 'yjs';
 import { z } from 'zod';
 
 import { PageArrow } from '../arrows/arrow';
-import { ElemType, IElemReact, PageElem } from '../elems/elem';
+import { ElemType, IElemCollab, IElemReact, PageElem } from '../elems/elem';
 import { PageLayer } from '../layers/layer';
 import { AppPage } from '../page';
 import { IPageRegion, IRegionCollab, IRegionReact } from '../regions/region';
@@ -58,52 +58,54 @@ export type INoteCollabTextSectionOutput = z.output<
   typeof INoteCollabTextSection
 >;
 
-export const INoteCollab = IRegionCollab.extend({
-  link: z.string().nullable().default(null),
+export const INoteCollab = IElemCollab.merge(
+  IRegionCollab.extend({
+    link: z.string().nullable().default(null),
 
-  anchor: IVec2.default({ x: 0.5, y: 0.5 }),
-  pos: IVec2.default({ x: 0, y: 0 }),
+    anchor: IVec2.default({ x: 0.5, y: 0.5 }),
+    pos: IVec2.default({ x: 0, y: 0 }),
 
-  width: INoteCollabSize,
+    width: INoteCollabSize,
 
-  head: INoteCollabTextSection.default(
-    INoteCollabTextSection.parse({ enabled: true })
-  ),
-  body: INoteCollabTextSection.default(
-    INoteCollabTextSection.parse({ enabled: false })
-  ),
+    head: INoteCollabTextSection.default(
+      INoteCollabTextSection.parse({ enabled: true })
+    ),
+    body: INoteCollabTextSection.default(
+      INoteCollabTextSection.parse({ enabled: false })
+    ),
 
-  container: INoteCollabSection.extend({
-    enabled: z.boolean().default(false),
-
-    horizontal: z.boolean().default(false),
-    spatial: z.boolean().default(false),
-
-    wrapChildren: z.boolean().default(false),
-    stretchChildren: z.boolean().default(true),
-  }).default({}),
-
-  collapsing: z
-    .object({
+    container: INoteCollabSection.extend({
       enabled: z.boolean().default(false),
-      collapsed: z.boolean().default(false),
-      localCollapsing: z.boolean().default(false),
-    })
-    .default({}),
 
-  movable: z.boolean().default(true),
-  resizable: z.boolean().default(true),
-  readOnly: z.boolean().default(false),
+      horizontal: z.boolean().default(false),
+      spatial: z.boolean().default(false),
 
-  color: z
-    .object({
-      inherit: z.boolean().default(true),
-      value: z.string().default('#424242'),
-    })
-    .default({}),
+      wrapChildren: z.boolean().default(false),
+      stretchChildren: z.boolean().default(true),
+    }).default({}),
 
-  zIndex: z.number().default(-1),
-});
+    collapsing: z
+      .object({
+        enabled: z.boolean().default(false),
+        collapsed: z.boolean().default(false),
+        localCollapsing: z.boolean().default(false),
+      })
+      .default({}),
+
+    movable: z.boolean().default(true),
+    resizable: z.boolean().default(true),
+    readOnly: z.boolean().default(false),
+
+    color: z
+      .object({
+        inherit: z.boolean().default(true),
+        value: z.string().default('#424242'),
+      })
+      .default({}),
+
+    zIndex: z.number().default(-1),
+  })
+);
 export type INoteCollabInput = z.input<typeof INoteCollab>;
 export type INoteCollabOutput = z.output<typeof INoteCollab>;
 
@@ -225,12 +227,10 @@ export class PageNote extends PageElem implements IPageRegion {
   constructor(
     page: AppPage,
     id: string,
-    regionId: string,
-    layerId: string,
     index: number,
-    readonly collab?: INoteCollabOutput
+    collab?: INoteCollabOutput
   ) {
-    super(page, id, ElemType.NOTE, regionId, layerId, index);
+    super(page, id, ElemType.NOTE, index, collab);
 
     const makeSectionHeightCSS = (section: NoteSection) =>
       computed(() => {
@@ -252,10 +252,6 @@ export class PageNote extends PageElem implements IPageRegion {
 
     const react: Omit<INoteReact, keyof IElemReact> = {
       // Region
-
-      collab: computed(
-        () => this.collab ?? this.page.notes.react.collab[this.id]
-      ),
 
       rootNote: computed(() => {
         if (this.react.region instanceof PageNote) {
@@ -687,20 +683,19 @@ export class PageNote extends PageElem implements IPageRegion {
 
     this.occurrences = {};
   }
-  moveToLayer(layer: PageLayer, insertIndex?: number) {
+  moveToLayer(destLayer: PageLayer, insertIndex?: number) {
     this.page.collab.doc.transact(() => {
       this.removeFromLayers();
 
-      this.react.regionId = layer.react.regionId;
-      this.react.parentLayerId = layer.id;
+      this.react.collab.parentLayerId = destLayer.id;
 
-      layer.react.collab.noteIds.splice(
-        insertIndex ?? layer.react.collab.noteIds.length,
+      this.react.collab.zIndex = destLayer.react.collab.nextZIndex++;
+
+      destLayer.react.collab.noteIds.splice(
+        insertIndex ?? destLayer.react.collab.noteIds.length,
         0,
         this.id
       );
-
-      this.bringToTop();
     });
   }
 

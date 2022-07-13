@@ -52,7 +52,7 @@
         >
           <DisplayNote
             v-if="note != null"
-            :region="region"
+            :parent-layer="layer"
             :note="note"
             :index="index"
           />

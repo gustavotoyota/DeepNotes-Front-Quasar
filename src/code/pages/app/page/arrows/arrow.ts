@@ -16,14 +16,14 @@ import {
 import * as Y from 'yjs';
 import { z } from 'zod';
 
-import { ElemType, IElemReact, PageElem } from '../elems/elem';
+import { ElemType, IElemCollab, IElemReact, PageElem } from '../elems/elem';
 import { PageLayer } from '../layers/layer';
 import { PageNote } from '../notes/note';
 import { AppPage } from '../page';
 
-export const IArrowCollab = z.object({
-  sourceId: z.string().uuid().optional(),
-  targetId: z.string().uuid().optional(),
+export const IArrowCollab = IElemCollab.extend({
+  sourceId: z.string().uuid(),
+  targetId: z.string().uuid(),
 
   label: z.any().default(() => new Y.XmlFragment()) as z.ZodType<Y.XmlFragment>,
 
@@ -79,19 +79,13 @@ export class PageArrow extends PageElem {
   constructor(
     page: AppPage,
     id: string,
-    regionId: string,
-    layerId: string,
     index: number,
-    readonly collab?: IArrowCollabOutput
+    collab?: IArrowCollabOutput
   ) {
-    super(page, id, ElemType.ARROW, regionId, layerId, index);
+    super(page, id, ElemType.ARROW, index, collab);
 
     const react: Omit<IArrowReact, keyof IElemReact> = {
-      collab: computed(
-        () => this.collab ?? this.page.arrows.react.collab[this.id]
-      ),
-
-      fakeTargetPos: this.collab ? new Vec2() : null,
+      fakeTargetPos: this._collab ? new Vec2() : null,
 
       valid: computed(() => {
         if (this.react.sourceNote == null) {
@@ -107,8 +101,8 @@ export class PageArrow extends PageElem {
         }
 
         return (
-          this.react.sourceNote.react.region === this.react.region &&
-          this.react.targetNote.react.region === this.react.region
+          this.react.sourceNote.react.parentLayer === this.react.parentLayer &&
+          this.react.targetNote.react.parentLayer === this.react.parentLayer
         );
       }),
 
@@ -184,7 +178,7 @@ export class PageArrow extends PageElem {
 
     Object.assign(this.react, react);
 
-    if (!this.collab) {
+    if (!this._collab) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       nextTick(() => {
         // nextTick is necessary because the arrow may be created before the notes
@@ -213,8 +207,7 @@ export class PageArrow extends PageElem {
     this.page.collab.doc.transact(() => {
       this.removeFromLayer();
 
-      this.react.regionId = layer.react.regionId;
-      this.react.parentLayerId = layer.id;
+      this.react.collab.parentLayerId = layer.id;
 
       layer.react.collab.arrowIds.push(this.id);
     });

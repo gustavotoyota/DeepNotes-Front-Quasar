@@ -141,9 +141,7 @@ export class AppPage implements IPageRegion {
       collab: computed(() => this.collab.store.page),
 
       layers: computed(() => this.layers.fromIds(this.react.collab.layerIds)),
-
       topLayer: computed(() => this.react.layers.at(-1)!),
-
       activeLayer: computed(
         () =>
           this.layers.fromId(this.react.activeLayerId ?? null) ??

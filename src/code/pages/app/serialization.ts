@@ -24,6 +24,8 @@ import { IRegionElemIdsInput } from './page/regions/region';
 // Arrow
 
 export const ISerialArrow = IArrowCollab.omit({
+  parentLayerId: true,
+
   sourceId: true,
   targetId: true,
 
@@ -61,6 +63,8 @@ export type ISerialTextSectionOutput = z.output<typeof ISerialTextSection>;
 
 export const ISerialNote = z.lazy(() =>
   INoteCollab.omit({
+    parentLayerId: true,
+
     head: true,
     body: true,
 
@@ -262,6 +266,7 @@ export class AppSerialization {
     $pages.react.page.collab.doc.transact(() => {
       layerCollab = this._deserializeLayer(
         serialObjectOutput.layers[0],
+        destLayer.id,
         serialObjectOutput
       );
 
@@ -278,6 +283,7 @@ export class AppSerialization {
   }
   private _deserializeLayer(
     serialLayer: ISerialLayerOutput,
+    layerId: string,
     serialObject: ISerialObjectOutput
   ): ILayerCollabOutput {
     const layerCollab = ILayerCollab.parse({
@@ -289,6 +295,7 @@ export class AppSerialization {
     for (const noteIndex of serialLayer.noteIndexes) {
       const noteId = this._deserializeNote(
         serialObject.notes[noteIndex],
+        layerId,
         layerCollab,
         serialObject
       );
@@ -301,6 +308,7 @@ export class AppSerialization {
     for (const arrowIndex of serialLayer.arrowIndexes) {
       const arrowCollab = this.deserializeArrow(
         serialObject.arrows[arrowIndex],
+        layerId,
         noteMap
       );
 
@@ -315,11 +323,14 @@ export class AppSerialization {
   }
   private _deserializeNote(
     serialNote: ISerialNoteOutput,
-    layerCollab: ILayerCollabOutput,
+    parentLayerId: string,
+    parentLayerCollab: ILayerCollabOutput,
     serialObject: ISerialObjectOutput
   ): string {
     const noteCollab = INoteCollab.parse({
       ...serialNote,
+
+      parentLayerId,
 
       head: {
         ...serialNote.head,
@@ -338,7 +349,7 @@ export class AppSerialization {
         ),
       },
 
-      zIndex: layerCollab.nextZIndex++,
+      zIndex: parentLayerCollab.nextZIndex++,
     } as INoteCollabInput);
 
     for (const layerIndex of serialNote.layerIndexes) {
@@ -346,6 +357,7 @@ export class AppSerialization {
 
       const layerCollab = this._deserializeLayer(
         serialObject.layers[layerIndex],
+        layerId,
         serialObject
       );
 
@@ -362,10 +374,13 @@ export class AppSerialization {
   }
   deserializeArrow(
     serialArrow: ISerialArrowOutput,
+    parentLayerId: string,
     noteMap = new Map<number, string>()
   ): IArrowCollabOutput {
     return IArrowCollab.parse({
       ...serialArrow,
+
+      parentLayerId,
 
       sourceId: noteMap.get(serialArrow.sourceIndex!),
       targetId: noteMap.get(serialArrow.targetIndex!),

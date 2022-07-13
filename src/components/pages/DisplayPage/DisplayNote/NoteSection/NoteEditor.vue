@@ -258,7 +258,7 @@ $note-padding: 9px;
 
       color: #fff;
 
-      background: #181818;
+      background: #202020;
     }
 
     pre {
@@ -266,7 +266,7 @@ $note-padding: 9px;
       border-radius: 0.4rem;
       padding: 0.4rem 0.5rem;
 
-      background: #181818;
+      background: #202020;
     }
 
     h1,

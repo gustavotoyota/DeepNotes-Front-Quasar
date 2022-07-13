@@ -117,39 +117,41 @@ export class PageBoxSelection {
 
     const originClientPos = this.react.region.originClientPos;
 
-    for (const note of this.react.region.react.notes) {
-      const noteRect = note.getClientRect('note-frame');
+    this.page.collab.doc.transact(() => {
+      for (const note of this.react.region.react.notes) {
+        const noteRect = note.getClientRect('note-frame');
 
-      noteRect.topLeft = noteRect.topLeft.sub(originClientPos);
-      noteRect.bottomRight = noteRect.bottomRight.sub(originClientPos);
+        noteRect.topLeft = noteRect.topLeft.sub(originClientPos);
+        noteRect.bottomRight = noteRect.bottomRight.sub(originClientPos);
 
-      if (!boxRect.intersectsRect(noteRect)) {
-        continue;
+        if (!boxRect.intersectsRect(noteRect)) {
+          continue;
+        }
+
+        if (note.react.selected && !event.shiftKey) {
+          this.page.selection.remove(note);
+        } else {
+          this.page.selection.add(note);
+        }
       }
 
-      if (note.react.selected && !event.shiftKey) {
-        this.page.selection.remove(note);
-      } else {
-        this.page.selection.add(note);
-      }
-    }
+      for (const arrow of this.react.region.react.arrows) {
+        const arrowClientCenter = this.page.pos.worldToClient(
+          arrow.react.centerPos
+        );
+        const arrowCenter = arrowClientCenter.sub(originClientPos);
 
-    for (const arrow of this.react.region.react.arrows) {
-      const arrowClientCenter = this.page.pos.worldToClient(
-        arrow.react.centerPos
-      );
-      const arrowCenter = arrowClientCenter.sub(originClientPos);
+        if (!boxRect.containsVec2(arrowCenter)) {
+          continue;
+        }
 
-      if (!boxRect.containsVec2(arrowCenter)) {
-        continue;
+        if (arrow.react.selected && !event.shiftKey) {
+          this.page.selection.remove(arrow);
+        } else {
+          this.page.selection.add(arrow);
+        }
       }
-
-      if (arrow.react.selected && !event.shiftKey) {
-        this.page.selection.remove(arrow);
-      } else {
-        this.page.selection.add(arrow);
-      }
-    }
+    });
   };
 
   private _timerPointerMove = (event: PointerEvent) => {

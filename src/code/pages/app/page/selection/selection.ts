@@ -65,26 +65,28 @@ export class PageSelection {
   }
 
   add(...elems: PageElem[]) {
-    for (const elem of elems) {
-      if (elem.react.selected || elem.type == null) {
-        continue;
-      }
+    this.page.collab.doc.transact(() => {
+      for (const elem of elems) {
+        if (elem.react.selected || elem.type == null) {
+          continue;
+        }
 
-      if (elem.react.region !== this.page.activeRegion.react.region) {
-        this.clear(elem.react.region);
-      }
+        if (elem.react.region !== this.page.activeRegion.react.region) {
+          this.clear(elem.react.region);
+        }
 
-      elem.react.selected = true;
-      this.react[`${elem.type}Set`][elem.id] = true;
+        elem.react.selected = true;
+        this.react[`${elem.type}Set`][elem.id] = true;
 
-      if (!this.page.activeElem.react.exists) {
-        this.page.activeElem.set(elem);
-      }
+        if (!this.page.activeElem.react.exists) {
+          this.page.activeElem.set(elem);
+        }
 
-      if (elem instanceof PageNote) {
-        elem.bringToTop();
+        if (elem instanceof PageNote) {
+          elem.bringToTop();
+        }
       }
-    }
+    });
   }
   remove(...elems: PageElem[]) {
     for (const elem of elems) {
@@ -102,14 +104,15 @@ export class PageSelection {
   }
 
   set(...elems: PageElem[]) {
-    this.clear();
-    this.add(...elems);
+    this.page.collab.doc.transact(() => {
+      this.clear();
+
+      this.add(...elems);
+    });
   }
 
   selectAll() {
-    for (const elem of this.page.activeRegion.react.region.react.elems) {
-      this.add(elem);
-    }
+    this.add(...this.page.activeRegion.react.region.react.elems);
   }
 
   shift(shiftX: number, shiftY: number) {
@@ -131,27 +134,35 @@ export class PageSelection {
     return true;
   }
   setMark(name: MarkName, attribs?: Record<string, any>) {
-    for (const elem of this.react.elems) {
-      elem.setMark(name, attribs);
-    }
+    this.page.collab.doc.transact(() => {
+      for (const elem of this.react.elems) {
+        elem.setMark(name, attribs);
+      }
+    });
   }
   unsetMark(name: MarkName) {
-    for (const elem of this.react.elems) {
-      elem.unsetMark(name);
-    }
+    this.page.collab.doc.transact(() => {
+      for (const elem of this.react.elems) {
+        elem.unsetMark(name);
+      }
+    });
   }
   toggleMark(name: MarkName, attribs?: Record<string, any>) {
-    if (this.isMarkActive(name)) {
-      this.unsetMark(name);
-    } else {
-      this.setMark(name, attribs);
-    }
+    this.page.collab.doc.transact(() => {
+      if (this.isMarkActive(name)) {
+        this.unsetMark(name);
+      } else {
+        this.setMark(name, attribs);
+      }
+    });
   }
 
   format(chainFunc: (chain: ChainedCommands) => ChainedCommands) {
-    for (const elem of this.react.elems) {
-      elem.format(chainFunc);
-    }
+    this.page.collab.doc.transact(() => {
+      for (const elem of this.react.elems) {
+        elem.format(chainFunc);
+      }
+    });
   }
 
   moveToLayer(layer: PageLayer, insertIndex?: number) {
@@ -196,14 +207,6 @@ export class PageSelection {
 
     this.page.activeRegion.react.id = layer.react.region.id;
 
-    this.page.collab.doc.transact(() => {
-      for (const note of notesArray) {
-        this.add(note);
-      }
-
-      for (const arrow of arrowsArray) {
-        this.add(arrow);
-      }
-    });
+    this.add(...notesArray, ...arrowsArray);
   }
 }

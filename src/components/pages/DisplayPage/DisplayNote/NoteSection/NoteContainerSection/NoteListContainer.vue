@@ -120,9 +120,11 @@ const note = inject<PageNote>('note')!;
 
 const originElem = ref<Element>();
 
-onMounted(() => {
-  note.originElem = originElem.value!;
-});
+if (!note.react.rootNote.react.ghost) {
+  onMounted(() => {
+    note.originElem = originElem.value!;
+  });
+}
 
 async function onLeftDoubleClick(event: MouseEvent, destIndex?: number) {
   const clientPos = page.pos.eventToClient(event);

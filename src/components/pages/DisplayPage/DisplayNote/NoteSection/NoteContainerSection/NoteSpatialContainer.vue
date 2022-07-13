@@ -67,9 +67,11 @@ const note = inject<PageNote>('note')!;
 
 const originElem = ref<Element>();
 
-onMounted(() => {
-  note.originElem = originElem.value!;
-});
+if (!note.react.rootNote.react.ghost) {
+  onMounted(() => {
+    note.originElem = originElem.value!;
+  });
+}
 
 const pointerOver = ref(false);
 

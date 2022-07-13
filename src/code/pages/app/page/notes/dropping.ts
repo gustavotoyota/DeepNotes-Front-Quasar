@@ -31,9 +31,9 @@ export class PageDropping {
         selectedNote.react.collab.pos.x -= containerWorldRect.topLeft.x;
         selectedNote.react.collab.pos.y -= containerWorldRect.topLeft.y;
       }
-
-      this.page.selection.moveToLayer(destLayer, dropIndex);
     });
+
+    this.page.selection.moveToLayer(destLayer, dropIndex);
 
     this.page.dragging.cancel();
 

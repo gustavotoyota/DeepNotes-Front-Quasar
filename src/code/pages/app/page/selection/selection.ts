@@ -195,5 +195,15 @@ export class PageSelection {
     });
 
     this.page.activeRegion.react.id = layer.react.region.id;
+
+    this.page.collab.doc.transact(() => {
+      for (const note of notesArray) {
+        this.add(note);
+      }
+
+      for (const arrow of arrowsArray) {
+        this.add(arrow);
+      }
+    });
   }
 }

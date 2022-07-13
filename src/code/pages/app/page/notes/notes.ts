@@ -53,9 +53,7 @@ export class PageNotes {
 
       this.page.layers.createAndObserveIds(note.react.collab.layerIds, note.id);
     } else {
-      if (note.react.collab.parentLayerId !== layerId) {
-        this.page.selection.remove(note);
-      }
+      this.page.selection.remove(note);
 
       note.react.index = index;
 

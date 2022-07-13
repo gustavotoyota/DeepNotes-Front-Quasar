@@ -27,10 +27,7 @@ export class PageActiveElem {
         const elems = this.page[`${this.react.type}s`];
         const activeElem = elems.react.map[this.react.id] ?? null;
 
-        if (
-          activeElem == null ||
-          activeElem.react.region !== this.page.activeRegion.react.region
-        ) {
+        if (activeElem == null) {
           return null;
         }
 

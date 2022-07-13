@@ -24,11 +24,11 @@ export class PageRegions {
       new Vec2(-Infinity, -Infinity)
     );
 
-    if (regionElems.notes.length === 0) {
+    if (regionElems.validNotes.length === 0) {
       return new Rect(this.page.camera.react.pos, this.page.camera.react.pos);
     }
 
-    for (const note of regionElems.notes) {
+    for (const note of regionElems.validNotes) {
       worldRect.topLeft.x = Math.min(
         worldRect.topLeft.x,
         note.react.worldRect.topLeft.x

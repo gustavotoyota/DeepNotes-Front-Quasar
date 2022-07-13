@@ -27,10 +27,48 @@ export class PageArrows {
       return null;
     }
   }
-  fromIds(arrowIds: string[], parentLayerId?: string): PageArrow[] {
-    return arrowIds
-      .map((arrowId) => this.fromId(arrowId, parentLayerId) as PageArrow)
-      .filter((arrow) => arrow != null);
+  cleanedFromIds(
+    arrowIds: string[],
+    parentLayerId?: string
+  ): (PageArrow | null)[] {
+    const arrowIdsSet = new Set<string>();
+
+    const arrowsArray = [];
+
+    for (const arrowId of arrowIds) {
+      if (arrowIdsSet.has(arrowId)) {
+        continue;
+      }
+
+      arrowIdsSet.add(arrowId);
+
+      arrowsArray.push(this.fromId(arrowId, parentLayerId));
+    }
+
+    return arrowsArray;
+  }
+  validFromIds(arrowIds: string[], parentLayerId?: string): PageArrow[] {
+    const arrowIdsSet = new Set<string>();
+
+    const arrowsArray = [];
+
+    for (const arrowId of arrowIds) {
+      if (arrowIdsSet.has(arrowId)) {
+        continue;
+      }
+
+      arrowIdsSet.add(arrowId);
+
+      const arrow = this.fromId(arrowId, parentLayerId);
+
+      if (arrow == null) {
+        continue;
+      }
+
+      arrowsArray.push(arrow);
+    }
+
+    return arrowsArray;
   }
 
   create(arrowId: string, index: number) {

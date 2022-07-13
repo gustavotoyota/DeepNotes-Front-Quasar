@@ -4,19 +4,14 @@
 
     <SVGDisplay :root="region === page">
       <template
-        v-for="(arrowId, index) in layer.react.collab.arrowIds"
-        :key="arrowId"
+        v-for="(arrow, index) in layer.react.cleanedArrows"
+        :key="arrow?.id ?? index"
       >
-        <template
-          v-for="arrow in [page.arrows.fromId(arrowId, layer.id)]"
-          :key="arrow?.id ?? arrowId"
-        >
-          <DisplayArrow
-            v-if="arrow != null"
-            :arrow="arrow"
-            :index="index"
-          />
-        </template>
+        <DisplayArrow
+          v-if="arrow != null"
+          :arrow="arrow"
+          :index="index"
+        />
       </template>
     </SVGDisplay>
 
@@ -24,18 +19,13 @@
 
     <DOMDisplay :root="region === page">
       <template
-        v-for="arrowId in layer.react.collab.arrowIds"
-        :key="arrowId"
+        v-for="(arrow, index) in layer.react.cleanedArrows"
+        :key="arrow?.id ?? index"
       >
-        <template
-          v-for="arrow in [page.arrows.fromId(arrowId, layer.id)]"
-          :key="arrow?.id ?? arrowId"
-        >
-          <ArrowLabel
-            v-if="arrow != null"
-            :arrow="arrow"
-          />
-        </template>
+        <ArrowLabel
+          v-if="arrow != null"
+          :arrow="arrow"
+        />
       </template>
     </DOMDisplay>
 
@@ -43,19 +33,14 @@
 
     <DOMDisplay :root="region === page">
       <template
-        v-for="(noteId, index) in layer.react.collab.noteIds"
-        :key="noteId"
+        v-for="(note, index) in layer.react.cleanedNotes"
+        :key="note?.id ?? index"
       >
-        <template
-          v-for="note in [page.notes.fromId(noteId, layer.id)]"
-          :key="note?.id ?? noteId"
-        >
-          <DisplayNote
-            v-if="note != null"
-            :note="note"
-            :index="index"
-          />
-        </template>
+        <DisplayNote
+          v-if="note != null"
+          :note="note"
+          :index="index"
+        />
       </template>
     </DOMDisplay>
   </div>

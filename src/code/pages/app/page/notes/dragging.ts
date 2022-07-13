@@ -90,7 +90,7 @@ export class PageDragging {
 
       // Update dragging states
 
-      for (const selectedNote of this.page.selection.react.notes) {
+      for (const selectedNote of this.page.selection.react.validNotes) {
         selectedNote.react.dragging = selectedNote.react.collab.movable;
 
         if (!selectedNote.react.dragging) {
@@ -101,7 +101,7 @@ export class PageDragging {
       const gapWorldDelta = this.page.sizes.screenToWorld2D(gapClientDelta);
 
       this.page.collab.doc.transact(() => {
-        for (const selectedNote of this.page.selection.react.notes) {
+        for (const selectedNote of this.page.selection.react.validNotes) {
           selectedNote.react.collab.pos.x += gapWorldDelta.x;
           selectedNote.react.collab.pos.y += gapWorldDelta.y;
         }
@@ -117,7 +117,7 @@ export class PageDragging {
     // Move selected notes
 
     this.page.collab.doc.transact(() => {
-      for (const selectedNote of this.page.selection.react.notes) {
+      for (const selectedNote of this.page.selection.react.validNotes) {
         selectedNote.react.collab.pos.x += worldDelta.x;
         selectedNote.react.collab.pos.y += worldDelta.y;
       }
@@ -129,7 +129,7 @@ export class PageDragging {
 
     const prevCenters = new Map<string, Vec2>();
 
-    for (const selectedNote of this.page.selection.react.notes) {
+    for (const selectedNote of this.page.selection.react.validNotes) {
       prevCenters.set(
         selectedNote.id,
         selectedNote.getWorldRect('note-frame').center
@@ -162,7 +162,7 @@ export class PageDragging {
       );
 
       this.page.collab.doc.transact(() => {
-        for (const selectedNote of this.page.selection.react.notes) {
+        for (const selectedNote of this.page.selection.react.validNotes) {
           selectedNote.react.collab.pos.x += containerWorldTopLeft.x;
           selectedNote.react.collab.pos.y += containerWorldTopLeft.y;
         }
@@ -179,7 +179,7 @@ export class PageDragging {
       }
 
       this.page.collab.doc.transact(() => {
-        for (const selectedNote of this.page.selection.react.notes) {
+        for (const selectedNote of this.page.selection.react.validNotes) {
           void watchUntilTrue(() => selectedNote.react.loaded).then(() => {
             const worldPos = this.page.pos.clientToWorld(this.react.currentPos);
             const mouseOffset = worldPos.sub(prevCenters.get(activeElem.id)!);
@@ -205,7 +205,7 @@ export class PageDragging {
   private _finish = () => {
     this.react.active = false;
 
-    for (const selectedNote of this.page.selection.react.notes) {
+    for (const selectedNote of this.page.selection.react.validNotes) {
       selectedNote.react.dragging = false;
     }
   };

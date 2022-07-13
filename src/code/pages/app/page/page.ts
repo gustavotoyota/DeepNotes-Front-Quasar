@@ -26,6 +26,7 @@ import {
   PagesApp,
 } from '../app';
 import { REALTIME_USER_DISPLAY_NAME } from '../realtime';
+import { PageArrow } from './arrows/arrow';
 import { PageArrowCreation } from './arrows/arrow-creation';
 import { PageArrows } from './arrows/arrows';
 import { ICameraData, PageCamera } from './camera/camera';
@@ -42,6 +43,7 @@ import { PageCloning } from './notes/cloning';
 import { PageDragging } from './notes/dragging';
 import { PageDropping } from './notes/dropping';
 import { PageEditing } from './notes/editing';
+import { PageNote } from './notes/note';
 import { PageNotes } from './notes/notes';
 import { PageResizing } from './notes/resizing';
 import { IPageRegion, IRegionCollab, IRegionReact } from './regions/region';
@@ -148,26 +150,35 @@ export class AppPage implements IPageRegion {
           this.react.topLayer
       ),
 
-      notes: computed(() => {
+      cleanedNotes: computed(() => {
         const result = [];
 
         for (const layer of this.react.layers) {
-          result.push(...layer.react.notes);
+          result.push(...layer.react.cleanedNotes);
         }
 
         return result;
       }),
-      arrows: computed(() => {
+      cleanedArrows: computed(() => {
         const result = [];
 
         for (const layer of this.react.layers) {
-          result.push(...layer.react.arrows);
+          result.push(...layer.react.cleanedArrows);
         }
 
         return result;
       }),
+
+      validNotes: computed(() =>
+        (this.react.cleanedNotes as PageNote[]).filter((note) => note != null)
+      ),
+      validArrows: computed(() =>
+        (this.react.cleanedArrows as PageArrow[]).filter(
+          (arrow) => arrow != null
+        )
+      ),
       elems: computed(() =>
-        (this.react.notes as PageElem[]).concat(this.react.arrows)
+        (this.react.validNotes as PageElem[]).concat(this.react.validArrows)
       ),
 
       // Page

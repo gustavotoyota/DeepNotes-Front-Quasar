@@ -89,13 +89,13 @@ export class PageCamera {
   fitToScreen() {
     let regionElems: IRegionElemsOutput;
 
-    if (this.page.selection.react.notes.length > 0) {
+    if (this.page.selection.react.validNotes.length > 0) {
       regionElems = this.page.selection.react;
     } else {
       regionElems = this.page.react;
     }
 
-    if (regionElems.notes.length === 0) {
+    if (regionElems.validNotes.length === 0) {
       this.react.pos = new Vec2();
       this.resetZoom();
       return;

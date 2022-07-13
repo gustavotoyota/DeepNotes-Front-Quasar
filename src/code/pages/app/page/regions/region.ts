@@ -21,8 +21,8 @@ export type IRegionElemIdsInput = z.input<typeof IRegionElemIds>;
 export type IRegionElemIdsOutput = z.output<typeof IRegionElemIds>;
 
 export const IRegionElems = z.object({
-  notes: (z.any() as ZodType<PageNote>).array().default([]),
-  arrows: (z.any() as ZodType<PageArrow>).array().default([]),
+  validNotes: (z.any() as ZodType<PageNote>).array().default([]),
+  validArrows: (z.any() as ZodType<PageArrow>).array().default([]),
 });
 export type IRegionElemsInput = z.input<typeof IRegionElems>;
 export type IRegionElemsOutput = z.output<typeof IRegionElems>;
@@ -35,8 +35,12 @@ export interface IRegionReact {
   activeLayerId?: string;
   activeLayer: ComputedRef<PageLayer>;
 
-  notes: ComputedRef<PageNote[]>;
-  arrows: ComputedRef<PageArrow[]>;
+  cleanedNotes: ComputedRef<(PageNote | null)[]>;
+  cleanedArrows: ComputedRef<(PageArrow | null)[]>;
+
+  validNotes: ComputedRef<PageNote[]>;
+  validArrows: ComputedRef<PageArrow[]>;
+
   elems: ComputedRef<PageElem[]>;
 }
 

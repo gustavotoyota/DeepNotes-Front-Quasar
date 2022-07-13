@@ -29,10 +29,30 @@ export class PageNotes {
       return null;
     }
   }
-  fromIds(noteIds: string[], parentLayerId?: string): PageNote[] {
-    return noteIds
-      .map((noteId) => this.fromId(noteId, parentLayerId) as PageNote)
-      .filter((note) => note != null);
+  cleanedFromIds(
+    noteIds: string[],
+    parentLayerId?: string
+  ): (PageNote | null)[] {
+    const noteIdsSet = new Set<string>();
+
+    const notesArray = [];
+
+    for (const noteId of noteIds) {
+      if (noteIdsSet.has(noteId)) {
+        continue;
+      }
+
+      noteIdsSet.add(noteId);
+
+      notesArray.push(this.fromId(noteId, parentLayerId));
+    }
+
+    return notesArray;
+  }
+  validFromIds(noteIds: string[], parentLayerId?: string): PageNote[] {
+    return (this.cleanedFromIds(noteIds, parentLayerId) as PageNote[]).filter(
+      (note) => note != null
+    );
   }
 
   createAndObserveChildren(

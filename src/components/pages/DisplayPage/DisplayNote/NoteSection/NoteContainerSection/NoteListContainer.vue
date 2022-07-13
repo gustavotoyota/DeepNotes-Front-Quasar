@@ -24,7 +24,7 @@
     <!-- Background -->
 
     <div
-      v-if="note.react.topLayer.react.notes.length === 0"
+      v-if="note.react.topLayer.react.validNotes.length === 0"
       class="note-container-background"
     >
       <!-- Placeholder -->
@@ -45,46 +45,39 @@
     <!-- Children -->
 
     <template
-      v-for="(childNoteId, index) in note.react.topLayer.react.collab.noteIds"
-      :key="childNoteId"
+      v-for="(childNote, index) in note.react.topLayer.react.cleanedNotes"
+      :key="childNote?.id ?? index"
     >
-      <template
-        v-for="childNote in [
-          page.notes.fromId(childNoteId, note.react.topLayer.id),
-        ]"
-        :key="childNote?.id ?? childNoteId"
+      <div
+        v-if="childNote != null"
+        class="note-container-child"
+        :style="{
+          'flex-direction': note.react.collab.container.horizontal
+            ? 'row'
+            : 'column',
+          width:
+            !note.react.collab.container.horizontal &&
+            note.react.collab.container.stretchChildren
+              ? 'calc(100% - 6px)'
+              : undefined,
+        }"
       >
-        <div
-          v-if="childNote != null"
-          class="note-container-child"
-          :style="{
-            'flex-direction': note.react.collab.container.horizontal
-              ? 'row'
-              : 'column',
-            width:
-              !note.react.collab.container.horizontal &&
-              note.react.collab.container.stretchChildren
-                ? 'calc(100% - 6px)'
-                : undefined,
-          }"
-        >
-          <DisplayNote
-            :note="childNote"
-            :index="index"
-          />
+        <DisplayNote
+          :note="childNote"
+          :index="index"
+        />
 
-          <div style="position: relative">
-            <NoteDropZone
-              v-if="index < note.react.topLayer.react.notes.length - 1"
-              :parent-note="note"
-              :always-visible="true"
-              :index="index + 1"
-              style="position: absolute; min-width: 6px; min-height: 6px"
-              @dblclick.left="onLeftDoubleClick($event, index + 1)"
-            />
-          </div>
+        <div style="position: relative">
+          <NoteDropZone
+            v-if="index < note.react.topLayer.react.validNotes.length - 1"
+            :parent-note="note"
+            :always-visible="true"
+            :index="index + 1"
+            style="position: absolute; min-width: 6px; min-height: 6px"
+            @dblclick.left="onLeftDoubleClick($event, index + 1)"
+          />
         </div>
-      </template>
+      </div>
     </template>
 
     <!-- Last drop zone -->

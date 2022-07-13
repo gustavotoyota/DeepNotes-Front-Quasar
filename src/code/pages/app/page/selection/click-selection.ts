@@ -22,7 +22,7 @@ export class PageClickSelection {
 
         for (let i = fromIndex; i !== toIndex; i += step) {
           this.page.selection.add(
-            this.page.activeRegion.react.region.react.notes[i]
+            this.page.activeRegion.react.region.react.validNotes[i]
           );
         }
       }

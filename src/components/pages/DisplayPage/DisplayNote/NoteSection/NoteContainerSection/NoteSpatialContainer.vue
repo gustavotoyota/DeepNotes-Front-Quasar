@@ -18,7 +18,7 @@
     >
       <!-- Placeholder -->
 
-      <template v-if="note.react.notes.length === 0">
+      <template v-if="note.react.validNotes.length === 0">
         <div>Drag notes here or</div>
         <div>double-click to create.</div>
       </template>

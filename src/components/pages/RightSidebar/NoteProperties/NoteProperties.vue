@@ -699,7 +699,7 @@ const note = computed(() => page.value.activeElem.react.elem as PageNote);
 
 function changeProp(value: any, func: (note: PageNote, value: any) => void) {
   page.value.collab.doc.transact(() => {
-    for (const selectedNote of page.value.selection.react.notes) {
+    for (const selectedNote of page.value.selection.react.validNotes) {
       func(selectedNote, value);
     }
   });

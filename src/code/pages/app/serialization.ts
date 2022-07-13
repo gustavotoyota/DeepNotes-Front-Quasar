@@ -126,8 +126,10 @@ export class AppSerialization {
       {
         id: 'root',
         react: {
-          notes: $pages.react.page.notes.fromIds(input.noteIds ?? []),
-          arrows: $pages.react.page.arrows.fromIds(input.arrowIds ?? []),
+          validNotes: $pages.react.page.notes.validFromIds(input.noteIds ?? []),
+          validArrows: $pages.react.page.arrows.validFromIds(
+            input.arrowIds ?? []
+          ),
         },
       } as PageLayer,
       maps,
@@ -159,13 +161,13 @@ export class AppSerialization {
     result.layers.push(serialLayer);
     maps.layers.set(layer.id, layerIndex);
 
-    for (const note of layer.react.notes) {
+    for (const note of layer.react.validNotes) {
       const noteIndex = this._serializeNote(note, maps, result);
 
       serialLayer.noteIndexes.push(noteIndex);
     }
 
-    for (const arrow of layer.react.arrows) {
+    for (const arrow of layer.react.validArrows) {
       const arrowIndex = this.serializeArrow(arrow, maps, result);
 
       if (arrowIndex != null) {

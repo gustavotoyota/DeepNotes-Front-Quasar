@@ -18,20 +18,22 @@ export class PageDeleting {
     this.page.collab.doc.transact(() => {
       // Delete arrows
 
-      const arrowSet = new Set<PageArrow>(this.page.selection.react.arrows);
+      const arrowSet = new Set<PageArrow>(
+        this.page.selection.react.validArrows
+      );
 
-      for (const selectedNote of this.page.selection.react.notes) {
-        for (const arrow of this.page.arrows.fromIds(
+      for (const selectedNote of this.page.selection.react.validNotes) {
+        for (const arrow of this.page.arrows.validFromIds(
           Array.from(selectedNote.incomingArrowIds)
         )) {
           arrowSet.add(arrow);
         }
-        for (const arrow of this.page.arrows.fromIds(
+        for (const arrow of this.page.arrows.validFromIds(
           Array.from(selectedNote.outgoingArrowIds)
         )) {
           arrowSet.add(arrow);
         }
-        for (const arrow of selectedNote.react.arrows) {
+        for (const arrow of selectedNote.react.validArrows) {
           arrowSet.add(arrow);
         }
       }
@@ -50,7 +52,7 @@ export class PageDeleting {
 
       // Delete notes
 
-      const selectedNotes = this.page.selection.react.notes.slice();
+      const selectedNotes = this.page.selection.react.validNotes.slice();
 
       selectedNotes.sort((a, b) => b.react.index - a.react.index);
 
@@ -66,11 +68,11 @@ export class PageDeleting {
 
   deleteLayer(layer: PageLayer) {
     this.page.collab.doc.transact(() => {
-      for (const note of layer.react.notes) {
+      for (const note of layer.react.validNotes) {
         this.deleteNote(note);
       }
 
-      for (const arrow of layer.react.arrows) {
+      for (const arrow of layer.react.validArrows) {
         if (this.page.collab.store.arrows[arrow.id] != null) {
           delete this.page.collab.store.arrows[arrow.id];
         }

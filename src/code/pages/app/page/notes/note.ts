@@ -271,26 +271,37 @@ export class PageNote extends PageElem implements IPageRegion {
           this.react.topLayer
       ),
 
-      notes: computed(() => {
+      cleanedNotes: computed(() => {
         const result = [];
 
         for (const layer of this.react.layers) {
-          result.push(...layer.react.notes);
+          result.push(...layer.react.cleanedNotes);
         }
 
         return result;
       }),
-      arrows: computed(() => {
+      cleanedArrows: computed(() => {
         const result = [];
 
         for (const layer of this.react.layers) {
-          result.push(...layer.react.arrows);
+          result.push(...layer.react.cleanedArrows);
         }
 
         return result;
       }),
+
+      validNotes: computed(() =>
+        (this.react.cleanedNotes as PageNote[]).filter((note) => note != null)
+      ),
+      validArrows: computed(() =>
+        (this.react.cleanedArrows as PageArrow[]).filter(
+          (arrow) => arrow != null
+        )
+      ),
       elems: computed(() =>
-        (this.react.notes as (PageNote | PageArrow)[]).concat(this.react.arrows)
+        (this.react.validNotes as (PageNote | PageArrow)[]).concat(
+          this.react.validArrows
+        )
       ),
 
       // Note
@@ -404,7 +415,7 @@ export class PageNote extends PageElem implements IPageRegion {
           if (
             // Is empty container with unpinned width:
             this.react.collab.container.enabled &&
-            this.react.notes.length === 0
+            this.react.validNotes.length === 0
           ) {
             return '167px';
           } else {
@@ -574,7 +585,7 @@ export class PageNote extends PageElem implements IPageRegion {
           return true;
         }
 
-        for (const childNote of this.react.notes) {
+        for (const childNote of this.react.validNotes) {
           if (!childNote.react.allEditorsLoaded) {
             return false;
           }

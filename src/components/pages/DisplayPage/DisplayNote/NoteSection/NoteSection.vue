@@ -13,7 +13,7 @@
         height: note.react[section].heightCSS,
         'min-height':
           section === 'container'
-            ? note.react.activeLayer.react.notes.length === 0
+            ? note.react.activeLayer.react.validNotes.length === 0
               ? '72px'
               : '52.5px'
             : '36.45px',

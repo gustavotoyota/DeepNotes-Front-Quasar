@@ -20,8 +20,11 @@ export interface ILayerReact {
   regionId: string;
   region: ComputedRef<AppPage | PageNote>;
 
-  notes: ComputedRef<PageNote[]>;
-  arrows: ComputedRef<PageArrow[]>;
+  cleanedNotes: ComputedRef<(PageNote | null)[]>;
+  cleanedArrows: ComputedRef<(PageArrow | null)[]>;
+
+  validNotes: ComputedRef<PageNote[]>;
+  validArrows: ComputedRef<PageArrow[]>;
 }
 
 export class PageLayer {
@@ -34,11 +37,20 @@ export class PageLayer {
       regionId,
       region: computed(() => this.page.regions.fromId(this.react.regionId)!),
 
-      notes: computed(() =>
-        this.page.notes.fromIds(this.react.collab.noteIds, this.id)
+      cleanedNotes: computed(() =>
+        this.page.notes.cleanedFromIds(this.react.collab.noteIds, this.id)
       ),
-      arrows: computed(() =>
-        this.page.arrows.fromIds(this.react.collab.arrowIds, this.id)
+      cleanedArrows: computed(() =>
+        this.page.arrows.cleanedFromIds(this.react.collab.arrowIds, this.id)
+      ),
+
+      validNotes: computed(() =>
+        (this.react.cleanedNotes as PageNote[]).filter((note) => note != null)
+      ),
+      validArrows: computed(() =>
+        (this.react.cleanedArrows as PageArrow[]).filter(
+          (arrow) => arrow != null
+        )
       ),
     });
   }

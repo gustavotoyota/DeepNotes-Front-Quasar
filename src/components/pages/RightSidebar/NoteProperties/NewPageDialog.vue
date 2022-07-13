@@ -265,7 +265,7 @@ async function createPage() {
     });
 
     page.value.collab.doc.transact(() => {
-      for (const selectedNote of page.value.selection.react.notes) {
+      for (const selectedNote of page.value.selection.react.validNotes) {
         selectedNote.react.collab.link = response.data.pageId;
       }
     });

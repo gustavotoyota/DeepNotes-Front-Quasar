@@ -158,7 +158,7 @@ const arrow = computed(() => page.value.activeElem.react.elem as PageArrow);
 
 function changeProp(value: any, func: (arrow: PageArrow, value: any) => void) {
   page.value.collab.doc.transact(() => {
-    for (const arrow of page.value.selection.react.arrows) {
+    for (const arrow of page.value.selection.react.validArrows) {
       func(arrow, value);
     }
   });

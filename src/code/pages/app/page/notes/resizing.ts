@@ -65,7 +65,7 @@ export class PageResizing {
 
     let nextZIndex = 0;
 
-    for (const selectedNote of this.page.selection.react.notes) {
+    for (const selectedNote of this.page.selection.react.validNotes) {
       this.oldRects[selectedNote.id] = this._getNoteRects(selectedNote);
 
       const collab: INoteCollabOutput = (

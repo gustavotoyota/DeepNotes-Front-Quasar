@@ -29,8 +29,8 @@ export class PageCloning {
     // Deserialize into structure
 
     let destIndex;
-    if (this.page.selection.react.notes.length > 0)
-      destIndex = this.page.selection.react.notes.at(-1)!.react.index + 1;
+    if (this.page.selection.react.validNotes.length > 0)
+      destIndex = this.page.selection.react.validNotes.at(-1)!.react.index + 1;
 
     const destLayer = this.page.activeRegion.react.region.react.activeLayer;
 
@@ -42,17 +42,17 @@ export class PageCloning {
 
     // Select clones
 
-    const notes = this.page.notes.fromIds(noteIds, destLayer.id);
-    const arrows = this.page.arrows.fromIds(arrowIds, destLayer.id);
+    const notes = this.page.notes.validFromIds(noteIds, destLayer.id);
+    const arrows = this.page.arrows.validFromIds(arrowIds, destLayer.id);
 
     this.page.selection.set(...(notes as PageElem[]).concat(arrows));
 
     // Scroll into view
 
-    if (this.page.selection.react.notes.length > 0) {
+    if (this.page.selection.react.validNotes.length > 0) {
       await nextTick();
 
-      const lastSelectedNote = this.page.selection.react.notes.at(-1)!;
+      const lastSelectedNote = this.page.selection.react.validNotes.at(-1)!;
 
       lastSelectedNote.scrollIntoView();
     }

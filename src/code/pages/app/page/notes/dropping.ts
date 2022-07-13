@@ -27,7 +27,7 @@ export class PageDropping {
       this.page.rects.clientToWorld(containerClientRect);
 
     this.page.collab.doc.transact(() => {
-      for (const selectedNote of this.page.selection.react.notes) {
+      for (const selectedNote of this.page.selection.react.validNotes) {
         selectedNote.react.collab.pos.x -= containerWorldRect.topLeft.x;
         selectedNote.react.collab.pos.y -= containerWorldRect.topLeft.y;
       }
@@ -39,7 +39,7 @@ export class PageDropping {
 
     await nextTick();
 
-    const lastSelectedNote = this.page.selection.react.notes.at(-1)!;
+    const lastSelectedNote = this.page.selection.react.validNotes.at(-1)!;
 
     lastSelectedNote.scrollIntoView();
   }

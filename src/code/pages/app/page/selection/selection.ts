@@ -15,8 +15,8 @@ export interface ISelectionReact {
   noteIds: ComputedRef<string[]>;
   arrowIds: ComputedRef<string[]>;
 
-  notes: ComputedRef<PageNote[]>;
-  arrows: ComputedRef<PageArrow[]>;
+  validNotes: ComputedRef<PageNote[]>;
+  validArrows: ComputedRef<PageArrow[]>;
 
   elems: ComputedRef<(PageNote | PageArrow)[]>;
 }
@@ -32,11 +32,17 @@ export class PageSelection {
       noteIds: computed(() => Object.keys(this.react.noteSet)),
       arrowIds: computed(() => Object.keys(this.react.arrowSet)),
 
-      notes: computed(() => this.page.notes.fromIds(this.react.noteIds)),
-      arrows: computed(() => this.page.arrows.fromIds(this.react.arrowIds)),
+      validNotes: computed(() =>
+        this.page.notes.validFromIds(this.react.noteIds)
+      ),
+      validArrows: computed(() =>
+        this.page.arrows.validFromIds(this.react.arrowIds)
+      ),
 
       elems: computed(() =>
-        (this.react.notes as (PageNote | PageArrow)[]).concat(this.react.arrows)
+        (this.react.validNotes as (PageNote | PageArrow)[]).concat(
+          this.react.validArrows
+        )
       ),
     });
   }
@@ -117,7 +123,7 @@ export class PageSelection {
 
   shift(shiftX: number, shiftY: number) {
     this.page.collab.doc.transact(() => {
-      for (const note of this.react.notes) {
+      for (const note of this.react.validNotes) {
         note.react.collab.pos.x += shiftX;
         note.react.collab.pos.y += shiftY;
       }
@@ -166,11 +172,11 @@ export class PageSelection {
   }
 
   moveToLayer(layer: PageLayer, insertIndex?: number) {
-    const notesSet = new Set(this.react.notes);
+    const notesSet = new Set(this.react.validNotes);
     const arrowsSet = new Set<PageArrow>();
 
-    for (const note of this.react.notes) {
-      for (const arrow of this.page.arrows.fromIds(
+    for (const note of this.react.validNotes) {
+      for (const arrow of this.page.arrows.validFromIds(
         Array.from(note.incomingArrowIds)
       )) {
         if (notesSet.has(arrow.react.sourceNote)) {
@@ -178,7 +184,7 @@ export class PageSelection {
         }
       }
 
-      for (const arrow of this.page.arrows.fromIds(
+      for (const arrow of this.page.arrows.validFromIds(
         Array.from(note.outgoingArrowIds)
       )) {
         if (notesSet.has(arrow.react.targetNote)) {

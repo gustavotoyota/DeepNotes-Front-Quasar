@@ -118,7 +118,7 @@ export class PageBoxSelection {
     const originClientPos = this.react.region.originClientPos;
 
     this.page.collab.doc.transact(() => {
-      for (const note of this.react.region.react.notes) {
+      for (const note of this.react.region.react.validNotes) {
         const noteRect = note.getClientRect('note-frame');
 
         noteRect.topLeft = noteRect.topLeft.sub(originClientPos);
@@ -135,7 +135,7 @@ export class PageBoxSelection {
         }
       }
 
-      for (const arrow of this.react.region.react.arrows) {
+      for (const arrow of this.react.region.react.validArrows) {
         const arrowClientCenter = this.page.pos.worldToClient(
           arrow.react.centerPos
         );

@@ -271,25 +271,6 @@ export class PageNote extends PageElem implements IPageRegion {
           this.react.topLayer
       ),
 
-      noteIds: computed(() => {
-        const result = [];
-
-        for (const layer of this.react.layers) {
-          result.push(...layer.react.collab.noteIds);
-        }
-
-        return result;
-      }),
-      arrowIds: computed(() => {
-        const result = [];
-
-        for (const layer of this.react.layers) {
-          result.push(...layer.react.collab.arrowIds);
-        }
-
-        return result;
-      }),
-
       notes: computed(() => {
         const result = [];
 

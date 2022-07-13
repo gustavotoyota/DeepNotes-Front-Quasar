@@ -32,16 +32,18 @@ export class PageCloning {
     if (this.page.selection.react.notes.length > 0)
       destIndex = this.page.selection.react.notes.at(-1)!.react.index + 1;
 
+    const destLayer = this.page.activeRegion.react.region.react.activeLayer;
+
     const { noteIds, arrowIds } = this.page.app.serialization.deserialize(
       serialObject,
-      this.page.activeRegion.react.region.react.activeLayer,
+      destLayer,
       destIndex
     );
 
     // Select clones
 
-    const notes = this.page.notes.fromIds(noteIds);
-    const arrows = this.page.arrows.fromIds(arrowIds);
+    const notes = this.page.notes.fromIds(noteIds, destLayer.id);
+    const arrows = this.page.arrows.fromIds(arrowIds, destLayer.id);
 
     this.page.selection.set(...(notes as PageElem[]).concat(arrows));
 

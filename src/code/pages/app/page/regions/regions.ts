@@ -8,8 +8,8 @@ import { IRegionElemsOutput } from './region';
 export class PageRegions {
   constructor(readonly page: AppPage) {}
 
-  fromId(id: string): AppPage | PageNote {
-    const note = this.page.notes.fromId(id);
+  fromId(regionId: string): AppPage | PageNote {
+    const note = this.page.notes.fromId(regionId);
 
     if (note != null) {
       return note;

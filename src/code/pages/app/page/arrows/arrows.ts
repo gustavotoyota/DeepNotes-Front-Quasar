@@ -14,12 +14,22 @@ export class PageArrows {
 
   constructor(readonly factory: Factory, readonly page: AppPage) {}
 
-  fromId(arrowId: string | null): PageArrow | null {
-    return this.react.map[arrowId!] ?? null;
+  fromId(arrowId: string | null, parentLayerId?: string): PageArrow | null {
+    const arrow = this.react.map[arrowId!];
+
+    if (
+      (parentLayerId == null && arrow != null) ||
+      (parentLayerId != null &&
+        arrow?.react.collab.parentLayerId === parentLayerId)
+    ) {
+      return arrow;
+    } else {
+      return null;
+    }
   }
-  fromIds(arrowIds: string[]): PageArrow[] {
+  fromIds(arrowIds: string[], parentLayerId?: string): PageArrow[] {
     return arrowIds
-      .map((arrowId) => this.fromId(arrowId) as PageArrow)
+      .map((arrowId) => this.fromId(arrowId, parentLayerId) as PageArrow)
       .filter((arrow) => arrow != null);
   }
 

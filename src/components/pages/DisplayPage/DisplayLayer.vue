@@ -8,7 +8,7 @@
         :key="arrowId"
       >
         <template
-          v-for="arrow in [page.arrows.fromId(arrowId)]"
+          v-for="arrow in [page.arrows.fromId(arrowId, layer.id)]"
           :key="arrow?.id ?? arrowId"
         >
           <DisplayArrow
@@ -28,7 +28,7 @@
         :key="arrowId"
       >
         <template
-          v-for="arrow in [page.arrows.fromId(arrowId)]"
+          v-for="arrow in [page.arrows.fromId(arrowId, layer.id)]"
           :key="arrow?.id ?? arrowId"
         >
           <ArrowLabel
@@ -47,12 +47,11 @@
         :key="noteId"
       >
         <template
-          v-for="note in [page.notes.fromId(noteId)]"
+          v-for="note in [page.notes.fromId(noteId, layer.id)]"
           :key="note?.id ?? noteId"
         >
           <DisplayNote
             v-if="note != null"
-            :parent-layer="layer"
             :note="note"
             :index="index"
           />

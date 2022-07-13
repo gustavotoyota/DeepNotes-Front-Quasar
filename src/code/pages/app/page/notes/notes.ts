@@ -16,12 +16,22 @@ export class PageNotes {
 
   constructor(readonly factory: Factory, readonly page: AppPage) {}
 
-  fromId(noteId: string | null): PageNote | null {
-    return this.react.map[noteId!] ?? null;
+  fromId(noteId: string | null, parentLayerId?: string): PageNote | null {
+    const note = this.react.map[noteId!];
+
+    if (
+      (parentLayerId == null && note != null) ||
+      (parentLayerId != null &&
+        note?.react.collab.parentLayerId === parentLayerId)
+    ) {
+      return note;
+    } else {
+      return null;
+    }
   }
-  fromIds(noteIds: string[]): PageNote[] {
+  fromIds(noteIds: string[], parentLayerId?: string): PageNote[] {
     return noteIds
-      .map((noteId) => this.fromId(noteId) as PageNote)
+      .map((noteId) => this.fromId(noteId, parentLayerId) as PageNote)
       .filter((note) => note != null);
   }
 

@@ -34,9 +34,11 @@ export class PageLayer {
       regionId,
       region: computed(() => this.page.regions.fromId(this.react.regionId)!),
 
-      notes: computed(() => this.page.notes.fromIds(this.react.collab.noteIds)),
+      notes: computed(() =>
+        this.page.notes.fromIds(this.react.collab.noteIds, this.id)
+      ),
       arrows: computed(() =>
-        this.page.arrows.fromIds(this.react.collab.arrowIds)
+        this.page.arrows.fromIds(this.react.collab.arrowIds, this.id)
       ),
     });
   }

@@ -35,9 +35,6 @@ export interface IRegionReact {
   activeLayerId?: string;
   activeLayer: ComputedRef<PageLayer>;
 
-  noteIds: ComputedRef<string[]>;
-  arrowIds: ComputedRef<string[]>;
-
   notes: ComputedRef<PageNote[]>;
   arrows: ComputedRef<PageArrow[]>;
   elems: ComputedRef<PageElem[]>;

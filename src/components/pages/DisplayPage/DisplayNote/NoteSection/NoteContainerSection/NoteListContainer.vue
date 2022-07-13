@@ -49,7 +49,9 @@
       :key="childNoteId"
     >
       <template
-        v-for="childNote in [page.notes.fromId(childNoteId)]"
+        v-for="childNote in [
+          page.notes.fromId(childNoteId, note.react.topLayer.id),
+        ]"
         :key="childNote?.id ?? childNoteId"
       >
         <div
@@ -67,7 +69,6 @@
           }"
         >
           <DisplayNote
-            :parent-layer="note.react.topLayer"
             :note="childNote"
             :index="index"
           />

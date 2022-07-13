@@ -148,27 +148,24 @@ export class AppPage implements IPageRegion {
           this.react.topLayer
       ),
 
-      noteIds: computed(() => {
+      notes: computed(() => {
         const result = [];
 
         for (const layer of this.react.layers) {
-          result.push(...layer.react.collab.noteIds);
+          result.push(...layer.react.notes);
         }
 
         return result;
       }),
-      arrowIds: computed(() => {
+      arrows: computed(() => {
         const result = [];
 
         for (const layer of this.react.layers) {
-          result.push(...layer.react.collab.arrowIds);
+          result.push(...layer.react.arrows);
         }
 
         return result;
       }),
-
-      notes: computed(() => this.notes.fromIds(this.react.noteIds)),
-      arrows: computed(() => this.arrows.fromIds(this.react.arrowIds)),
       elems: computed(() =>
         (this.react.notes as PageElem[]).concat(this.react.arrows)
       ),

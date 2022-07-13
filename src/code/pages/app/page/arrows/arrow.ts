@@ -179,8 +179,7 @@ export class PageArrow extends PageElem {
     Object.assign(this.react, react);
 
     if (!this._collab) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      nextTick(() => {
+      void nextTick(() => {
         // nextTick is necessary because the arrow may be created before the notes
 
         if (this.react.sourceNote != null) {

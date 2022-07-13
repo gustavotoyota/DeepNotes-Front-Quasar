@@ -176,8 +176,7 @@ export function logout() {
 
   if (auth.loggedIn) {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      $api.post(authEndpoints.logout);
+      void $api.post(authEndpoints.logout);
     } catch (err) {
       console.error(err);
     }

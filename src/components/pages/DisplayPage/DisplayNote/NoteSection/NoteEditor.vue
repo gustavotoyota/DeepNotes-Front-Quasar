@@ -64,8 +64,7 @@ function finishLoading() {
   if (note.react.numEditorsLoading === 0) {
     note.react.allEditorsLoaded = true;
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    watchUntilTrue(() => {
+    void watchUntilTrue(() => {
       if (!note.react.loaded) {
         return false;
       }

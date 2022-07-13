@@ -53,8 +53,7 @@ export function watchUntilTrue(
 
   let unwatch: WatchStopHandle | null = null;
 
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  resolvable.then(() => {
+  void resolvable.then(() => {
     unwatch?.();
   });
 

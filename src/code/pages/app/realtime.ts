@@ -109,8 +109,7 @@ export class AppRealtime extends ClientSocket {
     }
 
     if (this._subscribeBuffer.size === 0) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      nextTick(this._subscribeFlush);
+      void nextTick(this._subscribeFlush);
     }
 
     for (const channel of channels) {
@@ -155,8 +154,7 @@ export class AppRealtime extends ClientSocket {
     }
 
     if (this._unsubscribeBuffer.size === 0) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      nextTick(this._unsubscribeFlush);
+      void nextTick(this._unsubscribeFlush);
     }
 
     for (const channel of channels) {
@@ -200,8 +198,7 @@ export class AppRealtime extends ClientSocket {
     }
 
     if (this._publishBuffer.size === 0) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this._publishFlush();
+      void this._publishFlush();
     }
 
     for (const [channel, value] of entries) {
@@ -267,8 +264,7 @@ export class AppRealtime extends ClientSocket {
         const notifObj = JSON.parse(value);
 
         if (notifObj.type.startsWith('group')) {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          Promise.all([
+          void Promise.all([
             $pages.realtime.getAsync(
               REALTIME_USER_DISPLAY_NAME,
               notifObj.data.agentId
@@ -300,8 +296,7 @@ export class AppRealtime extends ClientSocket {
             if (notifObj.type === NOTIFICATION_GROUP_REQUEST_ACCEPTED) {
               for (const page of $pages.pageCache.react.cache) {
                 if (page.react.groupId === notifObj.data.groupId) {
-                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                  page.setup();
+                  void page.setup();
                 }
               }
 

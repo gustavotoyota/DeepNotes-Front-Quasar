@@ -180,8 +180,7 @@ export class PageDragging {
 
       this.page.collab.doc.transact(() => {
         for (const selectedNote of this.page.selection.react.notes) {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          watchUntilTrue(() => selectedNote.react.loaded).then(() => {
+          void watchUntilTrue(() => selectedNote.react.loaded).then(() => {
             const worldPos = this.page.pos.clientToWorld(this.react.currentPos);
             const mouseOffset = worldPos.sub(prevCenters.get(activeElem.id)!);
 

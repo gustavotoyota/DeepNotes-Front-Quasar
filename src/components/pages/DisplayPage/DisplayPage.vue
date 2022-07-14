@@ -16,7 +16,7 @@
 
       <Gap style="height: 16px" />
 
-      <q-form style="display: flex; flex-direction: column; width: 220px">
+      <q-form style="display: flex; flex-direction: column; width: 240px">
         <q-input
           label="Password"
           type="password"

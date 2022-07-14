@@ -5,43 +5,86 @@
     @click="visible = true"
   />
 
-  <q-dialog v-model="visible">
+  <q-dialog
+    v-model="visible"
+    :maximized="ui.width < BREAKPOINT_MD_MIN"
+  >
     <q-card
-      style="
-        display: flex;
-        flex-direction: column;
-        max-width: unset;
-        width: 800px;
-        height: 600px;
-      "
+      style="display: flex; flex-direction: column; max-width: unset"
+      :style="{
+        width: ui.width < BREAKPOINT_MD_MIN ? undefined : '800px',
+        height: ui.width < BREAKPOINT_MD_MIN ? undefined : '600px',
+      }"
     >
       <q-card-section>
         <div class="text-h5">Group Settings</div>
       </q-card-section>
 
+      <template v-if="ui.width < BREAKPOINT_MD_MIN">
+        <q-separator />
+
+        <q-tabs
+          v-model="settings.tab"
+          inline-label
+          outside-arrows
+          mobile-arrows
+        >
+          <q-tab
+            name="General"
+            icon="mdi-account-group"
+            label="General"
+          />
+          <q-tab
+            name="Members"
+            icon="mdi-wallet-membership"
+            label="Members"
+          />
+          <q-tab
+            name="Invitations"
+            icon="mdi-calendar"
+            label="Invitations"
+          />
+          <q-tab
+            name="Requests"
+            icon="mdi-account-multiple-plus"
+            label="Requests"
+          />
+        </q-tabs>
+      </template>
+
       <q-separator />
 
       <q-card-section style="flex: 1; height: 0; display: flex; padding: 0">
-        <q-list style="flex: none; width: 180px">
+        <q-list
+          style="flex: none; width: 180px"
+          class="d-none d-md-block"
+        >
           <TabBtn
             name="General"
+            icon="mdi-account-group"
             :settings="settings"
           />
           <TabBtn
             name="Members"
+            icon="mdi-wallet-membership"
             :settings="settings"
           />
           <TabBtn
             name="Invitations"
+            icon="mdi-calendar"
             :settings="settings"
           />
           <TabBtn
             name="Requests"
+            icon="mdi-account-multiple-plus"
             :settings="settings"
           />
         </q-list>
 
-        <q-separator vertical />
+        <q-separator
+          vertical
+          class="d-none d-md-block"
+        />
 
         <div
           style="
@@ -119,14 +162,18 @@ export function initialSettings() {
 >
 import { AppPage } from 'src/code/pages/app/page/page';
 import { REALTIME_ENCRYPTED_GROUP_NAME } from 'src/code/pages/app/realtime';
+import { BREAKPOINT_MD_MIN } from 'src/code/pages/static/responsive';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import TabBtn from 'src/components/pages/misc/TabBtn.vue';
+import { useUI } from 'src/stores/pages/ui';
 import { inject, provide, Ref, ref, watch } from 'vue';
 
 import GeneralTab from './GeneralTab.vue';
 import InvitationsTab from './InvitationsTab/InvitationsTab.vue';
 import MembersTab from './MembersTab/MembersTab.vue';
 import RequestsTab from './RequestsTab/RequestsTab.vue';
+
+const ui = useUI();
 
 const visible = ref(false);
 

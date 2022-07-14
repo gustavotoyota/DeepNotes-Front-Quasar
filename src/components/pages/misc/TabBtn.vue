@@ -9,6 +9,9 @@
       settings.tab = name
     "
   >
+    <q-item-section avatar>
+      <q-icon :name="icon" />
+    </q-item-section>
     <q-item-section>{{ name }}</q-item-section>
   </q-item>
 </template>
@@ -19,6 +22,7 @@
 >
 defineProps<{
   name: string;
+  icon: string;
   settings: { tab: string };
 }>();
 </script>

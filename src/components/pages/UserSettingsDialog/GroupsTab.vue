@@ -21,7 +21,14 @@
 
   <div style="flex: 1; height: 0; display: flex">
     <div style="flex: 1">
-      <q-list style="border-radius: 10px; padding: 0; overflow-y: auto">
+      <q-list
+        style="
+          border-radius: 10px;
+          padding: 0;
+          overflow-y: auto;
+          max-height: 100%;
+        "
+      >
         <q-item
           v-for="group in settings.groups.list"
           :key="group.groupId"

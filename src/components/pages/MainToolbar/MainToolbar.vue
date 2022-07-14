@@ -574,6 +574,15 @@
                     page.selection.format((chain) => chain.setHorizontalRule())
                   "
                 />
+                <InsertImageDialog #default="{ on }">
+                  <ToolbarBtn
+                    tooltip="Image"
+                    icon="mdi-image"
+                    icon-size="23px"
+                    :disable="page.react.readonly || !page.editing.react.active"
+                    v-on="on"
+                  />
+                </InsertImageDialog>
               </div>
 
               <div>
@@ -773,6 +782,7 @@ import { useUI } from 'src/stores/pages/ui';
 import { computed } from 'vue';
 
 import ToolbarBtn from '../misc/ToolbarBtn.vue';
+import InsertImageDialog from './InsertImageDialog.vue';
 
 const ui = useUI();
 

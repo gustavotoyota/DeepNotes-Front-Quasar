@@ -23,6 +23,10 @@ export const noteExtensions = [
     codeBlock: false,
 
     horizontalRule: false,
+
+    heading: {
+      levels: [1, 2, 3],
+    },
   }),
 
   HorizontalRule.configure({

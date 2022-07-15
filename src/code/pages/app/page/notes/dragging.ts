@@ -102,8 +102,9 @@ export class PageDragging {
 
       this.page.collab.doc.transact(() => {
         for (const selectedNote of this.page.selection.react.validNotes) {
-          selectedNote.react.collab.pos.x += gapWorldDelta.x;
-          selectedNote.react.collab.pos.y += gapWorldDelta.y;
+          selectedNote.react.collab.pos = new Vec2(
+            selectedNote.react.collab.pos
+          ).add(gapWorldDelta);
         }
       });
 
@@ -118,8 +119,9 @@ export class PageDragging {
 
     this.page.collab.doc.transact(() => {
       for (const selectedNote of this.page.selection.react.validNotes) {
-        selectedNote.react.collab.pos.x += worldDelta.x;
-        selectedNote.react.collab.pos.y += worldDelta.y;
+        selectedNote.react.collab.pos = new Vec2(
+          selectedNote.react.collab.pos
+        ).add(worldDelta);
       }
     });
   };
@@ -163,8 +165,9 @@ export class PageDragging {
 
       this.page.collab.doc.transact(() => {
         for (const selectedNote of this.page.selection.react.validNotes) {
-          selectedNote.react.collab.pos.x += containerWorldTopLeft.x;
-          selectedNote.react.collab.pos.y += containerWorldTopLeft.y;
+          selectedNote.react.collab.pos = new Vec2(
+            selectedNote.react.collab.pos
+          ).add(containerWorldTopLeft);
         }
       });
     } else {
@@ -188,14 +191,13 @@ export class PageDragging {
 
             const worldSize = selectedNote.getWorldRect('note-frame').size;
 
-            selectedNote.react.collab.pos.x =
-              prevCenter.x +
-              mouseOffset.x +
-              worldSize.x * (selectedNote.react.collab.anchor.x - 0.5);
-            selectedNote.react.collab.pos.y =
-              prevCenter.y +
-              mouseOffset.y +
-              worldSize.y * (selectedNote.react.collab.anchor.y - 0.5);
+            selectedNote.react.collab.pos = prevCenter
+              .add(mouseOffset)
+              .add(
+                worldSize.mul(
+                  new Vec2(selectedNote.react.collab.anchor).sub(new Vec2(0.5))
+                )
+              );
           });
         }
       });

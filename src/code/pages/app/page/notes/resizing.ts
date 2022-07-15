@@ -198,8 +198,7 @@ export class PageResizing {
 
       const oldRects = this.oldRects[note.id];
 
-      ghost.react.collab.pos.x = oldRects.frame.topLeft.x + posDelta.x;
-      ghost.react.collab.pos.y = oldRects.frame.topLeft.y + posDelta.y;
+      ghost.react.collab.pos = oldRects.frame.topLeft.add(posDelta);
     }
   };
 
@@ -244,8 +243,9 @@ export class PageResizing {
             containerClientRect.topLeft
           );
 
-          note.react.collab.pos.x -= containerWorldTopLeft.x;
-          note.react.collab.pos.y -= containerWorldTopLeft.y;
+          note.react.collab.pos = new Vec2(note.react.collab.pos).sub(
+            containerWorldTopLeft
+          );
         }
 
         note.react.resizing = false;

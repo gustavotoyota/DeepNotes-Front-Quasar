@@ -1,5 +1,6 @@
 import { ChainedCommands } from '@tiptap/vue-3';
 import { MarkName } from 'src/code/pages/static/tiptap';
+import { Vec2 } from 'src/code/pages/static/vec2';
 import { computed, ComputedRef, reactive, UnwrapNestedRefs } from 'vue';
 
 import { PageArrow } from '../arrows/arrow';
@@ -121,11 +122,10 @@ export class PageSelection {
     this.add(...this.page.activeRegion.react.region.react.elems);
   }
 
-  shift(shiftX: number, shiftY: number) {
+  shift(shift: Vec2) {
     this.page.collab.doc.transact(() => {
       for (const note of this.react.validNotes) {
-        note.react.collab.pos.x += shiftX;
-        note.react.collab.pos.y += shiftY;
+        note.react.collab.pos = new Vec2(note.react.collab.pos).add(shift);
       }
     });
   }

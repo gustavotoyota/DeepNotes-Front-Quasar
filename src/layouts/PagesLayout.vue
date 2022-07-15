@@ -235,19 +235,19 @@ async function onKeyDown(event: KeyboardEvent) {
   }
 
   if (event.code === 'ArrowLeft') {
-    page.value.selection.shift(-1, 0);
+    page.value.selection.shift(new Vec2(-1, 0));
     return;
   }
   if (event.code === 'ArrowRight') {
-    page.value.selection.shift(1, 0);
+    page.value.selection.shift(new Vec2(1, 0));
     return;
   }
   if (event.code === 'ArrowUp') {
-    page.value.selection.shift(0, -1);
+    page.value.selection.shift(new Vec2(0, -1));
     return;
   }
   if (event.code === 'ArrowDown') {
-    page.value.selection.shift(0, 1);
+    page.value.selection.shift(new Vec2(0, 1));
     return;
   }
 }

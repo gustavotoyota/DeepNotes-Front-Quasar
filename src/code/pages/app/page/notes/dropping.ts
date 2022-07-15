@@ -1,3 +1,4 @@
+import { Vec2 } from 'src/code/pages/static/vec2';
 import { nextTick } from 'vue';
 
 import { PageLayer } from '../layers/layer';
@@ -28,8 +29,9 @@ export class PageDropping {
 
     this.page.collab.doc.transact(() => {
       for (const selectedNote of this.page.selection.react.validNotes) {
-        selectedNote.react.collab.pos.x -= containerWorldRect.topLeft.x;
-        selectedNote.react.collab.pos.y -= containerWorldRect.topLeft.y;
+        selectedNote.react.collab.pos = new Vec2(
+          selectedNote.react.collab.pos
+        ).sub(containerWorldRect.topLeft);
       }
     });
 

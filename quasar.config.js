@@ -29,12 +29,13 @@ module.exports = configure(function (/* ctx */) {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: [
-      { path: 'external/i18n' },
-      { path: 'external/axios' },
-      { path: 'external/syncedstore', server: false },
-      { path: 'external/lowlight', server: false },
-      { path: 'external/tiptap', server: false },
-      { path: 'internal/global-vue-props' },
+      { path: 'i18n' },
+      { path: 'axios' },
+      { path: 'syncedstore', server: false },
+      { path: 'lowlight', server: false },
+      { path: 'prosemirror', server: false },
+      { path: 'tiptap/tiptap', server: false },
+      { path: 'vue' },
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css

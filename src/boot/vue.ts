@@ -13,6 +13,8 @@ declare module '@vue/runtime-core' {
 }
 
 export default boot((params) => {
+  params.app.config.unwrapInjectedRef = true;
+
   params.app.config.globalProperties.globalThis = globalThis;
   params.app.config.globalProperties.console = console;
   params.app.config.globalProperties.process = process;

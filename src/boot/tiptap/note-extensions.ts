@@ -25,11 +25,9 @@ export const noteExtensions = [
     horizontalRule: false,
   }),
 
-  HorizontalRule.extend({
-    draggable: false,
-  }).configure({
+  HorizontalRule.configure({
     HTMLAttributes: {
-      draggable: false,
+      draggable: 'false',
     },
   }),
 

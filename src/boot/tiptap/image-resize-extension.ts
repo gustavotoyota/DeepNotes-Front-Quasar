@@ -3,8 +3,6 @@ import { VueNodeViewRenderer } from '@tiptap/vue-3';
 
 import ImageResize from './ImageResize.vue';
 
-// Tiptap stuff
-
 export const ImageResizeExtension = Image.extend({
   addAttributes() {
     return {
@@ -22,6 +20,4 @@ export const ImageResizeExtension = Image.extend({
   addNodeView() {
     return VueNodeViewRenderer(ImageResize);
   },
-
-  draggable: true,
 });

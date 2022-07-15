@@ -43,7 +43,7 @@ export const noteExtensions = [
   Link.configure({
     openOnClick: false,
     HTMLAttributes: {
-      draggable: false,
+      draggable: 'false',
     },
   }),
 

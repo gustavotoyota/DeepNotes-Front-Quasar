@@ -35,7 +35,7 @@ export const arrowExtensions = [
   Link.configure({
     openOnClick: false,
     HTMLAttributes: {
-      draggable: false,
+      draggable: 'false',
     },
   }),
 ];

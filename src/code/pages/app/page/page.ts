@@ -129,7 +129,6 @@ export class AppPage implements IPageRegion {
   unwatchUserDisplayName?: WatchStopHandle;
 
   originElem!: Element;
-  cameraData?: ICameraData;
   encryptedGroupSymmetricKey!: Uint8Array;
 
   get originClientPos(): Vec2 {
@@ -312,10 +311,6 @@ export class AppPage implements IPageRegion {
     this.react.roleId = response.data.roleId;
     this.react.userStatus = response.data.userStatus;
 
-    // Save camera data
-
-    this.cameraData = response.data.camera;
-
     // Check if user is authorized
 
     if (
@@ -395,8 +390,9 @@ export class AppPage implements IPageRegion {
 
     await nextTick();
     await watchUntilTrue(() => this.react.allEditorsLoaded);
+    await nextTick();
 
-    this.camera.setup(this.cameraData);
+    this.camera.fitToScreen();
 
     this.react.loading = false;
   }

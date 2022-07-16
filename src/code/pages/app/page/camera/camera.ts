@@ -1,12 +1,5 @@
-import { debounce } from 'lodash';
 import { Vec2 } from 'src/code/pages/static/vec2';
-import {
-  computed,
-  reactive,
-  UnwrapNestedRefs,
-  watch,
-  WritableComputedRef,
-} from 'vue';
+import { computed, reactive, UnwrapNestedRefs, WritableComputedRef } from 'vue';
 
 import { AppPage } from '../page';
 import { IRegionElemsOutput } from '../regions/region';
@@ -51,35 +44,6 @@ export class PageCamera {
       lockPos: false,
       lockZoom: false,
     });
-  }
-
-  setup(cameraData?: ICameraData) {
-    if (cameraData == null) {
-      this.fitToScreen();
-    } else {
-      this.react.pos = new Vec2(cameraData.pos);
-      this.react._zoom = cameraData.zoom;
-
-      this.react.lockPos = cameraData.lockPos;
-      this.react.lockZoom = cameraData.lockZoom;
-    }
-
-    this.watchUpdates();
-  }
-  watchUpdates() {
-    watch(
-      () => this.react,
-      debounce(async () => {
-        console.log('Camera update sent');
-
-        await $api.post('/api/pages/update-camera', {
-          pageId: this.page.id,
-
-          camera: this.react,
-        });
-      }, 2000),
-      { deep: true }
-    );
   }
 
   resetZoom() {

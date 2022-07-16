@@ -242,11 +242,9 @@ export class WebsocketProvider extends ClientSocket {
 
     this.syncPromise.resolve();
 
-    this._sendSyncAllUpdatesMergedMessage(updateEndIndex);
-
-    if (this._updateBuffer != null) {
-      this._sendSyncSingleUpdateMessage();
-    }
+    setTimeout(() => {
+      this._sendSyncAllUpdatesMergedMessage(updateEndIndex);
+    }, 0);
   }
 
   private _sendSyncAllUpdatesMergedMessage(updateEndIndex: number) {

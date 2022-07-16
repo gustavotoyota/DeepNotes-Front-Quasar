@@ -31,11 +31,12 @@ module.exports = configure(function (/* ctx */) {
     boot: [
       { path: 'i18n' },
       { path: 'axios' },
+      { path: 'vue' },
+      { path: 'globals' },
       { path: 'syncedstore', server: false },
       { path: 'lowlight', server: false },
       { path: 'prosemirror', server: false },
       { path: 'tiptap/tiptap', server: false },
-      { path: 'vue' },
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css

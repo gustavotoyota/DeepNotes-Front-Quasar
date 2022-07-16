@@ -41,7 +41,7 @@ export class PageCollab {
       this.page.react.symmetricKey
     );
 
-    await this.websocketProvider.syncedPromise;
+    await this.websocketProvider.syncPromise;
   }
 
   reset() {

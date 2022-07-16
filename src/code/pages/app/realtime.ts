@@ -32,7 +32,7 @@ const MSGTOCL_NOTIFY = 0;
 export class AppRealtime extends ClientSocket {
   private readonly _values: Record<string, string | undefined> = reactive({});
 
-  syncedPromise!: Resolvable;
+  syncPromise!: Resolvable;
 
   private readonly _subscriptions = new Set<string>();
 
@@ -53,7 +53,7 @@ export class AppRealtime extends ClientSocket {
   connect() {
     super.connect();
 
-    this.syncedPromise = new Resolvable();
+    this.syncPromise = new Resolvable();
 
     this.socket.addEventListener('open', async () => {
       for (const subscription of this._subscriptions) {
@@ -124,8 +124,8 @@ export class AppRealtime extends ClientSocket {
     }
   }
   private _subscribeFlush = async () => {
-    await this.connectedPromise;
-    await $pages.loadedPromise;
+    await this.connectPromise;
+    await $pages.loadPromise;
 
     if (this._subscribeBuffer.size === 0) {
       return;
@@ -162,8 +162,8 @@ export class AppRealtime extends ClientSocket {
     }
   }
   private _unsubscribeFlush = async () => {
-    await this.connectedPromise;
-    await $pages.loadedPromise;
+    await this.connectPromise;
+    await $pages.loadPromise;
 
     if (this._unsubscribeBuffer.size === 0) {
       return;
@@ -207,8 +207,8 @@ export class AppRealtime extends ClientSocket {
   }
   private _publishFlush = throttle(
     async () => {
-      await this.connectedPromise;
-      await $pages.loadedPromise;
+      await this.connectPromise;
+      await $pages.loadPromise;
 
       if (this._publishBuffer.size === 0) {
         return;
@@ -392,6 +392,6 @@ export class AppRealtime extends ClientSocket {
 
     this._autoPublish = true;
 
-    this.syncedPromise.resolve();
+    this.syncPromise.resolve();
   }
 }

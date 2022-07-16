@@ -1,7 +1,7 @@
 import { Resolvable } from 'src/code/utils';
 
 export class ClientSocket {
-  connectedPromise!: Resolvable;
+  connectPromise!: Resolvable;
 
   socket!: WebSocket;
 
@@ -16,7 +16,7 @@ export class ClientSocket {
       return;
     }
 
-    this.connectedPromise = new Resolvable();
+    this.connectPromise = new Resolvable();
 
     this._keepConnected = true;
 
@@ -33,7 +33,7 @@ export class ClientSocket {
 
       this._nextReconnectDelay = 200;
 
-      this.connectedPromise.resolve();
+      this.connectPromise.resolve();
     });
 
     this.socket.addEventListener('close', (event) => {

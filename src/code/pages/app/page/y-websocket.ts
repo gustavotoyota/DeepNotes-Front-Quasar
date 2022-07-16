@@ -25,7 +25,7 @@ interface IAwarenessChanges {
 export class WebsocketProvider extends ClientSocket {
   readonly awareness: awarenessProtocol.Awareness;
 
-  readonly syncedPromise = new Resolvable();
+  syncPromise!: Resolvable;
 
   size = 0;
 
@@ -59,6 +59,8 @@ export class WebsocketProvider extends ClientSocket {
 
   connect() {
     super.connect();
+
+    this.syncPromise = new Resolvable();
 
     this.socket.addEventListener('open', () => {
       // Broadcast local awareness state
@@ -238,7 +240,7 @@ export class WebsocketProvider extends ClientSocket {
       }
     });
 
-    this.syncedPromise.resolve();
+    this.syncPromise.resolve();
 
     this._sendSyncAllUpdatesMergedMessage(updateEndIndex);
 

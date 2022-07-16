@@ -110,7 +110,7 @@ export class PagesApp {
 
   parentPageId: string | null = null;
 
-  readonly loadedPromise = new Resolvable();
+  readonly loadPromise = new Resolvable();
 
   constructor(factory: Factory) {
     this.serialization = factory.makeSerialization(this);
@@ -293,7 +293,7 @@ export class PagesApp {
       `${REALTIME_USER_NOTIFICATION}:${this.react.userId}`
     );
 
-    this.loadedPromise.resolve();
+    this.loadPromise.resolve();
   }
 
   async loadPages(initialPageId: string) {

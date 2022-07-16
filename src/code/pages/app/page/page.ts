@@ -359,6 +359,8 @@ export class AppPage implements IPageRegion {
   }
 
   async finishSetup() {
+    this.react.loading = true;
+
     // Synchronize collaboration
 
     await this.collab.synchronize();

@@ -1,3 +1,4 @@
+import { Notify } from 'quasar';
 import {
   getClipboardText,
   setClipboardText,
@@ -42,50 +43,60 @@ export class PageClipboard {
       return;
     }
 
-    // Get from clipboard
+    try {
+      // Get from clipboard
 
-    const clipboardText = text ?? (await getClipboardText());
-    const clipboardObjectInput = JSON.parse(clipboardText);
-    const clipboardObjectOutput = ISerialObject.parse(clipboardObjectInput);
+      const clipboardText = text ?? (await getClipboardText());
+      const clipboardObjectInput = JSON.parse(clipboardText);
+      const clipboardObjectOutput = ISerialObject.parse(clipboardObjectInput);
 
-    // Center notes around destination
+      // Center notes around destination
 
-    if (this.page.activeRegion.react.region instanceof AppPage) {
-      const worldRect = this.page.regions.getWorldRect(
-        this.page.selection.react
+      if (this.page.activeRegion.react.region instanceof AppPage) {
+        const worldRect = this.page.regions.getWorldRect(
+          this.page.selection.react
+        );
+
+        const destCenter = worldRect.center.add(new Vec2(8, 8));
+
+        for (const noteIndex of clipboardObjectOutput.layers[0].noteIndexes) {
+          const clipboardNote = clipboardObjectOutput.notes[noteIndex];
+
+          clipboardNote.pos.x += destCenter.x;
+          clipboardNote.pos.y += destCenter.y;
+        }
+      }
+
+      // Deserialize into structure
+
+      let destIndex;
+      if (this.page.selection.react.validNotes.length > 0) {
+        destIndex =
+          this.page.selection.react.validNotes.at(-1)!.react.index + 1;
+      }
+
+      const destLayer = this.page.activeRegion.react.region.react.activeLayer;
+
+      const { noteIds, arrowIds } = this.page.app.serialization.deserialize(
+        clipboardObjectOutput,
+        destLayer,
+        destIndex
       );
 
-      const destCenter = worldRect.center.add(new Vec2(8, 8));
+      // Select notes
 
-      for (const noteIndex of clipboardObjectOutput.layers[0].noteIndexes) {
-        const clipboardNote = clipboardObjectOutput.notes[noteIndex];
+      const notes = this.page.notes.validFromIds(noteIds, destLayer.id);
+      const arrows = this.page.arrows.validFromIds(arrowIds, destLayer.id);
 
-        clipboardNote.pos.x += destCenter.x;
-        clipboardNote.pos.y += destCenter.y;
-      }
+      this.page.selection.set(...(notes as PageElem[]).concat(arrows));
+    } catch (err) {
+      Notify.create({
+        message: 'Failed to paste from clipboard.',
+        color: 'negative',
+      });
+
+      console.log(err);
     }
-
-    // Deserialize into structure
-
-    let destIndex;
-    if (this.page.selection.react.validNotes.length > 0) {
-      destIndex = this.page.selection.react.validNotes.at(-1)!.react.index + 1;
-    }
-
-    const destLayer = this.page.activeRegion.react.region.react.activeLayer;
-
-    const { noteIds, arrowIds } = this.page.app.serialization.deserialize(
-      clipboardObjectOutput,
-      destLayer,
-      destIndex
-    );
-
-    // Select notes
-
-    const notes = this.page.notes.validFromIds(noteIds, destLayer.id);
-    const arrows = this.page.arrows.validFromIds(arrowIds, destLayer.id);
-
-    this.page.selection.set(...(notes as PageElem[]).concat(arrows));
   }
 
   async cut() {

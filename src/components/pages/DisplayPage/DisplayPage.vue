@@ -192,29 +192,41 @@ async function rejectInvitation() {
 }
 
 async function onEnterPassword() {
-  const groupPasswordHash = sodium.crypto_pwhash(
-    32,
-    password.value,
-    new Uint8Array(sodium.crypto_pwhash_SALTBYTES),
-    sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
-    sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE,
-    sodium.crypto_pwhash_ALG_ARGON2ID13
-  );
+  try {
+    const groupPasswordHash = sodium.crypto_pwhash(
+      32,
+      password.value,
+      new Uint8Array(sodium.crypto_pwhash_SALTBYTES),
+      sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+      sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE,
+      sodium.crypto_pwhash_ALG_ARGON2ID13
+    );
 
-  const decryptedGroupSymmetricKey = decryptSymmetric(
-    props.page.encryptedGroupSymmetricKey,
-    groupPasswordHash
-  );
+    const decryptedGroupSymmetricKey = decryptSymmetric(
+      props.page.encryptedGroupSymmetricKey,
+      groupPasswordHash
+    );
 
-  const wrappedGroupSymmetricKey = wrapSymmetricKey(decryptedGroupSymmetricKey);
+    const wrappedGroupSymmetricKey = wrapSymmetricKey(
+      decryptedGroupSymmetricKey
+    );
 
-  $pages.react.dict[`${DICT_GROUP_SYMMETRIC_KEY}:${props.page.react.groupId}`] =
-    wrappedGroupSymmetricKey;
+    $pages.react.dict[
+      `${DICT_GROUP_SYMMETRIC_KEY}:${props.page.react.groupId}`
+    ] = wrappedGroupSymmetricKey;
 
-  for (const page of $pages.pageCache.react.cache) {
-    if (page.react.groupId === props.page.react.groupId) {
-      await page.finishSetup();
+    for (const page of $pages.pageCache.react.cache) {
+      if (page.react.groupId === props.page.react.groupId) {
+        await page.finishSetup();
+      }
     }
+  } catch (err) {
+    Notify.create({
+      message: 'Incorrect password.',
+      color: 'negative',
+    });
+
+    console.error(err);
   }
 }
 </script>

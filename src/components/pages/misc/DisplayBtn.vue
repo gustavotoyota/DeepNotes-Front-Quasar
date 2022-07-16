@@ -4,7 +4,6 @@
     :icon="icon"
     color="grey-9"
     dense
-    @click="$emit('click', $event)"
   >
     <slot></slot>
   </q-btn>

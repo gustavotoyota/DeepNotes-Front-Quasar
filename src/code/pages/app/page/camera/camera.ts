@@ -14,14 +14,6 @@ export interface ICameraReact {
   lockZoom: boolean;
 }
 
-export interface ICameraData {
-  pos: { x: number; y: number };
-  zoom: number;
-
-  lockPos: boolean;
-  lockZoom: boolean;
-}
-
 export class PageCamera {
   readonly react: UnwrapNestedRefs<ICameraReact>;
 

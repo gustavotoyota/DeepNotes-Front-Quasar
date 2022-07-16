@@ -29,7 +29,7 @@ import { REALTIME_USER_DISPLAY_NAME } from '../realtime';
 import { PageArrow } from './arrows/arrow';
 import { PageArrowCreation } from './arrows/arrow-creation';
 import { PageArrows } from './arrows/arrows';
-import { ICameraData, PageCamera } from './camera/camera';
+import { PageCamera } from './camera/camera';
 import { PagePanning } from './camera/panning';
 import { PagePinching } from './camera/pinching';
 import { PageZooming } from './camera/zooming';
@@ -294,8 +294,6 @@ export class AppPage implements IPageRegion {
       ownerId: string;
       userStatus: string;
       roleId: string;
-
-      camera?: ICameraData;
 
       encryptedSymmetricKey: string | undefined;
       encryptersPublicKey: string | undefined;

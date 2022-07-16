@@ -19,7 +19,7 @@ export class PageRegions {
   }
 
   getWorldRect(regionElems: IRegionElemsOutput) {
-    const worldRect = new Rect(
+    const regionWorldRect = new Rect(
       new Vec2(Infinity, Infinity),
       new Vec2(-Infinity, -Infinity)
     );
@@ -29,25 +29,27 @@ export class PageRegions {
     }
 
     for (const note of regionElems.validNotes) {
-      worldRect.topLeft.x = Math.min(
-        worldRect.topLeft.x,
-        note.react.worldRect.topLeft.x
+      const noteWorldRect = note.getWorldRect('note-frame');
+
+      regionWorldRect.topLeft.x = Math.min(
+        regionWorldRect.topLeft.x,
+        noteWorldRect.topLeft.x
       );
-      worldRect.topLeft.y = Math.min(
-        worldRect.topLeft.y,
-        note.react.worldRect.topLeft.y
+      regionWorldRect.topLeft.y = Math.min(
+        regionWorldRect.topLeft.y,
+        noteWorldRect.topLeft.y
       );
 
-      worldRect.bottomRight.x = Math.max(
-        worldRect.bottomRight.x,
-        note.react.worldRect.bottomRight.x
+      regionWorldRect.bottomRight.x = Math.max(
+        regionWorldRect.bottomRight.x,
+        noteWorldRect.bottomRight.x
       );
-      worldRect.bottomRight.y = Math.max(
-        worldRect.bottomRight.y,
-        note.react.worldRect.bottomRight.y
+      regionWorldRect.bottomRight.y = Math.max(
+        regionWorldRect.bottomRight.y,
+        noteWorldRect.bottomRight.y
       );
     }
 
-    return worldRect;
+    return regionWorldRect;
   }
 }

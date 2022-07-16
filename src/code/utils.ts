@@ -139,3 +139,13 @@ export function sizeToCSS(size: string): string {
     return 'auto';
   }
 }
+
+export function timeoutPromise(ms = 0): Promise<void> {
+  const resolvable = new Resolvable();
+
+  setTimeout(() => {
+    resolvable.resolve();
+  }, ms);
+
+  return resolvable;
+}

@@ -392,9 +392,11 @@ export class AppPage implements IPageRegion {
     await watchUntilTrue(() => this.react.allEditorsLoaded);
     await nextTick();
 
-    this.camera.fitToScreen();
+    setTimeout(() => {
+      this.camera.fitToScreen();
 
-    this.react.loading = false;
+      this.react.loading = false;
+    }, 0);
   }
 
   destroy() {

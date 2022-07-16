@@ -79,3 +79,15 @@ export function listenPointerEvents(
     options.up?.(upEvent);
   }
 }
+
+export function isDetachedDOM(node: Node | null) {
+  while (node != null) {
+    if (node instanceof Document) {
+      return false;
+    }
+
+    node = node.parentNode;
+  }
+
+  return node == null;
+}

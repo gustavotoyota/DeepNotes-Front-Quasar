@@ -42,6 +42,7 @@
 import { useMeta } from 'quasar';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { factory } from 'src/code/pages/static/composition-root';
+import { isDetachedDOM } from 'src/code/pages/static/dom';
 import {
   BREAKPOINT_LG_MIN,
   BREAKPOINT_SM_MIN,
@@ -309,17 +310,50 @@ onBeforeUnmount(() => {
 // Clipboard pasting
 
 onMounted(() => {
-  document.addEventListener('paste', onPaste);
+  document.addEventListener('paste', onPaste, {
+    capture: true,
+  });
 });
 
 async function onPaste(event: ClipboardEvent) {
   const target = event.target as HTMLElement;
 
+  // Pasting local images
+
+  const editorElem = target.closest('.ProseMirror');
+
+  if (editorElem != null && (event.clipboardData?.files?.length ?? 0) > 0) {
+    for (const file of Array.from(event.clipboardData!.files)) {
+      if (!file.type.startsWith('image/')) {
+        continue;
+      }
+
+      const reader = new FileReader();
+
+      reader.addEventListener('loadend', (event) => {
+        page.value.selection.format((chain) =>
+          chain.setImage({
+            src: event.target!.result as string,
+          })
+        );
+      });
+
+      reader.readAsDataURL(file);
+    }
+
+    event.preventDefault();
+
+    return;
+  }
+
+  // Pasting elements into document
+
   if (
     target.nodeName === 'INPUT' ||
     target.nodeName === 'TEXTAREA' ||
     target.isContentEditable ||
-    target.parentNode == null
+    editorElem != null ||
+    isDetachedDOM(target)
   ) {
     return;
   }

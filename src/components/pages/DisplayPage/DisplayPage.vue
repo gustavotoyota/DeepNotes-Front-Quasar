@@ -7,7 +7,7 @@
   >
     <LoadingOverlay v-if="page.react.loading" />
 
-    <template v-else-if="page.react.status === 'error'">
+    <template v-if="page.react.status === 'error'">
       {{ page.react.errorMessage }}
     </template>
 

@@ -11,13 +11,13 @@ export class PageRects {
   }
 
   fromDisplay() {
-    const node = document.querySelector('.display-page');
+    const elem = document.querySelector('.display-page');
 
-    if (node == null) {
+    if (elem == null) {
       throw 'No active display';
     }
 
-    const domClientRect = node.getBoundingClientRect();
+    const domClientRect = elem.getBoundingClientRect();
 
     return this.fromDOM(domClientRect);
   }

@@ -12,14 +12,14 @@ export class PageZooming {
     if (event.altKey) {
       event.preventDefault();
     } else {
-      let node = event.target as Node | null;
+      let elem = event.target as HTMLElement | null;
 
-      while (node != null) {
-        if (hasVertScrollbar(node as HTMLElement)) {
+      while (elem != null) {
+        if (hasVertScrollbar(elem)) {
           return;
         }
 
-        node = node.parentNode;
+        elem = elem.parentElement;
       }
     }
 

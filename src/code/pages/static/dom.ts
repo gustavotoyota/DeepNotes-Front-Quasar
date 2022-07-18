@@ -1,13 +1,21 @@
 export function hasVertScrollbar(elem: HTMLElement) {
+  const computedStyle = window.getComputedStyle(elem);
+
   return (
-    elem.scrollHeight > (elem.clientHeight || elem.offsetHeight) &&
-    elem.offsetWidth > (elem.clientWidth || elem.offsetWidth)
+    computedStyle.overflowY === 'scroll' ||
+    (computedStyle.overflowY === 'auto' &&
+      elem.scrollHeight > (elem.clientHeight || elem.offsetHeight) &&
+      elem.offsetWidth > (elem.clientWidth || elem.offsetWidth))
   );
 }
 export function hasHorizScrollbar(elem: HTMLElement) {
+  const computedStyle = window.getComputedStyle(elem);
+
   return (
-    elem.scrollWidth > (elem.clientWidth || elem.offsetWidth) &&
-    elem.offsetHeight > (elem.clientHeight || elem.offsetHeight)
+    computedStyle.overflowX === 'scroll' ||
+    (computedStyle.overflowX === 'auto' &&
+      elem.scrollWidth > (elem.clientWidth || elem.offsetWidth) &&
+      elem.offsetHeight > (elem.clientHeight || elem.offsetHeight))
   );
 }
 

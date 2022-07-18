@@ -603,11 +603,11 @@ export class PageNote extends PageElem implements IPageRegion {
     this.react.collab.zIndex = this.react.parentLayer.react.collab.nextZIndex++;
   }
 
-  getNode(part: string | null): Element {
+  getElem(part: string | null): HTMLElement | null {
     if (part == null) {
-      return document.getElementById(`note-${this.id}`) as Element;
+      return document.getElementById(`note-${this.id}`);
     } else {
-      return document.querySelector(`#note-${this.id} .${part}`) as Element;
+      return document.querySelector(`#note-${this.id} .${part}`);
     }
   }
 
@@ -616,32 +616,40 @@ export class PageNote extends PageElem implements IPageRegion {
       return;
     }
 
-    const frameNode = this.getNode('note-frame');
+    const frameElem = this.getElem('note-frame');
 
-    let auxNode = frameNode as Node;
-
-    while (auxNode != null) {
-      if (hasVertScrollbar(auxNode as HTMLElement)) {
-        break;
-      }
-
-      auxNode = auxNode.parentNode as Node;
-    }
-
-    if (auxNode == null) {
+    if (frameElem == null) {
       return;
     }
 
-    frameNode.scrollIntoView({
+    let auxElem: HTMLElement | null = frameElem;
+
+    while (auxElem != null) {
+      if (hasVertScrollbar(auxElem)) {
+        break;
+      }
+
+      auxElem = auxElem.parentElement;
+    }
+
+    if (auxElem == null) {
+      return;
+    }
+
+    frameElem.scrollIntoView({
       behavior: 'smooth',
       block: 'nearest',
     });
   }
 
   getClientRect(part: string) {
-    const node = this.getNode(part);
+    const elem = this.getElem(part);
 
-    const domClientRect = node.getBoundingClientRect();
+    if (elem == null) {
+      return new Rect();
+    }
+
+    const domClientRect = elem.getBoundingClientRect();
 
     return this.page.rects.fromDOM(domClientRect);
   }

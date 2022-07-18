@@ -215,7 +215,7 @@
     </q-page-container>
 
     <q-footer style="padding: 80px 0px; background-color: #202020">
-      <ResponsiveContainer> © 2022 Gustavo T. Toyota </ResponsiveContainer>
+      <ResponsiveContainer></ResponsiveContainer>
     </q-footer>
   </q-layout>
 </template>

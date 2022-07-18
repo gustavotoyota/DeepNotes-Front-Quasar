@@ -76,43 +76,11 @@
 
     <Gap style="height: 24px" />
 
-    <template
-      v-for="(device, index) in data.devices"
-      :key="device.id"
-    >
-      <Gap
-        v-if="index > 0"
-        style="height: 18px"
-      />
-
-      <div
-        style="
-          border: 1px solid #606060;
-          max-width: 450px;
-          padding: 14px;
-          border-radius: 6px;
-
-          display: flex;
-        "
-        class="bg-grey-9"
-      >
-        <div>
-          <div>
-            {{ device.ipAddress }}
-            <span v-if="device.current">(Current)</span>
-          </div>
-          <div>{{ device.browser }} on {{ device.os }}</div>
-        </div>
-
-        <q-space />
-
-        <q-btn
-          v-if="!device.current"
-          label="Revoke"
-          color="negative"
-        />
-      </div>
-    </template>
+    <q-btn
+      label="Sign out of other sessions"
+      color="primary"
+      style="max-width: 300px"
+    />
   </template>
 
   <LoadingOverlay v-else />
@@ -145,24 +113,13 @@ const mounted = ref(false);
 
 const passwordChangeForm = ref() as Ref<QForm>;
 
-interface IDevice {
-  id: string;
-
-  ipAddress: string;
-  browser: string;
-  os: string;
-
-  current: boolean;
-}
-
 const data = reactive({
   email: '',
+  authenticatorEnabled: false,
 
   oldPassword: '',
   newPassword: '',
   confirmNewPassword: '',
-
-  devices: [] as IDevice[],
 });
 
 onMounted(async () => {
@@ -170,12 +127,11 @@ onMounted(async () => {
 
   const response = await $api.post<{
     email: string;
-
-    devices: IDevice[];
+    authenticatorEnabled: boolean;
   }>('/api/users/account/security/load');
 
   data.email = response.data.email;
-  data.devices = response.data.devices;
+  data.authenticatorEnabled = response.data.authenticatorEnabled;
 
   mounted.value = true;
 });

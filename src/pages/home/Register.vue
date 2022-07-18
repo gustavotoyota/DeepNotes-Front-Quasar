@@ -20,21 +20,15 @@
 
         <Gap style="height: 12px" />
 
-        <q-input
+        <PasswordField
           label="Password"
-          type="password"
-          filled
-          label-color="grey-5"
           v-model="data.password"
         />
 
         <Gap style="height: 12px" />
 
-        <q-input
+        <PasswordField
           label="Repeat password"
-          type="password"
-          filled
-          label-color="grey-5"
           v-model="data.repeatPassword"
         />
 
@@ -89,6 +83,7 @@ import { ISerialObjectInput } from 'src/code/pages/app/serialization';
 import { encodeText } from 'src/code/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import ResponsiveContainer from 'src/components/misc/ResponsiveContainer.vue';
+import PasswordField from 'src/components/pages/misc/PasswordField.vue';
 import { useAuth } from 'src/stores/auth';
 import { reactive } from 'vue';
 import { useRouter } from 'vue-router';

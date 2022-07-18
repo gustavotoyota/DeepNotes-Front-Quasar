@@ -12,35 +12,29 @@
       ref="passwordChangeForm"
       style="display: flex; flex-direction: column"
     >
-      <q-input
+      <PasswordField
         label="Old password"
-        type="password"
         v-model="data.oldPassword"
-        style="max-width: 300px"
-        filled
         dense
+        style="max-width: 300px"
       />
 
       <Gap style="height: 20px" />
 
-      <q-input
+      <PasswordField
         label="New password"
-        type="password"
         v-model="data.newPassword"
-        style="max-width: 300px"
-        filled
         dense
+        style="max-width: 300px"
       />
 
       <Gap style="height: 20px" />
 
-      <q-input
+      <PasswordField
         label="Confirm new password"
-        type="password"
         v-model="data.confirmNewPassword"
-        style="max-width: 300px"
-        filled
         dense
+        style="max-width: 300px"
       />
 
       <Gap style="height: 20px" />
@@ -137,6 +131,7 @@ import {
 } from 'src/code/crypto/crypto';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
+import PasswordField from 'src/components/pages/misc/PasswordField.vue';
 import { useApp } from 'src/stores/app';
 import { onMounted, reactive, Ref, ref } from 'vue';
 

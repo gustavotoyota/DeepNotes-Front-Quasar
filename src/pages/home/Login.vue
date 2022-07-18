@@ -12,11 +12,8 @@
 
           <Gap style="height: 12px" />
 
-          <q-input
+          <PasswordField
             label="Password"
-            type="password"
-            filled
-            label-color="grey-5"
             v-model="data.password"
           />
 
@@ -56,6 +53,7 @@ import { Notify } from 'quasar';
 import { login } from 'src/code/auth';
 import Gap from 'src/components/misc/Gap.vue';
 import ResponsiveContainer from 'src/components/misc/ResponsiveContainer.vue';
+import PasswordField from 'src/components/pages/misc/PasswordField.vue';
 import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
 

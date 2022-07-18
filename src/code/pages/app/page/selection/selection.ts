@@ -172,6 +172,8 @@ export class PageSelection {
   }
 
   moveToLayer(layer: PageLayer, insertIndex?: number) {
+    const oldActiveElem = this.page.activeElem.react.elem;
+
     const notesSet = new Set(this.react.validNotes);
     const arrowsSet = new Set<PageArrow>();
 
@@ -214,5 +216,7 @@ export class PageSelection {
     this.page.activeRegion.react.id = layer.react.region.id;
 
     this.add(...notesArray, ...arrowsArray);
+
+    this.page.activeElem.set(oldActiveElem);
   }
 }

@@ -76,7 +76,6 @@ export default {
 import { PreFetchOptions } from '@quasar/app-vite';
 import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
-import { login } from 'src/code/auth';
 import { computeDerivedKeys, generateRandomKeys } from 'src/code/crypto/crypto';
 import { wrapSymmetricKey } from 'src/code/crypto/symmetric-key';
 import { ISerialObjectInput } from 'src/code/pages/app/serialization';
@@ -166,14 +165,12 @@ async function register() {
       ),
     });
 
-    await login(data.email, data.password);
-
-    Notify.create({
-      message: 'Account created successfully.',
-      color: 'positive',
+    await router.push({
+      name: 'finish-registration',
+      params: {
+        email: data.email,
+      },
     });
-
-    await router.push('/pages');
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',

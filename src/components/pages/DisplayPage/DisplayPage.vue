@@ -4,6 +4,7 @@
     @wheel="onWheel"
     @pointerdown.left.capture="onLeftPointerDown"
     @pointerdown.middle.prevent="onMiddlePointerDown"
+    @auxclick.capture.middle="onMiddleAuxClick"
   >
     <LoadingOverlay v-if="page.react.loading" />
 
@@ -137,6 +138,12 @@ function onLeftPointerDown(event: PointerEvent) {
 
 function onMiddlePointerDown(event: PointerEvent) {
   props.page.panning.start(event);
+}
+
+function onMiddleAuxClick(event: MouseEvent) {
+  if (props.page.panning.react.active) {
+    event.preventDefault();
+  }
 }
 
 async function cancelRequest() {

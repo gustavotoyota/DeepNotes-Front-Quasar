@@ -1,5 +1,13 @@
+import { debounce } from 'lodash';
 import { Vec2 } from 'src/code/pages/static/vec2';
-import { computed, reactive, UnwrapNestedRefs, WritableComputedRef } from 'vue';
+import {
+  computed,
+  reactive,
+  UnwrapNestedRefs,
+  watch,
+  WatchStopHandle,
+  WritableComputedRef,
+} from 'vue';
 
 import { AppPage } from '../page';
 import { IRegionElemsOutput } from '../regions/region';
@@ -16,6 +24,8 @@ export interface ICameraReact {
 
 export class PageCamera {
   readonly react: UnwrapNestedRefs<ICameraReact>;
+
+  unwatchHandle!: WatchStopHandle;
 
   constructor(readonly page: AppPage) {
     this.react = reactive({
@@ -36,6 +46,23 @@ export class PageCamera {
       lockPos: false,
       lockZoom: false,
     });
+  }
+
+  setup() {
+    this.unwatchHandle = watch(
+      [() => this.react.lockPos, () => this.react.lockZoom],
+      debounce(async () => {
+        await $api.post('/api/users/save-camera-settings', {
+          lockPos: this.react.lockPos,
+          lockZoom: this.react.lockZoom,
+        });
+      }, 1000)
+    );
+
+    this.fitToScreen();
+  }
+  destroy() {
+    this.unwatchHandle();
   }
 
   resetZoom() {

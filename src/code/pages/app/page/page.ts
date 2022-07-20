@@ -297,6 +297,11 @@ export class AppPage implements IPageRegion {
 
       encryptedSymmetricKey: string | undefined;
       encryptersPublicKey: string | undefined;
+
+      camera: {
+        lockPos: boolean;
+        lockZoom: boolean;
+      };
     }>('/api/pages/data', {
       pageId: this.id,
       parentPageId,
@@ -308,6 +313,11 @@ export class AppPage implements IPageRegion {
     this.react.ownerId = response.data.ownerId;
     this.react.roleId = response.data.roleId;
     this.react.userStatus = response.data.userStatus;
+
+    // Save camera data
+
+    this.camera.react.lockPos = response.data.camera.lockPos;
+    this.camera.react.lockZoom = response.data.camera.lockZoom;
 
     // Check if user is authorized
 
@@ -390,15 +400,15 @@ export class AppPage implements IPageRegion {
     await watchUntilTrue(() => this.react.allEditorsLoaded);
     await nextTick();
 
-    setTimeout(() => {
-      this.camera.fitToScreen();
+    this.camera.setup();
 
-      this.react.loading = false;
-    }, 0);
+    this.react.loading = false;
   }
 
   destroy() {
     this.unwatchUserDisplayName?.();
+
+    this.camera.destroy();
 
     this.collab.websocketProvider?.disconnect();
   }

@@ -17,7 +17,14 @@
             v-model="data.password"
           />
 
-          <Gap style="height: 20px" />
+          <Gap style="height: 16px" />
+
+          <Checkbox
+            label="Remember e-mail"
+            v-model="data.rememberEmail"
+          />
+
+          <Gap style="height: 16px" />
 
           <q-btn
             label="Login"
@@ -53,8 +60,9 @@ import { Notify } from 'quasar';
 import { login } from 'src/code/auth';
 import Gap from 'src/components/misc/Gap.vue';
 import ResponsiveContainer from 'src/components/misc/ResponsiveContainer.vue';
+import Checkbox from 'src/components/pages/misc/Checkbox.vue';
 import PasswordField from 'src/components/pages/misc/PasswordField.vue';
-import { reactive } from 'vue';
+import { onMounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -63,12 +71,29 @@ const data = reactive({
   email: '',
   password: '',
 
+  rememberEmail: false,
+
   loading: false,
+});
+
+onMounted(() => {
+  data.email = localStorage.getItem('email') ?? '';
+  data.rememberEmail = data.email !== '';
 });
 
 async function onSubmit() {
   try {
     data.loading = true;
+
+    // Store e-mail
+
+    if (data.rememberEmail) {
+      localStorage.setItem('email', data.email);
+    } else {
+      localStorage.removeItem('email');
+    }
+
+    // Login
 
     await login(data.email, data.password);
 

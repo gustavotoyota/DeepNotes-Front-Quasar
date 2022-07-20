@@ -8,7 +8,6 @@ import {
   reencryptSessionPrivateKey,
 } from './crypto/crypto';
 import { privateKey } from './crypto/private-key';
-import { addDays } from './utils';
 
 export const apiBaseURL = process.env.DEV
   ? 'http://192.168.1.4:21733'
@@ -90,12 +89,12 @@ export async function tryRefreshTokens(): Promise<void> {
     );
 
     auth.loggedIn = true;
+
+    enforceRouteRules();
   } catch (err) {
     console.error(err);
     logout();
   }
-
-  enforceRouteRules();
 }
 
 export function enforceRouteRules() {
@@ -125,7 +124,6 @@ export function storeTokens(accessToken: string, refreshToken: string): void {
 function storeToken(tokenName: string, token: string) {
   Cookies.set(tokenName, token, {
     path: '/',
-    expires: addDays(new Date(), 7),
     secure: !!process.env.PROD,
     sameSite: 'Strict',
     domain: process.env.PROD ? 'deepnotes.app' : '192.168.1.4',

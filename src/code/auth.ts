@@ -20,7 +20,7 @@ export const authEndpoints = {
 };
 
 export function isTokenValid(tokenName: string): boolean {
-  const exp = parseInt(localStorage.getItem(`${tokenName}-exp`) ?? '');
+  const exp = parseInt(localStorage.getItem(`${tokenName}-expiration`) ?? '');
 
   if (isNaN(exp)) {
     return false;
@@ -29,22 +29,25 @@ export function isTokenValid(tokenName: string): boolean {
   return new Date().getTime() < exp;
 }
 
-export function isTokenExpiring(tokenName: string): boolean {
-  const exp = parseInt(localStorage.getItem(`${tokenName}-exp`) ?? '');
-  const iat = parseInt(localStorage.getItem(`${tokenName}-iat`) ?? '');
+export function isTokenExpiring(tokenName: string, duration: number): boolean {
+  const expiration = parseInt(
+    localStorage.getItem(`${tokenName}-expiration`) ?? ''
+  );
 
-  if (isNaN(exp) || isNaN(iat)) {
+  if (isNaN(expiration)) {
     return true;
   }
 
-  const timeToLive = exp - iat;
-  const timeDifference = exp - new Date().getTime();
-  const timeExpired = timeToLive - timeDifference;
+  const timeDifference = expiration - new Date().getTime();
+  const timeExpired = duration - timeDifference;
 
-  return timeExpired / timeToLive >= 0.75;
+  return timeExpired / duration >= 0.75;
 }
 export function areTokensExpiring(): boolean {
-  return isTokenExpiring('access-token') || isTokenExpiring('refresh-token');
+  return (
+    isTokenExpiring('access-token', 30 * 60 * 1000) ||
+    isTokenExpiring('refresh-token', 7 * 24 * 60 * 60 * 1000)
+  );
 }
 
 export async function tryRefreshTokens(): Promise<void> {
@@ -119,11 +122,18 @@ export function enforceRouteRules() {
 
 export function storeTokens(accessToken: string, refreshToken: string): void {
   storeToken('access-token', accessToken);
-  storeToken('refresh-token', refreshToken);
+  storeToken('refresh-token', refreshToken, { path: '/auth/refresh' });
 }
-function storeToken(tokenName: string, token: string) {
+function storeToken(
+  tokenName: string,
+  token: string,
+  options?: { path?: string }
+): void {
+  options = options ?? {};
+  options.path = options.path ?? '/';
+
   Cookies.set(tokenName, token, {
-    path: '/',
+    path: options.path,
     secure: !!process.env.PROD,
     sameSite: 'Strict',
     domain: process.env.PROD ? 'deepnotes.app' : '192.168.1.4',
@@ -131,8 +141,7 @@ function storeToken(tokenName: string, token: string) {
 
   const decodedToken = jwtDecode<{ exp: number; iat: number }>(token);
 
-  localStorage.setItem(`${tokenName}-iat`, `${decodedToken.iat * 1000}`);
-  localStorage.setItem(`${tokenName}-exp`, `${decodedToken.exp * 1000}`);
+  localStorage.setItem(`${tokenName}-expiration`, `${decodedToken.exp * 1000}`);
 }
 
 export async function login(email: string, password: string) {
@@ -199,6 +208,5 @@ export function deleteTokens() {
 }
 export function deleteToken(tokenName: string) {
   Cookies.remove(tokenName);
-  localStorage.removeItem(`${tokenName}-iat`);
-  localStorage.removeItem(`${tokenName}-exp`);
+  localStorage.removeItem(`${tokenName}-expiration`);
 }

@@ -34,11 +34,10 @@
 
         <Gap style="height: 20px" />
 
-        <q-btn
+        <SmartBtn
           label="Create account"
           type="submit"
           color="primary"
-          :loading="data.loading"
           style="width: 100%; font-size: 16px; padding: 12px 0px"
           @click.prevent="register()"
         />
@@ -79,9 +78,11 @@ import { Notify } from 'quasar';
 import { computeDerivedKeys, generateRandomKeys } from 'src/code/crypto/crypto';
 import { wrapSymmetricKey } from 'src/code/crypto/symmetric-key';
 import { ISerialObjectInput } from 'src/code/pages/app/serialization';
+import { internals } from 'src/code/pages/static/internals';
 import { encodeText } from 'src/code/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import ResponsiveContainer from 'src/components/misc/ResponsiveContainer.vue';
+import SmartBtn from 'src/components/misc/SmartBtn.vue';
 import PasswordField from 'src/components/pages/misc/PasswordField.vue';
 import { useAuth } from 'src/stores/auth';
 import { reactive } from 'vue';
@@ -94,8 +95,6 @@ const data = reactive({
   displayName: '',
   password: '',
   repeatPassword: '',
-
-  loading: false,
 });
 
 async function register() {
@@ -104,15 +103,13 @@ async function register() {
   if (data.password !== data.repeatPassword) {
     Notify.create({
       message: 'Passwords do not match.',
-      color: 'negative',
+      type: 'negative',
     });
 
     return;
   }
 
   try {
-    data.loading = true;
-
     const derivedKeys = await computeDerivedKeys(data.email, data.password);
     const randomKeys = await generateRandomKeys(derivedKeys.masterKey);
 
@@ -137,7 +134,7 @@ async function register() {
 
     const groupSymmetricKey = wrapSymmetricKey(randomKeys.groupSymmetricKey);
 
-    await $api.post('/auth/register', {
+    await internals.api.post('/auth/register', {
       email: data.email,
 
       displayName: data.displayName,
@@ -174,12 +171,10 @@ async function register() {
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',
-      color: 'negative',
+      type: 'negative',
     });
 
     console.error(err);
-
-    data.loading = false;
   }
 }
 </script>

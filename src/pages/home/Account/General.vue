@@ -25,6 +25,7 @@
   lang="ts"
 >
 import { Notify, useMeta } from 'quasar';
+import { internals } from 'src/code/pages/static/internals';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { useApp } from 'src/stores/app';
@@ -45,7 +46,7 @@ const mounted = ref(false);
 onMounted(async () => {
   await app.ready;
 
-  const response = await $api.post('/api/users/account/general/load');
+  const response = await internals.api.post('/api/users/account/general/load');
 
   data.displayName = response.data.displayName;
 
@@ -54,18 +55,18 @@ onMounted(async () => {
 
 async function save() {
   try {
-    await $api.post('/api/users/account/general/save', {
+    await internals.api.post('/api/users/account/general/save', {
       displayName: data.displayName,
     });
 
     Notify.create({
       message: 'User settings saved.',
-      color: 'positive',
+      type: 'positive',
     });
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',
-      color: 'negative',
+      type: 'negative',
     });
 
     console.error(err);

@@ -1,5 +1,6 @@
 import type { Y } from '@syncedstore/core';
 import { Factory } from 'src/code/pages/static/composition-root';
+import { internals } from 'src/code/pages/static/internals';
 import { computed, reactive, shallowReactive } from 'vue';
 
 import { AppPage } from '../page';
@@ -81,26 +82,30 @@ export class PageArrows {
       this.create(arrowIds[index], index);
     }
 
-    (syncedstore.getYjsValue(arrowIds) as Y.Array<string>).observe((event) => {
-      let index = 0;
+    (internals.syncedstore.getYjsValue(arrowIds) as Y.Array<string>).observe(
+      (event) => {
+        let index = 0;
 
-      for (const delta of event.changes.delta) {
-        if (delta.retain != null) {
-          index += delta.retain;
-        }
+        for (const delta of event.changes.delta) {
+          if (delta.retain != null) {
+            index += delta.retain;
+          }
 
-        if (delta.insert != null) {
-          for (const arrowId of delta.insert) {
-            this.create(arrowId, index);
+          if (delta.insert != null) {
+            for (const arrowId of delta.insert) {
+              this.create(arrowId, index);
+            }
           }
         }
       }
-    });
+    );
   }
 
   observeMap() {
     (
-      syncedstore.getYjsValue(this.react.collab) as Y.Map<IArrowCollabOutput>
+      internals.syncedstore.getYjsValue(
+        this.react.collab
+      ) as Y.Map<IArrowCollabOutput>
     ).observe((event) => {
       for (const [arrowId, change] of event.changes.keys) {
         if (change.action !== 'delete') {

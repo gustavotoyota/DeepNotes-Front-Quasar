@@ -18,6 +18,7 @@
 import { PageArrow } from 'src/code/pages/app/page/arrows/arrow';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { REALTIME_USER_DISPLAY_NAME } from 'src/code/pages/app/realtime';
+import { internals } from 'src/code/pages/static/internals';
 import { inject } from 'vue';
 import * as Y from 'yjs';
 
@@ -31,25 +32,25 @@ const arrow = props.arrow;
 
 arrow.react.loaded = false;
 
-const EditorContent = tiptap.EditorContent;
+const EditorContent = internals.tiptap.EditorContent;
 
 // eslint-disable-next-line vue/no-setup-props-destructure
 const value = props.arrow.react.collab.label;
 
-const editor = tiptap.useEditor({
+const editor = internals.tiptap.useEditor({
   content: value instanceof Y.XmlFragment ? undefined : value,
 
   editable: false,
 
   extensions: [
-    ...tiptap.arrowExtensions,
+    ...internals.tiptap.arrowExtensions,
 
     ...(value instanceof Y.XmlFragment
       ? [
-          tiptap.Collaboration.configure({
+          internals.tiptap.Collaboration.configure({
             fragment: value,
           }),
-          tiptap.CollaborationCursor.configure({
+          internals.tiptap.CollaborationCursor.configure({
             provider: page.collab.websocketProvider,
             user: {
               name: $pages.realtime.get(

@@ -60,38 +60,24 @@
 
     <Gap style="height: 24px" />
 
-    <EnableTwoFactorAuthDialog>
+    <ManageTwoFactorAuthDialog v-if="authenticatorEnabled">
+      <template #default="{ showDialog }">
+        <q-btn
+          label="Manage two-factor authentication"
+          color="primary"
+          style="max-width: 300px"
+          @click="showDialog(email)"
+        />
+      </template>
+    </ManageTwoFactorAuthDialog>
+
+    <EnableTwoFactorAuthDialog v-else>
       <template #default="{ showDialog }">
         <q-btn
           label="Enable two-factor authentication"
           color="primary"
           style="max-width: 300px"
-          @click="
-            async () => {
-              Dialog.create({
-                title: 'Enable two-factor authentication',
-                message: 'Enter your password:',
-                prompt: {
-                  type: 'password',
-                  model: '',
-                },
-                style: {
-                  maxWidth: '350px',
-                },
-                cancel: true,
-              }).onOk(async (password: string) => {
-                const data = await enableTwoFactorAuth(password);
-
-                // @ts-ignore
-                if (data == null) {
-                  return;
-                }
-
-                // @ts-ignore
-                await showDialog(data);
-              });
-            }
-          "
+          @click="showDialog(email)"
         />
       </template>
     </EnableTwoFactorAuthDialog>
@@ -114,6 +100,8 @@
   </template>
 
   <LoadingOverlay v-else />
+
+  <RecoveryCodeDialog />
 </template>
 
 <script
@@ -121,13 +109,13 @@
   lang="ts"
 >
 import sodium from 'libsodium-wrappers';
-import { Dialog, Notify, QForm, useMeta } from 'quasar';
+import { Notify, QForm, useMeta } from 'quasar';
 import {
   computeDerivedKeys,
   encryptSymmetric,
   reencryptSessionPrivateKey,
 } from 'src/code/crypto/crypto';
-import { bytesToBase64 } from 'src/code/utils';
+import { internals } from 'src/code/pages/static/internals';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import PasswordField from 'src/components/pages/misc/PasswordField.vue';
@@ -135,6 +123,8 @@ import { useApp } from 'src/stores/app';
 import { onMounted, Ref, ref } from 'vue';
 
 import EnableTwoFactorAuthDialog from './EnableTwoFactorAuthDialog.vue';
+import ManageTwoFactorAuthDialog from './ManageTwoFactorAuthDialog.vue';
+import RecoveryCodeDialog from './RecoveryCodeDialog.vue';
 
 const app = useApp();
 
@@ -157,7 +147,7 @@ const authenticatorEnabled = ref(false);
 onMounted(async () => {
   await app.ready;
 
-  const response = await $api.post<{
+  const response = await internals.api.post<{
     email: string;
     authenticatorEnabled: boolean;
   }>('/api/users/account/security/load');
@@ -168,37 +158,11 @@ onMounted(async () => {
   mounted.value = true;
 });
 
-async function enableTwoFactorAuth(password: string) {
-  try {
-    const passwordHash = (await computeDerivedKeys(email.value, password))
-      .passwordHash;
-
-    const response = await $api.post<{
-      secret: string;
-      keyUri: string;
-    }>('/api/users/account/security/two-factor-auth/enable', {
-      passwordHash: bytesToBase64(passwordHash),
-    });
-
-    return {
-      secret: response.data.secret,
-      keyUri: response.data.keyUri,
-    };
-  } catch (err: any) {
-    Notify.create({
-      message: err.response?.data.message ?? 'An error has occurred.',
-      color: 'negative',
-    });
-
-    console.error(err);
-  }
-}
-
 async function changePassword() {
   if (newPassword.value !== confirmNewPassword.value) {
     Notify.create({
       message: 'New passwords do not match.',
-      color: 'negative',
+      type: 'negative',
     });
 
     return;
@@ -218,7 +182,7 @@ async function changePassword() {
 
     // Reencrypt derived keys
 
-    const response = await $api.post<{
+    const response = await internals.api.post<{
       encryptedPrivateKey: string;
       sessionKey: string;
     }>('/api/users/account/security/change-password', {
@@ -243,7 +207,7 @@ async function changePassword() {
 
     // Request password change
 
-    await $api.post('/api/users/account/security/change-password', {
+    await internals.api.post('/api/users/account/security/change-password', {
       oldPasswordHash: sodium.to_base64(oldDerivedKeys.passwordHash),
       newPasswordHash: sodium.to_base64(newDerivedKeys.passwordHash),
       reencryptedPrivateKey: sodium.to_base64(reencryptedPrivateKey),
@@ -251,7 +215,7 @@ async function changePassword() {
 
     Notify.create({
       message: 'Password changed successfully.',
-      color: 'positive',
+      type: 'positive',
     });
 
     // Clear form data
@@ -262,7 +226,7 @@ async function changePassword() {
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',
-      color: 'negative',
+      type: 'negative',
     });
 
     console.error(err);

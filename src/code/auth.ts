@@ -1,6 +1,7 @@
 import jwtDecode from 'jwt-decode';
 import sodium from 'libsodium-wrappers';
 import { Cookies } from 'quasar';
+import { internals } from 'src/code/pages/static/internals';
 import { useAuth } from 'src/stores/auth';
 
 import {
@@ -71,7 +72,7 @@ export async function tryRefreshTokens(): Promise<void> {
       localStorage.getItem('encrypted-private-key')!
     );
 
-    const response = await $api.post<{
+    const response = await internals.api.post<{
       accessToken: string;
       refreshToken: string;
 
@@ -149,7 +150,7 @@ export async function login(email: string, password: string) {
 
   const derivedKeys = await computeDerivedKeys(email, password);
 
-  const response = await $api.post<{
+  const response = await internals.api.post<{
     accessToken: string;
     refreshToken: string;
 
@@ -183,7 +184,7 @@ export function logout() {
 
   if (auth.loggedIn) {
     try {
-      void $api.post(authEndpoints.logout);
+      void internals.api.post(authEndpoints.logout);
     } catch (err) {
       console.error(err);
     }

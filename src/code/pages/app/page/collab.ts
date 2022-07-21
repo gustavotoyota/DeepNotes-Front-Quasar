@@ -1,5 +1,6 @@
 import type { Y } from '@syncedstore/core';
 import { WebsocketProvider } from 'src/code/pages/app/page/y-websocket';
+import { internals } from 'src/code/pages/static/internals';
 import { v4 } from 'uuid';
 
 import { IArrowCollabOutput } from './arrows/arrow';
@@ -21,14 +22,14 @@ export class PageCollab {
   websocketProvider!: WebsocketProvider;
 
   constructor(readonly page: AppPage) {
-    this.store = syncedstore.SyncedStore({
+    this.store = internals.syncedstore.SyncedStore({
       page: {},
       layers: {},
       notes: {},
       arrows: {},
     }) as IAppCollabStore;
 
-    this.doc = syncedstore.getYjsValue(this.store) as Y.Doc;
+    this.doc = internals.syncedstore.getYjsValue(this.store) as Y.Doc;
   }
 
   async synchronize() {

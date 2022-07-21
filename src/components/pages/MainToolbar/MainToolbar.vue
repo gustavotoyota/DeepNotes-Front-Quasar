@@ -701,13 +701,13 @@
 
         <Gap style="width: 2px" />
 
-            <ToolbarBtn
-              tooltip="Settings"
-              icon="mdi-cog"
-              icon-size="28px"
-              round
-          @click="$pages.react.userSettingsVisible = true"
-            />
+        <ToolbarBtn
+          tooltip="Settings"
+          icon="mdi-cog"
+          icon-size="28px"
+          round
+          @click="internals.showUserSettingsDialog()"
+        />
 
         <Gap style="width: 2px" />
 

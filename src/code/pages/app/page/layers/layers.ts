@@ -1,5 +1,6 @@
 import { Y } from '@syncedstore/core';
 import { Factory } from 'src/code/pages/static/composition-root';
+import { internals } from 'src/code/pages/static/internals';
 import { computed, reactive, shallowReactive } from 'vue';
 
 import { AppPage } from '../page';
@@ -36,22 +37,26 @@ export class PageLayers {
       this.createAndObserveChildren(layerId, regionId);
     }
 
-    (syncedstore.getYjsValue(layerIds) as Y.Array<string>).observe((event) => {
-      for (const delta of event.changes.delta) {
-        if (delta.insert == null) {
-          continue;
-        }
+    (internals.syncedstore.getYjsValue(layerIds) as Y.Array<string>).observe(
+      (event) => {
+        for (const delta of event.changes.delta) {
+          if (delta.insert == null) {
+            continue;
+          }
 
-        for (const layerId of delta.insert) {
-          this.createAndObserveChildren(layerId, regionId);
+          for (const layerId of delta.insert) {
+            this.createAndObserveChildren(layerId, regionId);
+          }
         }
       }
-    });
+    );
   }
 
   observeMap() {
     (
-      syncedstore.getYjsValue(this.react.collab) as Y.Map<ILayerCollabOutput>
+      internals.syncedstore.getYjsValue(
+        this.react.collab
+      ) as Y.Map<ILayerCollabOutput>
     ).observe((event) => {
       for (const [noteId, change] of event.changes.keys) {
         if (change.action === 'delete') {

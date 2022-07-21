@@ -1,5 +1,6 @@
 import type { Y } from '@syncedstore/core';
 import { Factory } from 'src/code/pages/static/composition-root';
+import { internals } from 'src/code/pages/static/internals';
 import { Vec2 } from 'src/code/pages/static/vec2';
 import { computed, reactive, shallowReactive } from 'vue';
 
@@ -88,26 +89,30 @@ export class PageNotes {
       this.createAndObserveChildren(noteIds[index], layerId, index);
     }
 
-    (syncedstore.getYjsValue(noteIds) as Y.Array<string>).observe((event) => {
-      let index = 0;
+    (internals.syncedstore.getYjsValue(noteIds) as Y.Array<string>).observe(
+      (event) => {
+        let index = 0;
 
-      for (const delta of event.changes.delta) {
-        if (delta.retain != null) {
-          index += delta.retain;
-        }
+        for (const delta of event.changes.delta) {
+          if (delta.retain != null) {
+            index += delta.retain;
+          }
 
-        if (delta.insert != null) {
-          for (const noteId of delta.insert) {
-            this.createAndObserveChildren(noteId, layerId, index);
+          if (delta.insert != null) {
+            for (const noteId of delta.insert) {
+              this.createAndObserveChildren(noteId, layerId, index);
+            }
           }
         }
       }
-    });
+    );
   }
 
   observeMap() {
     (
-      syncedstore.getYjsValue(this.react.collab) as Y.Map<INoteCollabOutput>
+      internals.syncedstore.getYjsValue(
+        this.react.collab
+      ) as Y.Map<INoteCollabOutput>
     ).observe((event) => {
       for (const [noteId, change] of event.changes.keys) {
         if (change.action === 'delete') {

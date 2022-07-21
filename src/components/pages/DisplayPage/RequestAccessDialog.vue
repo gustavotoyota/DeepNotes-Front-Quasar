@@ -46,11 +46,10 @@
             v-close-popup
           />
 
-          <q-btn
+          <SmartBtn
             flat
             label="Ok"
             color="primary"
-            :loading="loading"
             @click.prevent="requestAccess(message)"
           />
         </q-card-actions>
@@ -65,12 +64,13 @@
 >
 import { Notify } from 'quasar';
 import { AppPage } from 'src/code/pages/app/page/page';
+import { internals } from 'src/code/pages/static/internals';
 import { roles } from 'src/code/pages/static/roles';
 import Gap from 'src/components/misc/Gap.vue';
+import SmartBtn from 'src/components/misc/SmartBtn.vue';
 import { inject, ref, watch } from 'vue';
 
 const visible = ref(false);
-const loading = ref(false);
 
 const roleId = ref();
 const message = ref('');
@@ -90,16 +90,14 @@ async function requestAccess(message: string) {
   if (roleId.value == null) {
     Notify.create({
       message: 'Please select a role.',
-      color: 'negative',
+      type: 'negative',
     });
 
     return;
   }
 
   try {
-    loading.value = true;
-
-    await $api.post('/api/groups/access-requests/send', {
+    await internals.api.post('/api/groups/access-requests/send', {
       groupId: page.react.groupId,
       roleId: roleId.value,
       pageId: page.id,
@@ -110,20 +108,18 @@ async function requestAccess(message: string) {
 
     Notify.create({
       message: 'Access request sent.',
-      color: 'positive',
+      type: 'positive',
     });
 
     visible.value = false;
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',
-      color: 'negative',
+      type: 'negative',
     });
 
     console.error(err);
   }
-
-  loading.value = false;
 }
 </script>
 

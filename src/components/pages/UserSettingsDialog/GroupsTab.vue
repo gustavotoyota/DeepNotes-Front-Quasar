@@ -81,6 +81,7 @@
   lang="ts"
 >
 import { Notify } from 'quasar';
+import { internals } from 'src/code/pages/static/internals';
 import { rolesMap } from 'src/code/pages/static/roles';
 import Gap from 'src/components/misc/Gap.vue';
 import { computed, inject, Ref } from 'vue';
@@ -128,7 +129,7 @@ async function leaveSelectedGroups() {
   try {
     await Promise.all(
       Array.from(selectedIds.value).map((groupId) =>
-        $api.post('/api/groups/leave', {
+        internals.api.post('/api/groups/leave', {
           groupId,
         })
       )
@@ -141,7 +142,7 @@ async function leaveSelectedGroups() {
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',
-      color: 'negative',
+      type: 'negative',
     });
 
     console.error(err);

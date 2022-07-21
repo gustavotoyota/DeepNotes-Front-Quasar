@@ -50,6 +50,7 @@
   lang="ts"
 >
 import { useMeta } from 'quasar';
+import { internals } from 'src/code/pages/static/internals';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import ResponsiveContainer from 'src/components/misc/ResponsiveContainer.vue';
@@ -66,7 +67,7 @@ const status = ref<boolean | undefined>(undefined);
 
 onMounted(async () => {
   try {
-    await $api.post('/auth/email-verification', {
+    await internals.api.post('/auth/email-verification', {
       emailVerificationCode: route.params.code,
     });
 

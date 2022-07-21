@@ -20,7 +20,7 @@
       :disable="page.react.readonly"
       @click="
         changeProp(null, (note) => {
-          tiptap.swapXmlFragments(
+          internals.tiptap.swapXmlFragments(
             note.react.collab.head.value,
             note.react.collab.body.value
           );
@@ -181,7 +181,7 @@
           style="flex: 1"
           @click="
             changeProp(null, (note) => {
-              tiptap.swapXmlFragments(
+              internals.tiptap.swapXmlFragments(
                 note.react.collab.head.value,
                 note.react.collab.body.value
               );
@@ -200,7 +200,7 @@
           @click="
             changeProp(note, (note) => {
               if (note.react.collab.head.value.toDOM().textContent!.length === 0) {
-                tiptap.swapXmlFragments(
+                internals.tiptap.swapXmlFragments(
                   note.react.collab.head.value,
                   note.react.collab.body.value
                 );
@@ -689,6 +689,7 @@ import { Notify } from 'quasar';
 import { DICT_PAGE_GROUP_ID } from 'src/code/pages/app/app';
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
+import { internals } from 'src/code/pages/static/internals';
 import { encodeText } from 'src/code/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
@@ -721,7 +722,7 @@ async function setAsDefault() {
   });
 
   try {
-    await $api.post<{
+    await internals.api.post<{
       templateId: string;
     }>('/api/users/save-default-note', {
       encryptedDefaultNote: sodium.to_base64(
@@ -733,12 +734,12 @@ async function setAsDefault() {
 
     Notify.create({
       message: 'Default note set.',
-      color: 'positive',
+      type: 'positive',
     });
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',
-      color: 'negative',
+      type: 'negative',
     });
 
     console.error(err);

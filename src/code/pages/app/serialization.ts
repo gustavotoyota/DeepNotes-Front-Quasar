@@ -1,3 +1,4 @@
+import { internals } from 'src/code/pages/static/internals';
 import { v4 } from 'uuid';
 import {
   prosemirrorJSONToYXmlFragment,
@@ -338,7 +339,7 @@ export class AppSerialization {
         ...serialNote.head,
 
         value: prosemirrorJSONToYXmlFragment(
-          tiptap.noteSchema,
+          internals.tiptap.noteSchema,
           serialNote.head.value
         ),
       },
@@ -346,7 +347,7 @@ export class AppSerialization {
         ...serialNote.body,
 
         value: prosemirrorJSONToYXmlFragment(
-          tiptap.noteSchema,
+          internals.tiptap.noteSchema,
           serialNote.body.value
         ),
       },
@@ -388,7 +389,7 @@ export class AppSerialization {
       targetId: noteMap.get(serialArrow.targetIndex!),
 
       label: prosemirrorJSONToYXmlFragment(
-        tiptap.arrowSchema,
+        internals.tiptap.arrowSchema,
         serialArrow.label
       ),
     } as IArrowCollabInput);

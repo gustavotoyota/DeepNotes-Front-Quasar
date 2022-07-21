@@ -42,12 +42,11 @@
             color="primary"
             v-close-popup
           />
-          <q-btn
+          <SmartBtn
             type="submit"
             flat
             label="Ok"
             color="primary"
-            :loading="loading"
             @click.prevent="inviteUser()"
           />
         </q-card-actions>
@@ -64,15 +63,16 @@ import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
 import { reencryptSymmetricKey } from 'src/code/crypto/crypto';
 import { AppPage } from 'src/code/pages/app/page/page';
+import { internals } from 'src/code/pages/static/internals';
 import { roles } from 'src/code/pages/static/roles';
 import Gap from 'src/components/misc/Gap.vue';
+import SmartBtn from 'src/components/misc/SmartBtn.vue';
 import { inject, Ref, ref, watch } from 'vue';
 import { z } from 'zod';
 
 import { initialSettings } from '../GroupSettingsDialog.vue';
 
 const visible = ref(false);
-const loading = ref(false);
 
 const page = inject<Ref<AppPage>>('page')!;
 
@@ -96,7 +96,7 @@ async function inviteUser() {
   ) {
     Notify.create({
       message: 'Invalid user ID.',
-      color: 'negative',
+      type: 'negative',
     });
 
     return;
@@ -105,17 +105,15 @@ async function inviteUser() {
   if (roleId.value == null) {
     Notify.create({
       message: 'Please select a role.',
-      color: 'negative',
+      type: 'negative',
     });
 
     return;
   }
 
   try {
-    loading.value = true;
-
     const [inviterKeys, inviteeInfos] = await Promise.all([
-      $api.post<{
+      internals.api.post<{
         sessionKey: string;
         encryptedSymmetricKey: string;
         encryptersPublicKey: string;
@@ -123,7 +121,7 @@ async function inviteUser() {
         groupId: page.value.react.groupId,
       }),
 
-      $api.post<{
+      internals.api.post<{
         userId: string;
         email: string;
         publicKey: string;
@@ -139,7 +137,7 @@ async function inviteUser() {
       sodium.from_base64(inviteeInfos.data.publicKey)
     );
 
-    await $api.post('/api/groups/access-invitations/send', {
+    await internals.api.post('/api/groups/access-invitations/send', {
       groupId: page.value.react.groupId,
       userId: inviteeInfos.data.userId,
       roleId: roleId.value,
@@ -155,12 +153,10 @@ async function inviteUser() {
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',
-      color: 'negative',
+      type: 'negative',
     });
 
     console.error(err);
   }
-
-  loading.value = false;
 }
 </script>

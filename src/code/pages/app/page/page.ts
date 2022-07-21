@@ -2,6 +2,7 @@ import sodium from 'libsodium-wrappers';
 import { saveGroupSymmetricKey } from 'src/code/crypto/crypto';
 import { privateKey } from 'src/code/crypto/private-key';
 import { SymmetricKey } from 'src/code/crypto/symmetric-key';
+import { internals } from 'src/code/pages/static/internals';
 import {
   computed,
   ComputedRef,
@@ -289,7 +290,7 @@ export class AppPage implements IPageRegion {
     const parentPageId = this.app.parentPageId;
     this.app.parentPageId = null;
 
-    const response = await $api.post<{
+    const response = await internals.api.post<{
       groupId: string;
       ownerId: string;
       userStatus: string;

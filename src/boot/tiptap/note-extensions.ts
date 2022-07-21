@@ -14,6 +14,7 @@ import Underline from '@tiptap/extension-underline';
 import StarterKit from '@tiptap/starter-kit';
 import { Extension } from '@tiptap/vue-3';
 import { columnResizing } from 'prosemirror-tables';
+import { internals } from 'src/code/pages/static/internals';
 
 import { ImageResizeExtension } from './image-resize-extension';
 
@@ -70,7 +71,7 @@ export const noteExtensions = [
   TableCell,
 
   CodeBlockLowlight.configure({
-    lowlight: lowlight,
+    lowlight: internals.lowlight,
   }),
 
   Extension.create({

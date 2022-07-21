@@ -2,6 +2,7 @@ import { Y } from '@syncedstore/core';
 import Collaboration from '@tiptap/extension-collaboration';
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
 import { EditorContent, getSchema, useEditor } from '@tiptap/vue-3';
+import { internals } from 'src/code/pages/static/internals';
 import {
   prosemirrorJSONToYXmlFragment,
   ySyncPluginKey,
@@ -19,7 +20,7 @@ export function swapXmlFragments(frag1: Y.XmlFragment, frag2: Y.XmlFragment) {
   prosemirrorJSONToYXmlFragment(tiptap.noteSchema, json1, frag2);
 }
 
-const _tiptap = {
+const tiptap = {
   arrowExtensions,
   noteExtensions,
 
@@ -36,9 +37,10 @@ const _tiptap = {
   ySyncPluginKey,
 };
 
-declare global {
-  /* eslint-disable no-var */
-  var tiptap: typeof _tiptap;
+declare module 'src/code/pages/static/internals' {
+  export interface DeepNotesInternals {
+    tiptap: typeof tiptap;
+  }
 }
 
-globalThis.tiptap = _tiptap;
+internals.tiptap = tiptap;

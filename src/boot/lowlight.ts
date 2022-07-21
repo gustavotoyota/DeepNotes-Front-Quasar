@@ -1,10 +1,12 @@
 import 'highlight.js/styles/atom-one-dark.css';
 
-import { lowlight as _lowlight } from 'lowlight';
+import { lowlight } from 'lowlight';
+import { internals } from 'src/code/pages/static/internals';
 
-declare global {
-  // eslint-disable-next-line no-var
-  var lowlight: typeof _lowlight;
+declare module 'src/code/pages/static/internals' {
+  export interface DeepNotesInternals {
+    lowlight: typeof lowlight;
+  }
 }
 
-globalThis.lowlight = _lowlight;
+internals.lowlight = lowlight;

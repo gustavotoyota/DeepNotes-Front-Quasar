@@ -17,12 +17,11 @@
             color="primary"
             v-close-popup
           />
-          <q-btn
+          <SmartBtn
             type="submit"
             flat
             label="Ok"
             color="primary"
-            :loading="loading"
             @click.prevent="acceptRequests()"
           />
         </q-card-actions>
@@ -39,12 +38,13 @@ import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
 import { reencryptSymmetricKey } from 'src/code/crypto/crypto';
 import { AppPage } from 'src/code/pages/app/page/page';
+import { internals } from 'src/code/pages/static/internals';
+import SmartBtn from 'src/components/misc/SmartBtn.vue';
 import { computed, inject, Ref, ref } from 'vue';
 
 import { initialSettings } from '../GroupSettingsDialog.vue';
 
 const visible = ref(false);
-const loading = ref(false);
 
 const page = inject<Ref<AppPage>>('page')!;
 
@@ -54,13 +54,11 @@ const selectedIds = computed(() => settings.value.requests.selectedIds);
 
 async function acceptRequests() {
   try {
-    loading.value = true;
-
     const selectedUsers = settings.value.requests.list.filter((user) =>
       selectedIds.value.has(user.userId)
     );
 
-    const userKeys = await $api.post<{
+    const userKeys = await internals.api.post<{
       sessionKey: string;
       encryptedSymmetricKey: string;
       encryptersPublicKey: string;
@@ -77,7 +75,7 @@ async function acceptRequests() {
           sodium.from_base64(user.publicKey!)
         );
 
-        return $api.post('/api/groups/access-requests/accept', {
+        return internals.api.post('/api/groups/access-requests/accept', {
           groupId: page.value.react.groupId,
           userId: user.userId,
           encryptedSymmetricKey: sodium.to_base64(reencryptedSymmetricKey),
@@ -98,12 +96,10 @@ async function acceptRequests() {
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',
-      color: 'negative',
+      type: 'negative',
     });
 
     console.error(err);
   }
-
-  loading.value = false;
 }
 </script>

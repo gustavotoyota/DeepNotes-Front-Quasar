@@ -1,6 +1,7 @@
 import { cloneDeep, merge } from 'lodash';
 import { Factory } from 'src/code/pages/static/composition-root';
 import { listenPointerEvents } from 'src/code/pages/static/dom';
+import { internals } from 'src/code/pages/static/internals';
 import { v4 } from 'uuid';
 import { reactive } from 'vue';
 import { prosemirrorJSONToYXmlFragment } from 'y-prosemirror';
@@ -103,7 +104,7 @@ export class PageArrowCreation {
     const newCollab = cloneDeep(this.fakeArrow.react.collab);
 
     newCollab.label = prosemirrorJSONToYXmlFragment(
-      tiptap.arrowSchema,
+      internals.tiptap.arrowSchema,
       this.fakeArrow.react.collab.label
     );
 

@@ -8,6 +8,7 @@ import {
   SymmetricKey,
   wrapSymmetricKey as wrapSymmetricKey,
 } from 'src/code/crypto/symmetric-key';
+import { internals } from 'src/code/pages/static/internals';
 import { decodeText, encodeText, Resolvable } from 'src/code/utils';
 import {
   computed,
@@ -42,16 +43,6 @@ export const DICT_GROUP_OWNER_ID = 'group-owner-id';
 export const DICT_GROUP_ROLE_ID = 'group-role-id';
 
 declare global {
-  // eslint-disable-next-line no-var
-  var __DEEP_NOTES__: {
-    pages: Record<
-      string,
-      {
-        zoom?: number;
-      }
-    >;
-  };
-
   // eslint-disable-next-line no-var
   var $pages: PagesApp;
 }
@@ -97,8 +88,6 @@ export interface IAppReact {
 
   tableContextMenu: boolean;
   tableContextMenuPos: Vec2;
-
-  userSettingsVisible: boolean;
 }
 
 export class PagesApp {
@@ -233,13 +222,7 @@ export class PagesApp {
 
       tableContextMenu: false,
       tableContextMenuPos: new Vec2(),
-
-      userSettingsVisible: false,
     });
-
-    globalThis.__DEEP_NOTES__ = {
-      pages: {},
-    };
   }
 
   async goToPage(pageId: string, router: Router, fromParent?: boolean) {
@@ -249,7 +232,7 @@ export class PagesApp {
   }
 
   async loadData() {
-    const response = await $api.post<{
+    const response = await internals.api.post<{
       userId: string;
 
       publicKey: string;
@@ -297,7 +280,7 @@ export class PagesApp {
   }
 
   async loadPages(initialPageId: string) {
-    const response = await $api.post<{
+    const response = await internals.api.post<{
       pathPages: IPageData[];
       recentPages: IPageData[];
 
@@ -346,7 +329,7 @@ export class PagesApp {
     const parentPageId = this.parentPageId;
     this.parentPageId = null;
 
-    await $api.post('/api/pages/bump', {
+    await internals.api.post('/api/pages/bump', {
       pageId,
       parentPageId,
     });

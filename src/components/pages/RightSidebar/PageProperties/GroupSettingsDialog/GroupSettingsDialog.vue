@@ -158,6 +158,7 @@ export function initialSettings() {
 >
 import { AppPage } from 'src/code/pages/app/page/page';
 import { REALTIME_ENCRYPTED_GROUP_NAME } from 'src/code/pages/app/realtime';
+import { internals } from 'src/code/pages/static/internals';
 import { BREAKPOINT_MD_MIN } from 'src/code/pages/static/responsive';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import TabBtn from 'src/components/pages/misc/TabBtn.vue';
@@ -188,7 +189,7 @@ watch(visible, async (value) => {
   settings.value = initialSettings();
 
   const [response] = await Promise.all([
-    $api.post<{
+    internals.api.post<{
       requests: IGroupUser[];
       invitations: IGroupUser[];
       members: IGroupUser[];

@@ -20,12 +20,13 @@
 import { NoteTextSection, PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { REALTIME_USER_DISPLAY_NAME } from 'src/code/pages/app/realtime';
+import { internals } from 'src/code/pages/static/internals';
 import { watchUntilTrue } from 'src/code/pages/static/vue';
 import { computed } from 'vue';
 import { inject } from 'vue';
 import * as Y from 'yjs';
 
-const EditorContent = tiptap.EditorContent;
+const EditorContent = internals.tiptap.EditorContent;
 
 const props = defineProps<{
   section: NoteTextSection;
@@ -78,20 +79,20 @@ function finishLoading() {
 
 const value = note.react.collab[props.section].value;
 
-const editor = tiptap.useEditor({
+const editor = internals.tiptap.useEditor({
   content: value instanceof Y.XmlFragment ? undefined : value,
 
   editable: false,
 
   extensions: [
-    ...tiptap.noteExtensions,
+    ...internals.tiptap.noteExtensions,
 
     ...(value instanceof Y.XmlFragment
       ? [
-          tiptap.Collaboration.configure({
+          internals.tiptap.Collaboration.configure({
             fragment: value,
           }),
-          tiptap.CollaborationCursor.configure({
+          internals.tiptap.CollaborationCursor.configure({
             provider: page.collab.websocketProvider,
             user: {
               name: $pages.realtime.get(

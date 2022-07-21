@@ -33,12 +33,11 @@
             color="primary"
             v-close-popup
           />
-          <q-btn
+          <SmartBtn
             type="submit"
             flat
             label="Ok"
             color="primary"
-            :loading="loading"
             @click.prevent="changeRole()"
           />
         </q-card-actions>
@@ -53,13 +52,14 @@
 >
 import { Notify } from 'quasar';
 import { AppPage } from 'src/code/pages/app/page/page';
+import { internals } from 'src/code/pages/static/internals';
 import { roles } from 'src/code/pages/static/roles';
+import SmartBtn from 'src/components/misc/SmartBtn.vue';
 import { computed, inject, Ref, ref, watch } from 'vue';
 
 import { initialSettings } from '../GroupSettingsDialog.vue';
 
 const visible = ref(false);
-const loading = ref(false);
 
 const page = inject<Ref<AppPage>>('page')!;
 
@@ -81,17 +81,15 @@ async function changeRole() {
   if (roleId.value == null) {
     Notify.create({
       message: 'Please select a role.',
-      color: 'negative',
+      type: 'negative',
     });
     return;
   }
 
   try {
-    loading.value = true;
-
     await Promise.all(
       Array.from(selectedIds.value).map((userId) =>
-        $api.post('/api/groups/change-user-role', {
+        internals.api.post('/api/groups/change-user-role', {
           groupId: page.value.react.groupId,
           userId,
           roleId: roleId.value,
@@ -109,12 +107,10 @@ async function changeRole() {
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',
-      color: 'negative',
+      type: 'negative',
     });
 
     console.error(err);
   }
-
-  loading.value = false;
 }
 </script>

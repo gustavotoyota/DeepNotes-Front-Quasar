@@ -92,7 +92,7 @@ export class PageClipboard {
     } catch (err) {
       Notify.create({
         message: 'Failed to paste from clipboard.',
-        color: 'negative',
+        type: 'negative',
       });
 
       console.log(err);

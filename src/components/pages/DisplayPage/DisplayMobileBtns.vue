@@ -418,15 +418,15 @@
             </q-item-section>
             <q-item-section>Notifications</q-item-section>
           </q-item>
-              <q-item
-                clickable
-            @click="$pages.react.userSettingsVisible = true"
-              >
-                <q-item-section avatar>
-                  <q-icon name="mdi-cog" />
-                </q-item-section>
-                <q-item-section>Settings</q-item-section>
-              </q-item>
+          <q-item
+            clickable
+            @click="internals.showUserSettingsDialog()"
+          >
+            <q-item-section avatar>
+              <q-icon name="mdi-cog" />
+            </q-item-section>
+            <q-item-section>Settings</q-item-section>
+          </q-item>
           <q-item
             clickable
             href="/account/general"

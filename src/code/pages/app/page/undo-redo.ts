@@ -1,3 +1,4 @@
+import { internals } from 'src/code/pages/static/internals';
 import { computed, reactive } from 'vue';
 import * as Y from 'yjs';
 
@@ -26,21 +27,21 @@ export class PageUndoRedo {
   setup() {
     this.undoManager = new Y.UndoManager(
       [
-        syncedstore.getYjsValue(
+        internals.syncedstore.getYjsValue(
           this.page.collab.store.page
         ) as Y.AbstractType<any>,
-        syncedstore.getYjsValue(
+        internals.syncedstore.getYjsValue(
           this.page.collab.store.layers
         ) as Y.AbstractType<any>,
-        syncedstore.getYjsValue(
+        internals.syncedstore.getYjsValue(
           this.page.collab.store.notes
         ) as Y.AbstractType<any>,
-        syncedstore.getYjsValue(
+        internals.syncedstore.getYjsValue(
           this.page.collab.store.arrows
         ) as Y.AbstractType<any>,
       ],
       {
-        trackedOrigins: new Set([null, tiptap.ySyncPluginKey]),
+        trackedOrigins: new Set([null, internals.tiptap.ySyncPluginKey]),
       }
     );
 

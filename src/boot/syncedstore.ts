@@ -1,16 +1,18 @@
 import SyncedStore, { enableVueBindings, getYjsValue } from '@syncedstore/core';
+import { internals } from 'src/code/pages/static/internals';
 import * as Vue from 'vue';
 
 enableVueBindings(Vue);
 
-const _syncedstore = {
+const syncedstore = {
   SyncedStore,
   getYjsValue,
 };
 
-declare global {
-  // eslint-disable-next-line no-var
-  var syncedstore: typeof _syncedstore;
+declare module 'src/code/pages/static/internals' {
+  export interface DeepNotesInternals {
+    syncedstore: typeof syncedstore;
+  }
 }
 
-globalThis.syncedstore = _syncedstore;
+internals.syncedstore = syncedstore;

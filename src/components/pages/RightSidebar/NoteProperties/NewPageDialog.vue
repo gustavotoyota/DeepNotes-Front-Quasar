@@ -100,12 +100,11 @@
             color="primary"
             v-close-popup
           />
-          <q-btn
+          <SmartBtn
             type="submit"
             flat
             label="Ok"
             color="primary"
-            :loading="loading"
             @click.prevent="createPage()"
           />
         </q-card-actions>
@@ -125,9 +124,11 @@ import { privateKey } from 'src/code/crypto/private-key';
 import { wrapSymmetricKey } from 'src/code/crypto/symmetric-key';
 import { PageNote } from 'src/code/pages/app/page/notes/note';
 import { AppPage } from 'src/code/pages/app/page/page';
+import { internals } from 'src/code/pages/static/internals';
 import { BREAKPOINT_MD_MIN } from 'src/code/pages/static/responsive';
 import { bytesToBase64, encodeText } from 'src/code/utils';
 import Gap from 'src/components/misc/Gap.vue';
+import SmartBtn from 'src/components/misc/SmartBtn.vue';
 import { useUI } from 'src/stores/pages/ui';
 import { computed, inject, Ref, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
@@ -140,7 +141,6 @@ const ui = useUI();
 const page = inject<Ref<AppPage>>('page')!;
 
 const visible = ref(false);
-const loading = ref(false);
 
 const pageTitle = ref('');
 const pageTitleElem = ref<HTMLElement>();
@@ -192,15 +192,13 @@ async function createPage() {
   if (createGroup.value && groupName.value === '') {
     Notify.create({
       message: 'Please enter a group name.',
-      color: 'negative',
+      type: 'negative',
     });
 
     return;
   }
 
   try {
-    loading.value = true;
-
     let groupSymmetricKey;
     let encryptedGroupSymmetricKey;
     let encryptedGroupName;
@@ -246,7 +244,7 @@ async function createPage() {
       );
     }
 
-    const response = await $api.post<{
+    const response = await internals.api.post<{
       pageId: string;
     }>('/api/pages/create', {
       createGroup: createGroup.value,
@@ -269,19 +267,17 @@ async function createPage() {
 
     Notify.create({
       message: 'Page created successfully.',
-      color: 'positive',
+      type: 'positive',
     });
 
     visible.value = false;
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',
-      color: 'negative',
+      type: 'negative',
     });
 
     console.error(err);
   }
-
-  loading.value = false;
 }
 </script>

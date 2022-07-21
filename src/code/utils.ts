@@ -140,12 +140,6 @@ export function sizeToCSS(size: string): string {
   }
 }
 
-export function timeoutPromise(ms = 0): Promise<void> {
-  const resolvable = new Resolvable();
-
-  setTimeout(() => {
-    resolvable.resolve();
-  }, ms);
-
-  return resolvable;
+export function sleep(ms = 0): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

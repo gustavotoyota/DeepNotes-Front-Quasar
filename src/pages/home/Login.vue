@@ -26,11 +26,10 @@
 
           <Gap style="height: 16px" />
 
-          <q-btn
+          <SmartBtn
             label="Login"
             type="submit"
             color="primary"
-            :loading="data.loading"
             style="width: 100%; font-size: 16px; padding: 12px 0px"
             @click.prevent="onSubmit()"
           />
@@ -60,6 +59,7 @@ import { Notify } from 'quasar';
 import { login } from 'src/code/auth';
 import Gap from 'src/components/misc/Gap.vue';
 import ResponsiveContainer from 'src/components/misc/ResponsiveContainer.vue';
+import SmartBtn from 'src/components/misc/SmartBtn.vue';
 import Checkbox from 'src/components/pages/misc/Checkbox.vue';
 import PasswordField from 'src/components/pages/misc/PasswordField.vue';
 import { onMounted, reactive } from 'vue';
@@ -72,8 +72,6 @@ const data = reactive({
   password: '',
 
   rememberEmail: false,
-
-  loading: false,
 });
 
 onMounted(() => {
@@ -83,8 +81,6 @@ onMounted(() => {
 
 async function onSubmit() {
   try {
-    data.loading = true;
-
     // Store e-mail
 
     if (data.rememberEmail) {
@@ -98,20 +94,18 @@ async function onSubmit() {
     await login(data.email, data.password);
 
     Notify.create({
-      message: 'Login successful.',
-      color: 'positive',
+      message: 'Logged in successfully.',
+      type: 'positive',
     });
 
     await router.push('/pages');
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',
-      color: 'negative',
+      type: 'negative',
     });
 
     console.error(err);
-
-    data.loading = false;
   }
 }
 </script>

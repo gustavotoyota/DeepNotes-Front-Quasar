@@ -1,6 +1,6 @@
 <template>
   <q-dialog
-    v-model="$pages.react.userSettingsVisible"
+    v-model="visible"
     :maximized="maximized"
   >
     <q-card
@@ -159,10 +159,11 @@ import { Notify } from 'quasar';
 import { saveGroupSymmetricKey } from 'src/code/crypto/crypto';
 import { DICT_GROUP_OWNER_ID } from 'src/code/pages/app/app';
 import { REALTIME_USER_DISPLAY_NAME } from 'src/code/pages/app/realtime';
+import { internals } from 'src/code/pages/static/internals';
 import { BREAKPOINT_MD_MIN } from 'src/code/pages/static/responsive';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { useUI } from 'src/stores/pages/ui';
-import { computed, provide, ref, watch } from 'vue';
+import { computed, provide, ref } from 'vue';
 
 import TabBtn from '../misc/TabBtn.vue';
 import GeneralTab from './GeneralTab.vue';
@@ -174,66 +175,60 @@ const ui = useUI();
 
 const maximized = computed(() => ui.width < BREAKPOINT_MD_MIN);
 
+const visible = ref(false);
+
 const settings = ref(initialSettings());
 provide('settings', settings);
 
-watch(
-  () => $pages.react.userSettingsVisible,
-  async () => {
-    if (!$pages.react.userSettingsVisible) {
-      return;
-    }
+internals.showUserSettingsDialog = async () => {
+  try {
+    visible.value = true;
 
-    try {
-      settings.value = initialSettings();
+    settings.value = initialSettings();
 
-      const [request, displayName] = await Promise.all([
-        $api.post<{
-          groups: IGroupData[];
-          invitations: IGroupData[];
-          requests: IGroupData[];
-        }>('/api/users/load-settings'),
+    const [request, displayName] = await Promise.all([
+      internals.api.post<{
+        groups: IGroupData[];
+        invitations: IGroupData[];
+        requests: IGroupData[];
+      }>('/api/users/load-settings'),
 
-        $pages.realtime.getAsync(
-          REALTIME_USER_DISPLAY_NAME,
-          $pages.react.userId
-        ),
-      ]);
+      $pages.realtime.getAsync(REALTIME_USER_DISPLAY_NAME, $pages.react.userId),
+    ]);
 
-      settings.value.general.displayName = displayName!;
+    settings.value.general.displayName = displayName!;
 
-      settings.value.groups.list = request.data.groups;
-      settings.value.invitations.list = request.data.invitations;
-      settings.value.requests.list = request.data.requests;
+    settings.value.groups.list = request.data.groups;
+    settings.value.invitations.list = request.data.invitations;
+    settings.value.requests.list = request.data.requests;
 
-      request.data.groups
-        .concat(request.data.invitations)
-        .concat(request.data.requests)
-        .forEach((group) => {
-          $pages.react.dict[`${DICT_GROUP_OWNER_ID}:${group.groupId}`] =
-            group.ownerId;
+    request.data.groups
+      .concat(request.data.invitations)
+      .concat(request.data.requests)
+      .forEach((group) => {
+        $pages.react.dict[`${DICT_GROUP_OWNER_ID}:${group.groupId}`] =
+          group.ownerId;
 
-          if (
-            group.encryptedSymmetricKey != null &&
-            group.encryptersPublicKey != null
-          ) {
-            saveGroupSymmetricKey(
-              group.groupId,
-              group.encryptedSymmetricKey,
-              group.encryptersPublicKey
-            );
-          }
-        });
-
-      settings.value.loaded = true;
-    } catch (err: any) {
-      Notify.create({
-        message: err.response?.data.message ?? 'An error has occurred.',
-        color: 'negative',
+        if (
+          group.encryptedSymmetricKey != null &&
+          group.encryptersPublicKey != null
+        ) {
+          saveGroupSymmetricKey(
+            group.groupId,
+            group.encryptedSymmetricKey,
+            group.encryptersPublicKey
+          );
+        }
       });
 
-      console.error(err);
-    }
+    settings.value.loaded = true;
+  } catch (err: any) {
+    Notify.create({
+      message: err.response?.data.message ?? 'An error has occurred.',
+      type: 'negative',
+    });
+
+    console.error(err);
   }
-);
+};
 </script>

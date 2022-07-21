@@ -1,6 +1,7 @@
 import type { Y } from '@syncedstore/core';
 import { Factory } from 'src/code/pages/static/composition-root';
 import { listenPointerEvents } from 'src/code/pages/static/dom';
+import { internals } from 'src/code/pages/static/internals';
 import { Rect } from 'src/code/pages/static/rect';
 import { Vec2 } from 'src/code/pages/static/vec2';
 import {
@@ -69,7 +70,9 @@ export class PageResizing {
       this.oldRects[selectedNote.id] = this._getNoteRects(selectedNote);
 
       const collab: INoteCollabOutput = (
-        syncedstore.getYjsValue(selectedNote.react.collab) as Y.Map<any>
+        internals.syncedstore.getYjsValue(
+          selectedNote.react.collab
+        ) as Y.Map<any>
       ).toJSON() as INoteCollabOutput;
 
       collab.parentLayerId = this.page.react.activeLayer.id;

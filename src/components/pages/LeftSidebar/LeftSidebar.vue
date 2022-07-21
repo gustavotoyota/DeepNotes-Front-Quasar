@@ -182,7 +182,7 @@ function deleteLayer(layerIndex: number) {
   if (region.value.react.collab.layerIds.length <= 1) {
     Notify.create({
       message: 'You must have at least one layer.',
-      color: 'negative',
+      type: 'negative',
     });
 
     return;

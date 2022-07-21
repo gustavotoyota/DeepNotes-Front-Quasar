@@ -4,22 +4,12 @@ import 'pinia';
 import axios, { AxiosInstance } from 'axios';
 import { boot } from 'quasar/wrappers';
 import { apiBaseURL } from 'src/code/auth';
+import { internals } from 'src/code/pages/static/internals';
 
-declare module '@vue/runtime-core' {
-  interface ComponentCustomProperties {
-    $api: AxiosInstance;
+declare module 'src/code/pages/static/internals' {
+  export interface DeepNotesInternals {
+    api: AxiosInstance;
   }
-}
-
-declare module 'pinia' {
-  interface PiniaCustomProperties {
-    $api: AxiosInstance;
-  }
-}
-
-declare global {
-  // eslint-disable-next-line no-var
-  var $api: AxiosInstance;
 }
 
 // Be careful when using SSR for cross-request state pollution
@@ -29,17 +19,13 @@ declare global {
 // "export default () => {}" function below (which runs individually
 // for each client)
 
-export default boot(({ app, store }) => {
+export default boot(() => {
   const api = axios.create({
     withCredentials: true,
     baseURL: apiBaseURL,
   });
 
-  app.config.globalProperties.$api = api;
-
-  store.use(() => ({ $api: api }));
-
   if (process.env.CLIENT) {
-    globalThis.$api = api;
+    internals.api = api;
   }
 });

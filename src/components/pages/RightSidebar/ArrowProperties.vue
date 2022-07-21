@@ -140,6 +140,7 @@ import {
   ISerialArrow,
   ISerialArrowInput,
 } from 'src/code/pages/app/serialization';
+import { internals } from 'src/code/pages/static/internals';
 import { encodeText } from 'src/code/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
@@ -176,7 +177,7 @@ async function setAsDefault() {
   } as ISerialArrowInput);
 
   try {
-    await $api.post<{
+    await internals.api.post<{
       templateId: string;
     }>('/api/users/save-default-arrow', {
       encryptedDefaultArrow: sodium.to_base64(
@@ -188,12 +189,12 @@ async function setAsDefault() {
 
     Notify.create({
       message: 'Default arrow set.',
-      color: 'positive',
+      type: 'positive',
     });
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',
-      color: 'negative',
+      type: 'negative',
     });
 
     console.error(err);

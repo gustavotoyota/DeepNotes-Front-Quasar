@@ -108,6 +108,7 @@ import { wrapSymmetricKey } from 'src/code/crypto/symmetric-key';
 import { DICT_GROUP_SYMMETRIC_KEY } from 'src/code/pages/app/app';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { isMouseOverScrollbar } from 'src/code/pages/static/dom';
+import { internals } from 'src/code/pages/static/internals';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { onMounted, provide, ref } from 'vue';
@@ -156,7 +157,7 @@ function onMiddleAuxClick(event: MouseEvent) {
 
 async function cancelRequest() {
   try {
-    await $api.post('/api/groups/access-requests/cancel', {
+    await internals.api.post('/api/groups/access-requests/cancel', {
       groupIds: [props.page.react.groupId],
     });
 
@@ -165,7 +166,7 @@ async function cancelRequest() {
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',
-      color: 'negative',
+      type: 'negative',
     });
 
     console.error(err);
@@ -174,7 +175,7 @@ async function cancelRequest() {
 
 async function acceptInvitation() {
   try {
-    await $api.post('/api/groups/access-invitations/accept', {
+    await internals.api.post('/api/groups/access-invitations/accept', {
       groupId: props.page.react.groupId,
     });
 
@@ -182,7 +183,7 @@ async function acceptInvitation() {
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',
-      color: 'negative',
+      type: 'negative',
     });
 
     console.error(err);
@@ -190,7 +191,7 @@ async function acceptInvitation() {
 }
 async function rejectInvitation() {
   try {
-    await $api.post('/api/groups/access-invitations/reject', {
+    await internals.api.post('/api/groups/access-invitations/reject', {
       groupId: props.page.react.groupId,
     });
 
@@ -199,7 +200,7 @@ async function rejectInvitation() {
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',
-      color: 'negative',
+      type: 'negative',
     });
 
     console.error(err);
@@ -238,7 +239,7 @@ async function onEnterPassword() {
   } catch (err) {
     Notify.create({
       message: 'Incorrect password.',
-      color: 'negative',
+      type: 'negative',
     });
 
     console.error(err);

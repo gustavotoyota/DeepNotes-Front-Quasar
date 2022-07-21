@@ -85,6 +85,7 @@
   lang="ts"
 >
 import { Notify } from 'quasar';
+import { internals } from 'src/code/pages/static/internals';
 import { rolesMap } from 'src/code/pages/static/roles';
 import Gap from 'src/components/misc/Gap.vue';
 import { computed, inject, Ref } from 'vue';
@@ -130,7 +131,7 @@ function select(groupId: string, event: MouseEvent) {
 
 async function cancelSelectedRequests() {
   try {
-    await $api.post('/api/groups/access-requests/cancel', {
+    await internals.api.post('/api/groups/access-requests/cancel', {
       groupIds: Array.from(selectedIds.value),
     });
 
@@ -141,7 +142,7 @@ async function cancelSelectedRequests() {
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',
-      color: 'negative',
+      type: 'negative',
     });
 
     console.error(err);

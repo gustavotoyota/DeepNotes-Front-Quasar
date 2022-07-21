@@ -95,6 +95,7 @@
 import { Notify } from 'quasar';
 import { AppPage } from 'src/code/pages/app/page/page';
 import { REALTIME_USER_DISPLAY_NAME } from 'src/code/pages/app/realtime';
+import { internals } from 'src/code/pages/static/internals';
 import { rolesMap } from 'src/code/pages/static/roles';
 import Gap from 'src/components/misc/Gap.vue';
 import { computed, inject, Ref } from 'vue';
@@ -135,7 +136,7 @@ async function rejectSelectedRequests() {
   try {
     await Promise.all(
       Array.from(selectedIds.value).map((userId) =>
-        $api.post('/api/groups/access-requests/reject', {
+        internals.api.post('/api/groups/access-requests/reject', {
           groupId: page.value.react.groupId,
           userId,
         })
@@ -149,7 +150,7 @@ async function rejectSelectedRequests() {
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',
-      color: 'negative',
+      type: 'negative',
     });
 
     console.error(err);

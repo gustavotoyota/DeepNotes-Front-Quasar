@@ -18,9 +18,15 @@
         <q-separator />
 
         <q-card-section
-          style="flex: 1; padding: 21px; display: flex; flex-direction: column"
+          style="
+            flex: 1;
+            padding: 21px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+          "
         >
-          <div>1. Get an authenticator app:</div>
+          <div style="color: #c0c0c0">1. Get an authenticator app:</div>
 
           <Gap style="height: 8px" />
 
@@ -63,11 +69,17 @@
 
           <Gap style="height: 16px" />
 
-          <div>2. Scan the QR code below:</div>
+          <div style="color: #c0c0c0">2. Scan the QR code below:</div>
 
           <Gap style="height: 8px" />
 
-          <div><canvas ref="canvasElem"></canvas></div>
+          <div>
+            <canvas
+              ref="canvasElem"
+              width="175"
+              height="175"
+            ></canvas>
+          </div>
 
           <Gap style="height: 8px" />
 
@@ -75,7 +87,9 @@
 
           <Gap style="height: 16px" />
 
-          <div>3. Enter the 6-digit verification code below:</div>
+          <div style="color: #c0c0c0">
+            3. Enter the 6-digit verification code below:
+          </div>
 
           <Gap style="height: 8px" />
 
@@ -88,6 +102,8 @@
               v-model="authenticatorToken"
             />
           </div>
+
+          <LoadingOverlay v-if="loading" />
         </q-card-section>
 
         <q-separator />
@@ -100,11 +116,12 @@
             v-close-popup
           />
 
-          <q-btn
+          <SmartBtn
             flat
             label="Continue"
             color="positive"
             @click.prevent="verify()"
+            :disable="loading"
           />
         </q-card-actions>
       </q-form>
@@ -117,17 +134,24 @@
   lang="ts"
 >
 import QRCode from 'qrcode';
-import { Notify } from 'quasar';
+import { Dialog, Notify } from 'quasar';
+import { computeDerivedKeys } from 'src/code/crypto/crypto';
+import { internals } from 'src/code/pages/static/internals';
 import { BREAKPOINT_MD_MIN } from 'src/code/pages/static/responsive';
+import { bytesToBase64, sleep } from 'src/code/utils';
 import Gap from 'src/components/misc/Gap.vue';
+import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { useUI } from 'src/stores/pages/ui';
-import { computed, nextTick, ref } from 'vue';
+import { computed, ref } from 'vue';
+
+import SmartBtn from '../../../components/misc/SmartBtn.vue';
 
 const ui = useUI();
 
 const maximized = computed(() => ui.width < BREAKPOINT_MD_MIN);
 
 const visible = ref(false);
+const loading = ref(true);
 
 const keyUri = ref('');
 
@@ -136,35 +160,74 @@ const canvasElem = ref<HTMLElement>();
 const secret = ref('');
 const authenticatorToken = ref('');
 
-async function showDialog(params: { secret: string; keyUri: string }) {
-  visible.value = true;
+async function showDialog(email: string) {
+  Dialog.create({
+    title: 'Enable two-factor authentication',
+    message: 'Enter your password:',
+    prompt: {
+      type: 'password',
+      model: '',
+    },
+    style: {
+      maxWidth: '350px',
+    },
+    cancel: true,
+  }).onOk(async (password: string) => {
+    try {
+      loading.value = true;
+      visible.value = true;
 
-  secret.value = params.secret;
-  keyUri.value = params.keyUri;
+      await sleep(500);
 
-  await nextTick();
+      const passwordHash = (await computeDerivedKeys(email, password))
+        .passwordHash;
 
-  await QRCode.toCanvas(canvasElem.value, keyUri.value, {
-    width: 175,
+      const response = await internals.api.post<{
+        secret: string;
+        keyUri: string;
+      }>('/api/users/account/security/two-factor-auth/enable', {
+        passwordHash: bytesToBase64(passwordHash),
+      });
+
+      secret.value = response.data.secret;
+      keyUri.value = response.data.keyUri;
+
+      await QRCode.toCanvas(canvasElem.value, keyUri.value, {
+        width: 175,
+      });
+
+      loading.value = false;
+    } catch (err: any) {
+      Notify.create({
+        message: err.response?.data.message ?? 'An error has occurred.',
+        type: 'negative',
+      });
+
+      console.error(err);
+    }
   });
 }
 
 async function verify() {
   try {
-    const response = await $api.post<{
+    const response = await internals.api.post<{
       recoveryCode: string;
     }>('/api/users/account/security/two-factor-auth/verify', {
       authenticatorToken: authenticatorToken.value,
     });
 
+    visible.value = false;
+
+    internals.showRecoveryCodeDialog(response.data.recoveryCode);
+
     Notify.create({
-      message: 'Two factor authentication successfully enabled.',
-      color: 'positive',
+      message: 'Two factor authentication enabled successfully.',
+      type: 'positive',
     });
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',
-      color: 'negative',
+      type: 'negative',
     });
 
     console.error(err);

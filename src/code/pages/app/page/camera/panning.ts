@@ -14,10 +14,6 @@ export class PagePanning {
   constructor(readonly page: AppPage) {}
 
   start(event: PointerEvent) {
-    if (this.page.camera.react.lockPos) {
-      return;
-    }
-
     this.currentPos = this.page.pos.eventToClient(event);
 
     listenPointerEvents(event, {

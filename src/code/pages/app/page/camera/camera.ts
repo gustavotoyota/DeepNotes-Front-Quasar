@@ -1,13 +1,5 @@
-import { debounce } from 'lodash';
 import { Vec2 } from 'src/code/pages/static/vec2';
-import {
-  computed,
-  reactive,
-  UnwrapNestedRefs,
-  watch,
-  WatchStopHandle,
-  WritableComputedRef,
-} from 'vue';
+import { reactive, UnwrapNestedRefs, WatchStopHandle } from 'vue';
 
 import { AppPage } from '../page';
 import { IRegionElemsOutput } from '../regions/region';
@@ -15,11 +7,7 @@ import { IRegionElemsOutput } from '../regions/region';
 export interface ICameraReact {
   pos: Vec2;
 
-  _zoom: number;
-  zoom: WritableComputedRef<number>;
-
-  lockPos: boolean;
-  lockZoom: boolean;
+  zoom: number;
 }
 
 export class PageCamera {
@@ -31,39 +19,10 @@ export class PageCamera {
     this.react = reactive({
       pos: new Vec2(),
 
-      _zoom: 1,
-      zoom: computed({
-        get: () => this.react._zoom,
-        set: (value) => {
-          if (this.react.lockZoom) {
-            return;
-          }
-
-          this.react._zoom = value;
-        },
-      }),
-
-      lockPos: false,
-      lockZoom: false,
+      zoom: 1,
     });
   }
 
-  setup(lockPos: boolean, lockZoom: boolean) {
-    this.unwatchHandle = watch(
-      [() => this.react.lockPos, () => this.react.lockZoom],
-      debounce(async () => {
-        await $api.post('/api/users/save-camera-settings', {
-          lockPos: this.react.lockPos,
-          lockZoom: this.react.lockZoom,
-        });
-      }, 1000)
-    );
-
-    this.fitToScreen();
-
-    this.react.lockPos = lockPos;
-    this.react.lockZoom = lockZoom;
-  }
   destroy() {
     this.unwatchHandle();
   }
@@ -88,12 +47,9 @@ export class PageCamera {
     }
 
     const worldRect = this.page.regions.getWorldRect(regionElems);
-
-    if (!this.react.lockPos) {
-      this.react.pos = worldRect.center;
-    }
-
     const displayRect = this.page.rects.fromDisplay();
+
+    this.react.pos = worldRect.center;
 
     this.react.zoom = Math.min(
       (Math.min(70, displayRect.size.x / 4) - displayRect.size.x / 2) /

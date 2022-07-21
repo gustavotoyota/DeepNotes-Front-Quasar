@@ -85,9 +85,7 @@ export class PagePinching {
 
     // Compute ratio
 
-    let ratio;
-    if (this.page.camera.react.lockZoom) ratio = 1;
-    else ratio = displayDistance / this.displayDistance;
+    const ratio = displayDistance / this.displayDistance;
 
     // Camera position update
 

@@ -297,11 +297,6 @@ export class AppPage implements IPageRegion {
 
       encryptedSymmetricKey: string | undefined;
       encryptersPublicKey: string | undefined;
-
-      camera: {
-        lockPos: boolean;
-        lockZoom: boolean;
-      };
     }>('/api/pages/data', {
       pageId: this.id,
       parentPageId,
@@ -353,10 +348,10 @@ export class AppPage implements IPageRegion {
       );
     }
 
-    await this.finishSetup(response.data.camera);
+    await this.finishSetup();
   }
 
-  async finishSetup(camera: { lockPos: boolean; lockZoom: boolean }) {
+  async finishSetup() {
     this.react.loading = true;
 
     // Synchronize collaboration
@@ -395,7 +390,7 @@ export class AppPage implements IPageRegion {
     await watchUntilTrue(() => this.react.allEditorsLoaded);
     await nextTick();
 
-    this.camera.setup(camera.lockPos, camera.lockZoom);
+    this.camera.fitToScreen();
 
     this.react.loading = false;
   }

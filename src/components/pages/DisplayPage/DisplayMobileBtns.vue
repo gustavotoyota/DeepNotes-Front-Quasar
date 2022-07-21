@@ -176,8 +176,10 @@
                 Dialog.create({
                   title: 'Insert link',
                   message: 'URL:',
+                  color: 'primary',
                   prompt: {
                     model: '',
+                    filled: true,
                   },
                   style: {
                     width: '300px',

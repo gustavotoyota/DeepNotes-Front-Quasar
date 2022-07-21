@@ -15,10 +15,10 @@
   setup
   lang="ts"
 >
-import { PageArrow } from 'src/code/pages/app/page/arrows/arrow';
-import { AppPage } from 'src/code/pages/app/page/page';
-import { REALTIME_USER_DISPLAY_NAME } from 'src/code/pages/app/realtime';
-import { internals } from 'src/code/pages/static/internals';
+import { PageArrow } from 'src/code/pages/page/arrows/arrow';
+import { AppPage } from 'src/code/pages/page/page';
+import { REALTIME_USER_DISPLAY_NAME } from 'src/code/pages/realtime';
+import { internals } from 'src/code/static/internals';
 import { inject } from 'vue';
 import * as Y from 'yjs';
 

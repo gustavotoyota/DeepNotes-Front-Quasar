@@ -21,7 +21,7 @@
   setup
   lang="ts"
 >
-import { NoteSection, PageNote } from 'src/code/pages/app/page/notes/note';
+import { NoteSection, PageNote } from 'src/code/pages/page/notes/note';
 import { inject } from 'vue';
 
 import NoteResizeHandle from './NoteResizeHandles/NoteResizeHandle.vue';

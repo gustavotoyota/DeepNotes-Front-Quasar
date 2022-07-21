@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { negateProp } from 'src/code/utils';
+import { negateProp } from 'src/code/static/utils';
 
 export const useUI = defineStore('ui', {
   state: () => ({

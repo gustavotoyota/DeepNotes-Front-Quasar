@@ -36,7 +36,7 @@
   setup
   lang="ts"
 >
-import { AppPage } from 'src/code/pages/app/page/page';
+import { AppPage } from 'src/code/pages/page/page';
 import { inject } from 'vue';
 
 defineProps<{

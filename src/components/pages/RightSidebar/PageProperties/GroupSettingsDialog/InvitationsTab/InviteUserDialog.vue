@@ -62,9 +62,9 @@
 import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
 import { reencryptSymmetricKey } from 'src/code/crypto/crypto';
-import { AppPage } from 'src/code/pages/app/page/page';
-import { internals } from 'src/code/pages/static/internals';
-import { roles } from 'src/code/pages/static/roles';
+import { AppPage } from 'src/code/pages/page/page';
+import { internals } from 'src/code/static/internals';
+import { roles } from 'src/code/static/roles';
 import Gap from 'src/components/misc/Gap.vue';
 import SmartBtn from 'src/components/misc/SmartBtn.vue';
 import { inject, Ref, ref, watch } from 'vue';

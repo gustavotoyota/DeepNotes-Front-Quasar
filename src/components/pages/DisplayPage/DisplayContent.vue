@@ -38,8 +38,8 @@
   setup
   lang="ts"
 >
-import { PageNote } from 'src/code/pages/app/page/notes/note';
-import { AppPage } from 'src/code/pages/app/page/page';
+import { PageNote } from 'src/code/pages/page/notes/note';
+import { AppPage } from 'src/code/pages/page/page';
 import { inject } from 'vue';
 
 import ArrowCreation from './ArrowCreation.vue';

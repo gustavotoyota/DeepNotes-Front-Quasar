@@ -1,7 +1,7 @@
 import sodium from 'libsodium-wrappers';
 
-import { DICT_GROUP_SYMMETRIC_KEY } from '../pages/app/app';
-import { concatUint8Array } from '../utils';
+import { DICT_GROUP_SYMMETRIC_KEY } from '../pages/pages';
+import { concatUint8Array } from '../static/utils';
 import { privateKey } from './private-key';
 import { wrapSymmetricKey } from './symmetric-key';
 

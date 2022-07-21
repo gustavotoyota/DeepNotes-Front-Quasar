@@ -11,7 +11,7 @@
   setup
   lang="ts"
 >
-import { REALTIME_USER_DISPLAY_NAME } from 'src/code/pages/app/realtime';
+import { REALTIME_USER_DISPLAY_NAME } from 'src/code/pages/realtime';
 import { inject, Ref, watch } from 'vue';
 
 import { initialSettings } from './UserSettingsDialog.vue';

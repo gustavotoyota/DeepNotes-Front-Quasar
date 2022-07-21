@@ -156,10 +156,10 @@ export function initialSettings() {
   setup
   lang="ts"
 >
-import { AppPage } from 'src/code/pages/app/page/page';
-import { REALTIME_ENCRYPTED_GROUP_NAME } from 'src/code/pages/app/realtime';
-import { internals } from 'src/code/pages/static/internals';
-import { BREAKPOINT_MD_MIN } from 'src/code/pages/static/responsive';
+import { AppPage } from 'src/code/pages/page/page';
+import { REALTIME_ENCRYPTED_GROUP_NAME } from 'src/code/pages/realtime';
+import { internals } from 'src/code/static/internals';
+import { BREAKPOINT_MD_MIN } from 'src/code/static/responsive';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import TabBtn from 'src/components/pages/misc/TabBtn.vue';
 import { useUI } from 'src/stores/pages/ui';

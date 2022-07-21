@@ -157,10 +157,10 @@ export function initialSettings() {
 >
 import { Notify } from 'quasar';
 import { saveGroupSymmetricKey } from 'src/code/crypto/crypto';
-import { DICT_GROUP_OWNER_ID } from 'src/code/pages/app/app';
-import { REALTIME_USER_DISPLAY_NAME } from 'src/code/pages/app/realtime';
-import { internals } from 'src/code/pages/static/internals';
-import { BREAKPOINT_MD_MIN } from 'src/code/pages/static/responsive';
+import { DICT_GROUP_OWNER_ID } from 'src/code/pages/pages';
+import { REALTIME_USER_DISPLAY_NAME } from 'src/code/pages/realtime';
+import { internals } from 'src/code/static/internals';
+import { BREAKPOINT_MD_MIN } from 'src/code/static/responsive';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { useUI } from 'src/stores/pages/ui';
 import { computed, provide, ref } from 'vue';

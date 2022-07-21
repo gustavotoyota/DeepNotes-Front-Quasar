@@ -4,9 +4,9 @@ import 'pinia';
 import axios, { AxiosInstance } from 'axios';
 import { boot } from 'quasar/wrappers';
 import { apiBaseURL } from 'src/code/auth';
-import { internals } from 'src/code/pages/static/internals';
+import { internals } from 'src/code/static/internals';
 
-declare module 'src/code/pages/static/internals' {
+declare module 'src/code/static/internals' {
   export interface DeepNotesInternals {
     api: AxiosInstance;
   }

@@ -39,7 +39,7 @@
 
       <Gap style="height: 20px" />
 
-      <q-btn
+      <SmartBtn
         label="Change password"
         type="submit"
         color="primary"
@@ -115,9 +115,10 @@ import {
   encryptSymmetric,
   reencryptSessionPrivateKey,
 } from 'src/code/crypto/crypto';
-import { internals } from 'src/code/pages/static/internals';
+import { internals } from 'src/code/static/internals';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
+import SmartBtn from 'src/components/misc/SmartBtn.vue';
 import PasswordField from 'src/components/pages/misc/PasswordField.vue';
 import { useApp } from 'src/stores/app';
 import { onMounted, Ref, ref } from 'vue';

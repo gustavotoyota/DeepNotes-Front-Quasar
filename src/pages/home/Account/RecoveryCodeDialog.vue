@@ -82,9 +82,9 @@
   setup
   lang="ts"
 >
-import { setClipboardText } from 'src/code/pages/static/clipboard';
-import { internals } from 'src/code/pages/static/internals';
-import { BREAKPOINT_MD_MIN } from 'src/code/pages/static/responsive';
+import { setClipboardText } from 'src/code/static/clipboard';
+import { internals } from 'src/code/static/internals';
+import { BREAKPOINT_MD_MIN } from 'src/code/static/responsive';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
 import { computed, ref } from 'vue';

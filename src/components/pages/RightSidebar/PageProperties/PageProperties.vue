@@ -37,7 +37,7 @@
   setup
   lang="ts"
 >
-import { AppPage } from 'src/code/pages/app/page/page';
+import { AppPage } from 'src/code/pages/page/page';
 import { useUI } from 'src/stores/pages/ui';
 import { inject, Ref, ref, watch } from 'vue';
 

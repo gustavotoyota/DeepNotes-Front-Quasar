@@ -1,7 +1,7 @@
 <template>
   <router-view />
 
-  <LoadingOverlay v-if="!app.mounted" />
+  <LoadingOverlay v-if="app.loading" />
 </template>
 
 <script
@@ -31,7 +31,8 @@ onMounted(async () => {
     setTimeout(tokenRefreshLoop, 10000);
   })();
 
-  app.mounted = true;
+  app.loading = false;
+  app.ready.resolve();
 });
 
 // Resize

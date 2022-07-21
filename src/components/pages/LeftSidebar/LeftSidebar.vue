@@ -152,7 +152,7 @@
   lang="ts"
 >
 import { Dialog, Notify } from 'quasar';
-import { ILayerCollab } from 'src/code/pages/app/page/layers/layer';
+import { ILayerCollab } from 'src/code/pages/page/layers/layer';
 import { useUI } from 'src/stores/pages/ui';
 import { v4 } from 'uuid';
 import { computed } from 'vue';
@@ -203,8 +203,10 @@ function createLayer() {
   Dialog.create({
     title: 'Add new layer',
     message: 'Name:',
+    color: 'primary',
     prompt: {
       model: '',
+      filled: true,
     },
     style: {
       width: '300px',

@@ -83,7 +83,43 @@
 
           <Gap style="height: 8px" />
 
-          <div>Or enter the following code: {{ secret }}</div>
+          <div>Or use the following code:</div>
+
+          <Gap style="height: 8px" />
+
+          <q-input
+            :model-value="secret"
+            readonly
+            filled
+            dense
+            style="max-width: 250px"
+          >
+            <template v-slot:append>
+              <q-icon
+                name="mdi-content-copy"
+                class="cursor-pointer"
+                @click="
+                  () => {
+                    setClipboardText(secret);
+
+                    Notify.create({
+                      message: 'Copied to clipboard.',
+                      type: 'positive',
+                    });
+                  }
+                "
+              >
+                <q-tooltip
+                  anchor="top middle"
+                  self="bottom middle"
+                  transition-show="jump-up"
+                  transition-hide="jump-down"
+                >
+                  Copy
+                </q-tooltip>
+              </q-icon>
+            </template>
+          </q-input>
 
           <Gap style="height: 16px" />
 
@@ -136,9 +172,10 @@
 import QRCode from 'qrcode';
 import { Dialog, Notify } from 'quasar';
 import { computeDerivedKeys } from 'src/code/crypto/crypto';
-import { internals } from 'src/code/pages/static/internals';
-import { BREAKPOINT_MD_MIN } from 'src/code/pages/static/responsive';
-import { bytesToBase64, sleep } from 'src/code/utils';
+import { setClipboardText } from 'src/code/static/clipboard';
+import { internals } from 'src/code/static/internals';
+import { BREAKPOINT_MD_MIN } from 'src/code/static/responsive';
+import { bytesToBase64, sleep } from 'src/code/static/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { useUI } from 'src/stores/pages/ui';
@@ -164,9 +201,11 @@ async function showDialog(email: string) {
   Dialog.create({
     title: 'Enable two-factor authentication',
     message: 'Enter your password:',
+    color: 'primary',
     prompt: {
       type: 'password',
       model: '',
+      filled: true,
     },
     style: {
       maxWidth: '350px',

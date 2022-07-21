@@ -6,7 +6,7 @@
   setup
   lang="ts"
 >
-import { internals } from 'src/code/pages/static/internals';
+import { internals } from 'src/code/static/internals';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';

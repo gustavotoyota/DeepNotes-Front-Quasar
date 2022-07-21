@@ -37,8 +37,8 @@
 import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
 import { reencryptSymmetricKey } from 'src/code/crypto/crypto';
-import { AppPage } from 'src/code/pages/app/page/page';
-import { internals } from 'src/code/pages/static/internals';
+import { AppPage } from 'src/code/pages/page/page';
+import { internals } from 'src/code/static/internals';
 import SmartBtn from 'src/components/misc/SmartBtn.vue';
 import { computed, inject, Ref, ref } from 'vue';
 

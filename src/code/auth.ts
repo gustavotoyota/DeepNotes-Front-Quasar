@@ -1,7 +1,7 @@
 import jwtDecode from 'jwt-decode';
 import sodium from 'libsodium-wrappers';
 import { Cookies } from 'quasar';
-import { internals } from 'src/code/pages/static/internals';
+import { internals } from 'src/code/static/internals';
 import { useAuth } from 'src/stores/auth';
 
 import {

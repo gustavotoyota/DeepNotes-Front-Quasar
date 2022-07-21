@@ -34,7 +34,7 @@
   setup
   lang="ts"
 >
-import { DICT_PAGE_GROUP_ID } from 'src/code/pages/app/app';
+import { DICT_PAGE_GROUP_ID } from 'src/code/pages/pages';
 import { useUI } from 'src/stores/pages/ui';
 import { computed } from 'vue';
 

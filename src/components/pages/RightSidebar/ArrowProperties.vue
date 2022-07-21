@@ -134,14 +134,11 @@
 >
 import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
-import { PageArrow } from 'src/code/pages/app/page/arrows/arrow';
-import { AppPage } from 'src/code/pages/app/page/page';
-import {
-  ISerialArrow,
-  ISerialArrowInput,
-} from 'src/code/pages/app/serialization';
-import { internals } from 'src/code/pages/static/internals';
-import { encodeText } from 'src/code/utils';
+import { PageArrow } from 'src/code/pages/page/arrows/arrow';
+import { AppPage } from 'src/code/pages/page/page';
+import { ISerialArrow, ISerialArrowInput } from 'src/code/pages/serialization';
+import { internals } from 'src/code/static/internals';
+import { encodeText } from 'src/code/static/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
 import { computed } from 'vue';

@@ -165,10 +165,10 @@ import sodium from 'libsodium-wrappers';
 import QRCode from 'qrcode';
 import { Dialog, Notify } from 'quasar';
 import { computeDerivedKeys } from 'src/code/crypto/crypto';
-import { setClipboardText } from 'src/code/pages/static/clipboard';
-import { internals } from 'src/code/pages/static/internals';
-import { BREAKPOINT_MD_MIN } from 'src/code/pages/static/responsive';
-import { sleep } from 'src/code/utils';
+import { setClipboardText } from 'src/code/static/clipboard';
+import { internals } from 'src/code/static/internals';
+import { BREAKPOINT_MD_MIN } from 'src/code/static/responsive';
+import { sleep } from 'src/code/static/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import SmartBtn from 'src/components/misc/SmartBtn.vue';
@@ -193,9 +193,11 @@ async function showDialog(email: string) {
   Dialog.create({
     title: 'Manage two-factor authentication',
     message: 'Enter your password:',
+    color: 'primary',
     prompt: {
       type: 'password',
       model: '',
+      filled: true,
     },
     style: {
       maxWidth: '350px',

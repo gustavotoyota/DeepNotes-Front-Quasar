@@ -53,9 +53,9 @@
   setup
   lang="ts"
 >
-import { PageNote } from 'src/code/pages/app/page/notes/note';
-import { AppPage } from 'src/code/pages/app/page/page';
-import { Vec2 } from 'src/code/pages/static/vec2';
+import { PageNote } from 'src/code/pages/page/notes/note';
+import { AppPage } from 'src/code/pages/page/page';
+import { Vec2 } from 'src/code/static/vec2';
 import { inject, onMounted, ref } from 'vue';
 
 import ArrowCreation from '../../../ArrowCreation.vue';

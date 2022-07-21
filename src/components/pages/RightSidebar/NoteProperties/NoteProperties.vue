@@ -686,11 +686,11 @@
 >
 import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
-import { DICT_PAGE_GROUP_ID } from 'src/code/pages/app/app';
-import { PageNote } from 'src/code/pages/app/page/notes/note';
-import { AppPage } from 'src/code/pages/app/page/page';
-import { internals } from 'src/code/pages/static/internals';
-import { encodeText } from 'src/code/utils';
+import { PageNote } from 'src/code/pages/page/notes/note';
+import { AppPage } from 'src/code/pages/page/page';
+import { DICT_PAGE_GROUP_ID } from 'src/code/pages/pages';
+import { internals } from 'src/code/static/internals';
+import { encodeText } from 'src/code/static/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
 import { computed } from 'vue';

@@ -25,7 +25,7 @@
   lang="ts"
 >
 import { Notify, useMeta } from 'quasar';
-import { internals } from 'src/code/pages/static/internals';
+import { internals } from 'src/code/static/internals';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { useApp } from 'src/stores/app';

@@ -2,7 +2,7 @@ import { Y } from '@syncedstore/core';
 import Collaboration from '@tiptap/extension-collaboration';
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
 import { EditorContent, getSchema, useEditor } from '@tiptap/vue-3';
-import { internals } from 'src/code/pages/static/internals';
+import { internals } from 'src/code/static/internals';
 import {
   prosemirrorJSONToYXmlFragment,
   ySyncPluginKey,
@@ -37,7 +37,7 @@ const tiptap = {
   ySyncPluginKey,
 };
 
-declare module 'src/code/pages/static/internals' {
+declare module 'src/code/static/internals' {
   export interface DeepNotesInternals {
     tiptap: typeof tiptap;
   }

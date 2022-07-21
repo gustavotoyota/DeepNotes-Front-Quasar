@@ -1,7 +1,7 @@
 import process from 'process';
 import { Dialog, Notify } from 'quasar';
 import { boot } from 'quasar/wrappers';
-import { internals } from 'src/code/pages/static/internals';
+import { internals } from 'src/code/static/internals';
 
 declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {

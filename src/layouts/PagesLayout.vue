@@ -40,14 +40,14 @@
   lang="ts"
 >
 import { useMeta } from 'quasar';
-import { AppPage } from 'src/code/pages/app/page/page';
-import { factory } from 'src/code/pages/static/composition-root';
-import { isDetachedDOM } from 'src/code/pages/static/dom';
+import { AppPage } from 'src/code/pages/page/page';
+import { factory } from 'src/code/static/composition-root';
+import { isDetachedDOM } from 'src/code/static/dom';
 import {
   BREAKPOINT_LG_MIN,
   BREAKPOINT_SM_MIN,
-} from 'src/code/pages/static/responsive';
-import { Vec2 } from 'src/code/pages/static/vec2';
+} from 'src/code/static/responsive';
+import { Vec2 } from 'src/code/static/vec2';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import DisplayBtns from 'src/components/pages/DisplayPage/DisplayBtns.vue';
 import DisplayMobileBtns from 'src/components/pages/DisplayPage/DisplayMobileBtns.vue';

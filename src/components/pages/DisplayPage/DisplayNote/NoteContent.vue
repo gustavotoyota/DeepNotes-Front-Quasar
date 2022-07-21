@@ -31,13 +31,13 @@
   setup
   lang="ts"
 >
-import { PageNote } from 'src/code/pages/app/page/notes/note';
-import { AppPage } from 'src/code/pages/app/page/page';
+import { PageNote } from 'src/code/pages/page/notes/note';
+import { AppPage } from 'src/code/pages/page/page';
 import {
   hasScrollbar,
   isMouseOverScrollbar,
   isTouchOverScrollbar,
-} from 'src/code/pages/static/dom';
+} from 'src/code/static/dom';
 import { inject } from 'vue';
 
 const page = inject<AppPage>('page')!;

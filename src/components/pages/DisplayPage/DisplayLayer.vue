@@ -50,9 +50,9 @@
   setup
   lang="ts"
 >
-import { PageLayer } from 'src/code/pages/app/page/layers/layer';
-import { PageNote } from 'src/code/pages/app/page/notes/note';
-import { AppPage } from 'src/code/pages/app/page/page';
+import { PageLayer } from 'src/code/pages/page/layers/layer';
+import { PageNote } from 'src/code/pages/page/notes/note';
+import { AppPage } from 'src/code/pages/page/page';
 import { inject, provide } from 'vue';
 
 import ArrowLabel from './ArrowLabel.vue';

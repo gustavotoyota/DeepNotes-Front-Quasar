@@ -27,7 +27,7 @@
 import { Editor, NodeViewWrapper } from '@tiptap/vue-3';
 import { Node as ProseMirrorNode } from 'prosemirror-model';
 import { Decoration } from 'prosemirror-view';
-import { listenPointerEvents } from 'src/code/pages/static/dom';
+import { listenPointerEvents } from 'src/code/static/dom';
 import { ref } from 'vue';
 
 const props = defineProps<{

@@ -57,7 +57,16 @@
     <div
       style="flex: none; width: 200px; display: flex; flex-direction: column"
     >
-      <ChangeRoleDialog />
+      <ChangeRoleDialog>
+        <template #default="{ showDialog }">
+          <q-btn
+            label="Change role"
+            color="secondary"
+            :disable="selectedIds.size === 0"
+            @click="showDialog()"
+          />
+        </template>
+      </ChangeRoleDialog>
 
       <Gap style="height: 16px" />
 

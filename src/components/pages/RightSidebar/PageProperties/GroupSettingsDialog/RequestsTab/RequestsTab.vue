@@ -64,7 +64,16 @@
       <div
         style="flex: none; width: 200px; display: flex; flex-direction: column"
       >
-        <AcceptRequestDialog />
+        <AcceptRequestDialog>
+          <template #default="{ showDialog }">
+            <q-btn
+              label="Accept"
+              color="positive"
+              :disable="selectedIds.size === 0"
+              @click="showDialog()"
+            />
+          </template>
+        </AcceptRequestDialog>
 
         <Gap style="height: 16px" />
 

@@ -1,9 +1,5 @@
 <template>
-  <q-btn
-    label="Group settings"
-    color="primary"
-    @click="visible = true"
-  />
+  <slot :show-dialog="() => (visible = true)"></slot>
 
   <q-dialog
     v-model="visible"

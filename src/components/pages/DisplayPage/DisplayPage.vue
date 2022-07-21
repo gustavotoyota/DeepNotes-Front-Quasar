@@ -65,7 +65,15 @@
 
         <Gap style="height: 12px" />
 
-        <RequestAccessDialog v-if="page.react.userStatus == null" />
+        <RequestAccessDialog v-if="page.react.userStatus == null">
+          <template #default="{ showDialog }">
+            <q-btn
+              label="Request access"
+              color="primary"
+              @click="showDialog()"
+            />
+          </template>
+        </RequestAccessDialog>
 
         <q-btn
           v-if="page.react.userStatus === 'request'"

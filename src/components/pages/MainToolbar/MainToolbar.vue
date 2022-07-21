@@ -574,13 +574,13 @@
                     page.selection.format((chain) => chain.setHorizontalRule())
                   "
                 />
-                <InsertImageDialog #default="{ on }">
+                <InsertImageDialog #default="{ showDialog }">
                   <ToolbarBtn
                     tooltip="Image"
                     icon="mdi-image"
                     icon-size="23px"
                     :disable="page.react.readonly || !page.editing.react.active"
-                    v-on="on"
+                    @click="showDialog()"
                   />
                 </InsertImageDialog>
               </div>
@@ -701,13 +701,13 @@
 
         <Gap style="width: 2px" />
 
-        <ToolbarBtn
-          tooltip="Settings"
-          icon="mdi-cog"
-          icon-size="28px"
-          round
+            <ToolbarBtn
+              tooltip="Settings"
+              icon="mdi-cog"
+              icon-size="28px"
+              round
           @click="$pages.react.userSettingsVisible = true"
-        />
+            />
 
         <Gap style="width: 2px" />
 

@@ -1,10 +1,5 @@
 <template>
-  <q-btn
-    label="Create new page"
-    color="primary"
-    :disable="page.react.readonly"
-    @click="visible = true"
-  />
+  <slot :show-dialog="() => (visible = true)"></slot>
 
   <q-dialog v-model="visible">
     <q-card>

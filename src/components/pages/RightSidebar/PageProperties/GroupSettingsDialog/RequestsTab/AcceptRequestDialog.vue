@@ -1,10 +1,5 @@
 <template>
-  <q-btn
-    label="Accept"
-    color="positive"
-    :disable="selectedIds.size === 0"
-    @click="visible = true"
-  />
+  <slot :show-dialog="() => (visible = true)"></slot>
 
   <q-dialog v-model="visible">
     <q-card style="width: 250px">

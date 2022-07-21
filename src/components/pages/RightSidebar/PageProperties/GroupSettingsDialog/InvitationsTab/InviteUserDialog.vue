@@ -1,10 +1,5 @@
 <template>
-  <q-btn
-    label="Invite new member"
-    color="primary"
-    style="width: 180px"
-    @click="visible = true"
-  />
+  <slot :show-dialog="() => (visible = true)"></slot>
 
   <q-dialog v-model="visible">
     <q-card style="width: 300px">

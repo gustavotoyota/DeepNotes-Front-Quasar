@@ -123,7 +123,16 @@
 
       <Gap style="height: 16px" />
 
-      <NewPageDialog />
+      <NewPageDialog>
+        <template #default="{ showDialog }">
+          <q-btn
+            label="Create new page"
+            color="primary"
+            :disable="page.react.readonly"
+            @click="showDialog()"
+          />
+        </template>
+      </NewPageDialog>
     </div>
 
     <q-separator />

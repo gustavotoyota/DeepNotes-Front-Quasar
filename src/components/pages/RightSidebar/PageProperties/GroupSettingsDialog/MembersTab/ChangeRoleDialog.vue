@@ -1,10 +1,5 @@
 <template>
-  <q-btn
-    label="Change role"
-    color="secondary"
-    :disable="selectedIds.size === 0"
-    @click="visible = true"
-  />
+  <slot :show-dialog="() => (visible = true)"></slot>
 
   <q-dialog v-model="visible">
     <q-card style="width: 300px">

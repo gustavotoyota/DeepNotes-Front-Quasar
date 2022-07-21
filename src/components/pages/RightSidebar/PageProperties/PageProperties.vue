@@ -52,7 +52,15 @@
     <q-separator />
 
     <div style="padding: 20px; display: flex; flex-direction: column">
-      <GroupSettingsDialog />
+      <GroupSettingsDialog>
+        <template #default="{ showDialog }">
+          <q-btn
+            label="Group settings"
+            color="primary"
+            @click="showDialog()"
+          />
+        </template>
+      </GroupSettingsDialog>
     </div>
   </div>
 </template>

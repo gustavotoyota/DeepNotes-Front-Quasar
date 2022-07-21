@@ -1,15 +1,15 @@
 <template>
   <slot
-    :on="{
-      click: () => {
+    :show-dialog="
+      () => {
         fileType = 'local';
 
         localFile = undefined;
         imageURL = '';
 
         visible = true;
-      },
-    }"
+      }
+    "
   >
   </slot>
 

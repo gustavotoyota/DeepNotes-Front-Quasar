@@ -76,7 +76,16 @@
 
   <Gap style="height: 16px" />
 
-  <InviteUserDialog />
+  <InviteUserDialog>
+    <template #default="{ showDialog }">
+      <q-btn
+        label="Invite new member"
+        color="primary"
+        style="width: 180px"
+        @click="showDialog()"
+      />
+    </template>
+  </InviteUserDialog>
 </template>
 
 <script

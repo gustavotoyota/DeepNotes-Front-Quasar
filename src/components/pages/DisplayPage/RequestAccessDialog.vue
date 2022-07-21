@@ -1,9 +1,5 @@
 <template>
-  <q-btn
-    label="Request access"
-    color="primary"
-    @click="visible = true"
-  />
+  <slot :show-dialog="() => (visible = true)"></slot>
 
   <q-dialog v-model="visible">
     <q-card style="width: 300px">

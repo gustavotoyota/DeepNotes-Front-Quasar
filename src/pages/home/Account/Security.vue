@@ -14,7 +14,7 @@
     >
       <PasswordField
         label="Old password"
-        v-model="data.oldPassword"
+        v-model="oldPassword"
         dense
         style="max-width: 300px"
       />
@@ -23,7 +23,7 @@
 
       <PasswordField
         label="New password"
-        v-model="data.newPassword"
+        v-model="newPassword"
         dense
         style="max-width: 300px"
       />
@@ -32,7 +32,7 @@
 
       <PasswordField
         label="Confirm new password"
-        v-model="data.confirmNewPassword"
+        v-model="confirmNewPassword"
         dense
         style="max-width: 300px"
       />
@@ -60,11 +60,41 @@
 
     <Gap style="height: 24px" />
 
-    <q-btn
-      label="Enable two-factor authentication"
-      color="primary"
-      style="max-width: 300px"
-    />
+    <EnableTwoFactorAuthDialog>
+      <template #default="{ showDialog }">
+        <q-btn
+          label="Enable two-factor authentication"
+          color="primary"
+          style="max-width: 300px"
+          @click="
+            async () => {
+              Dialog.create({
+                title: 'Enable two-factor authentication',
+                message: 'Enter your password:',
+                prompt: {
+                  type: 'password',
+                  model: '',
+                },
+                style: {
+                  maxWidth: '350px',
+                },
+                cancel: true,
+              }).onOk(async (password: string) => {
+                const data = await enableTwoFactorAuth(password);
+
+                // @ts-ignore
+                if (data == null) {
+                  return;
+                }
+
+                // @ts-ignore
+                await showDialog(data);
+              });
+            }
+          "
+        />
+      </template>
+    </EnableTwoFactorAuthDialog>
 
     <Gap style="height: 48px" />
 
@@ -91,17 +121,20 @@
   lang="ts"
 >
 import sodium from 'libsodium-wrappers';
-import { Notify, QForm, useMeta } from 'quasar';
+import { Dialog, Notify, QForm, useMeta } from 'quasar';
 import {
   computeDerivedKeys,
   encryptSymmetric,
   reencryptSessionPrivateKey,
 } from 'src/code/crypto/crypto';
+import { bytesToBase64 } from 'src/code/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import PasswordField from 'src/components/pages/misc/PasswordField.vue';
 import { useApp } from 'src/stores/app';
-import { onMounted, reactive, Ref, ref } from 'vue';
+import { onMounted, Ref, ref } from 'vue';
+
+import EnableTwoFactorAuthDialog from './EnableTwoFactorAuthDialog.vue';
 
 const app = useApp();
 
@@ -113,14 +146,13 @@ const mounted = ref(false);
 
 const passwordChangeForm = ref() as Ref<QForm>;
 
-const data = reactive({
-  email: '',
-  authenticatorEnabled: false,
+const email = ref('');
 
-  oldPassword: '',
-  newPassword: '',
-  confirmNewPassword: '',
-});
+const oldPassword = ref('');
+const newPassword = ref('');
+const confirmNewPassword = ref('');
+
+const authenticatorEnabled = ref(false);
 
 onMounted(async () => {
   await app.ready;
@@ -130,14 +162,40 @@ onMounted(async () => {
     authenticatorEnabled: boolean;
   }>('/api/users/account/security/load');
 
-  data.email = response.data.email;
-  data.authenticatorEnabled = response.data.authenticatorEnabled;
+  email.value = response.data.email;
+  authenticatorEnabled.value = response.data.authenticatorEnabled;
 
   mounted.value = true;
 });
 
+async function enableTwoFactorAuth(password: string) {
+  try {
+    const passwordHash = (await computeDerivedKeys(email.value, password))
+      .passwordHash;
+
+    const response = await $api.post<{
+      secret: string;
+      keyUri: string;
+    }>('/api/users/account/security/two-factor-auth/enable', {
+      passwordHash: bytesToBase64(passwordHash),
+    });
+
+    return {
+      secret: response.data.secret,
+      keyUri: response.data.keyUri,
+    };
+  } catch (err: any) {
+    Notify.create({
+      message: err.response?.data.message ?? 'An error has occurred.',
+      color: 'negative',
+    });
+
+    console.error(err);
+  }
+}
+
 async function changePassword() {
-  if (data.newPassword !== data.confirmNewPassword) {
+  if (newPassword.value !== confirmNewPassword.value) {
     Notify.create({
       message: 'New passwords do not match.',
       color: 'negative',
@@ -150,12 +208,12 @@ async function changePassword() {
     // Compute derived keys
 
     const oldDerivedKeys = await computeDerivedKeys(
-      data.email,
-      data.oldPassword
+      email.value,
+      oldPassword.value
     );
     const newDerivedKeys = await computeDerivedKeys(
-      data.email,
-      data.newPassword
+      email.value,
+      newPassword.value
     );
 
     // Reencrypt derived keys
@@ -198,9 +256,9 @@ async function changePassword() {
 
     // Clear form data
 
-    data.oldPassword = '';
-    data.newPassword = '';
-    data.confirmNewPassword = '';
+    oldPassword.value = '';
+    newPassword.value = '';
+    confirmNewPassword.value = '';
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',

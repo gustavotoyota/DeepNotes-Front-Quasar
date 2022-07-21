@@ -1,20 +1,20 @@
 <template>
   <q-dialog
     v-model="$pages.react.userSettingsVisible"
-    :maximized="ui.width < BREAKPOINT_MD_MIN"
+    :maximized="maximized"
   >
     <q-card
       style="display: flex; flex-direction: column; max-width: unset"
       :style="{
-        width: ui.width < BREAKPOINT_MD_MIN ? undefined : '750px',
-        height: ui.width < BREAKPOINT_MD_MIN ? undefined : '550px',
+        width: maximized ? undefined : '750px',
+        height: maximized ? undefined : '550px',
       }"
     >
       <q-card-section>
         <div class="text-h5">User Settings</div>
       </q-card-section>
 
-      <template v-if="ui.width < BREAKPOINT_MD_MIN">
+      <template v-if="maximized">
         <q-separator />
 
         <q-tabs
@@ -162,7 +162,7 @@ import { REALTIME_USER_DISPLAY_NAME } from 'src/code/pages/app/realtime';
 import { BREAKPOINT_MD_MIN } from 'src/code/pages/static/responsive';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { useUI } from 'src/stores/pages/ui';
-import { provide, ref, watch } from 'vue';
+import { computed, provide, ref, watch } from 'vue';
 
 import TabBtn from '../misc/TabBtn.vue';
 import GeneralTab from './GeneralTab.vue';
@@ -171,6 +171,8 @@ import InvitationsTab from './InvitationsTab.vue';
 import RequestsTab from './RequestsTab.vue';
 
 const ui = useUI();
+
+const maximized = computed(() => ui.width < BREAKPOINT_MD_MIN);
 
 const settings = ref(initialSettings());
 provide('settings', settings);

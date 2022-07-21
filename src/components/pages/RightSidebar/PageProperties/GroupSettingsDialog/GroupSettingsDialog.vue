@@ -3,20 +3,20 @@
 
   <q-dialog
     v-model="visible"
-    :maximized="ui.width < BREAKPOINT_MD_MIN"
+    :maximized="maximized"
   >
     <q-card
       style="display: flex; flex-direction: column; max-width: unset"
       :style="{
-        width: ui.width < BREAKPOINT_MD_MIN ? undefined : '800px',
-        height: ui.width < BREAKPOINT_MD_MIN ? undefined : '600px',
+        width: maximized ? undefined : '800px',
+        height: maximized ? undefined : '600px',
       }"
     >
       <q-card-section>
         <div class="text-h5">Group Settings</div>
       </q-card-section>
 
-      <template v-if="ui.width < BREAKPOINT_MD_MIN">
+      <template v-if="maximized">
         <q-separator />
 
         <q-tabs
@@ -162,7 +162,7 @@ import { BREAKPOINT_MD_MIN } from 'src/code/pages/static/responsive';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import TabBtn from 'src/components/pages/misc/TabBtn.vue';
 import { useUI } from 'src/stores/pages/ui';
-import { inject, provide, Ref, ref, watch } from 'vue';
+import { computed, inject, provide, Ref, ref, watch } from 'vue';
 
 import GeneralTab from './GeneralTab.vue';
 import InvitationsTab from './InvitationsTab/InvitationsTab.vue';
@@ -170,6 +170,8 @@ import MembersTab from './MembersTab/MembersTab.vue';
 import RequestsTab from './RequestsTab/RequestsTab.vue';
 
 const ui = useUI();
+
+const maximized = computed(() => ui.width < BREAKPOINT_MD_MIN);
 
 const visible = ref(false);
 

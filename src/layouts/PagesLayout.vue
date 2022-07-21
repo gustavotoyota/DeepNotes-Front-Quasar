@@ -464,8 +464,6 @@ function onResize() {
   ) {
     ui.rightSidebarExpanded = false;
   }
-
-  ui.width = window.innerWidth;
 }
 
 onBeforeUnmount(() => {

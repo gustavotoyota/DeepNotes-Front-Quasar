@@ -52,6 +52,7 @@
                 font-weight: bold;
                 display: flex;
                 align-items: center;
+                color: white;
               "
             >
               <img
@@ -240,7 +241,7 @@ const route = useRoute();
 a {
   text-decoration: none;
 
-  color: unset;
+  color: #29b6f6;
 }
 
 body {

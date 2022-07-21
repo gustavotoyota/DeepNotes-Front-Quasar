@@ -48,7 +48,7 @@ export class PageCamera {
     });
   }
 
-  setup() {
+  setup(lockPos: boolean, lockZoom: boolean) {
     this.unwatchHandle = watch(
       [() => this.react.lockPos, () => this.react.lockZoom],
       debounce(async () => {
@@ -60,6 +60,9 @@ export class PageCamera {
     );
 
     this.fitToScreen();
+
+    this.react.lockPos = lockPos;
+    this.react.lockZoom = lockZoom;
   }
   destroy() {
     this.unwatchHandle();

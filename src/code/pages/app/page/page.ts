@@ -314,11 +314,6 @@ export class AppPage implements IPageRegion {
     this.react.roleId = response.data.roleId;
     this.react.userStatus = response.data.userStatus;
 
-    // Save camera data
-
-    this.camera.react.lockPos = response.data.camera.lockPos;
-    this.camera.react.lockZoom = response.data.camera.lockZoom;
-
     // Check if user is authorized
 
     if (
@@ -358,10 +353,10 @@ export class AppPage implements IPageRegion {
       );
     }
 
-    await this.finishSetup();
+    await this.finishSetup(response.data.camera);
   }
 
-  async finishSetup() {
+  async finishSetup(camera: { lockPos: boolean; lockZoom: boolean }) {
     this.react.loading = true;
 
     // Synchronize collaboration
@@ -400,7 +395,7 @@ export class AppPage implements IPageRegion {
     await watchUntilTrue(() => this.react.allEditorsLoaded);
     await nextTick();
 
-    this.camera.setup();
+    this.camera.setup(camera.lockPos, camera.lockZoom);
 
     this.react.loading = false;
   }

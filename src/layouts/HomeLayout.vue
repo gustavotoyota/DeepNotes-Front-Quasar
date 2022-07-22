@@ -1,5 +1,8 @@
 <template>
-  <q-layout view="hhh Lpr fff">
+  <q-layout
+    class="home-layout"
+    view="hhh Lpr fff"
+  >
     <q-header
       class="bg-grey-10"
       style="background-color: #181818 !important"
@@ -238,22 +241,30 @@ const route = useRoute();
 </script>
 
 <style>
-a {
-  text-decoration: none;
-
-  color: #29b6f6;
-}
-a:hover {
-  color: #4fc3f7 !important;
-}
-
 body {
   background-color: #181818 !important;
 }
+</style>
 
-.toolbar-btn {
-  font-size: 16px;
-  font-weight: normal;
-  text-transform: none;
+<style
+  scoped
+  lang="scss"
+>
+.home-layout {
+  :deep(a:not(.q-btn)) {
+    text-decoration: none;
+
+    color: #29b6f6;
+
+    &:hover {
+      color: #4fc3f7 !important;
+    }
+  }
+
+  :deep(.toolbar-btn) {
+    font-size: 16px;
+    font-weight: normal;
+    text-transform: none;
+  }
 }
 </style>

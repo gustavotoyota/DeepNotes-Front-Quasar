@@ -39,12 +39,7 @@
 
             <div style="text-align: center">
               Not registered yet?
-              <router-link
-                to="/register"
-                style="color: #29b6f6"
-              >
-                Sign up
-              </router-link>
+              <router-link to="/register"> Sign up </router-link>
             </div>
           </template>
 

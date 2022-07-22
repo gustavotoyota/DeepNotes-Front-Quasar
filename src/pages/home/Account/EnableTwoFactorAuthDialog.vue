@@ -259,6 +259,8 @@ async function verify() {
       authenticatorToken: authenticatorToken.value,
     });
 
+    internals.react.twoFactorAuthEnabled = true;
+
     visible.value = false;
 
     internals.showRecoveryCodeDialog(response.data.recoveryCode);

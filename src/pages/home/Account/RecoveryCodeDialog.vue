@@ -78,6 +78,14 @@
   </q-dialog>
 </template>
 
+<script lang="ts">
+declare module 'src/code/static/internals' {
+  export interface DeepNotesInternals {
+    showRecoveryCodeDialog: (recoveryCode: string) => void;
+  }
+}
+</script>
+
 <script
   setup
   lang="ts"

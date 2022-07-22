@@ -113,6 +113,12 @@
 </template>
 
 <script lang="ts">
+declare module 'src/code/static/internals' {
+  export interface DeepNotesInternals {
+    showUserSettingsDialog: () => any;
+  }
+}
+
 export interface IGroupData {
   groupId: string;
   ownerId: string;

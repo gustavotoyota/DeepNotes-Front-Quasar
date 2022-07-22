@@ -96,6 +96,7 @@
             <div style="text-align: center">
               Lost your phone?
               <a
+                style="pointer: cursor"
                 @click="
                   () => {
                     recoveryCode = '';

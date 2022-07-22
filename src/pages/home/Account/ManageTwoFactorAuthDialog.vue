@@ -136,7 +136,7 @@
           <SmartBtn
             label="Disable two-factor authentication"
             color="negative"
-            @click="disable()"
+            @click="disableTwoFactorAuth()"
           />
         </q-card-section>
 
@@ -245,7 +245,7 @@ async function showDialog(email: string) {
   });
 }
 
-async function disable() {
+async function disableTwoFactorAuth() {
   try {
     await internals.api.post<void>(
       '/api/users/account/security/two-factor-auth/disable',
@@ -253,6 +253,8 @@ async function disable() {
         passwordHash,
       }
     );
+
+    internals.react.twoFactorAuthEnabled = false;
 
     Notify.create({
       message: 'Two-factor authentication has been disabled.',

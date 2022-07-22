@@ -60,7 +60,7 @@
 
     <Gap style="height: 24px" />
 
-    <ManageTwoFactorAuthDialog v-if="authenticatorEnabled">
+    <ManageTwoFactorAuthDialog v-if="internals.react.twoFactorAuthEnabled">
       <template #default="{ showDialog }">
         <q-btn
           label="Manage two-factor authentication"
@@ -104,6 +104,14 @@
   <RecoveryCodeDialog />
 </template>
 
+<script lang="ts">
+declare module 'src/code/static/internals' {
+  export interface DeepNotesInternalsReact {
+    twoFactorAuthEnabled: boolean;
+  }
+}
+</script>
+
 <script
   setup
   lang="ts"
@@ -143,7 +151,7 @@ const oldPassword = ref('');
 const newPassword = ref('');
 const confirmNewPassword = ref('');
 
-const authenticatorEnabled = ref(false);
+internals.react.twoFactorAuthEnabled = false;
 
 onMounted(async () => {
   await app.ready;
@@ -154,7 +162,7 @@ onMounted(async () => {
   }>('/api/users/account/security/load');
 
   email.value = response.data.email;
-  authenticatorEnabled.value = response.data.authenticatorEnabled;
+  internals.react.twoFactorAuthEnabled = response.data.authenticatorEnabled;
 
   mounted.value = true;
 });

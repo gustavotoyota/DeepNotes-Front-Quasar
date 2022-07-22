@@ -242,8 +242,6 @@ a {
   text-decoration: none;
 
   color: #29b6f6;
-
-  cursor: pointer;
 }
 a:hover {
   color: #4fc3f7 !important;

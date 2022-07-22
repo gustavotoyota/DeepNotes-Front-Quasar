@@ -1,6 +1,12 @@
+import { reactive } from 'vue';
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface DeepNotesInternalsReact {}
+
 export interface DeepNotesInternals {
-  showRecoveryCodeDialog: (recoveryCode: string) => void;
-  showUserSettingsDialog: () => any;
+  react: DeepNotesInternalsReact;
 }
 
-export const internals: DeepNotesInternals = {} as any;
+export const internals: DeepNotesInternals = {
+  react: reactive({}),
+} as any;

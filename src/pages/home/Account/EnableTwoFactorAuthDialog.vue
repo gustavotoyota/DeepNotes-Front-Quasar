@@ -12,7 +12,7 @@
     >
       <q-form style="display: flex; flex-direction: column; height: 100%">
         <q-card-section style="padding: 12px">
-          <div class="text-h6">Two factor authentication</div>
+          <div class="text-h6">Two-factor authentication</div>
         </q-card-section>
 
         <q-separator />
@@ -243,6 +243,10 @@ async function showDialog(email: string) {
       });
 
       console.error(err);
+
+      visible.value = false;
+
+      void showDialog(email);
     }
   });
 }
@@ -260,7 +264,7 @@ async function verify() {
     internals.showRecoveryCodeDialog(response.data.recoveryCode);
 
     Notify.create({
-      message: 'Two factor authentication enabled successfully.',
+      message: 'Two-factor authentication enabled successfully.',
       type: 'positive',
     });
   } catch (err: any) {

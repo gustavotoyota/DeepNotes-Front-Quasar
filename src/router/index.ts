@@ -35,9 +35,7 @@ export default route(function (/* { store, ssrContext } */) {
   });
 
   Router.beforeEach((to) => {
-    if (globalThis.$pages != null) {
-      void $pages.setupPage(to.params.page_id as string);
-    }
+    void globalThis.$pages?.setupPage(to.params.page_id as string);
   });
 
   return Router;

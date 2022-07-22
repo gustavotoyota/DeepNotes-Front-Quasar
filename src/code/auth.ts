@@ -4,10 +4,7 @@ import { Cookies } from 'quasar';
 import { internals } from 'src/code/static/internals';
 import { useAuth } from 'src/stores/auth';
 
-import {
-  computeDerivedKeys,
-  reencryptSessionPrivateKey,
-} from './crypto/crypto';
+import { reencryptSessionPrivateKey } from './crypto/crypto';
 import { privateKey } from './crypto/private-key';
 
 export const apiBaseURL = process.env.DEV
@@ -143,38 +140,6 @@ function storeToken(
   const decodedToken = jwtDecode<{ exp: number; iat: number }>(token);
 
   localStorage.setItem(`${tokenName}-expiration`, `${decodedToken.exp * 1000}`);
-}
-
-export async function login(email: string, password: string) {
-  const auth = useAuth();
-
-  const derivedKeys = await computeDerivedKeys(email, password);
-
-  const response = await internals.api.post<{
-    accessToken: string;
-    refreshToken: string;
-
-    encryptedPrivateKey: string;
-
-    sessionKey: string;
-  }>('/auth/login', {
-    email: email,
-    passwordHash: sodium.to_base64(derivedKeys.passwordHash),
-  });
-
-  // Store tokens
-
-  storeTokens(response.data.accessToken, response.data.refreshToken);
-
-  // Process session private key
-
-  reencryptSessionPrivateKey(
-    sodium.from_base64(response.data.encryptedPrivateKey),
-    derivedKeys.masterKey,
-    sodium.from_base64(response.data.sessionKey)
-  );
-
-  auth.loggedIn = true;
 }
 
 export function logout() {

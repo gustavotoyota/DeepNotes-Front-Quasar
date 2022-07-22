@@ -10,7 +10,7 @@
       :style="{ width: maximized ? undefined : '400px' }"
     >
       <q-card-section style="padding: 12px">
-        <div class="text-h6">Two factor authentication</div>
+        <div class="text-h6">Two-factor authentication</div>
       </q-card-section>
 
       <q-separator />
@@ -134,7 +134,7 @@
           style="padding: 21px; display: flex; flex-direction: column"
         >
           <SmartBtn
-            label="Disable two factor authentication"
+            label="Disable two-factor authentication"
             color="negative"
             @click="disable()"
           />

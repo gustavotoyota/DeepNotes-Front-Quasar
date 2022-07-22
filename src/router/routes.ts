@@ -15,6 +15,9 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/login',
     component: () => import('src/layouts/HomeLayout.vue'),
+    meta: {
+      guest: true,
+    },
     children: [
       {
         path: '',
@@ -26,6 +29,9 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/register',
     component: () => import('src/layouts/HomeLayout.vue'),
+    meta: {
+      guest: true,
+    },
     children: [
       {
         path: '',
@@ -37,6 +43,9 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/finish-registration',
     component: () => import('src/layouts/HomeLayout.vue'),
+    meta: {
+      guest: true,
+    },
     children: [
       {
         path: '',
@@ -59,6 +68,9 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/account',
     component: () => import('src/layouts/HomeLayout.vue'),
+    meta: {
+      requiresAuth: true,
+    },
     children: [
       {
         path: '',
@@ -82,10 +94,16 @@ const routes: RouteRecordRaw[] = [
     path: '/pages',
     name: 'pages',
     component: () => import('pages/pages/Pages.vue'),
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: '/pages/:page_id',
     component: () => import('src/layouts/PagesLayout.vue'),
+    meta: {
+      requiresAuth: true,
+    },
     children: [
       {
         path: '',

@@ -1,5 +1,5 @@
 <template>
-  <slot :show-dialog="() => (visible = true)"></slot>
+  <slot :show-dialog="showDialog"></slot>
 
   <q-dialog v-model="visible">
     <q-card style="width: 300px">
@@ -68,7 +68,7 @@ import { internals } from 'src/code/static/internals';
 import { roles } from 'src/code/static/roles';
 import Gap from 'src/components/misc/Gap.vue';
 import SmartBtn from 'src/components/misc/SmartBtn.vue';
-import { inject, ref, watch } from 'vue';
+import { inject, ref } from 'vue';
 
 const visible = ref(false);
 
@@ -77,14 +77,12 @@ const message = ref('');
 
 const page = inject<AppPage>('page')!;
 
-watch(visible, async (value) => {
-  if (!value) {
-    return;
-  }
+function showDialog() {
+  visible.value = true;
 
   roleId.value = null;
   message.value = '';
-});
+}
 
 async function requestAccess(message: string) {
   if (roleId.value == null) {

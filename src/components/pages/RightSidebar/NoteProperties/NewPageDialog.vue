@@ -1,5 +1,5 @@
 <template>
-  <slot :show-dialog="() => (visible = true)"></slot>
+  <slot :show-dialog="showDialog"></slot>
 
   <q-dialog v-model="visible">
     <q-card>
@@ -130,7 +130,7 @@ import { bytesToBase64, encodeText } from 'src/code/static/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import SmartBtn from 'src/components/misc/SmartBtn.vue';
 import { useUI } from 'src/stores/pages/ui';
-import { computed, inject, Ref, ref, watch } from 'vue';
+import { computed, inject, Ref, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import Checkbox from '../../misc/Checkbox.vue';
@@ -156,10 +156,8 @@ const groupPassword = ref('');
 
 const horizontal = computed(() => ui.width >= BREAKPOINT_MD_MIN);
 
-watch(visible, async () => {
-  if (!visible.value) {
-    return;
-  }
+function showDialog() {
+  visible.value = true;
 
   pageTitle.value = '';
 
@@ -186,7 +184,7 @@ watch(visible, async () => {
 
     pageTitleElem.value?.focus();
   });
-});
+}
 
 async function createPage() {
   if (createGroup.value && groupName.value === '') {

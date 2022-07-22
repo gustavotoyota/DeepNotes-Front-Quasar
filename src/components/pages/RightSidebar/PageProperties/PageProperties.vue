@@ -39,7 +39,15 @@
 >
 import { AppPage } from 'src/code/pages/page/page';
 import { useUI } from 'src/stores/pages/ui';
-import { inject, Ref, ref, watch } from 'vue';
+import {
+  inject,
+  onBeforeUnmount,
+  onMounted,
+  Ref,
+  ref,
+  watch,
+  WatchStopHandle,
+} from 'vue';
 
 import GroupSettingsDialog from './GroupSettingsDialog/GroupSettingsDialog.vue';
 
@@ -50,18 +58,26 @@ const page = inject<Ref<AppPage>>('page')!;
 const pageTitle = ref('');
 const pageTitleElem = ref();
 
-watch(
-  [pageTitleElem, () => $pages.react.pageTitles[page.value.id]],
-  () => {
-    if (
-      document.activeElement ===
-      pageTitleElem.value?.$el.querySelector(':scope input')
-    ) {
-      return;
-    }
+let unwatch: WatchStopHandle;
 
-    pageTitle.value = $pages.react.pageTitles[page.value.id];
-  },
-  { immediate: true }
-);
+onMounted(() => {
+  unwatch = watch(
+    [pageTitleElem, () => $pages.react.pageTitles[page.value.id]],
+    () => {
+      if (
+        document.activeElement ===
+        pageTitleElem.value?.$el.querySelector(':scope input')
+      ) {
+        return;
+      }
+
+      pageTitle.value = $pages.react.pageTitles[page.value.id];
+    },
+    { immediate: true }
+  );
+});
+
+onBeforeUnmount(() => {
+  unwatch?.();
+});
 </script>

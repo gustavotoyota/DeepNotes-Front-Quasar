@@ -1,5 +1,5 @@
 <template>
-  <slot :show-dialog="() => (visible = true)"></slot>
+  <slot :show-dialog="showDialog"></slot>
 
   <q-dialog
     v-model="visible"
@@ -163,7 +163,7 @@ import { BREAKPOINT_MD_MIN } from 'src/code/static/responsive';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import TabBtn from 'src/components/pages/misc/TabBtn.vue';
 import { useUI } from 'src/stores/pages/ui';
-import { computed, inject, provide, Ref, ref, watch } from 'vue';
+import { computed, inject, provide, Ref, ref } from 'vue';
 
 import GeneralTab from './GeneralTab.vue';
 import InvitationsTab from './InvitationsTab/InvitationsTab.vue';
@@ -181,10 +181,8 @@ provide('settings', settings);
 
 const page = inject<Ref<AppPage>>('page')!;
 
-watch(visible, async (value) => {
-  if (!value) {
-    return;
-  }
+async function showDialog() {
+  visible.value = true;
 
   settings.value = initialSettings();
 
@@ -211,5 +209,5 @@ watch(visible, async (value) => {
   settings.value.members.list = response.data.members;
 
   settings.value.loaded = true;
-});
+}
 </script>

@@ -400,6 +400,7 @@ export class AppPage implements IPageRegion {
     this.unwatchUserDisplayName?.();
 
     this.camera.destroy();
+    this.pinching.destroy();
 
     this.collab.websocketProvider?.disconnect();
   }

@@ -1,6 +1,13 @@
 import { listenPointerEvents } from 'src/code/static/dom';
 import { Vec2 } from 'src/code/static/vec2';
-import { computed, ComputedRef, reactive, UnwrapNestedRefs, watch } from 'vue';
+import {
+  computed,
+  ComputedRef,
+  reactive,
+  UnwrapNestedRefs,
+  watch,
+  WatchStopHandle,
+} from 'vue';
 
 import { AppPage } from '../page';
 
@@ -16,6 +23,8 @@ export class PagePinching {
   displayCenterPos!: Vec2;
   displayDistance!: number;
 
+  unwatchActive?: WatchStopHandle;
+
   constructor(readonly page: AppPage) {
     this.react = reactive({
       pointers: {},
@@ -25,7 +34,7 @@ export class PagePinching {
       }),
     });
 
-    watch(
+    this.unwatchActive = watch(
       () => this.react.active,
       () => {
         if (this.react.active) {
@@ -45,6 +54,10 @@ export class PagePinching {
         }
       }
     );
+  }
+
+  destroy() {
+    this.unwatchActive?.();
   }
 
   private _getCenterAndDistance() {

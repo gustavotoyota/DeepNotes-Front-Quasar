@@ -1,5 +1,5 @@
 <template>
-  <slot :show-dialog="() => (visible = true)"></slot>
+  <slot :show-dialog="showDialog"></slot>
 
   <q-dialog v-model="visible">
     <q-card style="width: 300px">
@@ -67,7 +67,7 @@ import { internals } from 'src/code/static/internals';
 import { roles } from 'src/code/static/roles';
 import Gap from 'src/components/misc/Gap.vue';
 import SmartBtn from 'src/components/misc/SmartBtn.vue';
-import { inject, Ref, ref, watch } from 'vue';
+import { inject, Ref, ref } from 'vue';
 import { z } from 'zod';
 
 import { initialSettings } from '../GroupSettingsDialog.vue';
@@ -81,14 +81,12 @@ const roleId = ref<string | null>(null);
 
 const settings = inject<Ref<ReturnType<typeof initialSettings>>>('settings')!;
 
-watch(visible, async (value) => {
-  if (!value) {
-    return;
-  }
+function showDialog() {
+  visible.value = true;
 
   identity.value = '';
   roleId.value = null;
-});
+}
 
 async function inviteUser() {
   if (

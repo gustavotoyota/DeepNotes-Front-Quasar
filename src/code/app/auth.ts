@@ -69,15 +69,14 @@ export async function tryRefreshTokens(
 
     const response = await internals.api.post<{
       accessToken: string;
-      refreshToken: string;
 
       oldSessionKey: string;
       newSessionKey: string;
     }>('/auth/refresh');
 
-    // Store tokens
+    // Store token data
 
-    storeTokens(response.data.accessToken, response.data.refreshToken);
+    storeTokenData(response.data.accessToken);
 
     // Reencrypt private key
 
@@ -96,28 +95,28 @@ export async function tryRefreshTokens(
   enforceRouteRules(auth, route, router);
 }
 
-export function storeTokens(accessToken: string, refreshToken: string): void {
-  storeToken('access-token', accessToken);
-  storeToken('refresh-token', refreshToken);
-}
-function storeToken(
-  tokenName: string,
-  token: string,
+export function storeTokenData(
+  accessToken: string,
   options?: { path?: string }
 ): void {
   options = options ?? {};
   options.path = options.path ?? '/';
 
-  Cookies.set(tokenName, token, {
+  Cookies.set('access-token', accessToken, {
     path: options.path,
     secure: !!process.env.PROD,
     sameSite: 'Strict',
     domain: process.env.PROD ? 'deepnotes.app' : '192.168.1.4',
   });
 
-  const decodedToken = jwtDecode<{ exp: number; iat: number }>(token);
+  const decodedToken = jwtDecode<{ exp: number; iat: number }>(accessToken);
 
-  localStorage.setItem(`${tokenName}-expiration`, `${decodedToken.exp * 1000}`);
+  localStorage.setItem('access-token-expiration', `${decodedToken.exp * 1000}`);
+
+  localStorage.setItem(
+    'refresh-token-expiration',
+    (Date.now() + 7 * 24 * 60 * 60 * 1000).toString()
+  );
 }
 
 export function logout() {

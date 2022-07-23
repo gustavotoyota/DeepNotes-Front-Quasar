@@ -150,7 +150,7 @@
 >
 import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
-import { storeTokens } from 'src/code/app/auth';
+import { storeTokenData } from 'src/code/app/auth';
 import {
   computeDerivedKeys,
   reencryptSessionPrivateKey,
@@ -205,7 +205,6 @@ async function onSubmit() {
       authenticator: boolean;
 
       accessToken: string;
-      refreshToken: string;
 
       encryptedPrivateKey: string;
 
@@ -231,9 +230,14 @@ async function onSubmit() {
       return;
     }
 
-    // Store tokens
+    // Store token data
 
-    storeTokens(response.data.accessToken, response.data.refreshToken);
+    storeTokenData(response.data.accessToken);
+
+    localStorage.setItem(
+      'refresh-token-expiration',
+      (Date.now() + 7 * 24 * 60 * 60 * 1000).toString()
+    );
 
     // Process session private key
 

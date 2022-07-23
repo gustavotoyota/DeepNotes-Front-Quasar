@@ -126,21 +126,6 @@ function storeToken(
   localStorage.setItem(`${tokenName}-expiration`, `${decodedToken.exp * 1000}`);
 }
 
-export function clearSessionData() {
-  const auth = useAuth();
-
-  // Delete token data
-
-  deleteTokens();
-
-  // Clear private key
-
-  localStorage.removeItem('encrypted-private-key');
-  privateKey.clear();
-
-  auth.loggedIn = false;
-}
-
 export function logout() {
   const auth = useAuth();
 
@@ -158,11 +143,35 @@ export function logout() {
 
   location.href = '/';
 }
-export function deleteTokens() {
-  deleteToken('access-token');
-  deleteToken('refresh-token');
+export function clearSessionData() {
+  const auth = useAuth();
+
+  // Delete token data
+
+  deleteTokens();
+
+  // Clear private key
+
+  localStorage.removeItem('encrypted-private-key');
+  privateKey.clear();
+
+  auth.loggedIn = false;
 }
-export function deleteToken(tokenName: string) {
-  Cookies.remove(tokenName);
+export function deleteTokens() {
+  deleteToken('access-token', {
+    domain: process.env.PROD ? 'deepnotes.app' : '192.168.1.4',
+    path: '/',
+  });
+  deleteToken('refresh-token', {
+    domain: process.env.PROD ? 'deepnotes.app' : '192.168.1.4',
+    path: '/auth/refresh',
+  });
+}
+export function deleteToken(
+  tokenName: string,
+  options?: { domain?: string; path?: string }
+) {
+  Cookies.remove(tokenName, options);
+
   localStorage.removeItem(`${tokenName}-expiration`);
 }

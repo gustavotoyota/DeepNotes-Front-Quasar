@@ -12,6 +12,12 @@ declare module 'src/code/app/internals' {
   }
 }
 
+declare module 'pinia' {
+  interface PiniaCustomProperties {
+    api: AxiosInstance;
+  }
+}
+
 // Be careful when using SSR for cross-request state pollution
 // due to creating a Singleton instance here;
 // If any client changes this (global) instance, it might be a
@@ -19,11 +25,13 @@ declare module 'src/code/app/internals' {
 // "export default () => {}" function below (which runs individually
 // for each client)
 
-export default boot(() => {
+export default boot(({ store }) => {
   const api = axios.create({
     withCredentials: true,
     baseURL: apiBaseURL,
   });
+
+  store.use(() => ({ api }));
 
   if (process.env.CLIENT) {
     internals.api = api;

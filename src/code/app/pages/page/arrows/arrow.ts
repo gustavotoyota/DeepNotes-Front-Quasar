@@ -1,9 +1,9 @@
 import { ChainedCommands, Editor, isMarkActive } from '@tiptap/vue-3';
 import Color from 'color';
+import { lightenByRatio } from 'src/code/lib/color';
 import { getLineRectIntersection } from 'src/code/lib/geometry';
 import { Line } from 'src/code/lib/line';
 import { MarkName } from 'src/code/lib/tiptap';
-import { lightenByRatio } from 'src/code/lib/utils';
 import { Vec2 } from 'src/code/lib/vec2';
 import {
   computed,

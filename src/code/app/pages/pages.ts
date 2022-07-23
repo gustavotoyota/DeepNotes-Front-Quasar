@@ -11,7 +11,8 @@ import {
 } from 'src/code/app/crypto/symmetric-key';
 import { internals } from 'src/code/app/internals';
 import { createComputedDict } from 'src/code/lib/computed-dict';
-import { decodeText, encodeText, Resolvable } from 'src/code/lib/utils';
+import { Resolvable } from 'src/code/lib/resolvable';
+import { decodeText, encodeText } from 'src/code/lib/text';
 import { Vec2 } from 'src/code/lib/vec2';
 import {
   computed,

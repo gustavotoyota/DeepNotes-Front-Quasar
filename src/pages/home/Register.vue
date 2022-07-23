@@ -77,7 +77,7 @@ import {
 import { wrapSymmetricKey } from 'src/code/app/crypto/symmetric-key';
 import { internals } from 'src/code/app/internals';
 import { ISerialObjectInput } from 'src/code/app/pages/serialization';
-import { encodeText } from 'src/code/lib/utils';
+import { encodeText } from 'src/code/lib/text';
 import Gap from 'src/components/misc/Gap.vue';
 import PasswordField from 'src/components/misc/PasswordField.vue';
 import ResponsiveContainer from 'src/components/misc/ResponsiveContainer.vue';

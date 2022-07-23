@@ -1,14 +1,11 @@
 import { ChainedCommands, Editor, isMarkActive } from '@tiptap/vue-3';
 import Color from 'color';
+import { sizeToCSS } from 'src/code/app/utils';
+import { darkenByRatio, lightenByRatio } from 'src/code/lib/color';
 import { hasVertScrollbar } from 'src/code/lib/dom';
 import { Rect } from 'src/code/lib/rect';
 import { MarkName } from 'src/code/lib/tiptap';
-import {
-  darkenByRatio,
-  isNumeric,
-  lightenByRatio,
-  sizeToCSS,
-} from 'src/code/lib/utils';
+import { isNumeric } from 'src/code/lib/utils';
 import { IVec2, Vec2 } from 'src/code/lib/vec2';
 import {
   computed,

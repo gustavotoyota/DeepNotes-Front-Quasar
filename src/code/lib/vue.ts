@@ -1,4 +1,4 @@
-import { Resolvable } from 'src/code/lib/utils';
+import { Resolvable } from 'src/code/lib/resolvable';
 import {
   markRaw,
   ref,

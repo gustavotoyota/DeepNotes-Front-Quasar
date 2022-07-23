@@ -690,7 +690,7 @@ import { internals } from 'src/code/app/internals';
 import { PageNote } from 'src/code/app/pages/page/notes/note';
 import { AppPage } from 'src/code/app/pages/page/page';
 import { DICT_PAGE_GROUP_ID } from 'src/code/app/pages/pages';
-import { encodeText } from 'src/code/lib/utils';
+import { encodeText } from 'src/code/lib/text';
 import Checkbox from 'src/components/misc/Checkbox.vue';
 import Combobox from 'src/components/misc/Combobox.vue';
 import Gap from 'src/components/misc/Gap.vue';

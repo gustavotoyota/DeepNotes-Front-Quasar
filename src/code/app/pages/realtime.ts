@@ -5,7 +5,7 @@ import { Notify } from 'quasar';
 import { saveGroupSymmetricKey } from 'src/code/app/crypto/crypto';
 import { rolesMap } from 'src/code/app/roles';
 import { ClientSocket } from 'src/code/lib/client-socket';
-import { Resolvable } from 'src/code/lib/utils';
+import { Resolvable } from 'src/code/lib/resolvable';
 import { nextTick, reactive } from 'vue';
 
 import { DICT_GROUP_SYMMETRIC_KEY } from './pages';

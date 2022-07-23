@@ -1,20 +1,27 @@
 <template>
   <template v-if="mounted">
-    <q-input
-      label="Display name"
-      v-model="data.displayName"
-      style="max-width: 300px"
-      filled
-    />
+    <h5 style="margin-block-start: 0; margin-block-end: 0">E-mail</h5>
+
+    <Gap style="height: 8px" />
+
+    <q-separator />
 
     <Gap style="height: 24px" />
 
-    <q-btn
-      label="Save"
-      color="primary"
-      style="max-width: 300px; height: 40px"
-      @click="save()"
-    />
+    <div style="display: flex; flex-direction: column; max-width: 300px">
+      <q-input
+        filled
+        dense
+        v-model="email"
+      />
+
+      <Gap style="height: 16px" />
+
+      <SmartBtn
+        label="Change e-mail"
+        color="primary"
+      />
+    </div>
   </template>
 
   <LoadingOverlay v-else />
@@ -24,12 +31,13 @@
   setup
   lang="ts"
 >
-import { Notify, useMeta } from 'quasar';
+import { useMeta } from 'quasar';
 import { internals } from 'src/code/static/internals';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
+import SmartBtn from 'src/components/misc/SmartBtn.vue';
 import { useApp } from 'src/stores/app';
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 const app = useApp();
 
@@ -37,39 +45,19 @@ useMeta(() => ({
   title: 'General - Account - DeepNotes',
 }));
 
-const data = reactive({
-  displayName: '',
-});
+const email = ref('');
 
 const mounted = ref(false);
 
 onMounted(async () => {
   await app.ready;
 
-  const response = await internals.api.post('/api/users/account/general/load');
+  const response = await internals.api.post<{
+    email: string;
+  }>('/api/users/account/general/load');
 
-  data.displayName = response.data.displayName;
+  email.value = response.data.email;
 
   mounted.value = true;
 });
-
-async function save() {
-  try {
-    await internals.api.post('/api/users/account/general/save', {
-      displayName: data.displayName,
-    });
-
-    Notify.create({
-      message: 'User settings saved.',
-      type: 'positive',
-    });
-  } catch (err: any) {
-    Notify.create({
-      message: err.response?.data.message ?? 'An error has occurred.',
-      type: 'negative',
-    });
-
-    console.error(err);
-  }
-}
 </script>

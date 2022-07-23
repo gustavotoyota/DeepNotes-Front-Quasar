@@ -6,7 +6,7 @@
           label="E-mail"
           filled
           label-color="grey-5"
-          v-model="data.email"
+          v-model="email"
         />
 
         <Gap style="height: 12px" />
@@ -15,21 +15,21 @@
           label="Display name"
           filled
           label-color="grey-5"
-          v-model="data.displayName"
+          v-model="displayName"
         />
 
         <Gap style="height: 12px" />
 
         <PasswordField
           label="Password"
-          v-model="data.password"
+          v-model="password"
         />
 
         <Gap style="height: 12px" />
 
         <PasswordField
           label="Repeat password"
-          v-model="data.repeatPassword"
+          v-model="repeatPassword"
         />
 
         <Gap style="height: 20px" />
@@ -80,22 +80,20 @@ import ResponsiveContainer from 'src/components/misc/ResponsiveContainer.vue';
 import SmartBtn from 'src/components/misc/SmartBtn.vue';
 import PasswordField from 'src/components/pages/misc/PasswordField.vue';
 import { useAuth } from 'src/stores/auth';
-import { reactive } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-const data = reactive({
-  email: '',
-  displayName: '',
-  password: '',
-  repeatPassword: '',
-});
+const email = ref('');
+const displayName = ref('');
+const password = ref('');
+const repeatPassword = ref('');
 
 async function register() {
   // Password validation
 
-  if (data.password !== data.repeatPassword) {
+  if (password.value !== repeatPassword.value) {
     Notify.create({
       message: 'Passwords do not match.',
       type: 'negative',
@@ -105,7 +103,7 @@ async function register() {
   }
 
   try {
-    const derivedKeys = await computeDerivedKeys(data.email, data.password);
+    const derivedKeys = await computeDerivedKeys(email.value, password.value);
     const randomKeys = await generateRandomKeys(derivedKeys.masterKey);
 
     const userSymmetricKey = wrapSymmetricKey(randomKeys.userSymmetricKey);
@@ -130,9 +128,9 @@ async function register() {
     const groupSymmetricKey = wrapSymmetricKey(randomKeys.groupSymmetricKey);
 
     await internals.api.post('/auth/register', {
-      email: data.email,
+      email: email,
 
-      displayName: data.displayName,
+      displayName: displayName,
 
       passwordHash: sodium.to_base64(derivedKeys.passwordHash),
 
@@ -149,7 +147,7 @@ async function register() {
       encryptedDefaultArrow: sodium.to_base64(encryptedDefaultArrow),
 
       encryptedGroupName: sodium.to_base64(
-        groupSymmetricKey.encrypt(encodeText(`${data.displayName}'s Group`))
+        groupSymmetricKey.encrypt(encodeText(`${displayName.value}'s Group`))
       ),
 
       encryptedMainPageTitle: sodium.to_base64(
@@ -160,12 +158,12 @@ async function register() {
     await router.push({
       name: 'finish-registration',
       params: {
-        email: data.email,
+        email: email.value,
       },
     });
   } catch (err: any) {
     Notify.create({
-      message: err.response?.data.message ?? 'An error has occurred.',
+      message: err.response?.message ?? 'An error has occurred.',
       type: 'negative',
     });
 

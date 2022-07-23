@@ -178,10 +178,9 @@ import { BREAKPOINT_MD_MIN } from 'src/code/static/responsive';
 import { bytesToBase64, sleep } from 'src/code/static/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
+import SmartBtn from 'src/components/misc/SmartBtn.vue';
 import { useUI } from 'src/stores/pages/ui';
 import { computed, ref } from 'vue';
-
-import SmartBtn from '../../../components/misc/SmartBtn.vue';
 
 const ui = useUI();
 

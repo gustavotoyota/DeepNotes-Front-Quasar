@@ -1,4 +1,3 @@
-import jwtDecode from 'jwt-decode';
 import sodium from 'libsodium-wrappers';
 import { Cookies } from 'quasar';
 import { internals } from 'src/code/app/internals';
@@ -68,15 +67,13 @@ export async function tryRefreshTokens(
     );
 
     const response = await internals.api.post<{
-      accessToken: string;
-
       oldSessionKey: string;
       newSessionKey: string;
-    }>('/auth/refresh');
+    }>('/auth/refresh', {});
 
     // Store token data
 
-    storeTokenData(response.data.accessToken);
+    storeTokenData();
 
     // Reencrypt private key
 
@@ -95,24 +92,11 @@ export async function tryRefreshTokens(
   enforceRouteRules(auth, route, router);
 }
 
-export function storeTokenData(
-  accessToken: string,
-  options?: { path?: string }
-): void {
-  options = options ?? {};
-  options.path = options.path ?? '/';
-
-  Cookies.set('access-token', accessToken, {
-    path: options.path,
-    secure: !!process.env.PROD,
-    sameSite: 'Strict',
-    domain: process.env.PROD ? 'deepnotes.app' : '192.168.1.4',
-  });
-
-  const decodedToken = jwtDecode<{ exp: number; iat: number }>(accessToken);
-
-  localStorage.setItem('access-token-expiration', `${decodedToken.exp * 1000}`);
-
+export function storeTokenData(): void {
+  localStorage.setItem(
+    'access-token-expiration',
+    (Date.now() + 30 * 60 * 1000).toString()
+  );
   localStorage.setItem(
     'refresh-token-expiration',
     (Date.now() + 7 * 24 * 60 * 60 * 1000).toString()

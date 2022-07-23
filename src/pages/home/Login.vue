@@ -163,9 +163,6 @@ import ResponsiveContainer from 'src/components/misc/ResponsiveContainer.vue';
 import SmartBtn from 'src/components/misc/SmartBtn.vue';
 import { useAuth } from 'src/stores/auth';
 import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
-
-const router = useRouter();
 
 const authType = ref('standard');
 
@@ -204,8 +201,6 @@ async function onSubmit() {
     const response = await internals.api.post<{
       authenticator: boolean;
 
-      accessToken: string;
-
       encryptedPrivateKey: string;
 
       sessionKey: string;
@@ -232,12 +227,7 @@ async function onSubmit() {
 
     // Store token data
 
-    storeTokenData(response.data.accessToken);
-
-    localStorage.setItem(
-      'refresh-token-expiration',
-      (Date.now() + 7 * 24 * 60 * 60 * 1000).toString()
-    );
+    storeTokenData();
 
     // Process session private key
 
@@ -254,7 +244,7 @@ async function onSubmit() {
       type: 'positive',
     });
 
-    await router.push('/pages');
+    //await router.push('/pages');
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',

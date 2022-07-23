@@ -54,7 +54,7 @@ import MainToolbar from 'src/components/pages/MainToolbar/MainToolbar.vue';
 import RightSidebar from 'src/components/pages/RightSidebar/RightSidebar.vue';
 import UserSettingsDialog from 'src/components/pages/UserSettingsDialog/UserSettingsDialog.vue';
 import { useApp } from 'src/stores/app';
-import { useUI } from 'src/stores/pages/ui';
+import { useUI } from 'src/stores/ui';
 import { computed } from 'vue';
 import {
   ComputedRef,

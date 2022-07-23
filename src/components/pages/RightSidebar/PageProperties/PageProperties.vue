@@ -38,7 +38,7 @@
   lang="ts"
 >
 import { AppPage } from 'src/code/app/pages/page/page';
-import { useUI } from 'src/stores/pages/ui';
+import { useUI } from 'src/stores/ui';
 import {
   inject,
   onBeforeUnmount,

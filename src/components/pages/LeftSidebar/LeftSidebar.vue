@@ -154,7 +154,7 @@
 import { Dialog, Notify } from 'quasar';
 import { ILayerCollab } from 'src/code/app/pages/page/layers/layer';
 import MiniSidebarPage from 'src/components/misc/MiniSidebarPage.vue';
-import { useUI } from 'src/stores/pages/ui';
+import { useUI } from 'src/stores/ui';
 import { v4 } from 'uuid';
 import { computed } from 'vue';
 

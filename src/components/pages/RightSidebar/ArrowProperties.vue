@@ -145,7 +145,7 @@ import { encodeText } from 'src/code/lib/text';
 import Checkbox from 'src/components/misc/Checkbox.vue';
 import Gap from 'src/components/misc/Gap.vue';
 import MiniSidebarBtn from 'src/components/misc/MiniSidebarBtn.vue';
-import { useUI } from 'src/stores/pages/ui';
+import { useUI } from 'src/stores/ui';
 import { computed } from 'vue';
 import { inject, Ref } from 'vue';
 import { yXmlFragmentToProsemirrorJSON } from 'y-prosemirror';

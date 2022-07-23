@@ -162,7 +162,7 @@ import { REALTIME_ENCRYPTED_GROUP_NAME } from 'src/code/app/pages/realtime';
 import { BREAKPOINT_MD_MIN } from 'src/code/lib/responsive';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import TabBtn from 'src/components/misc/TabBtn.vue';
-import { useUI } from 'src/stores/pages/ui';
+import { useUI } from 'src/stores/ui';
 import { computed, inject, provide, Ref, ref } from 'vue';
 
 import GeneralTab from './GeneralTab.vue';

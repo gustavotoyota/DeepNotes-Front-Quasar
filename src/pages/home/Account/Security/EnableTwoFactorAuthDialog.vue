@@ -180,7 +180,7 @@ import { sleep } from 'src/code/lib/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import SmartBtn from 'src/components/misc/SmartBtn.vue';
-import { useUI } from 'src/stores/pages/ui';
+import { useUI } from 'src/stores/ui';
 import { computed, ref } from 'vue';
 
 const ui = useUI();

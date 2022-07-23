@@ -35,7 +35,7 @@
   lang="ts"
 >
 import { DICT_PAGE_GROUP_ID } from 'src/code/app/pages/pages';
-import { useUI } from 'src/stores/pages/ui';
+import { useUI } from 'src/stores/ui';
 import { computed } from 'vue';
 
 const props = defineProps<{

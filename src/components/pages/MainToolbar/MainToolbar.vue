@@ -783,7 +783,7 @@ import { logout } from 'src/code/app/auth';
 import { BREAKPOINT_XL_MIN } from 'src/code/lib/responsive';
 import Gap from 'src/components/misc/Gap.vue';
 import ToolbarBtn from 'src/components/misc/ToolbarBtn.vue';
-import { useUI } from 'src/stores/pages/ui';
+import { useUI } from 'src/stores/ui';
 import { computed } from 'vue';
 
 import InsertImageDialog from './InsertImageDialog.vue';

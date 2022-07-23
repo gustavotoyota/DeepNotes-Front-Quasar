@@ -16,7 +16,7 @@ import { useRoute, useRouter } from 'vue-router';
 
 import { tryRefreshTokens } from './code/app/auth';
 import { useApp } from './stores/app';
-import { useUI } from './stores/pages/ui';
+import { useUI } from './stores/ui';
 
 const app = useApp();
 

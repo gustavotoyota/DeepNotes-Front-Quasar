@@ -131,7 +131,7 @@ import { encodeText } from 'src/code/lib/text';
 import Checkbox from 'src/components/misc/Checkbox.vue';
 import Gap from 'src/components/misc/Gap.vue';
 import SmartBtn from 'src/components/misc/SmartBtn.vue';
-import { useUI } from 'src/stores/pages/ui';
+import { useUI } from 'src/stores/ui';
 import { computed, inject, Ref, ref } from 'vue';
 import { useRouter } from 'vue-router';
 

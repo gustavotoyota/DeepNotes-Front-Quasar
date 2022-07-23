@@ -27,7 +27,7 @@
   lang="ts"
 >
 import { upperFirst } from 'lodash';
-import { useUI } from 'src/stores/pages/ui';
+import { useUI } from 'src/stores/ui';
 
 const props = defineProps<{
   side: 'left' | 'right';

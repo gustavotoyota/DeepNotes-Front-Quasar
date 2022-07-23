@@ -1,4 +1,6 @@
 import { route } from 'quasar/wrappers';
+import { getRedirect } from 'src/code/app/routing';
+import { useAuth } from 'src/stores/auth';
 import {
   createMemoryHistory,
   createRouter,
@@ -34,7 +36,23 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
 
-  Router.beforeEach((to) => {
+  let first = true;
+
+  Router.beforeEach(async (to) => {
+    if (process.env.SERVER || first) {
+      return;
+    }
+
+    first = false;
+
+    const auth = useAuth();
+
+    const redirect = getRedirect(to, auth);
+
+    if (redirect != null) {
+      return redirect;
+    }
+
     void globalThis.$pages?.setupPage(to.params.page_id as string);
   });
 

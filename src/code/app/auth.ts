@@ -2,7 +2,9 @@ import jwtDecode from 'jwt-decode';
 import sodium from 'libsodium-wrappers';
 import { Cookies } from 'quasar';
 import { internals } from 'src/code/app/internals';
-import { useAuth } from 'src/stores/auth';
+import { enforceRouteRules } from 'src/code/app/routing';
+import { Auth, useAuth } from 'src/stores/auth';
+import { RouteLocationNormalizedLoaded, Router } from 'vue-router';
 
 import { reencryptSessionPrivateKey } from './crypto/crypto';
 import { privateKey } from './crypto/private-key';
@@ -48,16 +50,18 @@ export function areTokensExpiring(): boolean {
   );
 }
 
-export async function tryRefreshTokens(): Promise<void> {
-  const auth = useAuth();
-
+export async function tryRefreshTokens(
+  auth: Auth,
+  route: RouteLocationNormalizedLoaded,
+  router: Router
+): Promise<void> {
   try {
     if (
       !isTokenValid('refresh-token') ||
       localStorage.getItem('encrypted-private-key') == null
     ) {
-      logout();
-      enforceRouteRules();
+      clearSessionData();
+      enforceRouteRules(auth, route, router);
       return;
     }
 
@@ -90,32 +94,12 @@ export async function tryRefreshTokens(): Promise<void> {
     );
 
     auth.loggedIn = true;
-
-    enforceRouteRules();
   } catch (err) {
     console.error(err);
-    logout();
+    clearSessionData();
   }
-}
 
-export function enforceRouteRules() {
-  const auth = useAuth();
-
-  if (auth.loggedIn) {
-    if (
-      location.pathname.startsWith('/login') ||
-      location.pathname.startsWith('/register')
-    ) {
-      location.href = '/';
-    }
-  } else {
-    if (
-      location.pathname.startsWith('/pages') ||
-      location.pathname.startsWith('/account')
-    ) {
-      location.href = '/';
-    }
-  }
+  enforceRouteRules(auth, route, router);
 }
 
 export function storeTokens(accessToken: string, refreshToken: string): void {
@@ -142,6 +126,21 @@ function storeToken(
   localStorage.setItem(`${tokenName}-expiration`, `${decodedToken.exp * 1000}`);
 }
 
+export function clearSessionData() {
+  const auth = useAuth();
+
+  // Delete token data
+
+  deleteTokens();
+
+  // Clear private key
+
+  localStorage.removeItem('encrypted-private-key');
+  privateKey.clear();
+
+  auth.loggedIn = false;
+}
+
 export function logout() {
   const auth = useAuth();
 
@@ -155,18 +154,9 @@ export function logout() {
     }
   }
 
-  // Delete token data
+  clearSessionData();
 
-  deleteTokens();
-
-  // Clear private key
-
-  localStorage.removeItem('encrypted-private-key');
-  privateKey.clear();
-
-  auth.loggedIn = false;
-
-  enforceRouteRules();
+  location.href = '/';
 }
 export function deleteTokens() {
   deleteToken('access-token');

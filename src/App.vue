@@ -10,7 +10,9 @@
 >
 import { useMeta } from 'quasar';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
+import { useAuth } from 'src/stores/auth';
 import { onBeforeUnmount, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 import { tryRefreshTokens } from './code/app/auth';
 import { useApp } from './stores/app';
@@ -20,13 +22,17 @@ const app = useApp();
 
 const ui = useUI();
 
+const auth = useAuth();
+const route = useRoute();
+const router = useRouter();
+
 useMeta(() => ({
   title: 'DeepNotes',
 }));
 
 onMounted(async () => {
   await (async function tokenRefreshLoop() {
-    await tryRefreshTokens();
+    await tryRefreshTokens(auth, route, router);
 
     setTimeout(tokenRefreshLoop, 10000);
   })();

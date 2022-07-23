@@ -14,8 +14,12 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 onMounted(async () => {
-  const response = await internals.api.post('/api/users/starting-page-id');
+  try {
+    const response = await internals.api.post('/api/users/starting-page-id');
 
-  await router.replace({ path: `/pages/${response.data.startingPageId}` });
+    await router.replace({ path: `/pages/${response.data.startingPageId}` });
+  } catch (err) {
+    console.error(err);
+  }
 });
 </script>

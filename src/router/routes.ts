@@ -16,7 +16,7 @@ const routes: RouteRecordRaw[] = [
     path: '/login',
     component: () => import('src/layouts/HomeLayout.vue'),
     meta: {
-      guest: true,
+      requiresGuest: true,
     },
     children: [
       {
@@ -30,7 +30,7 @@ const routes: RouteRecordRaw[] = [
     path: '/register',
     component: () => import('src/layouts/HomeLayout.vue'),
     meta: {
-      guest: true,
+      requiresGuest: true,
     },
     children: [
       {
@@ -44,7 +44,7 @@ const routes: RouteRecordRaw[] = [
     path: '/finish-registration',
     component: () => import('src/layouts/HomeLayout.vue'),
     meta: {
-      guest: true,
+      requiresGuest: true,
     },
     children: [
       {

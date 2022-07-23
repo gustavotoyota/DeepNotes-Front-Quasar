@@ -10,3 +10,5 @@ export const useAuth = defineStore('auth', () => {
     ...toRefs(state),
   };
 });
+
+export type Auth = ReturnType<typeof useAuth>;

@@ -163,6 +163,9 @@ import ResponsiveContainer from 'src/components/misc/ResponsiveContainer.vue';
 import SmartBtn from 'src/components/misc/SmartBtn.vue';
 import { useAuth } from 'src/stores/auth';
 import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const authType = ref('standard');
 
@@ -244,7 +247,7 @@ async function onSubmit() {
       type: 'positive',
     });
 
-    //await router.push('/pages');
+    await router.push('/pages');
   } catch (err: any) {
     Notify.create({
       message: err.response?.data.message ?? 'An error has occurred.',

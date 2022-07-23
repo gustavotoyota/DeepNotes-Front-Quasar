@@ -81,8 +81,8 @@
   lang="ts"
 >
 import { Notify } from 'quasar';
-import { internals } from 'src/code/static/internals';
-import { rolesMap } from 'src/code/static/roles';
+import { internals } from 'src/code/app/internals';
+import { rolesMap } from 'src/code/app/roles';
 import Gap from 'src/components/misc/Gap.vue';
 import { computed, inject, Ref } from 'vue';
 

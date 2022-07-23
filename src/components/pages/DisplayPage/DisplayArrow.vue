@@ -62,8 +62,8 @@
   setup
   lang="ts"
 >
-import { PageArrow } from 'src/code/pages/page/arrows/arrow';
-import { AppPage } from 'src/code/pages/page/page';
+import { PageArrow } from 'src/code/app/pages/page/arrows/arrow';
+import { AppPage } from 'src/code/app/pages/page/page';
 import { inject, watchEffect } from 'vue';
 
 const props = defineProps<{

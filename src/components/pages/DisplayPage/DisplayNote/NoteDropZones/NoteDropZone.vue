@@ -18,8 +18,8 @@
   setup
   lang="ts"
 >
-import { PageNote } from 'src/code/pages/page/notes/note';
-import { AppPage } from 'src/code/pages/page/page';
+import { PageNote } from 'src/code/app/pages/page/notes/note';
+import { AppPage } from 'src/code/app/pages/page/page';
 import { computed } from 'vue';
 import { inject } from 'vue';
 

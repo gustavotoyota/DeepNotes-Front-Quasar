@@ -36,10 +36,9 @@
   setup
   lang="ts"
 >
+import DisplayBtn from 'src/components/misc/DisplayBtn.vue';
 import Gap from 'src/components/misc/Gap.vue';
 import { computed } from 'vue';
-
-import DisplayBtn from '../misc/DisplayBtn.vue';
 
 const page = computed(() => $pages.react.page);
 </script>

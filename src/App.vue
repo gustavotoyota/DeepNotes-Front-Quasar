@@ -9,10 +9,10 @@
   lang="ts"
 >
 import { useMeta } from 'quasar';
+import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { onBeforeUnmount, onMounted } from 'vue';
 
-import { tryRefreshTokens } from './code/auth';
-import LoadingOverlay from './components/misc/LoadingOverlay.vue';
+import { tryRefreshTokens } from './code/app/auth';
 import { useApp } from './stores/app';
 import { useUI } from './stores/pages/ui';
 

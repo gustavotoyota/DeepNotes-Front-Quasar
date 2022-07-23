@@ -506,13 +506,12 @@
   setup
   lang="ts"
 >
-import { logout } from 'src/code/auth';
+import { logout } from 'src/code/app/auth';
+import DisplayBtn from 'src/components/misc/DisplayBtn.vue';
 import Gap from 'src/components/misc/Gap.vue';
+import ToolbarBtn from 'src/components/misc/ToolbarBtn.vue';
 import { useUI } from 'src/stores/pages/ui';
 import { computed } from 'vue';
-
-import DisplayBtn from '../misc/DisplayBtn.vue';
-import ToolbarBtn from '../misc/ToolbarBtn.vue';
 
 const ui = useUI();
 

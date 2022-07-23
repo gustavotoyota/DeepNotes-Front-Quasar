@@ -51,9 +51,9 @@
   lang="ts"
 >
 import { Notify } from 'quasar';
-import { AppPage } from 'src/code/pages/page/page';
-import { internals } from 'src/code/static/internals';
-import { roles } from 'src/code/static/roles';
+import { internals } from 'src/code/app/internals';
+import { AppPage } from 'src/code/app/pages/page/page';
+import { roles } from 'src/code/app/roles';
 import SmartBtn from 'src/components/misc/SmartBtn.vue';
 import { computed, inject, Ref, ref } from 'vue';
 

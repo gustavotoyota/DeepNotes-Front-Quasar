@@ -8,7 +8,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         name: 'home',
-        component: () => import('pages/home/Index.vue'),
+        component: () => import('src/pages/home/Index.vue'),
       },
     ],
   },
@@ -22,7 +22,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         name: 'login',
-        component: () => import('pages/home/Login.vue'),
+        component: () => import('src/pages/home/Login.vue'),
       },
     ],
   },
@@ -36,7 +36,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         name: 'register',
-        component: () => import('pages/home/Register.vue'),
+        component: () => import('src/pages/home/Register.vue'),
       },
     ],
   },
@@ -50,7 +50,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         name: 'finish-registration',
-        component: () => import('pages/home/FinishRegistration.vue'),
+        component: () => import('src/pages/home/FinishRegistration.vue'),
       },
     ],
   },
@@ -74,17 +74,18 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        component: () => import('pages/home/Account.vue'),
+        component: () => import('src/pages/home/Account.vue'),
         children: [
           {
             path: 'general',
             name: 'account-general',
-            component: () => import('pages/home/Account/General.vue'),
+            component: () => import('src/pages/home/Account/General.vue'),
           },
           {
             path: 'security',
             name: 'account-security',
-            component: () => import('pages/home/Account/Security.vue'),
+            component: () =>
+              import('src/pages/home/Account/Security/Security.vue'),
           },
         ],
       },
@@ -93,7 +94,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/pages',
     name: 'pages',
-    component: () => import('pages/pages/Pages.vue'),
+    component: () => import('src/pages/pages/Pages.vue'),
     meta: {
       requiresAuth: true,
     },
@@ -117,7 +118,7 @@ const routes: RouteRecordRaw[] = [
   // but you can also remove it
   {
     path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue'),
+    component: () => import('src/pages/ErrorNotFound.vue'),
   },
 ];
 

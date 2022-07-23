@@ -11,7 +11,7 @@
   setup
   lang="ts"
 >
-import { REALTIME_USER_DISPLAY_NAME } from 'src/code/pages/realtime';
+import { REALTIME_USER_DISPLAY_NAME } from 'src/code/app/pages/realtime';
 import {
   inject,
   onBeforeUnmount,

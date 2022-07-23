@@ -26,12 +26,9 @@
   setup
   lang="ts"
 >
-import { PageNote } from 'src/code/pages/page/notes/note';
-import {
-  observeResize,
-  unobserveResize,
-} from 'src/code/static/resize-observer';
-import { Vec2 } from 'src/code/static/vec2';
+import { PageNote } from 'src/code/app/pages/page/notes/note';
+import { observeResize, unobserveResize } from 'src/code/lib/resize-observer';
+import { Vec2 } from 'src/code/lib/vec2';
 import { inject, onBeforeUnmount, onMounted, ref } from 'vue';
 
 const note = inject<PageNote>('note')!;

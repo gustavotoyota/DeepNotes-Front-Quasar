@@ -113,7 +113,7 @@
 </template>
 
 <script lang="ts">
-declare module 'src/code/static/internals' {
+declare module 'src/code/app/internals' {
   export interface DeepNotesInternals {
     showUserSettingsDialog: () => any;
   }
@@ -162,16 +162,16 @@ export function initialSettings() {
   lang="ts"
 >
 import { Notify } from 'quasar';
-import { saveGroupSymmetricKey } from 'src/code/crypto/crypto';
-import { DICT_GROUP_OWNER_ID } from 'src/code/pages/pages';
-import { REALTIME_USER_DISPLAY_NAME } from 'src/code/pages/realtime';
-import { internals } from 'src/code/static/internals';
-import { BREAKPOINT_MD_MIN } from 'src/code/static/responsive';
+import { saveGroupSymmetricKey } from 'src/code/app/crypto/crypto';
+import { internals } from 'src/code/app/internals';
+import { DICT_GROUP_OWNER_ID } from 'src/code/app/pages/pages';
+import { REALTIME_USER_DISPLAY_NAME } from 'src/code/app/pages/realtime';
+import { BREAKPOINT_MD_MIN } from 'src/code/lib/responsive';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
+import TabBtn from 'src/components/misc/TabBtn.vue';
 import { useUI } from 'src/stores/pages/ui';
 import { computed, provide, ref } from 'vue';
 
-import TabBtn from '../misc/TabBtn.vue';
 import GeneralTab from './GeneralTab.vue';
 import GroupsTab from './GroupsTab.vue';
 import InvitationsTab from './InvitationsTab.vue';

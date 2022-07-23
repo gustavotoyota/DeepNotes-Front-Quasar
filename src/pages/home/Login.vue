@@ -150,17 +150,17 @@
 >
 import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
-import { storeTokens } from 'src/code/auth';
+import { storeTokens } from 'src/code/app/auth';
 import {
   computeDerivedKeys,
   reencryptSessionPrivateKey,
-} from 'src/code/crypto/crypto';
-import { internals } from 'src/code/static/internals';
+} from 'src/code/app/crypto/crypto';
+import { internals } from 'src/code/app/internals';
+import Checkbox from 'src/components/misc/Checkbox.vue';
 import Gap from 'src/components/misc/Gap.vue';
+import PasswordField from 'src/components/misc/PasswordField.vue';
 import ResponsiveContainer from 'src/components/misc/ResponsiveContainer.vue';
 import SmartBtn from 'src/components/misc/SmartBtn.vue';
-import Checkbox from 'src/components/pages/misc/Checkbox.vue';
-import PasswordField from 'src/components/pages/misc/PasswordField.vue';
 import { useAuth } from 'src/stores/auth';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';

@@ -105,7 +105,7 @@
 </template>
 
 <script lang="ts">
-declare module 'src/code/static/internals' {
+declare module 'src/code/app/internals' {
   export interface DeepNotesInternalsReact {
     twoFactorAuthEnabled: boolean;
   }
@@ -122,12 +122,12 @@ import {
   computeDerivedKeys,
   encryptSymmetric,
   reencryptSessionPrivateKey,
-} from 'src/code/crypto/crypto';
-import { internals } from 'src/code/static/internals';
+} from 'src/code/app/crypto/crypto';
+import { internals } from 'src/code/app/internals';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
+import PasswordField from 'src/components/misc/PasswordField.vue';
 import SmartBtn from 'src/components/misc/SmartBtn.vue';
-import PasswordField from 'src/components/pages/misc/PasswordField.vue';
 import { useApp } from 'src/stores/app';
 import { onMounted, Ref, ref } from 'vue';
 

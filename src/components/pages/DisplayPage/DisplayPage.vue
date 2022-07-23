@@ -103,12 +103,12 @@
 
 import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
-import { decryptSymmetric } from 'src/code/crypto/crypto';
-import { wrapSymmetricKey } from 'src/code/crypto/symmetric-key';
-import { AppPage } from 'src/code/pages/page/page';
-import { DICT_GROUP_SYMMETRIC_KEY } from 'src/code/pages/pages';
-import { isMouseOverScrollbar } from 'src/code/static/dom';
-import { internals } from 'src/code/static/internals';
+import { decryptSymmetric } from 'src/code/app/crypto/crypto';
+import { wrapSymmetricKey } from 'src/code/app/crypto/symmetric-key';
+import { internals } from 'src/code/app/internals';
+import { AppPage } from 'src/code/app/pages/page/page';
+import { DICT_GROUP_SYMMETRIC_KEY } from 'src/code/app/pages/pages';
+import { isMouseOverScrollbar } from 'src/code/lib/dom';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { onMounted, provide, ref } from 'vue';

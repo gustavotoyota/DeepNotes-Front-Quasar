@@ -40,7 +40,7 @@
   setup
   lang="ts"
 >
-import { ElemType } from 'src/code/pages/page/elems/elem';
+import { ElemType } from 'src/code/app/pages/page/elems/elem';
 import { useUI } from 'src/stores/pages/ui';
 import { computed } from 'vue';
 import { provide } from 'vue';

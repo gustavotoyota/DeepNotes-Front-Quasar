@@ -50,7 +50,7 @@
   lang="ts"
 >
 import { useMeta } from 'quasar';
-import { internals } from 'src/code/static/internals';
+import { internals } from 'src/code/app/internals';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import ResponsiveContainer from 'src/components/misc/ResponsiveContainer.vue';

@@ -27,9 +27,9 @@ import {
   NoteSection,
   NoteSide,
   PageNote,
-} from 'src/code/pages/page/notes/note';
-import { AppPage } from 'src/code/pages/page/page';
-import { Vec2 } from 'src/code/static/vec2';
+} from 'src/code/app/pages/page/notes/note';
+import { AppPage } from 'src/code/app/pages/page/page';
+import { Vec2 } from 'src/code/lib/vec2';
 import { computed, nextTick } from 'vue';
 import { inject } from 'vue';
 

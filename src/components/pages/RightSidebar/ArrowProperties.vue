@@ -134,19 +134,21 @@
 >
 import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
-import { PageArrow } from 'src/code/pages/page/arrows/arrow';
-import { AppPage } from 'src/code/pages/page/page';
-import { ISerialArrow, ISerialArrowInput } from 'src/code/pages/serialization';
-import { internals } from 'src/code/static/internals';
-import { encodeText } from 'src/code/static/utils';
+import { internals } from 'src/code/app/internals';
+import { PageArrow } from 'src/code/app/pages/page/arrows/arrow';
+import { AppPage } from 'src/code/app/pages/page/page';
+import {
+  ISerialArrow,
+  ISerialArrowInput,
+} from 'src/code/app/pages/serialization';
+import { encodeText } from 'src/code/lib/utils';
+import Checkbox from 'src/components/misc/Checkbox.vue';
 import Gap from 'src/components/misc/Gap.vue';
+import MiniSidebarBtn from 'src/components/misc/MiniSidebarBtn.vue';
 import { useUI } from 'src/stores/pages/ui';
 import { computed } from 'vue';
 import { inject, Ref } from 'vue';
 import { yXmlFragmentToProsemirrorJSON } from 'y-prosemirror';
-
-import Checkbox from '../misc/Checkbox.vue';
-import MiniSidebarBtn from '../misc/MiniSidebarBtn.vue';
 
 const ui = useUI();
 

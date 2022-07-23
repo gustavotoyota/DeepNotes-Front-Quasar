@@ -14,8 +14,8 @@
   setup
   lang="ts"
 >
-import { NoteTextSection, PageNote } from 'src/code/pages/page/notes/note';
-import { AppPage } from 'src/code/pages/page/page';
+import { NoteTextSection, PageNote } from 'src/code/app/pages/page/notes/note';
+import { AppPage } from 'src/code/app/pages/page/page';
 import { inject } from 'vue';
 
 import NoteEditor from './NoteEditor.vue';

@@ -30,8 +30,8 @@
   setup
   lang="ts"
 >
-import { NoteSection, PageNote } from 'src/code/pages/page/notes/note';
-import { negateProp } from 'src/code/static/utils';
+import { NoteSection, PageNote } from 'src/code/app/pages/page/notes/note';
+import { negateProp } from 'src/code/lib/utils';
 import { inject } from 'vue';
 
 defineProps<{

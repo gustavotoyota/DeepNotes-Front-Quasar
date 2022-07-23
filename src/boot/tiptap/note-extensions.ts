@@ -14,7 +14,7 @@ import Underline from '@tiptap/extension-underline';
 import StarterKit from '@tiptap/starter-kit';
 import { Extension } from '@tiptap/vue-3';
 import { columnResizing } from 'prosemirror-tables';
-import { internals } from 'src/code/static/internals';
+import { internals } from 'src/code/app/internals';
 
 import { ImageResizeExtension } from './image-resize-extension';
 

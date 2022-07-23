@@ -10,7 +10,7 @@
   setup
   lang="ts"
 >
-import { AppPage } from 'src/code/pages/page/page';
+import { AppPage } from 'src/code/app/pages/page/page';
 import { inject } from 'vue';
 
 const page = inject<AppPage>('page')!;

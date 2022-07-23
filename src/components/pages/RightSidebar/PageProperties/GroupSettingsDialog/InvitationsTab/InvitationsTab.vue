@@ -93,10 +93,10 @@
   lang="ts"
 >
 import { Notify } from 'quasar';
-import { AppPage } from 'src/code/pages/page/page';
-import { REALTIME_USER_DISPLAY_NAME } from 'src/code/pages/realtime';
-import { internals } from 'src/code/static/internals';
-import { rolesMap } from 'src/code/static/roles';
+import { internals } from 'src/code/app/internals';
+import { AppPage } from 'src/code/app/pages/page/page';
+import { REALTIME_USER_DISPLAY_NAME } from 'src/code/app/pages/realtime';
+import { rolesMap } from 'src/code/app/roles';
 import Gap from 'src/components/misc/Gap.vue';
 import { computed, inject, Ref } from 'vue';
 

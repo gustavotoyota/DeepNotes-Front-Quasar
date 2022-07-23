@@ -164,11 +164,11 @@
 import sodium from 'libsodium-wrappers';
 import QRCode from 'qrcode';
 import { Dialog, Notify } from 'quasar';
-import { computeDerivedKeys } from 'src/code/crypto/crypto';
-import { setClipboardText } from 'src/code/static/clipboard';
-import { internals } from 'src/code/static/internals';
-import { BREAKPOINT_MD_MIN } from 'src/code/static/responsive';
-import { sleep } from 'src/code/static/utils';
+import { computeDerivedKeys } from 'src/code/app/crypto/crypto';
+import { internals } from 'src/code/app/internals';
+import { setClipboardText } from 'src/code/lib/clipboard';
+import { BREAKPOINT_MD_MIN } from 'src/code/lib/responsive';
+import { sleep } from 'src/code/lib/utils';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import SmartBtn from 'src/components/misc/SmartBtn.vue';

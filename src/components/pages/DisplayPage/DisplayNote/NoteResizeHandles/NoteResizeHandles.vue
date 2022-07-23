@@ -39,7 +39,7 @@
   setup
   lang="ts"
 >
-import { PageNote } from 'src/code/pages/page/notes/note';
+import { PageNote } from 'src/code/app/pages/page/notes/note';
 import { inject } from 'vue';
 
 import NoteResizeHandle from './NoteResizeHandle.vue';

@@ -79,7 +79,7 @@
 </template>
 
 <script lang="ts">
-declare module 'src/code/static/internals' {
+declare module 'src/code/app/internals' {
   export interface DeepNotesInternals {
     showRecoveryCodeDialog: (recoveryCode: string) => void;
   }
@@ -90,9 +90,9 @@ declare module 'src/code/static/internals' {
   setup
   lang="ts"
 >
-import { setClipboardText } from 'src/code/static/clipboard';
-import { internals } from 'src/code/static/internals';
-import { BREAKPOINT_MD_MIN } from 'src/code/static/responsive';
+import { internals } from 'src/code/app/internals';
+import { setClipboardText } from 'src/code/lib/clipboard';
+import { BREAKPOINT_MD_MIN } from 'src/code/lib/responsive';
 import Gap from 'src/components/misc/Gap.vue';
 import { useUI } from 'src/stores/pages/ui';
 import { computed, ref } from 'vue';

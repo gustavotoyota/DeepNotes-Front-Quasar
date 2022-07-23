@@ -230,13 +230,12 @@
   setup
   lang="ts"
 >
-import { logout } from 'src/code/auth';
+import { logout } from 'src/code/app/auth';
 import Gap from 'src/components/misc/Gap.vue';
-import ToolbarBtn from 'src/components/pages/misc/ToolbarBtn.vue';
+import ResponsiveContainer from 'src/components/misc/ResponsiveContainer.vue';
+import ToolbarBtn from 'src/components/misc/ToolbarBtn.vue';
 import { useAuth } from 'src/stores/auth';
 import { useRoute } from 'vue-router';
-
-import ResponsiveContainer from '../components/misc/ResponsiveContainer.vue';
 
 const auth = useAuth();
 const route = useRoute();

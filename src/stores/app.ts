@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { Resolvable } from 'src/code/static/utils';
+import { Resolvable } from 'src/code/lib/utils';
 import { reactive, toRefs } from 'vue';
 
 export const useApp = defineStore('app', () => {

@@ -14,7 +14,7 @@
   setup
   lang="ts"
 >
-import { AppPage } from 'src/code/pages/page/page';
+import { AppPage } from 'src/code/app/pages/page/page';
 import { inject, Ref } from 'vue';
 
 import { initialSettings } from './GroupSettingsDialog.vue';

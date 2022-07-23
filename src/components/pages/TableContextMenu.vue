@@ -180,9 +180,8 @@
   lang="ts"
 >
 import { ChainedCommands } from '@tiptap/core';
+import QMenuHover from 'src/components/misc/QMenuHover.vue';
 import { computed } from 'vue';
-
-import QMenuHover from './misc/QMenuHover.vue';
 
 const page = computed(() => $pages.react.page);
 

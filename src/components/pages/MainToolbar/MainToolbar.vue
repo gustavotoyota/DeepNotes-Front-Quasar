@@ -779,13 +779,13 @@
   setup
   lang="ts"
 >
-import { logout } from 'src/code/auth';
-import { BREAKPOINT_XL_MIN } from 'src/code/static/responsive';
+import { logout } from 'src/code/app/auth';
+import { BREAKPOINT_XL_MIN } from 'src/code/lib/responsive';
 import Gap from 'src/components/misc/Gap.vue';
+import ToolbarBtn from 'src/components/misc/ToolbarBtn.vue';
 import { useUI } from 'src/stores/pages/ui';
 import { computed } from 'vue';
 
-import ToolbarBtn from '../misc/ToolbarBtn.vue';
 import InsertImageDialog from './InsertImageDialog.vue';
 
 const ui = useUI();

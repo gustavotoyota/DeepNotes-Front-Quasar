@@ -119,21 +119,20 @@
 >
 import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
-import { encryptSymmetric } from 'src/code/crypto/crypto';
-import { privateKey } from 'src/code/crypto/private-key';
-import { wrapSymmetricKey } from 'src/code/crypto/symmetric-key';
-import { PageNote } from 'src/code/pages/page/notes/note';
-import { AppPage } from 'src/code/pages/page/page';
-import { internals } from 'src/code/static/internals';
-import { BREAKPOINT_MD_MIN } from 'src/code/static/responsive';
-import { bytesToBase64, encodeText } from 'src/code/static/utils';
+import { encryptSymmetric } from 'src/code/app/crypto/crypto';
+import { privateKey } from 'src/code/app/crypto/private-key';
+import { wrapSymmetricKey } from 'src/code/app/crypto/symmetric-key';
+import { internals } from 'src/code/app/internals';
+import { PageNote } from 'src/code/app/pages/page/notes/note';
+import { AppPage } from 'src/code/app/pages/page/page';
+import { BREAKPOINT_MD_MIN } from 'src/code/lib/responsive';
+import { bytesToBase64, encodeText } from 'src/code/lib/utils';
+import Checkbox from 'src/components/misc/Checkbox.vue';
 import Gap from 'src/components/misc/Gap.vue';
 import SmartBtn from 'src/components/misc/SmartBtn.vue';
 import { useUI } from 'src/stores/pages/ui';
 import { computed, inject, Ref, ref } from 'vue';
 import { useRouter } from 'vue-router';
-
-import Checkbox from '../../misc/Checkbox.vue';
 
 const router = useRouter();
 const ui = useUI();

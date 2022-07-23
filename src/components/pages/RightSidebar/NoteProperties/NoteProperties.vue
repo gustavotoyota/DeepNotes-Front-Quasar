@@ -686,19 +686,19 @@
 >
 import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
-import { PageNote } from 'src/code/pages/page/notes/note';
-import { AppPage } from 'src/code/pages/page/page';
-import { DICT_PAGE_GROUP_ID } from 'src/code/pages/pages';
-import { internals } from 'src/code/static/internals';
-import { encodeText } from 'src/code/static/utils';
+import { internals } from 'src/code/app/internals';
+import { PageNote } from 'src/code/app/pages/page/notes/note';
+import { AppPage } from 'src/code/app/pages/page/page';
+import { DICT_PAGE_GROUP_ID } from 'src/code/app/pages/pages';
+import { encodeText } from 'src/code/lib/utils';
+import Checkbox from 'src/components/misc/Checkbox.vue';
+import Combobox from 'src/components/misc/Combobox.vue';
 import Gap from 'src/components/misc/Gap.vue';
+import MiniSidebarBtn from 'src/components/misc/MiniSidebarBtn.vue';
 import { useUI } from 'src/stores/pages/ui';
 import { computed } from 'vue';
 import { inject, Ref } from 'vue';
 
-import Checkbox from '../../misc/Checkbox.vue';
-import Combobox from '../../misc/Combobox.vue';
-import MiniSidebarBtn from '../../misc/MiniSidebarBtn.vue';
 import NewPageDialog from './NewPageDialog.vue';
 
 const ui = useUI();

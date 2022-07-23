@@ -17,11 +17,11 @@
   setup
   lang="ts"
 >
-import { NoteTextSection, PageNote } from 'src/code/pages/page/notes/note';
-import { AppPage } from 'src/code/pages/page/page';
-import { REALTIME_USER_DISPLAY_NAME } from 'src/code/pages/realtime';
-import { internals } from 'src/code/static/internals';
-import { watchUntilTrue } from 'src/code/static/vue';
+import { internals } from 'src/code/app/internals';
+import { NoteTextSection, PageNote } from 'src/code/app/pages/page/notes/note';
+import { AppPage } from 'src/code/app/pages/page/page';
+import { REALTIME_USER_DISPLAY_NAME } from 'src/code/app/pages/realtime';
+import { watchUntilTrue } from 'src/code/lib/vue';
 import { computed } from 'vue';
 import { inject } from 'vue';
 import * as Y from 'yjs';

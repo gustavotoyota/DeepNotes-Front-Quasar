@@ -47,7 +47,7 @@
             </q-menu>
           </q-btn>
 
-          <q-toolbar-title style="overflow: visible; padding: 0px">
+          <q-toolbar-title style="overflow: visible; padding: 0px; flex: none">
             <router-link
               to="/"
               style="
@@ -68,6 +68,8 @@
               DeepNotes
             </router-link>
           </q-toolbar-title>
+
+          <q-space />
 
           <q-btn
             icon="mdi-menu"
@@ -251,13 +253,13 @@ body {
   lang="scss"
 >
 .home-layout {
-  :deep(a:not(.q-btn)) {
+  :deep(a:not(.q-hoverable)) {
     text-decoration: none;
 
     color: #29b6f6;
 
     &:hover {
-      color: #4fc3f7 !important;
+      color: #4fc3f7;
     }
   }
 

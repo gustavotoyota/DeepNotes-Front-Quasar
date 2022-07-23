@@ -26,8 +26,6 @@ export default {
 
     if (cookies.has('refresh-token')) {
       try {
-        console.log('preFetch');
-
         const response = await auth.api.post<{
           oldSessionKey: string;
           newSessionKey: string;

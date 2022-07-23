@@ -13,12 +13,6 @@ export const apiBaseURL = process.env.DEV
   ? 'http://192.168.1.4:21733'
   : 'https://app-server.deepnotes.app/';
 
-export const authEndpoints = {
-  login: '/auth/login',
-  refresh: '/auth/refresh',
-  logout: '/auth/logout',
-};
-
 export function isTokenValid(tokenName: string): boolean {
   const exp = parseInt(localStorage.getItem(`${tokenName}-expiration`) ?? '');
 
@@ -79,7 +73,7 @@ export async function tryRefreshTokens(
 
       oldSessionKey: string;
       newSessionKey: string;
-    }>(authEndpoints.refresh);
+    }>('/auth/refresh');
 
     // Store tokens
 
@@ -104,7 +98,7 @@ export async function tryRefreshTokens(
 
 export function storeTokens(accessToken: string, refreshToken: string): void {
   storeToken('access-token', accessToken);
-  storeToken('refresh-token', refreshToken, { path: '/auth/refresh' });
+  storeToken('refresh-token', refreshToken);
 }
 function storeToken(
   tokenName: string,
@@ -133,7 +127,7 @@ export function logout() {
 
   if (auth.loggedIn) {
     try {
-      void internals.api.post(authEndpoints.logout);
+      void internals.api.post('/auth/logout');
     } catch (err) {
       console.error(err);
     }
@@ -164,7 +158,7 @@ export function deleteTokens() {
   });
   deleteToken('refresh-token', {
     domain: process.env.PROD ? 'deepnotes.app' : '192.168.1.4',
-    path: '/auth/refresh',
+    path: '/',
   });
 }
 export function deleteToken(

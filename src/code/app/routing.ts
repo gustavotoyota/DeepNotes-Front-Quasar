@@ -6,7 +6,7 @@ import {
   Router,
 } from 'vue-router';
 
-export function getRedirect(
+export function getRedirectDest(
   route: RouteLocationNormalized,
   auth: Auth
 ): RouteLocationRaw | void {
@@ -34,13 +34,13 @@ export function enforceRouteRules(
     return false;
   }
 
-  const redirect = getRedirect(route, auth);
+  const redirectDest = getRedirectDest(route, auth);
 
-  if (redirect == null) {
+  if (redirectDest == null) {
     return false;
   }
 
-  void router.push(redirect);
+  void router.push(redirectDest);
 
   return true;
 }

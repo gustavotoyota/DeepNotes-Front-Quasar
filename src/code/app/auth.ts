@@ -1,5 +1,4 @@
 import sodium from 'libsodium-wrappers';
-import { Cookies } from 'quasar';
 import { internals } from 'src/code/app/internals';
 import { enforceRouteRules } from 'src/code/app/routing';
 import { Auth, useAuth } from 'src/stores/auth';
@@ -66,6 +65,8 @@ export async function tryRefreshTokens(
       localStorage.getItem('encrypted-private-key')!
     );
 
+    console.log('Refreshing tokens...');
+
     const response = await internals.api.post<{
       oldSessionKey: string;
       newSessionKey: string;
@@ -103,14 +104,14 @@ export function storeTokenData(): void {
   );
 }
 
-export function logout() {
+export async function logout() {
   const auth = useAuth();
 
   // Notify server of logout
 
   if (auth.loggedIn) {
     try {
-      void internals.api.post('/auth/logout');
+      await internals.api.post('/auth/logout');
     } catch (err) {
       console.error(err);
     }
@@ -123,32 +124,10 @@ export function logout() {
 export function clearSessionData() {
   const auth = useAuth();
 
-  // Delete token data
-
-  deleteTokens();
-
   // Clear private key
 
   localStorage.removeItem('encrypted-private-key');
   privateKey.clear();
 
   auth.loggedIn = false;
-}
-export function deleteTokens() {
-  deleteToken('access-token', {
-    domain: process.env.PROD ? 'deepnotes.app' : '192.168.1.4',
-    path: '/',
-  });
-  deleteToken('refresh-token', {
-    domain: process.env.PROD ? 'deepnotes.app' : '192.168.1.4',
-    path: '/',
-  });
-}
-export function deleteToken(
-  tokenName: string,
-  options?: { domain?: string; path?: string }
-) {
-  Cookies.remove(tokenName, options);
-
-  localStorage.removeItem(`${tokenName}-expiration`);
 }

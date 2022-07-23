@@ -37,6 +37,7 @@ module.exports = configure(function (/* ctx */) {
       { path: 'syncedstore', server: false },
       { path: 'prosemirror', server: false },
       { path: 'tiptap/tiptap', server: false },
+      { path: 'auth', server: false },
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css

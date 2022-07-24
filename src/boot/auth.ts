@@ -1,6 +1,6 @@
 import sodium from 'libsodium-wrappers';
 import { boot } from 'quasar/wrappers';
-import { storeTokenData } from 'src/code/app/auth';
+import { storeTokenExpirations } from 'src/code/app/auth';
 import { reencryptSessionPrivateKey } from 'src/code/app/crypto/crypto';
 import { useAuth } from 'src/stores/auth';
 
@@ -17,7 +17,7 @@ export default boot(({ store }) => {
   }
 
   try {
-    storeTokenData();
+    storeTokenExpirations();
 
     const encryptedPrivateKey = sodium.from_base64(
       localStorage.getItem('encrypted-private-key')!

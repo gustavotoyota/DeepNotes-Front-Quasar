@@ -1,8 +1,7 @@
 import sodium from 'libsodium-wrappers';
+import { Cookies } from 'quasar';
 import { internals } from 'src/code/app/internals';
-import { enforceRouteRules } from 'src/code/app/routing';
 import { Auth, useAuth } from 'src/stores/auth';
-import { RouteLocationNormalizedLoaded, Router } from 'vue-router';
 
 import { reencryptSessionPrivateKey } from './crypto/crypto';
 import { privateKey } from './crypto/private-key';
@@ -42,18 +41,13 @@ export function areTokensExpiring(): boolean {
   );
 }
 
-export async function tryRefreshTokens(
-  auth: Auth,
-  route: RouteLocationNormalizedLoaded,
-  router: Router
-): Promise<void> {
+export async function tryRefreshTokens(auth: Auth): Promise<void> {
   try {
     if (
       !isTokenValid('refresh-token') ||
       localStorage.getItem('encrypted-private-key') == null
     ) {
-      clearSessionData();
-      enforceRouteRules(auth, route, router);
+      await logout();
       return;
     }
 
@@ -74,7 +68,7 @@ export async function tryRefreshTokens(
 
     // Store token data
 
-    storeTokenData();
+    storeTokenExpirations();
 
     // Reencrypt private key
 
@@ -87,13 +81,11 @@ export async function tryRefreshTokens(
     auth.loggedIn = true;
   } catch (err) {
     console.error(err);
-    clearSessionData();
+    await logout();
   }
-
-  enforceRouteRules(auth, route, router);
 }
 
-export function storeTokenData(): void {
+export function storeTokenExpirations(): void {
   localStorage.setItem(
     'access-token-expiration',
     (Date.now() + 30 * 60 * 1000).toString()
@@ -107,27 +99,35 @@ export function storeTokenData(): void {
 export async function logout() {
   const auth = useAuth();
 
-  // Notify server of logout
-
-  if (auth.loggedIn) {
-    try {
-      await internals.api.post('/auth/logout');
-    } catch (err) {
-      console.error(err);
-    }
+  if (!auth.loggedIn) {
+    return;
   }
 
-  clearSessionData();
-
-  location.href = '/';
-}
-export function clearSessionData() {
-  const auth = useAuth();
+  auth.loggedIn = false;
 
   // Clear private key
 
   localStorage.removeItem('encrypted-private-key');
+
   privateKey.clear();
 
-  auth.loggedIn = false;
+  // Clear token expirations
+
+  localStorage.removeItem('access-token-expiration');
+  localStorage.removeItem('refresh-token-expiration');
+
+  // Clear logged-in cookie
+
+  Cookies.remove('logged-in', {
+    domain: process.env.PROD ? '.deepnotes.app' : '192.168.1.4',
+    path: '/',
+  });
+
+  try {
+    await internals.api.post('/auth/logout');
+  } catch (error) {
+    console.error(error);
+  }
+
+  location.href = '/';
 }

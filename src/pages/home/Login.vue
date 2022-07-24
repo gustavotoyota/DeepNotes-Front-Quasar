@@ -150,7 +150,7 @@
 >
 import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
-import { storeTokenData } from 'src/code/app/auth';
+import { storeTokenExpirations } from 'src/code/app/auth';
 import {
   computeDerivedKeys,
   reencryptSessionPrivateKey,
@@ -230,7 +230,7 @@ async function onSubmit() {
 
     // Store token data
 
-    storeTokenData();
+    storeTokenExpirations();
 
     // Process session private key
 

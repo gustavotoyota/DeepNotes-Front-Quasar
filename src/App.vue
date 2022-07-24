@@ -11,11 +11,16 @@ import { getRedirectDest } from 'src/code/app/routing';
 
 export default {
   async preFetch({ ssrContext, store, currentRoute, redirect }) {
+    // Check if needs to redirect
+
     const auth = useAuth(store);
 
     const cookies = process.env.SERVER ? Cookies.parseSSR(ssrContext) : Cookies;
 
-    auth.loggedIn = cookies.has('refresh-token');
+    auth.loggedIn =
+      cookies.has('access-token') &&
+      cookies.has('refresh-token') &&
+      cookies.has('logged-in');
 
     const redirectDest = getRedirectDest(currentRoute, auth);
 
@@ -24,31 +29,44 @@ export default {
       return;
     }
 
-    if (cookies.has('refresh-token')) {
-      try {
-        const response = await auth.api.post<{
-          oldSessionKey: string;
-          newSessionKey: string;
-        }>('/auth/refresh', {
+    // Try refreshing tokens
+
+    if (!auth.loggedIn) {
+      return;
+    }
+
+    try {
+      const response = await auth.api.post<{
+        oldSessionKey: string;
+        newSessionKey: string;
+      }>(
+        '/auth/refresh',
+        {
           refreshToken: cookies.get('refresh-token'),
-        });
+        },
+        {
+          headers: {
+            'set-cookie': `refresh-token=${cookies.get('refresh-token')}`,
+          },
+        }
+      );
 
-        auth.loggedIn = true;
+      auth.oldSessionKey = response.data.oldSessionKey;
+      auth.newSessionKey = response.data.newSessionKey;
 
-        auth.oldSessionKey = response.data.oldSessionKey;
-        auth.newSessionKey = response.data.newSessionKey;
+      const parsedCookies = cookie.parse(
+        response.headers['set-cookie'].join(';')
+      );
 
-        const parsedCookies = cookie.parse(
-          response.headers['set-cookie'].join(';')
-        );
+      setCookie(cookies, 'access-token', parsedCookies['access-token']);
+      setCookie(cookies, 'refresh-token', parsedCookies['refresh-token']);
+      setCookie(cookies, 'logged-in', 'true', { httpOnly: false });
 
-        setCookie(cookies, 'access-token', parsedCookies['access-token']);
-        setCookie(cookies, 'refresh-token', parsedCookies['refresh-token']);
-      } catch (err) {
-        console.log(err);
+      auth.loggedIn = true;
+    } catch (err) {
+      console.log(err);
 
-        auth.loggedIn = false;
-      }
+      auth.loggedIn = false;
     }
   },
 };
@@ -62,7 +80,6 @@ import { Cookies, useMeta } from 'quasar';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import { useAuth } from 'src/stores/auth';
 import { onBeforeUnmount, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
 
 import { tryRefreshTokens } from './code/app/auth';
 import { useApp } from './stores/app';
@@ -73,8 +90,6 @@ const app = useApp();
 const ui = useUI();
 
 const auth = useAuth();
-const route = useRoute();
-const router = useRouter();
 
 useMeta(() => ({
   title: 'DeepNotes',
@@ -82,7 +97,7 @@ useMeta(() => ({
 
 onMounted(() => {
   setInterval(async () => {
-    await tryRefreshTokens(auth, route, router);
+    await tryRefreshTokens(auth);
   }, 10000);
 
   app.loading = false;

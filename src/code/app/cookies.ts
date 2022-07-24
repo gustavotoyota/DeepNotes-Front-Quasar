@@ -18,3 +18,10 @@ export function setCookie(
     ...option,
   });
 }
+
+export function clearCookie(cookies: Cookies, name: string) {
+  cookies.remove(name, {
+    domain: process.env.PROD ? '.deepnotes.app' : '192.168.1.4',
+    path: '/',
+  });
+}

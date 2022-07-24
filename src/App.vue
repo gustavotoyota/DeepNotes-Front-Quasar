@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import cookie from 'cookie';
-import { setCookie } from 'src/code/app/cookies';
+import { clearCookie, setCookie } from 'src/code/app/cookies';
 import { getRedirectDest } from 'src/code/app/routing';
 
 export default {
@@ -65,6 +65,10 @@ export default {
       auth.loggedIn = true;
     } catch (err) {
       console.log(err);
+
+      clearCookie(cookies, 'access-token');
+      clearCookie(cookies, 'refresh-token');
+      clearCookie(cookies, 'logged-in');
 
       auth.loggedIn = false;
     }

@@ -202,7 +202,7 @@ async function onSubmit() {
     const derivedKeys = await computeDerivedKeys(email.value, password.value);
 
     const response = await internals.api.post<{
-      authenticator: boolean;
+      twoFactorAuth: boolean;
 
       encryptedPrivateKey: string;
 
@@ -222,7 +222,7 @@ async function onSubmit() {
         authType.value === 'recovery' ? recoveryCode.value : undefined,
     });
 
-    if (response.data.authenticator && authType.value === 'standard') {
+    if (response.data.twoFactorAuth && authType.value === 'standard') {
       authenticatorToken.value = '';
       authType.value = 'authenticator';
       return;

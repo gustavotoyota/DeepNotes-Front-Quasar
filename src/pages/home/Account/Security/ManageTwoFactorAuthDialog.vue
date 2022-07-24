@@ -76,6 +76,14 @@
               </q-icon>
             </template>
           </q-input>
+
+          <Gap style="height: 16px" />
+
+          <SmartBtn
+            label="Untrust all devices"
+            color="secondary"
+            @click="untrustDevices()"
+          />
         </q-card-section>
 
         <q-separator />
@@ -245,13 +253,32 @@ async function showDialog(email: string) {
   });
 }
 
+async function untrustDevices() {
+  try {
+    await internals.api.post(
+      '/api/users/account/security/two-factor-auth/untrust-devices',
+      { passwordHash }
+    );
+
+    Notify.create({
+      message: 'All devices have been untrusted.',
+      type: 'positive',
+    });
+  } catch (error: any) {
+    Notify.create({
+      message: error.response?.data.message ?? 'An error has occurred.',
+      type: 'negative',
+    });
+
+    console.error(error);
+  }
+}
+
 async function disableTwoFactorAuth() {
   try {
     await internals.api.post<void>(
       '/api/users/account/security/two-factor-auth/disable',
-      {
-        passwordHash,
-      }
+      { passwordHash }
     );
 
     internals.react.twoFactorAuthEnabled = false;

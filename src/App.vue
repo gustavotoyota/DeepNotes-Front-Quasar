@@ -90,9 +90,7 @@ import { useApp } from './stores/app';
 import { useUI } from './stores/ui';
 
 const app = useApp();
-
 const ui = useUI();
-
 const auth = useAuth();
 
 useMeta(() => ({
@@ -111,9 +109,9 @@ onMounted(() => {
 // Resize
 
 onMounted(() => {
-  onResize();
-
   window.addEventListener('resize', onResize);
+
+  onResize();
 });
 
 function onResize() {

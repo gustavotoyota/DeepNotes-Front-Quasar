@@ -168,6 +168,15 @@ onMounted(async () => {
 });
 
 async function changePassword() {
+  if (newPassword.value === oldPassword.value) {
+    Notify.create({
+      message: 'New password must be different than old password.',
+      color: 'negative',
+    });
+
+    return;
+  }
+
   if (newPassword.value !== confirmNewPassword.value) {
     Notify.create({
       message: 'New passwords do not match.',
@@ -196,7 +205,6 @@ async function changePassword() {
       sessionKey: string;
     }>('/api/users/account/security/change-password', {
       oldPasswordHash: sodium.to_base64(oldDerivedKeys.passwordHash),
-      newPasswordHash: sodium.to_base64(newDerivedKeys.passwordHash),
     });
 
     // Process session private key

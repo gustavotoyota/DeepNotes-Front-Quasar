@@ -175,6 +175,7 @@ import { Dialog, Notify } from 'quasar';
 import { computeDerivedKeys } from 'src/code/app/crypto/crypto';
 import { internals } from 'src/code/app/internals';
 import { setClipboardText } from 'src/code/lib/clipboard';
+import { Resolvable } from 'src/code/lib/resolvable';
 import { BREAKPOINT_MD_MIN } from 'src/code/lib/responsive';
 import { sleep } from 'src/code/lib/utils';
 import Gap from 'src/components/misc/Gap.vue';
@@ -213,45 +214,56 @@ async function showDialog(email: string) {
       maxWidth: '350px',
     },
     cancel: true,
-  }).onOk(async (password: string) => {
-    try {
-      loading.value = true;
-      visible.value = true;
+  })
+    .onOk(async (password: string) => {
+      passwordPromise.resolve(password);
+    })
+    .onCancel(() => {
+      passwordPromise.reject();
+    });
 
-      await sleep(500);
+  // Use password to enable two-factor authentication
 
-      passwordHash = sodium.to_base64(
-        (await computeDerivedKeys(email, password)).passwordHash
-      );
+  const passwordPromise = new Resolvable<string>();
+  const password = await passwordPromise;
 
-      const response = await internals.api.post<{
-        secret: string;
-        keyUri: string;
-      }>('/api/users/account/security/two-factor-auth/enable', {
-        passwordHash,
-      });
+  try {
+    loading.value = true;
+    visible.value = true;
 
-      secret.value = response.data.secret;
-      keyUri.value = response.data.keyUri;
+    await sleep(500);
 
-      await QRCode.toCanvas(canvasElem.value, keyUri.value, {
-        width: 175,
-      });
+    passwordHash = sodium.to_base64(
+      (await computeDerivedKeys(email, password)).passwordHash
+    );
 
-      loading.value = false;
-    } catch (err: any) {
-      Notify.create({
-        message: err.response?.data.message ?? 'An error has occurred.',
-        type: 'negative',
-      });
+    const response = await internals.api.post<{
+      secret: string;
+      keyUri: string;
+    }>('/api/users/account/security/two-factor-auth/enable', {
+      passwordHash,
+    });
 
-      console.error(err);
+    secret.value = response.data.secret;
+    keyUri.value = response.data.keyUri;
 
-      visible.value = false;
+    await QRCode.toCanvas(canvasElem.value, keyUri.value, {
+      width: 175,
+    });
 
-      void showDialog(email);
-    }
-  });
+    loading.value = false;
+  } catch (err: any) {
+    Notify.create({
+      message: err.response?.data.message ?? 'An error has occurred.',
+      type: 'negative',
+    });
+
+    console.error(err);
+
+    visible.value = false;
+
+    void showDialog(email);
+  }
 }
 
 async function verify() {

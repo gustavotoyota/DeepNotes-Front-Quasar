@@ -91,7 +91,7 @@
             <div style="text-align: center">
               Lost your phone?
               <a
-                style="pointer: cursor"
+                style="cursor: pointer"
                 @click="
                   () => {
                     recoveryCode = '';
@@ -109,6 +109,18 @@
             </div>
 
             <Gap style="height: 16px" />
+
+            <div>
+              <div>
+                <span style="color: red">Note: </span>
+                <span style="color: #c0c0c0"
+                  >Two-factor authentication will be disabled after using your
+                  recovery code.</span
+                >
+              </div>
+            </div>
+
+            <Gap style="height: 8px" />
 
             <q-input
               label="Recovery code"
@@ -172,6 +184,8 @@ const authType = ref('standard');
 const email = ref('');
 const password = ref('');
 
+let passwordHash: string;
+
 const rememberEmail = ref(false);
 
 const authenticatorToken = ref('');
@@ -195,6 +209,14 @@ async function onSubmit() {
       localStorage.removeItem('email');
     }
 
+    // Compute password hash
+
+    if (authType.value === 'standard') {
+      passwordHash = sodium.to_base64(
+        (await computeDerivedKeys(email.value, password.value)).passwordHash
+      );
+    }
+
     // Login
 
     const auth = useAuth();
@@ -209,7 +231,7 @@ async function onSubmit() {
       sessionKey: string;
     }>('/auth/login', {
       email: email.value,
-      passwordHash: sodium.to_base64(derivedKeys.passwordHash),
+      passwordHash: passwordHash,
 
       authenticatorToken:
         authType.value === 'authenticator'

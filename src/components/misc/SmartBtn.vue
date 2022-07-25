@@ -9,7 +9,10 @@
 
         loading = true
 
-        await ($attrs.onClick as any)?.(event)
+        try {
+          await ($attrs.onClick as any)?.(event)
+        } catch (error) {
+        }
 
         loading = false
       }

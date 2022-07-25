@@ -257,6 +257,8 @@ body {
 
     color: #29b6f6;
 
+    cursor: pointer;
+
     &:hover {
       color: #4fc3f7;
     }

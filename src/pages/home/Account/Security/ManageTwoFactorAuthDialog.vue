@@ -226,7 +226,7 @@ async function showDialog(email: string) {
         secret: string;
         keyUri: string;
         recoveryCode: string;
-      }>('/api/users/account/security/two-factor-auth/load-data', {
+      }>('/api/users/account/security/two-factor-auth/load', {
         passwordHash,
       });
 

@@ -169,11 +169,11 @@
   setup
   lang="ts"
 >
+import sodium from 'libsodium-wrappers';
 import QRCode from 'qrcode';
 import { Dialog, Notify } from 'quasar';
 import { computeDerivedKeys } from 'src/code/app/crypto/crypto';
 import { internals } from 'src/code/app/internals';
-import { bytesToBase64 } from 'src/code/lib/base64';
 import { setClipboardText } from 'src/code/lib/clipboard';
 import { BREAKPOINT_MD_MIN } from 'src/code/lib/responsive';
 import { sleep } from 'src/code/lib/utils';
@@ -197,6 +197,8 @@ const canvasElem = ref<HTMLElement>();
 const secret = ref('');
 const authenticatorToken = ref('');
 
+let passwordHash: string;
+
 async function showDialog(email: string) {
   Dialog.create({
     title: 'Enable two-factor authentication',
@@ -218,14 +220,15 @@ async function showDialog(email: string) {
 
       await sleep(500);
 
-      const passwordHash = (await computeDerivedKeys(email, password))
-        .passwordHash;
+      passwordHash = sodium.to_base64(
+        (await computeDerivedKeys(email, password)).passwordHash
+      );
 
       const response = await internals.api.post<{
         secret: string;
         keyUri: string;
       }>('/api/users/account/security/two-factor-auth/enable', {
-        passwordHash: bytesToBase64(passwordHash),
+        passwordHash,
       });
 
       secret.value = response.data.secret;
@@ -256,6 +259,7 @@ async function verify() {
     const response = await internals.api.post<{
       recoveryCode: string;
     }>('/api/users/account/security/two-factor-auth/verify', {
+      passwordHash,
       authenticatorToken: authenticatorToken.value,
     });
 

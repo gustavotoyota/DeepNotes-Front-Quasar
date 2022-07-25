@@ -41,12 +41,12 @@ export default {
         newSessionKey: string;
       }>(
         '/auth/refresh',
-        {
-          refreshToken: cookies.get('refresh-token'),
-        },
+        {},
         {
           headers: {
-            'set-cookie': `refresh-token=${cookies.get('refresh-token')}`,
+            cookie: `refresh-token=${cookies.get(
+              'refresh-token'
+            )}; logged-in=true`,
           },
         }
       );

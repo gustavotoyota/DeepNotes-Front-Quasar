@@ -10,8 +10,19 @@
         height: maximized ? undefined : '550px',
       }"
     >
-      <q-card-section>
+      <q-card-section style="display: flex">
         <div class="text-h5">User Settings</div>
+
+        <q-space />
+
+        <q-btn
+          icon="mdi-close"
+          color="primary"
+          flat
+          round
+          style="margin: -5px; height: 42px"
+          v-close-popup
+        />
       </q-card-section>
 
       <template v-if="maximized">

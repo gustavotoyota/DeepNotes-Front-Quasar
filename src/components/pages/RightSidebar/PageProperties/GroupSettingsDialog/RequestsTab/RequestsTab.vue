@@ -77,7 +77,7 @@
 
         <Gap style="height: 16px" />
 
-        <q-btn
+        <SmartBtn
           label="Reject"
           color="negative"
           :disable="selectedIds.size === 0"
@@ -98,6 +98,7 @@ import { AppPage } from 'src/code/app/pages/page/page';
 import { REALTIME_USER_DISPLAY_NAME } from 'src/code/app/pages/realtime';
 import { rolesMap } from 'src/code/app/roles';
 import Gap from 'src/components/misc/Gap.vue';
+import SmartBtn from 'src/components/misc/SmartBtn.vue';
 import { computed, inject, Ref } from 'vue';
 
 import { initialSettings } from '../GroupSettingsDialog.vue';

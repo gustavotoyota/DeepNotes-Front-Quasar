@@ -12,7 +12,7 @@
   >
     <q-icon
       :name="
-        ui[`${side}SidebarMini`]
+        ui[`${side}SidebarVisible`]
           ? `mdi-chevron-${otherSide}`
           : `mdi-chevron-${side}`
       "

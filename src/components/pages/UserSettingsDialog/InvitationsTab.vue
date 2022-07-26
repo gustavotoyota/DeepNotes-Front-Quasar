@@ -69,14 +69,14 @@
           :to="`/pages/${activeGroup?.mainPageId}`"
         />
 
-        <q-btn
+        <SmartBtn
           label="Accept"
           color="positive"
           :disable="selectedIds.size === 0"
           @click="acceptSelectedInvitations()"
         />
 
-        <q-btn
+        <SmartBtn
           label="Reject"
           color="negative"
           :disable="selectedIds.size === 0"
@@ -95,6 +95,7 @@ import { Notify } from 'quasar';
 import { internals } from 'src/code/app/internals';
 import { rolesMap } from 'src/code/app/roles';
 import Gap from 'src/components/misc/Gap.vue';
+import SmartBtn from 'src/components/misc/SmartBtn.vue';
 import { computed, inject, Ref } from 'vue';
 
 import { initialSettings } from './UserSettingsDialog.vue';

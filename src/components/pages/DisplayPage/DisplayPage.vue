@@ -45,7 +45,7 @@
 
         <Gap style="height: 12px" />
 
-        <q-btn
+        <SmartBtn
           label="Accept invitation"
           color="positive"
           @click="acceptInvitation()"
@@ -53,7 +53,7 @@
 
         <Gap style="height: 16px" />
 
-        <q-btn
+        <SmartBtn
           label="Reject invitation"
           color="negative"
           @click="rejectInvitation()"
@@ -67,7 +67,7 @@
 
         <RequestAccessDialog v-if="page.react.userStatus == null">
           <template #default="{ showDialog }">
-            <q-btn
+            <SmartBtn
               label="Request access"
               color="primary"
               @click="showDialog()"
@@ -75,7 +75,7 @@
           </template>
         </RequestAccessDialog>
 
-        <q-btn
+        <SmartBtn
           v-if="page.react.userStatus === 'request'"
           label="Cancel request"
           color="negative"
@@ -111,6 +111,7 @@ import { DICT_GROUP_SYMMETRIC_KEY } from 'src/code/app/pages/pages';
 import { isMouseOverScrollbar } from 'src/code/lib/dom';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
+import SmartBtn from 'src/components/misc/SmartBtn.vue';
 import { onMounted, provide, ref } from 'vue';
 
 import DisplayContent from './DisplayContent.vue';

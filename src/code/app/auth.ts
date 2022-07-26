@@ -44,6 +44,7 @@ export function areTokensExpiring(): boolean {
 export async function tryRefreshTokens(auth: Auth): Promise<void> {
   try {
     if (
+      Cookies.get('logged-in') == null ||
       !isTokenValid('refresh-token') ||
       localStorage.getItem('encrypted-private-key') == null
     ) {
@@ -58,8 +59,6 @@ export async function tryRefreshTokens(auth: Auth): Promise<void> {
     const encryptedPrivateKey = sodium.from_base64(
       localStorage.getItem('encrypted-private-key')!
     );
-
-    console.log('Refreshing tokens...');
 
     const response = await internals.api.post<{
       oldSessionKey: string;

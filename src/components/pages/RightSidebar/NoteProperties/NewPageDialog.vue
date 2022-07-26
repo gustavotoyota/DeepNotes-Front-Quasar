@@ -132,7 +132,7 @@ import Checkbox from 'src/components/misc/Checkbox.vue';
 import Gap from 'src/components/misc/Gap.vue';
 import SmartBtn from 'src/components/misc/SmartBtn.vue';
 import { useUI } from 'src/stores/ui';
-import { computed, inject, Ref, ref } from 'vue';
+import { computed, inject, nextTick, Ref, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -156,7 +156,7 @@ const groupPassword = ref('');
 
 const horizontal = computed(() => ui.width >= BREAKPOINT_MD_MIN);
 
-function showDialog() {
+async function showDialog() {
   visible.value = true;
 
   pageTitle.value = '';
@@ -169,21 +169,23 @@ function showDialog() {
   passwordProtectGroup.value = false;
   groupPassword.value = '';
 
-  setTimeout(() => {
-    const activeElem = $pages.react.page.activeElem.react.elem;
-    if (!(activeElem instanceof PageNote)) {
-      return;
-    }
+  const activeElem = $pages.react.page.activeElem.react.elem;
 
-    if (activeElem.react.topSection === 'container') {
-      return;
-    }
+  if (!(activeElem instanceof PageNote)) {
+    return;
+  }
 
-    const text = activeElem.react.collab[activeElem.react.topSection].value;
-    pageTitle.value = text.toDOM().textContent!.split('\n')[0];
+  if (activeElem.react.topSection === 'container') {
+    return;
+  }
 
-    pageTitleElem.value?.focus();
-  });
+  const text = activeElem.react.collab[activeElem.react.topSection].value;
+
+  pageTitle.value = text.toDOM().textContent!.split('\n')[0];
+
+  await nextTick();
+
+  (pageTitleElem.value as any).$el.focus();
 }
 
 async function createPage() {

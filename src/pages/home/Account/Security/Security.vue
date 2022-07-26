@@ -93,7 +93,7 @@
     <Gap style="height: 24px" />
 
     <q-btn
-      label="Sign out of other sessions"
+      label="Invalidate other sessions"
       color="primary"
       style="max-width: 300px"
     />

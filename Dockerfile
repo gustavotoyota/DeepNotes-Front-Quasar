@@ -5,7 +5,6 @@ RUN yarn global add pm2
 WORKDIR /build
 COPY package*.json ./
 COPY yarn.lock ./
-COPY patches ./patches/
 RUN yarn install
 COPY . .
 RUN yarn build

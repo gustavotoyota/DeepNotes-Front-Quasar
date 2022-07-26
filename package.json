@@ -14,7 +14,7 @@
     "postinstall": "yarn patch-package"
   },
   "dependencies": {
-    "@quasar/extras": "1.13.6",
+    "@quasar/extras": "1.15.0",
     "@syncedstore/core": "0.3.9",
     "@tiptap/extension-code-block-lowlight": "2.0.0-beta.71",
     "@tiptap/extension-collaboration": "2.0.0-beta.33",
@@ -45,7 +45,7 @@
     "postinstall-postinstall": "2.1.0",
     "process": "0.11.10",
     "qrcode": "1.5.1",
-    "quasar": "2.6.6",
+    "quasar": "2.7.5",
     "uuid": "8.3.2",
     "vue": "3.2.33",
     "vue-i18n": "9.1.9",
@@ -74,8 +74,8 @@
     "prosemirror-view": "1.23.13"
   },
   "devDependencies": {
-    "@intlify/vite-plugin-vue-i18n": "3.4.0",
-    "@quasar/app-vite": "1.0.0-beta.14",
+    "@intlify/vite-plugin-vue-i18n": "5.0.1",
+    "@quasar/app-vite": "1.0.5",
     "@types/color": "3.0.3",
     "@types/cookie": "0.5.1",
     "@types/libsodium-wrappers": "0.7.9",

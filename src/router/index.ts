@@ -1,3 +1,4 @@
+import { Cookies } from 'quasar';
 import { route } from 'quasar/wrappers';
 import { getRedirectDest } from 'src/code/app/routing';
 import { useAuth } from 'src/stores/auth';
@@ -19,14 +20,14 @@ import routes from './routes';
  * with the Router instance.
  */
 
-export default route(function (/* { store, ssrContext } */) {
+export default route(function ({ store, ssrContext }) {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
     : process.env.VUE_ROUTER_MODE === 'history'
     ? createWebHistory
     : createWebHashHistory;
 
-  const Router = createRouter({
+  const router = createRouter({
     scrollBehavior: () => ({ left: 0, top: 0 }),
     routes,
 
@@ -36,24 +37,35 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
 
-  let firstTime = true;
+  const auth = useAuth(store);
+  const cookies = process.env.SERVER ? Cookies.parseSSR(ssrContext) : Cookies;
 
-  Router.beforeEach(async (to) => {
-    if (process.env.SERVER || firstTime) {
-      firstTime = false;
+  let firstClientRoute = true;
+
+  router.beforeEach(async (to) => {
+    if (process.env.SERVER) {
       return;
     }
 
-    const auth = useAuth();
+    if (firstClientRoute) {
+      firstClientRoute = false;
+      return;
+    }
 
-    const redirectDest = getRedirectDest(to, auth);
+    // Check if needs to redirect
+
+    const redirectDest = await getRedirectDest(to, auth, cookies);
 
     if (redirectDest != null) {
+      console.log('redirectDest', redirectDest);
+
       return redirectDest;
     }
+
+    // Setup page
 
     void globalThis.$pages?.setupPage(to.params.page_id as string);
   });
 
-  return Router;
+  return router;
 });

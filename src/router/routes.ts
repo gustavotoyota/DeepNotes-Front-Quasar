@@ -102,9 +102,6 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/pages/:page_id',
     component: () => import('src/layouts/PagesLayout.vue'),
-    meta: {
-      requiresAuth: true,
-    },
     children: [
       {
         path: '',

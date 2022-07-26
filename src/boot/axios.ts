@@ -2,7 +2,6 @@ import '@vue/runtime-core';
 import 'pinia';
 
 import axios, { AxiosInstance } from 'axios';
-import { boot } from 'quasar/wrappers';
 import { apiBaseURL } from 'src/code/app/auth';
 import { internals } from 'src/code/app/internals';
 
@@ -12,11 +11,10 @@ declare module 'src/code/app/internals' {
   }
 }
 
-declare module 'pinia' {
-  interface PiniaCustomProperties {
-    api: AxiosInstance;
-  }
-}
+internals.api = axios.create({
+  withCredentials: true,
+  baseURL: apiBaseURL,
+});
 
 // Be careful when using SSR for cross-request state pollution
 // due to creating a Singleton instance here;
@@ -24,16 +22,3 @@ declare module 'pinia' {
 // good idea to move this instance creation inside of the
 // "export default () => {}" function below (which runs individually
 // for each client)
-
-export default boot(({ store }) => {
-  const api = axios.create({
-    withCredentials: true,
-    baseURL: apiBaseURL,
-  });
-
-  store.use(() => ({ api }));
-
-  if (process.env.CLIENT) {
-    internals.api = api;
-  }
-});

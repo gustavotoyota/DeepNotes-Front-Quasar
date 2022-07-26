@@ -7,70 +7,78 @@
 <script lang="ts">
 import cookie from 'cookie';
 import { clearCookie, setCookie } from 'src/code/app/cookies';
+import { internals } from 'src/code/app/internals';
 import { getRedirectDest } from 'src/code/app/routing';
 
 export default {
   async preFetch({ ssrContext, store, currentRoute, redirect }) {
-    // Check if needs to redirect
-
     const auth = useAuth(store);
-
     const cookies = process.env.SERVER ? Cookies.parseSSR(ssrContext) : Cookies;
 
-    auth.loggedIn =
+    // Try refreshing tokens
+
+    const loggedIn =
       cookies.has('access-token') &&
       cookies.has('refresh-token') &&
       cookies.has('logged-in');
 
-    const redirectDest = getRedirectDest(currentRoute, auth);
+    auth.loggedIn = currentRoute.query.loggedIn != null;
+    auth.oldSessionKey = currentRoute.query.oldSessionKey as string;
+    auth.newSessionKey = currentRoute.query.newSessionKey as string;
+
+    if (loggedIn && !auth.loggedIn) {
+      try {
+        const response = await internals.api.post<{
+          oldSessionKey: string;
+          newSessionKey: string;
+        }>(
+          '/auth/refresh',
+          {},
+          {
+            headers: {
+              cookie: `refresh-token=${cookies.get(
+                'refresh-token'
+              )}; logged-in=true`,
+            },
+          }
+        );
+
+        const parsedCookies = cookie.parse(
+          response.headers['set-cookie'].join(';')
+        );
+
+        setCookie(cookies, 'access-token', parsedCookies['access-token']);
+        setCookie(cookies, 'refresh-token', parsedCookies['refresh-token']);
+        setCookie(cookies, 'logged-in', 'true', { httpOnly: false });
+
+        auth.loggedIn = true;
+        auth.oldSessionKey = response.data.oldSessionKey;
+        auth.newSessionKey = response.data.newSessionKey;
+      } catch (err) {
+        console.log(err);
+
+        clearCookie(cookies, 'access-token');
+        clearCookie(cookies, 'refresh-token');
+        clearCookie(cookies, 'logged-in');
+
+        auth.loggedIn = false;
+      }
+    }
+
+    // Check if needs to redirect
+
+    const redirectDest = await getRedirectDest(currentRoute, auth, cookies);
 
     if (redirectDest != null) {
-      redirect(redirectDest);
-      return;
-    }
+      redirect({
+        ...redirectDest,
 
-    // Try refreshing tokens
-
-    if (!auth.loggedIn) {
-      return;
-    }
-
-    try {
-      const response = await auth.api.post<{
-        oldSessionKey: string;
-        newSessionKey: string;
-      }>(
-        '/auth/refresh',
-        {},
-        {
-          headers: {
-            cookie: `refresh-token=${cookies.get(
-              'refresh-token'
-            )}; logged-in=true`,
-          },
-        }
-      );
-
-      auth.oldSessionKey = response.data.oldSessionKey;
-      auth.newSessionKey = response.data.newSessionKey;
-
-      const parsedCookies = cookie.parse(
-        response.headers['set-cookie'].join(';')
-      );
-
-      setCookie(cookies, 'access-token', parsedCookies['access-token']);
-      setCookie(cookies, 'refresh-token', parsedCookies['refresh-token']);
-      setCookie(cookies, 'logged-in', 'true', { httpOnly: false });
-
-      auth.loggedIn = true;
-    } catch (err) {
-      console.log(err);
-
-      clearCookie(cookies, 'access-token');
-      clearCookie(cookies, 'refresh-token');
-      clearCookie(cookies, 'logged-in');
-
-      auth.loggedIn = false;
+        query: {
+          loggedIn: auth.loggedIn.toString(),
+          oldSessionKey: auth.oldSessionKey,
+          newSessionKey: auth.newSessionKey,
+        },
+      });
     }
   },
 };

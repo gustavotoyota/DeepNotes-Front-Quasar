@@ -1,15 +1,40 @@
+import { Cookies } from 'quasar';
+import { internals } from 'src/code/app/internals';
 import { Auth } from 'src/stores/auth';
-import {
-  RouteLocationNormalized,
-  RouteLocationNormalizedLoaded,
-  RouteLocationRaw,
-  Router,
-} from 'vue-router';
+import { RouteLocationNormalized } from 'vue-router';
 
-export function getRedirectDest(
+export async function getRedirectDest(
   route: RouteLocationNormalized,
-  auth: Auth
-): RouteLocationRaw | void {
+  auth: Auth,
+  cookies: Cookies
+): Promise<object | void> {
+  if (auth.loggedIn && route.name === 'pages') {
+    let response;
+
+    if (process.env.SERVER) {
+      let cookieHeader = '';
+      for (const [name, value] of Object.entries(cookies.getAll())) {
+        cookieHeader += `${name}=${value}; `;
+      }
+
+      response = await internals.api.post<{
+        startingPageId: string;
+      }>(
+        '/api/users/starting-page-id',
+        {},
+        {
+          headers: { cookie: cookieHeader },
+        }
+      );
+    } else {
+      response = await internals.api.post<{
+        startingPageId: string;
+      }>('/api/users/starting-page-id');
+    }
+
+    return { path: `/pages/${response.data.startingPageId}` };
+  }
+
   if (
     auth.loggedIn &&
     route.matched.some((record) => record.meta.requiresGuest)
@@ -23,24 +48,4 @@ export function getRedirectDest(
   ) {
     return { name: 'login' };
   }
-}
-
-export function enforceRouteRules(
-  auth: Auth,
-  route: RouteLocationNormalizedLoaded,
-  router: Router
-): boolean {
-  if (process.env.SERVER) {
-    return false;
-  }
-
-  const redirectDest = getRedirectDest(route, auth);
-
-  if (redirectDest == null) {
-    return false;
-  }
-
-  void router.push(redirectDest);
-
-  return true;
 }

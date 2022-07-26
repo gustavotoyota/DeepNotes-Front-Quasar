@@ -1,10 +1,10 @@
 import sodium from 'libsodium-wrappers';
 import { boot } from 'quasar/wrappers';
-import { storeTokenExpirations } from 'src/code/app/auth';
+import { logout, storeTokenExpirations } from 'src/code/app/auth';
 import { reencryptSessionPrivateKey } from 'src/code/app/crypto/crypto';
 import { useAuth } from 'src/stores/auth';
 
-export default boot(({ store }) => {
+export default boot(async ({ store }) => {
   const auth = useAuth(store);
 
   if (
@@ -30,5 +30,7 @@ export default boot(({ store }) => {
     );
   } catch (error) {
     console.error(error);
+
+    await logout();
   }
 });

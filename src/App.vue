@@ -12,19 +12,22 @@ import { getRedirectDest } from 'src/code/app/routing';
 
 export default {
   async preFetch({ ssrContext, store, currentRoute, redirect }) {
+    // Initialize auth data
+
     const auth = useAuth(store);
-    const cookies = process.env.SERVER ? Cookies.parseSSR(ssrContext) : Cookies;
+
+    auth.loggedIn = currentRoute.query.loggedIn === 'true';
+    auth.oldSessionKey = currentRoute.query.oldSessionKey as string;
+    auth.newSessionKey = currentRoute.query.newSessionKey as string;
 
     // Try refreshing tokens
+
+    const cookies = process.env.SERVER ? Cookies.parseSSR(ssrContext) : Cookies;
 
     const loggedIn =
       cookies.has('access-token') &&
       cookies.has('refresh-token') &&
       cookies.has('logged-in');
-
-    auth.loggedIn = currentRoute.query.loggedIn != null;
-    auth.oldSessionKey = currentRoute.query.oldSessionKey as string;
-    auth.newSessionKey = currentRoute.query.newSessionKey as string;
 
     if (loggedIn && !auth.loggedIn) {
       try {

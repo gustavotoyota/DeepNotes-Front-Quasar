@@ -111,6 +111,7 @@ import { DICT_GROUP_SYMMETRIC_KEY } from 'src/code/app/pages/pages';
 import { decryptSymmetric } from 'src/code/lib/crypto/crypto';
 import { wrapSymmetricKey } from 'src/code/lib/crypto/symmetric-key';
 import { isMouseOverScrollbar } from 'src/code/lib/dom';
+import { uuidToBytes } from 'src/code/lib/uuid';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import SmartBtn from 'src/components/misc/SmartBtn.vue';
@@ -215,9 +216,9 @@ async function rejectInvitation() {
 async function onEnterPassword() {
   try {
     const groupPasswordHash = sodium.crypto_pwhash(
-      32,
+      sodium.crypto_aead_chacha20poly1305_ietf_KEYBYTES,
       password.value,
-      new Uint8Array(sodium.crypto_pwhash_SALTBYTES),
+      uuidToBytes(props.page.react.groupId),
       sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
       sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE,
       sodium.crypto_pwhash_ALG_ARGON2ID13

@@ -128,10 +128,12 @@ import { privateKey } from 'src/code/lib/crypto/private-key';
 import { wrapSymmetricKey } from 'src/code/lib/crypto/symmetric-key';
 import { BREAKPOINT_MD_MIN } from 'src/code/lib/responsive';
 import { encodeText } from 'src/code/lib/text';
+import { uuidToBytes } from 'src/code/lib/uuid';
 import Checkbox from 'src/components/misc/Checkbox.vue';
 import Gap from 'src/components/misc/Gap.vue';
 import SmartBtn from 'src/components/misc/SmartBtn.vue';
 import { useUI } from 'src/stores/ui';
+import { v4 } from 'uuid';
 import { computed, inject, nextTick, Ref, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -199,22 +201,29 @@ async function createPage() {
   }
 
   try {
+    let groupId;
     let groupSymmetricKey;
     let encryptedGroupSymmetricKey;
     let encryptedGroupName;
 
     let encryptedPageTitle;
 
-    if (createGroup.value) {
+    if (!createGroup.value) {
+      encryptedPageTitle = page.value.react.groupSymmetricKey.encrypt(
+        encodeText(pageTitle.value)
+      );
+    } else {
+      groupId = v4();
+
       groupSymmetricKey = sodium.randombytes_buf(32);
 
       const wrappedGroupSymmetricKey = wrapSymmetricKey(groupSymmetricKey);
 
       if (passwordProtectGroup.value) {
         const groupPasswordHash = sodium.crypto_pwhash(
-          32,
+          sodium.crypto_aead_chacha20poly1305_ietf_KEYBYTES,
           groupPassword.value,
-          new Uint8Array(sodium.crypto_pwhash_SALTBYTES),
+          uuidToBytes(groupId),
           sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
           sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE,
           sodium.crypto_pwhash_ALG_ARGON2ID13
@@ -238,10 +247,6 @@ async function createPage() {
       encryptedPageTitle = wrappedGroupSymmetricKey.encrypt(
         encodeText(pageTitle.value)
       );
-    } else {
-      encryptedPageTitle = page.value.react.groupSymmetricKey.encrypt(
-        encodeText(pageTitle.value)
-      );
     }
 
     const response = await internals.api.post<{
@@ -251,6 +256,7 @@ async function createPage() {
       encryptedPageTitle: bytesToBase64(encryptedPageTitle),
 
       createGroup: createGroup.value,
+      groupId,
       publicGroup: publicGroup.value,
       encryptedGroupSymmetricKey: bytesToBase64(encryptedGroupSymmetricKey),
       encryptedGroupName: bytesToBase64(encryptedGroupName),

@@ -9,28 +9,21 @@ export async function getRedirectDest(
   cookies: Cookies
 ): Promise<object | void> {
   if (auth.loggedIn && route.name === 'pages') {
-    let response;
-
-    if (process.env.SERVER) {
-      let cookieHeader = '';
-      for (const [name, value] of Object.entries(cookies.getAll())) {
-        cookieHeader += `${name}=${value}; `;
-      }
-
-      response = await internals.api.post<{
-        startingPageId: string;
-      }>(
-        '/api/users/starting-page-id',
-        {},
-        {
-          headers: { cookie: cookieHeader },
-        }
-      );
-    } else {
-      response = await internals.api.post<{
-        startingPageId: string;
-      }>('/api/users/starting-page-id');
-    }
+    const response = await internals.api.post<{
+      startingPageId: string;
+    }>(
+      '/api/users/starting-page-id',
+      {},
+      process.env.SERVER
+        ? {
+            headers: {
+              cookie: Object.entries(cookies.getAll())
+                .map(([name, value]) => `${name}=${value}`)
+                .join(';'),
+            },
+          }
+        : undefined
+    );
 
     return { path: `/pages/${response.data.startingPageId}` };
   }

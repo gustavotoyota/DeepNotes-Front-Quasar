@@ -128,9 +128,9 @@ async function register() {
     const groupSymmetricKey = wrapSymmetricKey(randomKeys.groupSymmetricKey);
 
     await internals.api.post('/auth/register', {
-      email: email,
+      email: email.value,
 
-      displayName: displayName,
+      displayName: displayName.value,
 
       passwordHash: sodium.to_base64(derivedKeys.passwordHash),
 

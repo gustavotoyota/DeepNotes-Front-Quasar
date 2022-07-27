@@ -54,8 +54,8 @@ export default {
         auth.loggedIn = true;
         auth.oldSessionKey = response.data.oldSessionKey;
         auth.newSessionKey = response.data.newSessionKey;
-      } catch (err) {
-        console.log(err);
+      } catch (error) {
+        console.log(error);
 
         clearCookie(cookies, 'access-token');
         clearCookie(cookies, 'refresh-token');

@@ -58,4 +58,15 @@ export class AppPageCache {
   add(page: AppPage): void {
     this.react.cache.push(page);
   }
+
+  bump(pageId: string): void {
+    const page = this.get(pageId);
+
+    if (page == null) {
+      return;
+    }
+
+    this.react.cache.splice(this.react.cache.indexOf(page), 1);
+    this.react.cache.push(page);
+  }
 }

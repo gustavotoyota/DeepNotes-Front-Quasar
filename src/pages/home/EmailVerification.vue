@@ -72,8 +72,8 @@ onMounted(async () => {
     });
 
     status.value = true;
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    console.log(error);
 
     status.value = false;
   }

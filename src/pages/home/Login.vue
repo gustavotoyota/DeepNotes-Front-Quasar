@@ -269,13 +269,13 @@ async function onSubmit() {
     });
 
     await router.push('/pages');
-  } catch (err: any) {
+  } catch (error: any) {
     Notify.create({
-      message: err.response?.data.message ?? 'An error has occurred.',
+      message: error.response?.data.message ?? 'An error has occurred.',
       type: 'negative',
     });
 
-    console.error(err);
+    console.error(error);
   }
 }
 </script>

@@ -127,6 +127,8 @@ export class AppPage implements IPageRegion {
   readonly arrows: PageArrows;
   readonly arrowCreation: PageArrowCreation;
 
+  startedSetup = false;
+
   unwatchUserDisplayName?: WatchStopHandle;
 
   originElem!: Element;
@@ -280,6 +282,8 @@ export class AppPage implements IPageRegion {
   }
 
   async setup() {
+    this.startedSetup = true;
+
     this.app.bumpRecentPage(this.id);
 
     this.react.status = undefined;
@@ -298,7 +302,7 @@ export class AppPage implements IPageRegion {
 
       encryptedSymmetricKey: string | undefined;
       encryptersPublicKey: string | undefined;
-    }>('/api/pages/data', {
+    }>('/pages/data', {
       pageId: this.id,
       parentPageId,
     });

@@ -1,7 +1,5 @@
-import axios from 'axios';
 import sodium from 'libsodium-wrappers';
 import { pull } from 'lodash';
-import { logout } from 'src/code/app/auth';
 import { Factory, factory } from 'src/code/app/composition-root';
 import { saveGroupSymmetricKey } from 'src/code/app/crypto/crypto';
 import { privateKey } from 'src/code/app/crypto/private-key';
@@ -233,17 +231,24 @@ export class PagesApp {
   }
 
   async loadData() {
-    const response = await internals.api.post<{
-      userId: string;
+    let response;
 
-      publicKey: string;
-      encryptedSymmetricKey: string;
+    try {
+      response = await internals.api.post<{
+        userId: string;
 
-      encryptedDefaultNote: string;
-      encryptedDefaultArrow: string;
+        publicKey: string;
+        encryptedSymmetricKey: string;
 
-      mainGroupId: string;
-    }>('/api/users/data');
+        encryptedDefaultNote: string;
+        encryptedDefaultArrow: string;
+
+        mainGroupId: string;
+      }>('/api/users/data');
+    } catch (error) {
+      console.log(error);
+      return;
+    }
 
     // Load user data
 
@@ -278,6 +283,80 @@ export class PagesApp {
     );
 
     this.loadPromise.resolve();
+  }
+
+  async setupPage(nextPageId: string) {
+    const prevPageId = this.react.pageId;
+
+    let page;
+
+    if (this.pageCache.has(nextPageId)) {
+      page = this.pageCache.get(nextPageId)!;
+    } else {
+      page = factory.makePage(this, nextPageId);
+
+      this.pageCache.add(page);
+    }
+
+    $pages.react.page = page;
+
+    await this.updatePathPages(prevPageId, nextPageId);
+
+    if (!page.startedSetup) {
+      try {
+        await page.setup();
+      } catch (error: any) {
+        console.log(error);
+
+        if (error.response?.status === 401) {
+          page.react.status = 'unauthorized';
+          page.react.loading = false;
+        } else {
+          page.react.status = 'error';
+          page.react.errorMessage = error.response?.data.message;
+          page.react.loading = false;
+        }
+      }
+    } else {
+      this.bumpPage(nextPageId);
+    }
+  }
+
+  async updatePathPages(prevPageId: string | null, nextPageId: string) {
+    if (
+      this.react.pathPageIds.find((pathPageId) => pathPageId === nextPageId)
+    ) {
+      // New page exists in path
+      // Do nothing
+
+      return;
+    }
+
+    const prevPageIndex = this.react.pathPageIds.findIndex(
+      (pagePageId) => pagePageId === prevPageId
+    );
+
+    if (prevPageIndex >= 0) {
+      // Previous page exists in path
+      // Insert new page in front of previous page
+
+      this.react.pathPageIds.splice(prevPageIndex + 1);
+      this.react.pathPageIds.push(nextPageId);
+
+      return;
+    }
+
+    // Previous page does not exist in path
+    // Try to load path pages
+
+    try {
+      await this.loadPages(nextPageId);
+    } catch (error) {
+      // Couldn't load path pages
+      // Set new page as root page
+
+      this.react.pathPageIds = [nextPageId];
+    }
   }
 
   async loadPages(initialPageId: string) {
@@ -322,93 +401,22 @@ export class PagesApp {
     });
   }
 
-  async bumpPage(pageId: string) {
+  bumpPage(pageId: string) {
     // New page exists in path
 
     this.bumpRecentPage(pageId);
 
-    const parentPageId = this.parentPageId;
-    this.parentPageId = null;
-
-    await internals.api.post('/api/pages/bump', {
+    void internals.api.post('/api/pages/bump', {
       pageId,
-      parentPageId,
+      parentPageId: this.parentPageId,
     });
+
+    this.parentPageId = null;
   }
   bumpRecentPage(pageId: string) {
-    const recentPageId = this.react.recentPageIds.find(
-      (recentPageId) => recentPageId === pageId
-    );
+    this.pageCache.bump(pageId);
 
-    pull(this.react.recentPageIds, recentPageId);
-
+    pull(this.react.recentPageIds, pageId);
     this.react.recentPageIds.unshift(pageId);
-  }
-
-  async updatePathPages(prevPageId: string | null, nextPageId: string) {
-    if (
-      this.react.pathPageIds.find((pathPageId) => pathPageId === nextPageId)
-    ) {
-      // New page exists in path
-
-      return;
-    }
-
-    const prevPageIndex = this.react.pathPageIds.findIndex(
-      (pagePageId) => pagePageId === prevPageId
-    );
-
-    if (prevPageIndex >= 0) {
-      // Previous page exists in path
-
-      this.react.pathPageIds.splice(prevPageIndex + 1);
-      this.react.pathPageIds.push(nextPageId);
-
-      return;
-    }
-
-    // Previous page does not exist in path
-    // Reload all path pages
-
-    await this.loadPages(nextPageId);
-  }
-
-  async setupPage(nextPageId: string) {
-    try {
-      const prevPageId = this.react.pageId;
-      const wasCached = this.pageCache.has(nextPageId);
-
-      let page;
-
-      if (wasCached) {
-        page = this.pageCache.get(nextPageId)!;
-      } else {
-        page = factory.makePage(this, nextPageId);
-
-        this.pageCache.add(page);
-      }
-
-      $pages.react.page = page;
-
-      await this.updatePathPages(prevPageId, nextPageId);
-
-      if (wasCached) {
-        await this.bumpPage(nextPageId);
-      } else {
-        await page.setup();
-      }
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        if (err.response?.status === 401) {
-          await logout();
-        } else {
-          $pages.react.page.react.status = 'error';
-          $pages.react.page.react.errorMessage = err.response?.data.message;
-          $pages.react.page.react.loading = false;
-        }
-      } else {
-        console.error(err);
-      }
-    }
   }
 }

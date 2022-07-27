@@ -164,13 +164,13 @@ async function register() {
         email: email.value,
       },
     });
-  } catch (err: any) {
+  } catch (error: any) {
     Notify.create({
-      message: err.response?.message ?? 'An error has occurred.',
+      message: error.response?.message ?? 'An error has occurred.',
       type: 'negative',
     });
 
-    console.error(err);
+    console.error(error);
   }
 }
 </script>

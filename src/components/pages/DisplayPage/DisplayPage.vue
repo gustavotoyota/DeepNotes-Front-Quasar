@@ -63,31 +63,33 @@
       <template v-else>
         <div>You do not have permission to access this page.</div>
 
-        <Gap style="height: 12px" />
+        <template v-if="auth.loggedIn">
+          <Gap style="height: 12px" />
 
-        <RequestAccessDialog v-if="page.react.userStatus == null">
-          <template #default="{ showDialog }">
-            <SmartBtn
-              label="Request access"
-              color="primary"
-              @click="showDialog()"
-            />
-          </template>
-        </RequestAccessDialog>
+          <RequestAccessDialog v-if="page.react.userStatus == null">
+            <template #default="{ showDialog }">
+              <SmartBtn
+                label="Request access"
+                color="primary"
+                @click="showDialog()"
+              />
+            </template>
+          </RequestAccessDialog>
 
-        <SmartBtn
-          v-if="page.react.userStatus === 'request'"
-          label="Cancel request"
-          color="negative"
-          @click="cancelRequest()"
-        />
+          <SmartBtn
+            v-if="page.react.userStatus === 'request'"
+            label="Cancel request"
+            color="negative"
+            @click="cancelRequest()"
+          />
 
-        <div
-          v-if="page.react.userStatus === 'rejected'"
-          style="color: red"
-        >
-          Your access request has been rejected.
-        </div>
+          <div
+            v-if="page.react.userStatus === 'rejected'"
+            style="color: red"
+          >
+            Your access request has been rejected.
+          </div>
+        </template>
       </template>
     </template>
 
@@ -112,6 +114,7 @@ import { isMouseOverScrollbar } from 'src/code/lib/dom';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import SmartBtn from 'src/components/misc/SmartBtn.vue';
+import { useAuth } from 'src/stores/auth';
 import { onMounted, provide, ref } from 'vue';
 
 import DisplayContent from './DisplayContent.vue';
@@ -122,6 +125,8 @@ const props = defineProps<{
 }>();
 
 provide('page', props.page);
+
+const auth = useAuth();
 
 const password = ref('');
 
@@ -164,13 +169,13 @@ async function cancelRequest() {
 
     // eslint-disable-next-line vue/no-mutating-props
     props.page.react.userStatus = undefined;
-  } catch (err: any) {
+  } catch (error: any) {
     Notify.create({
-      message: err.response?.data.message ?? 'An error has occurred.',
+      message: error.response?.data.message ?? 'An error has occurred.',
       type: 'negative',
     });
 
-    console.error(err);
+    console.error(error);
   }
 }
 
@@ -181,13 +186,13 @@ async function acceptInvitation() {
     });
 
     await props.page.setup();
-  } catch (err: any) {
+  } catch (error: any) {
     Notify.create({
-      message: err.response?.data.message ?? 'An error has occurred.',
+      message: error.response?.data.message ?? 'An error has occurred.',
       type: 'negative',
     });
 
-    console.error(err);
+    console.error(error);
   }
 }
 async function rejectInvitation() {
@@ -198,13 +203,13 @@ async function rejectInvitation() {
 
     props.page.react.userStatus = undefined;
     props.page.react.symmetricKey = null as any;
-  } catch (err: any) {
+  } catch (error: any) {
     Notify.create({
-      message: err.response?.data.message ?? 'An error has occurred.',
+      message: error.response?.data.message ?? 'An error has occurred.',
       type: 'negative',
     });
 
-    console.error(err);
+    console.error(error);
   }
 }
 
@@ -237,13 +242,13 @@ async function onEnterPassword() {
         await page.finishSetup();
       }
     }
-  } catch (err) {
+  } catch (error) {
     Notify.create({
       message: 'Incorrect password.',
       type: 'negative',
     });
 
-    console.error(err);
+    console.error(error);
   }
 }
 </script>

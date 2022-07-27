@@ -78,8 +78,8 @@ export async function tryRefreshTokens(auth: Auth): Promise<void> {
     );
 
     auth.loggedIn = true;
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
     await logout();
   }
 }

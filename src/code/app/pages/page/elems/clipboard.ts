@@ -86,13 +86,13 @@ export class PageClipboard {
       const arrows = this.page.arrows.validFromIds(arrowIds, destLayer.id);
 
       this.page.selection.set(...(notes as PageElem[]).concat(arrows));
-    } catch (err) {
+    } catch (error) {
       Notify.create({
         message: 'Failed to paste from clipboard.',
         type: 'negative',
       });
 
-      console.log(err);
+      console.log(error);
     }
   }
 

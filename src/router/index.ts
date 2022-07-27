@@ -57,8 +57,6 @@ export default route(function ({ store, ssrContext }) {
     const redirectDest = await getRedirectDest(to, auth, cookies);
 
     if (redirectDest != null) {
-      console.log('redirectDest', redirectDest);
-
       return redirectDest;
     }
 

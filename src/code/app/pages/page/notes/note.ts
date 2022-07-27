@@ -340,7 +340,7 @@ export class PageNote extends PageElem implements IPageRegion {
             }
 
             if (
-              this.page.react.readonly ||
+              this.page.react.groupReadOnly ||
               this.react.collab.collapsing.localCollapsing
             ) {
               return this.react.collapsing.locallyCollapsed;
@@ -350,7 +350,7 @@ export class PageNote extends PageElem implements IPageRegion {
           },
           set: (val) => {
             if (
-              this.page.react.readonly ||
+              this.page.react.groupReadOnly ||
               this.react.collab.collapsing.localCollapsing
             ) {
               this.react.collapsing.locallyCollapsed = val;

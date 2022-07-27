@@ -7,7 +7,7 @@ export class PageCloning {
   constructor(readonly page: AppPage) {}
 
   async perform() {
-    if (this.page.react.readonly) {
+    if (this.page.react.groupReadOnly) {
       return;
     }
 

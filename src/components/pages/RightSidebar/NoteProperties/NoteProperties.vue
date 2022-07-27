@@ -3,7 +3,7 @@
     <MiniSidebarBtn
       tooltip="Head"
       icon="mdi-page-layout-header"
-      :disable="page.react.readonly"
+      :disable="page.react.groupReadOnly"
       :active="note.react.collab.head.enabled"
       @click="
         changeProp(!note.react.collab.head.enabled, (note, value) => {
@@ -17,7 +17,7 @@
     <MiniSidebarBtn
       tooltip="Swap head and body"
       icon="mdi-swap-vertical"
-      :disable="page.react.readonly"
+      :disable="page.react.groupReadOnly"
       @click="
         changeProp(null, (note) => {
           internals.tiptap.swapXmlFragments(
@@ -31,7 +31,7 @@
     <MiniSidebarBtn
       tooltip="Body"
       icon="mdi-page-layout-body"
-      :disable="page.react.readonly"
+      :disable="page.react.groupReadOnly"
       :active="note.react.collab.body.enabled"
       @click="
         changeProp(!note.react.collab.body.enabled, (note, value) => {
@@ -47,7 +47,7 @@
     <MiniSidebarBtn
       tooltip="Container"
       icon="mdi-page-layout-footer"
-      :disable="page.react.readonly"
+      :disable="page.react.groupReadOnly"
       :active="note.react.collab.container.enabled"
       @click="
         changeProp(!note.react.collab.container.enabled, (note, value) => {
@@ -63,7 +63,7 @@
     <MiniSidebarBtn
       tooltip="Collapsible"
       icon="mdi-minus-box"
-      :disable="page.react.readonly"
+      :disable="page.react.groupReadOnly"
       :active="note.react.collab.collapsing.enabled"
       @click="
         changeProp(!note.react.collab.collapsing.enabled, (note, value) => {
@@ -80,7 +80,9 @@
           : 'mdi-chevron-up-box-outline'
       "
       :active="note.react.collapsing.collapsed"
-      :disable="page.react.readonly || !note.react.collab.collapsing.enabled"
+      :disable="
+        page.react.groupReadOnly || !note.react.collab.collapsing.enabled
+      "
       @click="
         changeProp(!note.react.collapsing.collapsed, (note, value) => {
           note.react.collapsing.collapsed = value;
@@ -95,7 +97,7 @@
     <div style="padding: 20px; display: flex; flex-direction: column">
       <Combobox
         label="Link URL"
-        :disable="page.react.readonly"
+        :disable="page.react.groupReadOnly"
         :options="
           $pages.react.recentPageIds.map((pageId) => ({
             label: $pages.react.pageTitles[pageId],
@@ -128,7 +130,7 @@
           <q-btn
             label="Create new page"
             color="primary"
-            :disable="page.react.readonly"
+            :disable="page.react.groupReadOnly"
             @click="showDialog()"
           />
         </template>
@@ -143,7 +145,7 @@
       <div style="display: flex">
         <Checkbox
           label="Head"
-          :disable="page.react.readonly"
+          :disable="page.react.groupReadOnly"
           :model-value="note.react.collab.head.enabled"
           @update:model-value="
             changeProp($event, (note, value) => {
@@ -158,7 +160,7 @@
 
         <Checkbox
           label="Body"
-          :disable="page.react.readonly"
+          :disable="page.react.groupReadOnly"
           :model-value="note.react.collab.body.enabled"
           @update:model-value="
             changeProp($event, (note, value) => {
@@ -176,7 +178,7 @@
         <q-btn
           label="Swap"
           color="primary"
-          :disable="page.react.readonly"
+          :disable="page.react.groupReadOnly"
           dense
           style="flex: 1"
           @click="
@@ -194,7 +196,7 @@
         <q-btn
           label="Float"
           color="primary"
-          :disable="page.react.readonly"
+          :disable="page.react.groupReadOnly"
           dense
           style="flex: 1"
           @click="
@@ -266,7 +268,7 @@
         <div style="flex: 1">
           <q-select
             label="X anchor"
-            :disable="page.react.readonly"
+            :disable="page.react.groupReadOnly"
             :model-value="note.react.collab.anchor.x"
             @update:model-value="
               changeProp($event, (note, value) => {
@@ -292,7 +294,7 @@
         <div style="flex: 1">
           <q-select
             label="Y anchor"
-            :disable="page.react.readonly"
+            :disable="page.react.groupReadOnly"
             :model-value="note.react.collab.anchor.y"
             @update:model-value="
               changeProp($event, (note, value) => {
@@ -321,7 +323,7 @@
       <div style="display: flex">
         <Combobox
           label="Width"
-          :disable="page.react.readonly"
+          :disable="page.react.groupReadOnly"
           :options="[{ label: 'Auto', value: 'Auto' }]"
           :model-value="note.react.collab.width[note.react.sizeProp]"
           @update:model-value="
@@ -336,7 +338,7 @@
 
         <Combobox
           label="Head height"
-          :disable="page.react.readonly"
+          :disable="page.react.groupReadOnly"
           :options="[{ label: 'Auto', value: 'Auto' }]"
           :model-value="note.react.collab.head.height[note.react.sizeProp]"
           @update:model-value="
@@ -353,7 +355,7 @@
       <div style="display: flex">
         <Combobox
           label="Body height"
-          :disable="page.react.readonly"
+          :disable="page.react.groupReadOnly"
           :options="[{ label: 'Auto', value: 'Auto' }]"
           :model-value="note.react.collab.body.height[note.react.sizeProp]"
           @update:model-value="
@@ -368,7 +370,7 @@
 
         <Combobox
           label="Container height"
-          :disable="page.react.readonly"
+          :disable="page.react.groupReadOnly"
           :options="[{ label: 'Auto', value: 'Auto' }]"
           :model-value="note.react.collab.container.height[note.react.sizeProp]"
           @update:model-value="
@@ -386,7 +388,7 @@
     <div style="padding: 20px">
       <Checkbox
         label="Inherit color from parent"
-        :disable="page.react.readonly"
+        :disable="page.react.groupReadOnly"
         :model-value="note.react.collab.color.inherit"
         @update:model-value="
           changeProp($event, (note, value) => {
@@ -398,7 +400,7 @@
       <Gap style="height: 16px" />
 
       <q-color
-        :disable="page.react.readonly"
+        :disable="page.react.groupReadOnly"
         :model-value="note.react.collab.color.value"
         @update:model-value="
           changeProp($event, (note, value) => {
@@ -442,7 +444,7 @@
       <div style="display: flex">
         <Checkbox
           label="Collapsible"
-          :disable="page.react.readonly"
+          :disable="page.react.groupReadOnly"
           :model-value="note.react.collab.collapsing.enabled"
           @update:model-value="
             changeProp($event, (note, value) => {
@@ -462,7 +464,7 @@
             })
           "
           :disable="
-            page.react.readonly || !note.react.collab.collapsing.enabled
+            page.react.groupReadOnly || !note.react.collab.collapsing.enabled
           "
         />
       </div>
@@ -479,7 +481,7 @@
             })
           "
           :disable="
-            page.react.readonly || !note.react.collab.collapsing.enabled
+            page.react.groupReadOnly || !note.react.collab.collapsing.enabled
           "
         />
 
@@ -494,7 +496,7 @@
             })
           "
           :disable="
-            page.react.readonly ||
+            page.react.groupReadOnly ||
             !note.react.collab.collapsing.enabled ||
             !note.react.collab.collapsing.localCollapsing
           "
@@ -510,7 +512,7 @@
       <div style="display: flex">
         <Checkbox
           label="Container"
-          :disable="page.react.readonly"
+          :disable="page.react.groupReadOnly"
           :model-value="note.react.collab.container.enabled"
           @update:model-value="
             changeProp($event, (note, value) => {
@@ -531,7 +533,9 @@
               note.react.collab.container.spatial = value;
             })
           "
-          :disable="page.react.readonly || !note.react.collab.container.enabled"
+          :disable="
+            page.react.groupReadOnly || !note.react.collab.container.enabled
+          "
         />
       </div>
 
@@ -547,7 +551,7 @@
             })
           "
           :disable="
-            page.react.readonly ||
+            page.react.groupReadOnly ||
             !note.react.collab.container.enabled ||
             note.react.collab.container.spatial
           "
@@ -564,7 +568,7 @@
             })
           "
           :disable="
-            page.react.readonly ||
+            page.react.groupReadOnly ||
             !note.react.collab.container.enabled ||
             note.react.collab.container.horizontal ||
             note.react.collab.container.spatial
@@ -583,7 +587,7 @@
           })
         "
         :disable="
-          page.react.readonly ||
+          page.react.groupReadOnly ||
           !note.react.collab.container.enabled ||
           note.react.collab.container.spatial
         "
@@ -593,7 +597,9 @@
 
       <q-btn
         label="Reverse children"
-        :disable="page.react.readonly || !note.react.collab.container.enabled"
+        :disable="
+          page.react.groupReadOnly || !note.react.collab.container.enabled
+        "
         color="primary"
         @click="
           changeProp($event, (note, value) => {
@@ -608,7 +614,7 @@
     <div style="padding: 20px; display: flex">
       <Checkbox
         label="Movable"
-        :disable="page.react.readonly"
+        :disable="page.react.groupReadOnly"
         :model-value="note.react.collab.movable"
         @update:model-value="
           changeProp($event, (note, value) => {
@@ -621,7 +627,7 @@
 
       <Checkbox
         label="Resizable"
-        :disable="page.react.readonly"
+        :disable="page.react.groupReadOnly"
         :model-value="note.react.collab.resizable"
         @update:model-value="
           changeProp($event, (note, value) => {
@@ -636,7 +642,7 @@
     <div style="padding: 20px; display: flex">
       <Checkbox
         label="Wrap head"
-        :disable="page.react.readonly"
+        :disable="page.react.groupReadOnly"
         :model-value="note.react.collab.head.wrap"
         @update:model-value="
           changeProp($event, (note, value) => {
@@ -649,7 +655,7 @@
 
       <Checkbox
         label="Wrap body"
-        :disable="page.react.readonly"
+        :disable="page.react.groupReadOnly"
         :model-value="note.react.collab.body.wrap"
         @update:model-value="
           changeProp($event, (note, value) => {
@@ -664,7 +670,7 @@
     <div style="padding: 20px; display: flex">
       <Checkbox
         label="Read-only"
-        :disable="page.react.readonly"
+        :disable="page.react.groupReadOnly"
         :model-value="note.react.collab.readOnly"
         @update:model-value="
           changeProp($event, (note, value) => {

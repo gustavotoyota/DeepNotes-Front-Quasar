@@ -8,7 +8,7 @@ import { ClientSocket } from 'src/code/lib/client-socket';
 import { Resolvable } from 'src/code/lib/resolvable';
 import { nextTick, reactive } from 'vue';
 
-import { DICT_GROUP_SYMMETRIC_KEY } from './pages';
+import { DICT_GROUP_SYMMETRIC_KEY, DICT_GROUP_USER_STATUS } from './pages';
 
 export const REALTIME_USER_NOTIFICATION = 'user-notification';
 export const REALTIME_ENCRYPTED_GROUP_NAME = 'encrypted-group-name';
@@ -305,10 +305,13 @@ export class AppRealtime extends ClientSocket {
                 type: 'positive',
               });
             } else if (notifObj.type === NOTIFICATION_GROUP_REQUEST_REJECTED) {
+              $pages.react.dict[
+                `${DICT_GROUP_USER_STATUS}:${notifObj.data.groupId}`
+              ] = 'rejected';
+
               for (const page of $pages.pageCache.react.cache) {
                 if (page.react.groupId === notifObj.data.groupId) {
                   page.react.status = 'unauthorized';
-                  page.react.userStatus = 'rejected';
                 }
               }
 
@@ -317,10 +320,13 @@ export class AppRealtime extends ClientSocket {
                 type: 'negative',
               });
             } else if (notifObj.type === NOTIFICATION_GROUP_INVITATION_SENT) {
+              $pages.react.dict[
+                `${DICT_GROUP_USER_STATUS}:${notifObj.data.groupId}`
+              ] = 'invite';
+
               for (const page of $pages.pageCache.react.cache) {
                 if (page.react.groupId === notifObj.data.groupId) {
                   page.react.status = 'unauthorized';
-                  page.react.userStatus = 'invite';
                 }
               }
 
@@ -331,10 +337,13 @@ export class AppRealtime extends ClientSocket {
             } else if (
               notifObj.type === NOTIFICATION_GROUP_INVITATION_CANCELLED
             ) {
+              $pages.react.dict[
+                `${DICT_GROUP_USER_STATUS}:${notifObj.data.groupId}`
+              ] = null;
+
               for (const page of $pages.pageCache.react.cache) {
                 if (page.react.groupId === notifObj.data.groupId) {
                   page.react.status = 'unauthorized';
-                  page.react.userStatus = undefined;
                 }
               }
 
@@ -349,7 +358,7 @@ export class AppRealtime extends ClientSocket {
             } else if (notifObj.type === NOTIFICATION_GROUP_USER_ROLE_CHANGED) {
               for (const page of $pages.pageCache.react.cache) {
                 if (page.react.groupId === notifObj.data.groupId) {
-                  page.react.roleId = notifObj.data.roleId;
+                  page.react.groupRoleId = notifObj.data.roleId;
                 }
               }
 
@@ -360,10 +369,13 @@ export class AppRealtime extends ClientSocket {
                 type: 'info',
               });
             } else if (notifObj.type === NOTIFICATION_GROUP_USER_REMOVED) {
+              $pages.react.dict[
+                `${DICT_GROUP_USER_STATUS}:${notifObj.data.groupId}`
+              ] = null;
+
               for (const page of $pages.pageCache.react.cache) {
                 if (page.react.groupId === notifObj.data.groupId) {
                   page.react.status = 'unauthorized';
-                  page.react.userStatus = undefined;
                 }
               }
 

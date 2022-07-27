@@ -36,7 +36,7 @@ export class PageClipboard {
   }
 
   async paste(text?: string) {
-    if (this.page.react.readonly) {
+    if (this.page.react.groupReadOnly) {
       return;
     }
 

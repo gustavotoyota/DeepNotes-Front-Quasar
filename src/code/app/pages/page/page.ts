@@ -6,6 +6,7 @@ import {
   DICT_GROUP_OWNER_ID,
   DICT_GROUP_ROLE_ID,
   DICT_GROUP_SYMMETRIC_KEY,
+  DICT_GROUP_USER_STATUS,
   DICT_PAGE_GROUP_ID,
   PagesApp,
 } from 'src/code/app/pages/pages';
@@ -69,18 +70,17 @@ export interface IAppPageReact extends IRegionReact {
   size: number;
 
   status?: string;
-  userStatus?: string;
   errorMessage?: string;
 
   title: WritableComputedRef<string>;
 
   groupId: WritableComputedRef<string>;
   groupName: WritableComputedRef<string>;
-  ownerId: WritableComputedRef<string | null>;
-  roleId: WritableComputedRef<string | null>;
-  symmetricKey: WritableComputedRef<SymmetricKey>;
-
-  readonly: ComputedRef<boolean>;
+  groupOwnerId: WritableComputedRef<string | null>;
+  groupUserStatus: WritableComputedRef<string | null>;
+  groupRoleId: WritableComputedRef<string | null>;
+  groupSymmetricKey: WritableComputedRef<SymmetricKey>;
+  groupReadOnly: ComputedRef<boolean>;
 
   numEditorsLoading: number;
   allEditorsLoaded: ComputedRef<boolean>;
@@ -206,7 +206,7 @@ export class AppPage implements IPageRegion {
           this.app.react.groupNames[this.react.groupId] = value;
         },
       }),
-      ownerId: computed({
+      groupOwnerId: computed({
         get: () =>
           this.app.react.dict[`${DICT_GROUP_OWNER_ID}:${this.react.groupId}`],
         set: (value) => {
@@ -214,7 +214,18 @@ export class AppPage implements IPageRegion {
             value;
         },
       }),
-      roleId: computed({
+      groupUserStatus: computed({
+        get: () =>
+          this.app.react.dict[
+            `${DICT_GROUP_USER_STATUS}:${this.react.groupId}`
+          ],
+        set: (value) => {
+          this.app.react.dict[
+            `${DICT_GROUP_USER_STATUS}:${this.react.groupId}`
+          ] = value;
+        },
+      }),
+      groupRoleId: computed({
         get: () =>
           this.app.react.dict[`${DICT_GROUP_ROLE_ID}:${this.react.groupId}`],
         set: (value) => {
@@ -222,7 +233,7 @@ export class AppPage implements IPageRegion {
             value;
         },
       }),
-      symmetricKey: computed({
+      groupSymmetricKey: computed({
         get: () =>
           this.app.react.dict[
             `${DICT_GROUP_SYMMETRIC_KEY}:${this.react.groupId}`
@@ -234,8 +245,8 @@ export class AppPage implements IPageRegion {
         },
       }),
 
-      readonly: computed(
-        () => !rolesMap[this.react.roleId!]?.permissions.editPages ?? true
+      groupReadOnly: computed(
+        () => !rolesMap[this.react.groupRoleId!]?.permissions.editPages ?? true
       ),
 
       numEditorsLoading: 0,
@@ -296,11 +307,11 @@ export class AppPage implements IPageRegion {
 
     const response = await internals.api.post<{
       groupId: string;
-      ownerId: string;
-      userStatus: string;
-      roleId: string;
+      groupOwnerId: string;
+      groupUserStatus: string;
+      groupRoleId: string;
 
-      encryptedSymmetricKey: string | undefined;
+      encryptedGroupSymmetricKey: string | undefined;
       encryptersPublicKey: string | undefined;
     }>('/pages/data', {
       pageId: this.id,
@@ -310,16 +321,16 @@ export class AppPage implements IPageRegion {
     // Save reactive data
 
     this.react.groupId = response.data.groupId;
-    this.react.ownerId = response.data.ownerId;
-    this.react.roleId = response.data.roleId;
-    this.react.userStatus = response.data.userStatus;
+    this.react.groupOwnerId = response.data.groupOwnerId;
+    this.react.groupUserStatus = response.data.groupUserStatus;
+    this.react.groupRoleId = response.data.groupRoleId;
 
     // Check if user is authorized
 
     if (
-      response.data.encryptedSymmetricKey == null ||
+      response.data.encryptedGroupSymmetricKey == null ||
       response.data.encryptersPublicKey == null ||
-      this.react.userStatus === 'invite'
+      this.react.groupUserStatus === 'invite'
     ) {
       this.react.status = 'unauthorized';
       this.react.loading = false;
@@ -328,13 +339,15 @@ export class AppPage implements IPageRegion {
 
     // Check if group is password protected
 
-    const symmetricKey: SymmetricKey | undefined =
-      $pages.react.dict[`${DICT_GROUP_SYMMETRIC_KEY}:${response.data.groupId}`];
+    if (response.data.encryptedGroupSymmetricKey.length > 96) {
+      const symmetricKey: SymmetricKey | undefined =
+        $pages.react.dict[
+          `${DICT_GROUP_SYMMETRIC_KEY}:${response.data.groupId}`
+        ];
 
-    if (response.data.encryptedSymmetricKey.length > 96) {
       if (symmetricKey == null || !symmetricKey.valid) {
         this.encryptedGroupSymmetricKey = privateKey.decrypt(
-          sodium.from_base64(response.data.encryptedSymmetricKey),
+          sodium.from_base64(response.data.encryptedGroupSymmetricKey),
           sodium.from_base64(response.data.encryptersPublicKey)
         );
 
@@ -348,7 +361,7 @@ export class AppPage implements IPageRegion {
 
       saveGroupSymmetricKey(
         response.data.groupId,
-        response.data.encryptedSymmetricKey,
+        response.data.encryptedGroupSymmetricKey,
         response.data.encryptersPublicKey
       );
     }

@@ -34,7 +34,7 @@ export class PageDragging {
   }
 
   start(event: PointerEvent) {
-    if (this.page.react.readonly) {
+    if (this.page.react.groupReadOnly) {
       return;
     }
 

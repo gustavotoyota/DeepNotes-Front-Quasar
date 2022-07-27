@@ -39,7 +39,7 @@ export class PageCollab {
         : 'wss://yjs-server.deepnotes.app',
       `page:${this.page.id}`,
       this.doc,
-      this.page.react.symmetricKey
+      this.page.react.groupSymmetricKey
     );
 
     await this.websocketProvider.syncPromise;

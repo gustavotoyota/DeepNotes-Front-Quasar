@@ -38,7 +38,7 @@
     </template>
 
     <template v-else-if="page.react.status === 'unauthorized'">
-      <template v-if="page.react.userStatus === 'invite'">
+      <template v-if="page.react.groupUserStatus === 'invite'">
         <div>
           You were invited to access this group ({{ page.react.groupName }}).
         </div>
@@ -66,7 +66,7 @@
         <template v-if="auth.loggedIn">
           <Gap style="height: 12px" />
 
-          <RequestAccessDialog v-if="page.react.userStatus == null">
+          <RequestAccessDialog v-if="page.react.groupUserStatus == null">
             <template #default="{ showDialog }">
               <SmartBtn
                 label="Request access"
@@ -77,14 +77,14 @@
           </RequestAccessDialog>
 
           <SmartBtn
-            v-if="page.react.userStatus === 'request'"
+            v-if="page.react.groupUserStatus === 'request'"
             label="Cancel request"
             color="negative"
             @click="cancelRequest()"
           />
 
           <div
-            v-if="page.react.userStatus === 'rejected'"
+            v-if="page.react.groupUserStatus === 'rejected'"
             style="color: red"
           >
             Your access request has been rejected.
@@ -167,8 +167,7 @@ async function cancelRequest() {
       groupIds: [props.page.react.groupId],
     });
 
-    // eslint-disable-next-line vue/no-mutating-props
-    props.page.react.userStatus = undefined;
+    props.page.react.groupUserStatus = null;
   } catch (error: any) {
     Notify.create({
       message: error.response?.data.message ?? 'An error has occurred.',
@@ -201,8 +200,8 @@ async function rejectInvitation() {
       groupId: props.page.react.groupId,
     });
 
-    props.page.react.userStatus = undefined;
-    props.page.react.symmetricKey = null as any;
+    props.page.react.groupUserStatus = null;
+    props.page.react.groupSymmetricKey = null as any;
   } catch (error: any) {
     Notify.create({
       message: error.response?.data.message ?? 'An error has occurred.',

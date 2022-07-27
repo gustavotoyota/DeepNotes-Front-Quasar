@@ -51,7 +51,7 @@ export class PageResizing {
     side: NoteSide,
     section?: NoteSection | null
   ) {
-    if (this.page.react.readonly) {
+    if (this.page.react.groupReadOnly) {
       return;
     }
 

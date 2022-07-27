@@ -128,7 +128,7 @@ export class PageNotes {
     centralize = true,
     destIndex?: number
   ) {
-    if (this.page.react.readonly) {
+    if (this.page.react.groupReadOnly) {
       return;
     }
 

@@ -102,7 +102,7 @@ async function requestAccess(message: string) {
       message,
     });
 
-    page.react.userStatus = 'request';
+    page.react.groupUserStatus = 'request';
 
     Notify.create({
       message: 'Access request sent.',

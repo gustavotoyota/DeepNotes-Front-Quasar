@@ -79,7 +79,7 @@
 
     <div style="padding: 20px">
       <q-color
-        :disable="page.react.readonly"
+        :disable="page.react.groupReadOnly"
         :model-value="arrow.react.collab.color"
         @update:model-value="
           changeProp($event, (arrow, value) => {

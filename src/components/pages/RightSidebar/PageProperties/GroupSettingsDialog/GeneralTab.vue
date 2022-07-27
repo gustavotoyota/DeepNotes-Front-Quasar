@@ -6,7 +6,7 @@
       page.react.groupName = $event as string"
     filled
     style="max-width: 300px"
-    :disable="page.react.ownerId != null"
+    :disable="page.react.groupOwnerId != null"
   />
 </template>
 

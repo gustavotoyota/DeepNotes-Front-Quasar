@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="
-      !note.page.react.readonly &&
+      !note.page.react.groupReadOnly &&
       note.react.collab.resizable &&
       note.react.selected &&
       !note.react.ghost

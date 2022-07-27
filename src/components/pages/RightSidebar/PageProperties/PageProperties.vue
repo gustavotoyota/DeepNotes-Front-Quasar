@@ -10,7 +10,7 @@
         label="Page title"
         dense
         filled
-        :disable="page.react.readonly"
+        :disable="page.react.groupReadOnly"
         :model-value="pageTitle"
         @update:model-value="pageTitle = $event!.toString();
         $pages.react.pageTitles[page.id] = $event!.toString()"

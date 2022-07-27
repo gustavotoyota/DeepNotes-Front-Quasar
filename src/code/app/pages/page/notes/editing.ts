@@ -57,7 +57,7 @@ export class PageEditing {
       this.stop();
     }
 
-    if (this.page.react.readonly || elem.react.collab.readOnly) {
+    if (this.page.react.groupReadOnly || elem.react.collab.readOnly) {
       return;
     }
 

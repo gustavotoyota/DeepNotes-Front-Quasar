@@ -239,7 +239,7 @@ async function createPage() {
         encodeText(pageTitle.value)
       );
     } else {
-      encryptedPageTitle = page.value.react.symmetricKey.encrypt(
+      encryptedPageTitle = page.value.react.groupSymmetricKey.encrypt(
         encodeText(pageTitle.value)
       );
     }
@@ -247,14 +247,13 @@ async function createPage() {
     const response = await internals.api.post<{
       pageId: string;
     }>('/api/pages/create', {
-      createGroup: createGroup.value,
-      encryptedGroupSymmetricKey: bytesToBase64(encryptedGroupSymmetricKey),
-      encryptedGroupName: bytesToBase64(encryptedGroupName),
-
-      publicGroup: publicGroup.value,
-
       parentPageId: page.value.id,
       encryptedPageTitle: bytesToBase64(encryptedPageTitle),
+
+      createGroup: createGroup.value,
+      publicGroup: publicGroup.value,
+      encryptedGroupSymmetricKey: bytesToBase64(encryptedGroupSymmetricKey),
+      encryptedGroupName: bytesToBase64(encryptedGroupName),
     });
 
     page.value.collab.doc.transact(() => {

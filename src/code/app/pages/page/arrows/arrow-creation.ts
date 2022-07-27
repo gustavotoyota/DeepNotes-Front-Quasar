@@ -35,7 +35,7 @@ export class PageArrowCreation {
   }
 
   start(sourceNote: PageNote, event: PointerEvent) {
-    if (this.page.react.readonly) {
+    if (this.page.react.groupReadOnly) {
       return;
     }
 

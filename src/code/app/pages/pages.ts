@@ -39,6 +39,7 @@ import {
 export const DICT_PAGE_GROUP_ID = 'page-group-id';
 export const DICT_GROUP_SYMMETRIC_KEY = 'group-symmetric-key';
 export const DICT_GROUP_OWNER_ID = 'group-owner-id';
+export const DICT_GROUP_USER_STATUS = 'group-user-status';
 export const DICT_GROUP_ROLE_ID = 'group-role-id';
 
 declare global {

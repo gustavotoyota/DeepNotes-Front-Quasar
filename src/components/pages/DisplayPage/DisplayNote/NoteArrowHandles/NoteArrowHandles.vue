@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="
-      !page.react.readonly &&
+      !page.react.groupReadOnly &&
       note.react.spatial &&
       note.react.active &&
       !note.react.dragging

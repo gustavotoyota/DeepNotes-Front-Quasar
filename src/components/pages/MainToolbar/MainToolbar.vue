@@ -42,7 +42,7 @@
           <ToolbarBtn
             tooltip="Cut"
             icon="mdi-content-cut"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
+            :disable="page.react.groupReadOnly || !page.activeElem.react.exists"
             @click="page.clipboard.cut()"
           />
           <ToolbarBtn
@@ -54,13 +54,13 @@
           <ToolbarBtn
             tooltip="Paste"
             icon="mdi-content-paste"
-            :disable="page.react.readonly"
+            :disable="page.react.groupReadOnly"
             @click="page.clipboard.paste()"
           />
           <ToolbarBtn
             tooltip="Duplicate"
             icon="mdi-content-duplicate"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
+            :disable="page.react.groupReadOnly || !page.activeElem.react.exists"
             @click="page.cloning.perform()"
           />
 
@@ -72,13 +72,13 @@
           <ToolbarBtn
             tooltip="Undo"
             icon="mdi-undo"
-            :disable="page.react.readonly || !page.undoRedo.react.canUndo"
+            :disable="page.react.groupReadOnly || !page.undoRedo.react.canUndo"
             @click="page.undoRedo.undo()"
           />
           <ToolbarBtn
             tooltip="Redo"
             icon="mdi-redo"
-            :disable="page.react.readonly || !page.undoRedo.react.canRedo"
+            :disable="page.react.groupReadOnly || !page.undoRedo.react.canRedo"
             @click="page.undoRedo.redo()"
           />
 
@@ -97,7 +97,7 @@
             tooltip="Delete"
             icon="mdi-delete-outline"
             icon-size="24px"
-            :disable="page.react.readonly || !page.activeElem.react.exists"
+            :disable="page.react.groupReadOnly || !page.activeElem.react.exists"
             @click="page.deleting.perform()"
           />
 
@@ -122,7 +122,7 @@
                   icon="mdi-format-bold"
                   icon-size="25px"
                   :disable="
-                    page.react.readonly || !page.activeElem.react.exists
+                    page.react.groupReadOnly || !page.activeElem.react.exists
                   "
                   @click="page.selection.toggleMark('bold')"
                 />
@@ -131,7 +131,7 @@
                   icon="mdi-format-italic"
                   icon-size="25px"
                   :disable="
-                    page.react.readonly || !page.activeElem.react.exists
+                    page.react.groupReadOnly || !page.activeElem.react.exists
                   "
                   @click="page.selection.toggleMark('italic')"
                 />
@@ -140,7 +140,7 @@
                   icon="mdi-format-strikethrough"
                   icon-size="25px"
                   :disable="
-                    page.react.readonly || !page.activeElem.react.exists
+                    page.react.groupReadOnly || !page.activeElem.react.exists
                   "
                   @click="page.selection.toggleMark('strike')"
                 />
@@ -149,7 +149,7 @@
                   icon="mdi-format-underline"
                   icon-size="25px"
                   :disable="
-                    page.react.readonly || !page.activeElem.react.exists
+                    page.react.groupReadOnly || !page.activeElem.react.exists
                   "
                   @click="page.selection.toggleMark('underline')"
                 />
@@ -161,7 +161,7 @@
                   icon="mdi-format-align-left"
                   icon-size="21px"
                   :disable="
-                    page.react.readonly || !page.activeElem.react.exists
+                    page.react.groupReadOnly || !page.activeElem.react.exists
                   "
                   @click="
                     page.selection.format((chain) => chain.setTextAlign('left'))
@@ -172,7 +172,7 @@
                   icon="mdi-format-align-center"
                   icon-size="21px"
                   :disable="
-                    page.react.readonly || !page.activeElem.react.exists
+                    page.react.groupReadOnly || !page.activeElem.react.exists
                   "
                   @click="
                     page.selection.format((chain) =>
@@ -185,7 +185,7 @@
                   icon="mdi-format-align-right"
                   icon-size="21px"
                   :disable="
-                    page.react.readonly || !page.activeElem.react.exists
+                    page.react.groupReadOnly || !page.activeElem.react.exists
                   "
                   @click="
                     page.selection.format((chain) =>
@@ -198,7 +198,7 @@
                   icon="mdi-format-align-justify"
                   icon-size="21px"
                   :disable="
-                    page.react.readonly || !page.activeElem.react.exists
+                    page.react.groupReadOnly || !page.activeElem.react.exists
                   "
                   @click="
                     page.selection.format((chain) =>
@@ -214,7 +214,7 @@
                   icon="mdi-format-subscript"
                   icon-size="23px"
                   :disable="
-                    page.react.readonly || !page.activeElem.react.exists
+                    page.react.groupReadOnly || !page.activeElem.react.exists
                   "
                   @click="page.selection.toggleMark('subscript')"
                 />
@@ -223,7 +223,7 @@
                   icon="mdi-format-superscript"
                   icon-size="23px"
                   :disable="
-                    page.react.readonly || !page.activeElem.react.exists
+                    page.react.groupReadOnly || !page.activeElem.react.exists
                   "
                   @click="page.selection.toggleMark('superscript')"
                 />
@@ -232,7 +232,7 @@
                   icon="mdi-link"
                   icon-size="24px"
                   :disable="
-                    page.react.readonly || !page.activeElem.react.exists
+                    page.react.groupReadOnly || !page.activeElem.react.exists
                   "
                   @click="
                     Dialog.create({
@@ -257,7 +257,7 @@
                   icon="mdi-link-off"
                   icon-size="24px"
                   :disable="
-                    page.react.readonly || !page.activeElem.react.exists
+                    page.react.groupReadOnly || !page.activeElem.react.exists
                   "
                   @click="page.selection.unsetMark('link')"
                 />
@@ -269,7 +269,7 @@
                   icon="mdi-format-header-1"
                   icon-size="24px"
                   :disable="
-                    page.react.readonly || !page.activeElem.react.exists
+                    page.react.groupReadOnly || !page.activeElem.react.exists
                   "
                   @click="
                     page.selection.format((chain) =>
@@ -282,7 +282,7 @@
                   icon="mdi-format-header-2"
                   icon-size="24px"
                   :disable="
-                    page.react.readonly || !page.activeElem.react.exists
+                    page.react.groupReadOnly || !page.activeElem.react.exists
                   "
                   @click="
                     page.selection.format((chain) =>
@@ -295,7 +295,7 @@
                   icon="mdi-format-header-3"
                   icon-size="24px"
                   :disable="
-                    page.react.readonly || !page.activeElem.react.exists
+                    page.react.groupReadOnly || !page.activeElem.react.exists
                   "
                   @click="
                     page.selection.format((chain) =>
@@ -308,7 +308,7 @@
                   icon="mdi-format-clear"
                   icon-size="24px"
                   :disable="
-                    page.react.readonly || !page.activeElem.react.exists
+                    page.react.groupReadOnly || !page.activeElem.react.exists
                   "
                   @click="
                     page.selection.format((chain) =>
@@ -325,28 +325,36 @@
               tooltip="Bold"
               icon="mdi-format-bold"
               icon-size="25px"
-              :disable="page.react.readonly || !page.activeElem.react.exists"
+              :disable="
+                page.react.groupReadOnly || !page.activeElem.react.exists
+              "
               @click="page.selection.toggleMark('bold')"
             />
             <ToolbarBtn
               tooltip="Italic"
               icon="mdi-format-italic"
               icon-size="25px"
-              :disable="page.react.readonly || !page.activeElem.react.exists"
+              :disable="
+                page.react.groupReadOnly || !page.activeElem.react.exists
+              "
               @click="page.selection.toggleMark('italic')"
             />
             <ToolbarBtn
               tooltip="Strike"
               icon="mdi-format-strikethrough"
               icon-size="25px"
-              :disable="page.react.readonly || !page.activeElem.react.exists"
+              :disable="
+                page.react.groupReadOnly || !page.activeElem.react.exists
+              "
               @click="page.selection.toggleMark('strike')"
             />
             <ToolbarBtn
               tooltip="Underline"
               icon="mdi-format-underline"
               icon-size="25px"
-              :disable="page.react.readonly || !page.activeElem.react.exists"
+              :disable="
+                page.react.groupReadOnly || !page.activeElem.react.exists
+              "
               @click="page.selection.toggleMark('underline')"
             />
 
@@ -359,7 +367,9 @@
               tooltip="Align left"
               icon="mdi-format-align-left"
               icon-size="21px"
-              :disable="page.react.readonly || !page.activeElem.react.exists"
+              :disable="
+                page.react.groupReadOnly || !page.activeElem.react.exists
+              "
               @click="
                 page.selection.format((chain) => chain.setTextAlign('left'))
               "
@@ -368,7 +378,9 @@
               tooltip="Align center"
               icon="mdi-format-align-center"
               icon-size="21px"
-              :disable="page.react.readonly || !page.activeElem.react.exists"
+              :disable="
+                page.react.groupReadOnly || !page.activeElem.react.exists
+              "
               @click="
                 page.selection.format((chain) => chain.setTextAlign('center'))
               "
@@ -377,7 +389,9 @@
               tooltip="Align right"
               icon="mdi-format-align-right"
               icon-size="21px"
-              :disable="page.react.readonly || !page.activeElem.react.exists"
+              :disable="
+                page.react.groupReadOnly || !page.activeElem.react.exists
+              "
               @click="
                 page.selection.format((chain) => chain.setTextAlign('right'))
               "
@@ -386,7 +400,9 @@
               tooltip="Justify"
               icon="mdi-format-align-justify"
               icon-size="21px"
-              :disable="page.react.readonly || !page.activeElem.react.exists"
+              :disable="
+                page.react.groupReadOnly || !page.activeElem.react.exists
+              "
               @click="
                 page.selection.format((chain) => chain.setTextAlign('justify'))
               "
@@ -401,21 +417,27 @@
               tooltip="Subscript"
               icon="mdi-format-subscript"
               icon-size="23px"
-              :disable="page.react.readonly || !page.activeElem.react.exists"
+              :disable="
+                page.react.groupReadOnly || !page.activeElem.react.exists
+              "
               @click="page.selection.toggleMark('subscript')"
             />
             <ToolbarBtn
               tooltip="Superscript"
               icon="mdi-format-superscript"
               icon-size="23px"
-              :disable="page.react.readonly || !page.activeElem.react.exists"
+              :disable="
+                page.react.groupReadOnly || !page.activeElem.react.exists
+              "
               @click="page.selection.toggleMark('superscript')"
             />
             <ToolbarBtn
               tooltip="Link"
               icon="mdi-link"
               icon-size="24px"
-              :disable="page.react.readonly || !page.activeElem.react.exists"
+              :disable="
+                page.react.groupReadOnly || !page.activeElem.react.exists
+              "
               @click="
                 Dialog.create({
                   title: 'Insert link',
@@ -438,7 +460,9 @@
               tooltip="Remove link"
               icon="mdi-link-off"
               icon-size="24px"
-              :disable="page.react.readonly || !page.activeElem.react.exists"
+              :disable="
+                page.react.groupReadOnly || !page.activeElem.react.exists
+              "
               @click="page.selection.unsetMark('link')"
             />
 
@@ -451,7 +475,9 @@
               tooltip="Header 1"
               icon="mdi-format-header-1"
               icon-size="24px"
-              :disable="page.react.readonly || !page.activeElem.react.exists"
+              :disable="
+                page.react.groupReadOnly || !page.activeElem.react.exists
+              "
               @click="
                 page.selection.format((chain) => chain.setHeading({ level: 1 }))
               "
@@ -460,7 +486,9 @@
               tooltip="Header 2"
               icon="mdi-format-header-2"
               icon-size="24px"
-              :disable="page.react.readonly || !page.activeElem.react.exists"
+              :disable="
+                page.react.groupReadOnly || !page.activeElem.react.exists
+              "
               @click="
                 page.selection.format((chain) => chain.setHeading({ level: 2 }))
               "
@@ -469,7 +497,9 @@
               tooltip="Header 3"
               icon="mdi-format-header-3"
               icon-size="24px"
-              :disable="page.react.readonly || !page.activeElem.react.exists"
+              :disable="
+                page.react.groupReadOnly || !page.activeElem.react.exists
+              "
               @click="
                 page.selection.format((chain) => chain.setHeading({ level: 3 }))
               "
@@ -478,7 +508,9 @@
               tooltip="Clear formatting"
               icon="mdi-format-clear"
               icon-size="24px"
-              :disable="page.react.readonly || !page.activeElem.react.exists"
+              :disable="
+                page.react.groupReadOnly || !page.activeElem.react.exists
+              "
               @click="
                 page.selection.format((chain) =>
                   chain.clearNodes().unsetAllMarks()
@@ -507,7 +539,7 @@
                   icon="mdi-format-list-bulleted"
                   icon-size="24px"
                   :disable="
-                    page.react.readonly || !page.activeElem.react.exists
+                    page.react.groupReadOnly || !page.activeElem.react.exists
                   "
                   @click="
                     page.selection.format((chain) => chain.toggleBulletList())
@@ -518,7 +550,7 @@
                   icon="mdi-format-list-numbered"
                   icon-size="24px"
                   :disable="
-                    page.react.readonly || !page.activeElem.react.exists
+                    page.react.groupReadOnly || !page.activeElem.react.exists
                   "
                   @click="
                     page.selection.format((chain) => chain.toggleOrderedList())
@@ -529,7 +561,7 @@
                   icon="mdi-checkbox-marked-outline"
                   icon-size="22px"
                   :disable="
-                    page.react.readonly || !page.activeElem.react.exists
+                    page.react.groupReadOnly || !page.activeElem.react.exists
                   "
                   @click="
                     page.selection.format((chain) => chain.toggleTaskList())
@@ -543,7 +575,7 @@
                   icon="mdi-format-quote-close"
                   icon-size="23px"
                   :disable="
-                    page.react.readonly || !page.activeElem.react.exists
+                    page.react.groupReadOnly || !page.activeElem.react.exists
                   "
                   @click="
                     page.selection.format((chain) => chain.toggleBlockquote())
@@ -554,7 +586,7 @@
                   icon="mdi-code-tags"
                   icon-size="23px"
                   :disable="
-                    page.react.readonly || !page.activeElem.react.exists
+                    page.react.groupReadOnly || !page.activeElem.react.exists
                   "
                   @click="page.selection.toggleMark('code')"
                 />
@@ -563,7 +595,7 @@
                   icon="mdi-code-braces"
                   icon-size="23px"
                   :disable="
-                    page.react.readonly || !page.activeElem.react.exists
+                    page.react.groupReadOnly || !page.activeElem.react.exists
                   "
                   @click="
                     page.selection.format((chain) => chain.toggleCodeBlock())
@@ -573,7 +605,9 @@
                   tooltip="Rule"
                   icon="mdi-minus"
                   icon-size="23px"
-                  :disable="page.react.readonly || !page.editing.react.active"
+                  :disable="
+                    page.react.groupReadOnly || !page.editing.react.active
+                  "
                   @click="
                     page.selection.format((chain) => chain.setHorizontalRule())
                   "
@@ -583,7 +617,9 @@
                     tooltip="Image"
                     icon="mdi-image"
                     icon-size="23px"
-                    :disable="page.react.readonly || !page.editing.react.active"
+                    :disable="
+                      page.react.groupReadOnly || !page.editing.react.active
+                    "
                     @click="showDialog()"
                   />
                 </InsertImageDialog>
@@ -594,7 +630,9 @@
                   tooltip="Insert table"
                   icon="mdi-table-large-plus"
                   icon-size="23px"
-                  :disable="page.react.readonly || !page.editing.react.active"
+                  :disable="
+                    page.react.groupReadOnly || !page.editing.react.active
+                  "
                   @click="
                     page.selection.format((chain) =>
                       chain.insertTable({
@@ -609,14 +647,18 @@
                   tooltip="Remove table"
                   icon="mdi-table-large-remove"
                   icon-size="23px"
-                  :disable="page.react.readonly || !page.editing.react.active"
+                  :disable="
+                    page.react.groupReadOnly || !page.editing.react.active
+                  "
                   @click="page.selection.format((chain) => chain.deleteTable())"
                 />
                 <ToolbarBtn
                   tooltip="Insert column before"
                   icon="mdi-table-column-plus-before"
                   icon-size="23px"
-                  :disable="page.react.readonly || !page.editing.react.active"
+                  :disable="
+                    page.react.groupReadOnly || !page.editing.react.active
+                  "
                   @click="
                     page.selection.format((chain) => chain.addColumnBefore())
                   "
@@ -625,7 +667,9 @@
                   tooltip="Insert column after"
                   icon="mdi-table-column-plus-after"
                   icon-size="23px"
-                  :disable="page.react.readonly || !page.editing.react.active"
+                  :disable="
+                    page.react.groupReadOnly || !page.editing.react.active
+                  "
                   @click="
                     page.selection.format((chain) => chain.addColumnAfter())
                   "
@@ -634,7 +678,9 @@
                   tooltip="Remove column"
                   icon="mdi-table-column-remove"
                   icon-size="23px"
-                  :disable="page.react.readonly || !page.editing.react.active"
+                  :disable="
+                    page.react.groupReadOnly || !page.editing.react.active
+                  "
                   @click="
                     page.selection.format((chain) => chain.deleteColumn())
                   "
@@ -646,21 +692,27 @@
                   tooltip="Merge cells"
                   icon="mdi-table-merge-cells"
                   icon-size="23px"
-                  :disable="page.react.readonly || !page.editing.react.active"
+                  :disable="
+                    page.react.groupReadOnly || !page.editing.react.active
+                  "
                   @click="page.selection.format((chain) => chain.mergeCells())"
                 />
                 <ToolbarBtn
                   tooltip="Split cell"
                   icon="mdi-table-split-cell"
                   icon-size="23px"
-                  :disable="page.react.readonly || !page.editing.react.active"
+                  :disable="
+                    page.react.groupReadOnly || !page.editing.react.active
+                  "
                   @click="page.selection.format((chain) => chain.splitCell())"
                 />
                 <ToolbarBtn
                   tooltip="Insert row before"
                   icon="mdi-table-row-plus-before"
                   icon-size="23px"
-                  :disable="page.react.readonly || !page.editing.react.active"
+                  :disable="
+                    page.react.groupReadOnly || !page.editing.react.active
+                  "
                   @click="
                     page.selection.format((chain) => chain.addRowBefore())
                   "
@@ -669,14 +721,18 @@
                   tooltip="Insert row after"
                   icon="mdi-table-row-plus-after"
                   icon-size="23px"
-                  :disable="page.react.readonly || !page.editing.react.active"
+                  :disable="
+                    page.react.groupReadOnly || !page.editing.react.active
+                  "
                   @click="page.selection.format((chain) => chain.addRowAfter())"
                 />
                 <ToolbarBtn
                   tooltip="Remove row"
                   icon="mdi-table-row-remove"
                   icon-size="23px"
-                  :disable="page.react.readonly || !page.editing.react.active"
+                  :disable="
+                    page.react.groupReadOnly || !page.editing.react.active
+                  "
                   @click="page.selection.format((chain) => chain.deleteRow())"
                 />
               </div>

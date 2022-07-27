@@ -7,7 +7,7 @@ export class PageDeleting {
   constructor(readonly page: AppPage) {}
 
   perform() {
-    if (this.page.react.readonly) {
+    if (this.page.react.groupReadOnly) {
       return;
     }
 

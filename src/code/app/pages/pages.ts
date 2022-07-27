@@ -1,14 +1,14 @@
 import sodium from 'libsodium-wrappers';
 import { pull } from 'lodash';
 import { Factory, factory } from 'src/code/app/composition-root';
-import { saveGroupSymmetricKey } from 'src/code/app/crypto/crypto';
-import { privateKey } from 'src/code/app/crypto/private-key';
-import {
-  SymmetricKey,
-  wrapSymmetricKey as wrapSymmetricKey,
-} from 'src/code/app/crypto/symmetric-key';
+import { saveGroupSymmetricKey } from 'src/code/app/crypto';
 import { internals } from 'src/code/app/internals';
 import { createComputedDict } from 'src/code/lib/computed-dict';
+import { privateKey } from 'src/code/lib/crypto/private-key';
+import {
+  SymmetricKey,
+  wrapSymmetricKey,
+} from 'src/code/lib/crypto/symmetric-key';
 import { Resolvable } from 'src/code/lib/resolvable';
 import { decodeText, encodeText } from 'src/code/lib/text';
 import { Vec2 } from 'src/code/lib/vec2';

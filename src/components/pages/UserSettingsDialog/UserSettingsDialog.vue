@@ -173,7 +173,7 @@ export function initialSettings() {
   lang="ts"
 >
 import { Notify } from 'quasar';
-import { saveGroupSymmetricKey } from 'src/code/app/crypto/crypto';
+import { saveGroupSymmetricKey } from 'src/code/app/crypto';
 import { internals } from 'src/code/app/internals';
 import { DICT_GROUP_OWNER_ID } from 'src/code/app/pages/pages';
 import { REALTIME_USER_DISPLAY_NAME } from 'src/code/app/pages/realtime';

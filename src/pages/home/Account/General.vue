@@ -47,10 +47,10 @@ import sodium from 'libsodium-wrappers';
 import { Dialog, Notify, useMeta } from 'quasar';
 import {
   computeDerivedKeys,
-  encryptSymmetric,
   reencryptSessionPrivateKey,
-} from 'src/code/app/crypto/crypto';
+} from 'src/code/app/crypto';
 import { internals } from 'src/code/app/internals';
+import { encryptSymmetric } from 'src/code/lib/crypto/crypto';
 import { Resolvable } from 'src/code/lib/resolvable';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';

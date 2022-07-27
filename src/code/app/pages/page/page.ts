@@ -1,8 +1,6 @@
 import sodium from 'libsodium-wrappers';
 import { Factory } from 'src/code/app/composition-root';
-import { saveGroupSymmetricKey } from 'src/code/app/crypto/crypto';
-import { privateKey } from 'src/code/app/crypto/private-key';
-import { SymmetricKey } from 'src/code/app/crypto/symmetric-key';
+import { saveGroupSymmetricKey } from 'src/code/app/crypto';
 import { internals } from 'src/code/app/internals';
 import {
   DICT_GROUP_OWNER_ID,
@@ -12,6 +10,8 @@ import {
   PagesApp,
 } from 'src/code/app/pages/pages';
 import { rolesMap } from 'src/code/app/roles';
+import { privateKey } from 'src/code/lib/crypto/private-key';
+import { SymmetricKey } from 'src/code/lib/crypto/symmetric-key';
 import { Vec2 } from 'src/code/lib/vec2';
 import { watchUntilTrue } from 'src/code/lib/vue';
 import {

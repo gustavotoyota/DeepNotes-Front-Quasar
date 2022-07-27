@@ -1,7 +1,7 @@
 import sodium from 'libsodium-wrappers';
 import { boot } from 'quasar/wrappers';
 import { logout, storeTokenExpirations } from 'src/code/app/auth';
-import { reencryptSessionPrivateKey } from 'src/code/app/crypto/crypto';
+import { reencryptSessionPrivateKey } from 'src/code/app/crypto';
 import { useAuth } from 'src/stores/auth';
 
 export default boot(async ({ store }) => {

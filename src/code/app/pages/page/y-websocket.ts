@@ -1,8 +1,8 @@
 import * as decoding from 'lib0/decoding';
 import * as encoding from 'lib0/encoding';
 import { throttle } from 'lodash';
-import { SymmetricKey } from 'src/code/app/crypto/symmetric-key';
 import { ClientSocket } from 'src/code/lib/client-socket';
+import { SymmetricKey } from 'src/code/lib/crypto/symmetric-key';
 import { Resolvable } from 'src/code/lib/resolvable';
 import * as awarenessProtocol from 'y-protocols/awareness';
 import * as Y from 'yjs';

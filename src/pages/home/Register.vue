@@ -70,13 +70,10 @@ export default {
 import { PreFetchOptions } from '@quasar/app-vite';
 import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
-import {
-  computeDerivedKeys,
-  generateRandomKeys,
-} from 'src/code/app/crypto/crypto';
-import { wrapSymmetricKey } from 'src/code/app/crypto/symmetric-key';
+import { computeDerivedKeys, generateRandomKeys } from 'src/code/app/crypto';
 import { internals } from 'src/code/app/internals';
 import { ISerialObjectInput } from 'src/code/app/pages/serialization';
+import { wrapSymmetricKey } from 'src/code/lib/crypto/symmetric-key';
 import { encodeText } from 'src/code/lib/text';
 import Gap from 'src/components/misc/Gap.vue';
 import PasswordField from 'src/components/misc/PasswordField.vue';

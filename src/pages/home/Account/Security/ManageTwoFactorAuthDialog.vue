@@ -172,7 +172,7 @@
 import sodium from 'libsodium-wrappers';
 import QRCode from 'qrcode';
 import { Dialog, Notify } from 'quasar';
-import { computeDerivedKeys } from 'src/code/app/crypto/crypto';
+import { computeDerivedKeys } from 'src/code/app/crypto';
 import { internals } from 'src/code/app/internals';
 import { setClipboardText } from 'src/code/lib/clipboard';
 import { Resolvable } from 'src/code/lib/resolvable';

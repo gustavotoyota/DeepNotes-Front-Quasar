@@ -2,7 +2,7 @@ import * as decoding from 'lib0/decoding';
 import * as encoding from 'lib0/encoding';
 import { throttle } from 'lodash';
 import { Notify } from 'quasar';
-import { saveGroupSymmetricKey } from 'src/code/app/crypto/crypto';
+import { saveGroupSymmetricKey } from 'src/code/app/crypto';
 import { rolesMap } from 'src/code/app/roles';
 import { ClientSocket } from 'src/code/lib/client-socket';
 import { Resolvable } from 'src/code/lib/resolvable';

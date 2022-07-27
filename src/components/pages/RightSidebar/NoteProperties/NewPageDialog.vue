@@ -119,13 +119,13 @@
 >
 import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
-import { encryptSymmetric } from 'src/code/app/crypto/crypto';
-import { privateKey } from 'src/code/app/crypto/private-key';
-import { wrapSymmetricKey } from 'src/code/app/crypto/symmetric-key';
 import { internals } from 'src/code/app/internals';
 import { PageNote } from 'src/code/app/pages/page/notes/note';
 import { AppPage } from 'src/code/app/pages/page/page';
 import { bytesToBase64 } from 'src/code/lib/base64';
+import { encryptSymmetric } from 'src/code/lib/crypto/crypto';
+import { privateKey } from 'src/code/lib/crypto/private-key';
+import { wrapSymmetricKey } from 'src/code/lib/crypto/symmetric-key';
 import { BREAKPOINT_MD_MIN } from 'src/code/lib/responsive';
 import { encodeText } from 'src/code/lib/text';
 import Checkbox from 'src/components/misc/Checkbox.vue';

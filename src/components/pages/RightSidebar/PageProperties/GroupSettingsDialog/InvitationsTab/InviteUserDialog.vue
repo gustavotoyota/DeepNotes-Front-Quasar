@@ -61,7 +61,7 @@
 >
 import sodium from 'libsodium-wrappers';
 import { Notify } from 'quasar';
-import { reencryptSymmetricKey } from 'src/code/app/crypto/crypto';
+import { reencryptSymmetricKey } from 'src/code/app/crypto';
 import { internals } from 'src/code/app/internals';
 import { AppPage } from 'src/code/app/pages/page/page';
 import { roles } from 'src/code/app/roles';

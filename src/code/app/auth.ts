@@ -1,10 +1,10 @@
 import sodium from 'libsodium-wrappers';
 import { Cookies } from 'quasar';
 import { internals } from 'src/code/app/internals';
+import { privateKey } from 'src/code/lib/crypto/private-key';
 import { Auth, useAuth } from 'src/stores/auth';
 
-import { reencryptSessionPrivateKey } from './crypto/crypto';
-import { privateKey } from './crypto/private-key';
+import { reencryptSessionPrivateKey } from './crypto';
 
 export const apiBaseURL = process.env.DEV
   ? 'http://192.168.1.4:21733'

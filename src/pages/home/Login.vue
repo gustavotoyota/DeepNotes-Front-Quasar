@@ -165,7 +165,7 @@ import { storeTokenExpirations } from 'src/code/app/auth';
 import {
   computeDerivedKeys,
   reencryptSessionPrivateKey,
-} from 'src/code/app/crypto/crypto';
+} from 'src/code/app/crypto';
 import { internals } from 'src/code/app/internals';
 import Checkbox from 'src/components/misc/Checkbox.vue';
 import Gap from 'src/components/misc/Gap.vue';

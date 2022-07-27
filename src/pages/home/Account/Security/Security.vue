@@ -120,10 +120,10 @@ import sodium from 'libsodium-wrappers';
 import { Notify, QForm, useMeta } from 'quasar';
 import {
   computeDerivedKeys,
-  encryptSymmetric,
   reencryptSessionPrivateKey,
-} from 'src/code/app/crypto/crypto';
+} from 'src/code/app/crypto';
 import { internals } from 'src/code/app/internals';
+import { encryptSymmetric } from 'src/code/lib/crypto/crypto';
 import Gap from 'src/components/misc/Gap.vue';
 import LoadingOverlay from 'src/components/misc/LoadingOverlay.vue';
 import PasswordField from 'src/components/misc/PasswordField.vue';

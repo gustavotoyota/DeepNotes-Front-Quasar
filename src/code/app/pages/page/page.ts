@@ -312,55 +312,50 @@ export class AppPage implements IPageRegion {
     ) {
       this.react.status = 'unauthorized';
       this.react.loading = false;
+
       return;
     }
 
-    // If group is password protected
-    // Setup password screen
+    // Check if symmetric key is already saved
 
-    if (
-      (!response.data.groupIsPublic &&
-        response.data.groupSymmetricKey.length > 96) ||
-      (response.data.groupIsPublic &&
-        response.data.groupSymmetricKey.length > 96)
-    ) {
-      const symmetricKey: SymmetricKey | undefined =
-        $pages.react.dict[
-          `${DICT_GROUP_SYMMETRIC_KEY}:${response.data.groupId}`
-        ];
+    const symmetricKey: SymmetricKey | undefined =
+      $pages.react.dict[`${DICT_GROUP_SYMMETRIC_KEY}:${response.data.groupId}`];
 
-      if (symmetricKey == null || !symmetricKey.valid) {
-        this.encryptedGroupSymmetricKey = privateKey.decrypt(
+    if (!symmetricKey?.valid) {
+      let groupSymmetricKey;
+
+      if (response.data.groupIsPublic) {
+        groupSymmetricKey = sodium.from_base64(response.data.groupSymmetricKey);
+      } else {
+        groupSymmetricKey = privateKey.decrypt(
           sodium.from_base64(response.data.groupSymmetricKey),
           sodium.from_base64(response.data.encryptersPublicKey!)
         );
+      }
+
+      // If group is password protected
+      // Setup password screen
+
+      if (
+        (!response.data.groupIsPublic &&
+          response.data.groupSymmetricKey.length > 96) ||
+        (response.data.groupIsPublic &&
+          response.data.groupSymmetricKey.length > 48)
+      ) {
+        this.encryptedGroupSymmetricKey = groupSymmetricKey;
 
         this.react.status = 'password';
         this.react.loading = false;
+
+        return;
       }
 
-      return;
+      const wrappedGroupSymmetricKey = wrapSymmetricKey(groupSymmetricKey);
+
+      $pages.react.dict[
+        `${DICT_GROUP_SYMMETRIC_KEY}:${response.data.groupId}`
+      ] = wrappedGroupSymmetricKey;
     }
-
-    let decryptedGroupSymmetricKey;
-
-    if (response.data.groupIsPublic) {
-      decryptedGroupSymmetricKey = sodium.from_base64(
-        response.data.groupSymmetricKey
-      );
-    } else {
-      decryptedGroupSymmetricKey = privateKey.decrypt(
-        sodium.from_base64(response.data.groupSymmetricKey),
-        sodium.from_base64(response.data.encryptersPublicKey!)
-      );
-    }
-
-    const wrappedGroupSymmetricKey = wrapSymmetricKey(
-      decryptedGroupSymmetricKey
-    );
-
-    $pages.react.dict[`${DICT_GROUP_SYMMETRIC_KEY}:${response.data.groupId}`] =
-      wrappedGroupSymmetricKey;
 
     await this.finishSetup();
   }

@@ -1,8 +1,8 @@
 import sodium from 'libsodium-wrappers';
 import { Factory } from 'src/code/app/composition-root';
-import { saveGroupSymmetricKey } from 'src/code/app/crypto';
 import { internals } from 'src/code/app/internals';
 import {
+  DICT_GROUP_IS_PUBLIC,
   DICT_GROUP_OWNER_ID,
   DICT_GROUP_ROLE_ID,
   DICT_GROUP_SYMMETRIC_KEY,
@@ -11,8 +11,12 @@ import {
   PagesApp,
 } from 'src/code/app/pages/pages';
 import { rolesMap } from 'src/code/app/roles';
+import { dictProp } from 'src/code/app/utils';
 import { privateKey } from 'src/code/lib/crypto/private-key';
-import { SymmetricKey } from 'src/code/lib/crypto/symmetric-key';
+import {
+  SymmetricKey,
+  wrapSymmetricKey,
+} from 'src/code/lib/crypto/symmetric-key';
 import { Vec2 } from 'src/code/lib/vec2';
 import { watchUntilTrue } from 'src/code/lib/vue';
 import {
@@ -79,6 +83,7 @@ export interface IAppPageReact extends IRegionReact {
   groupOwnerId: WritableComputedRef<string | null>;
   groupUserStatus: WritableComputedRef<string | null>;
   groupRoleId: WritableComputedRef<string | null>;
+  groupIsPublic: WritableComputedRef<boolean>;
   groupSymmetricKey: WritableComputedRef<SymmetricKey>;
   groupReadOnly: ComputedRef<boolean>;
 
@@ -194,56 +199,24 @@ export class AppPage implements IPageRegion {
         },
       }),
 
-      groupId: computed({
-        get: () => this.app.react.dict[`${DICT_PAGE_GROUP_ID}:${this.id}`],
-        set: (value) => {
-          this.app.react.dict[`${DICT_PAGE_GROUP_ID}:${this.id}`] = value;
-        },
-      }),
+      groupId: dictProp(DICT_PAGE_GROUP_ID, () => this.id),
       groupName: computed({
         get: () => this.app.react.groupNames[this.react.groupId],
         set: (value) => {
           this.app.react.groupNames[this.react.groupId] = value;
         },
       }),
-      groupOwnerId: computed({
-        get: () =>
-          this.app.react.dict[`${DICT_GROUP_OWNER_ID}:${this.react.groupId}`],
-        set: (value) => {
-          this.app.react.dict[`${DICT_GROUP_OWNER_ID}:${this.react.groupId}`] =
-            value;
-        },
-      }),
-      groupUserStatus: computed({
-        get: () =>
-          this.app.react.dict[
-            `${DICT_GROUP_USER_STATUS}:${this.react.groupId}`
-          ],
-        set: (value) => {
-          this.app.react.dict[
-            `${DICT_GROUP_USER_STATUS}:${this.react.groupId}`
-          ] = value;
-        },
-      }),
-      groupRoleId: computed({
-        get: () =>
-          this.app.react.dict[`${DICT_GROUP_ROLE_ID}:${this.react.groupId}`],
-        set: (value) => {
-          this.app.react.dict[`${DICT_GROUP_ROLE_ID}:${this.react.groupId}`] =
-            value;
-        },
-      }),
-      groupSymmetricKey: computed({
-        get: () =>
-          this.app.react.dict[
-            `${DICT_GROUP_SYMMETRIC_KEY}:${this.react.groupId}`
-          ],
-        set: (value) => {
-          this.app.react.dict[
-            `${DICT_GROUP_SYMMETRIC_KEY}:${this.react.groupId}`
-          ] = value;
-        },
-      }),
+      groupOwnerId: dictProp(DICT_GROUP_OWNER_ID, () => this.react.groupId),
+      groupUserStatus: dictProp(
+        DICT_GROUP_USER_STATUS,
+        () => this.react.groupId
+      ),
+      groupRoleId: dictProp(DICT_GROUP_ROLE_ID, () => this.react.groupId),
+      groupIsPublic: dictProp(DICT_GROUP_IS_PUBLIC, () => this.react.groupId),
+      groupSymmetricKey: dictProp(
+        DICT_GROUP_SYMMETRIC_KEY,
+        () => this.react.groupId
+      ),
 
       groupReadOnly: computed(
         () => !rolesMap[this.react.groupRoleId!]?.permissions.editPages ?? true
@@ -307,11 +280,13 @@ export class AppPage implements IPageRegion {
 
     const response = await internals.api.post<{
       groupId: string;
-      groupOwnerId: string;
-      groupUserStatus: string;
-      groupRoleId: string;
+      groupOwnerId: string | null;
+      groupUserStatus: string | null;
+      groupRoleId: string | null;
 
-      encryptedGroupSymmetricKey: string | undefined;
+      groupIsPublic: boolean;
+
+      groupSymmetricKey: string | undefined;
       encryptersPublicKey: string | undefined;
     }>('/pages/data', {
       pageId: this.id,
@@ -323,13 +298,15 @@ export class AppPage implements IPageRegion {
     this.react.groupId = response.data.groupId;
     this.react.groupOwnerId = response.data.groupOwnerId;
     this.react.groupUserStatus = response.data.groupUserStatus;
+    this.react.groupIsPublic = response.data.groupIsPublic;
     this.react.groupRoleId = response.data.groupRoleId;
 
     // Check if user is authorized
 
     if (
-      response.data.encryptedGroupSymmetricKey == null ||
-      response.data.encryptersPublicKey == null ||
+      response.data.groupSymmetricKey == null ||
+      (!response.data.groupIsPublic &&
+        response.data.encryptersPublicKey == null) ||
       this.react.groupUserStatus === 'invite'
     ) {
       this.react.status = 'unauthorized';
@@ -337,9 +314,15 @@ export class AppPage implements IPageRegion {
       return;
     }
 
-    // Check if group is password protected
+    // If group is password protected
+    // Setup password screen
 
-    if (response.data.encryptedGroupSymmetricKey.length > 96) {
+    if (
+      (!response.data.groupIsPublic &&
+        response.data.groupSymmetricKey.length > 96) ||
+      (response.data.groupIsPublic &&
+        response.data.groupSymmetricKey.length > 96)
+    ) {
       const symmetricKey: SymmetricKey | undefined =
         $pages.react.dict[
           `${DICT_GROUP_SYMMETRIC_KEY}:${response.data.groupId}`
@@ -347,24 +330,36 @@ export class AppPage implements IPageRegion {
 
       if (symmetricKey == null || !symmetricKey.valid) {
         this.encryptedGroupSymmetricKey = privateKey.decrypt(
-          sodium.from_base64(response.data.encryptedGroupSymmetricKey),
-          sodium.from_base64(response.data.encryptersPublicKey)
+          sodium.from_base64(response.data.groupSymmetricKey),
+          sodium.from_base64(response.data.encryptersPublicKey!)
         );
 
         this.react.status = 'password';
         this.react.loading = false;
-
-        return;
       }
-    } else {
-      // Save symmetric key
 
-      saveGroupSymmetricKey(
-        response.data.groupId,
-        response.data.encryptedGroupSymmetricKey,
-        response.data.encryptersPublicKey
+      return;
+    }
+
+    let decryptedGroupSymmetricKey;
+
+    if (response.data.groupIsPublic) {
+      decryptedGroupSymmetricKey = sodium.from_base64(
+        response.data.groupSymmetricKey
+      );
+    } else {
+      decryptedGroupSymmetricKey = privateKey.decrypt(
+        sodium.from_base64(response.data.groupSymmetricKey),
+        sodium.from_base64(response.data.encryptersPublicKey!)
       );
     }
+
+    const wrappedGroupSymmetricKey = wrapSymmetricKey(
+      decryptedGroupSymmetricKey
+    );
+
+    $pages.react.dict[`${DICT_GROUP_SYMMETRIC_KEY}:${response.data.groupId}`] =
+      wrappedGroupSymmetricKey;
 
     await this.finishSetup();
   }

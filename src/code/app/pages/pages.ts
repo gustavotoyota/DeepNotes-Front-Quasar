@@ -37,10 +37,11 @@ import {
 } from './serialization';
 
 export const DICT_PAGE_GROUP_ID = 'page-group-id';
-export const DICT_GROUP_SYMMETRIC_KEY = 'group-symmetric-key';
 export const DICT_GROUP_OWNER_ID = 'group-owner-id';
 export const DICT_GROUP_USER_STATUS = 'group-user-status';
 export const DICT_GROUP_ROLE_ID = 'group-role-id';
+export const DICT_GROUP_IS_PUBLIC = 'group-is-public';
+export const DICT_GROUP_SYMMETRIC_KEY = 'group-symmetric-key';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -232,10 +233,8 @@ export class PagesApp {
   }
 
   async loadData() {
-    let response;
-
     try {
-      response = await internals.api.post<{
+      const response = await internals.api.post<{
         userId: string;
 
         publicKey: string;
@@ -246,38 +245,37 @@ export class PagesApp {
 
         mainGroupId: string;
       }>('/api/users/data');
+
+      // Load user data
+
+      this.react.userId = response.data.userId;
+      this.react.publicKey = sodium.from_base64(response.data.publicKey);
+      this.react.symmetricKey = wrapSymmetricKey(
+        privateKey.decrypt(
+          sodium.from_base64(response.data.encryptedSymmetricKey),
+          this.react.publicKey
+        )
+      );
+
+      this.react.defaultNote = JSON.parse(
+        decodeText(
+          this.react.symmetricKey.decrypt(
+            sodium.from_base64(response.data.encryptedDefaultNote)
+          )
+        )
+      );
+      this.react.defaultArrow = JSON.parse(
+        decodeText(
+          this.react.symmetricKey.decrypt(
+            sodium.from_base64(response.data.encryptedDefaultArrow)
+          )
+        )
+      );
+
+      this.react.mainGroupId = response.data.mainGroupId;
     } catch (error) {
       console.log(error);
-      return;
     }
-
-    // Load user data
-
-    this.react.userId = response.data.userId;
-    this.react.publicKey = sodium.from_base64(response.data.publicKey);
-    this.react.symmetricKey = wrapSymmetricKey(
-      privateKey.decrypt(
-        sodium.from_base64(response.data.encryptedSymmetricKey),
-        this.react.publicKey
-      )
-    );
-
-    this.react.defaultNote = JSON.parse(
-      decodeText(
-        this.react.symmetricKey.decrypt(
-          sodium.from_base64(response.data.encryptedDefaultNote)
-        )
-      )
-    );
-    this.react.defaultArrow = JSON.parse(
-      decodeText(
-        this.react.symmetricKey.decrypt(
-          sodium.from_base64(response.data.encryptedDefaultArrow)
-        )
-      )
-    );
-
-    this.react.mainGroupId = response.data.mainGroupId;
 
     this.realtime.subscribe(
       `${REALTIME_USER_NOTIFICATION}:${this.react.userId}`

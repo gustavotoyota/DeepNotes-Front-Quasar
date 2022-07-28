@@ -66,7 +66,7 @@
 
                 <Checkbox
                   label="Make group public for viewing"
-                  v-model="publicGroup"
+                  v-model="groupIsPublic"
                 />
 
                 <Gap style="height: 16px" />
@@ -151,7 +151,7 @@ const createGroup = ref(false);
 const groupName = ref('');
 const groupNameElem = ref<HTMLElement>();
 
-const publicGroup = ref(false);
+const groupIsPublic = ref(false);
 
 const passwordProtectGroup = ref(false);
 const groupPassword = ref('');
@@ -166,7 +166,7 @@ async function showDialog() {
   createGroup.value = false;
   groupName.value = '';
 
-  publicGroup.value = false;
+  groupIsPublic.value = false;
 
   passwordProtectGroup.value = false;
   groupPassword.value = '';
@@ -203,7 +203,6 @@ async function createPage() {
   try {
     let groupId;
     let groupSymmetricKey;
-    let encryptedGroupSymmetricKey;
     let encryptedGroupName;
 
     let encryptedPageTitle;
@@ -235,10 +234,12 @@ async function createPage() {
         );
       }
 
-      encryptedGroupSymmetricKey = privateKey.encrypt(
-        groupSymmetricKey,
-        $pages.react.publicKey
-      );
+      if (!groupIsPublic.value) {
+        groupSymmetricKey = privateKey.encrypt(
+          groupSymmetricKey,
+          $pages.react.publicKey
+        );
+      }
 
       encryptedGroupName = wrappedGroupSymmetricKey.encrypt(
         encodeText(groupName.value)
@@ -252,14 +253,14 @@ async function createPage() {
     const response = await internals.api.post<{
       pageId: string;
     }>('/api/pages/create', {
-      parentPageId: page.value.id,
-      encryptedPageTitle: bytesToBase64(encryptedPageTitle),
-
       createGroup: createGroup.value,
       groupId,
-      publicGroup: publicGroup.value,
-      encryptedGroupSymmetricKey: bytesToBase64(encryptedGroupSymmetricKey),
+      groupIsPublic: groupIsPublic.value,
+      groupSymmetricKey: bytesToBase64(groupSymmetricKey),
       encryptedGroupName: bytesToBase64(encryptedGroupName),
+
+      parentPageId: page.value.id,
+      encryptedPageTitle: bytesToBase64(encryptedPageTitle),
     });
 
     page.value.collab.doc.transact(() => {

@@ -65,6 +65,7 @@ import { reencryptSymmetricKey } from 'src/code/app/crypto';
 import { internals } from 'src/code/app/internals';
 import { AppPage } from 'src/code/app/pages/page/page';
 import { roles } from 'src/code/app/roles';
+import { bytesToBase64 } from 'src/code/lib/base64';
 import Gap from 'src/components/misc/Gap.vue';
 import SmartBtn from 'src/components/misc/SmartBtn.vue';
 import { inject, Ref, ref } from 'vue';
@@ -128,18 +129,25 @@ async function inviteUser() {
       }),
     ]);
 
-    const reencryptedSymmetricKey = reencryptSymmetricKey(
-      sodium.from_base64(inviterKeys.data.sessionKey),
-      sodium.from_base64(inviterKeys.data.encryptedSymmetricKey),
-      sodium.from_base64(inviterKeys.data.encryptersPublicKey),
-      sodium.from_base64(inviteeInfos.data.publicKey)
-    );
+    let reencryptedSymmetricKey;
+
+    if (
+      inviterKeys.data.encryptedSymmetricKey != null &&
+      inviterKeys.data.encryptersPublicKey != null
+    ) {
+      reencryptedSymmetricKey = reencryptSymmetricKey(
+        sodium.from_base64(inviterKeys.data.sessionKey),
+        sodium.from_base64(inviterKeys.data.encryptedSymmetricKey),
+        sodium.from_base64(inviterKeys.data.encryptersPublicKey),
+        sodium.from_base64(inviteeInfos.data.publicKey)
+      );
+    }
 
     await internals.api.post('/api/groups/access-invitations/send', {
       groupId: page.value.react.groupId,
       userId: inviteeInfos.data.userId,
       roleId: roleId.value,
-      encryptedSymmetricKey: sodium.to_base64(reencryptedSymmetricKey),
+      encryptedSymmetricKey: bytesToBase64(reencryptedSymmetricKey),
     });
 
     settings.value.invitations.list.push({

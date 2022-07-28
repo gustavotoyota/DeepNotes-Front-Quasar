@@ -757,6 +757,7 @@
           icon="mdi-bell"
           icon-size="24px"
           round
+          :disable="page.react.groupReadOnly"
         />
 
         <Gap style="width: 2px" />
@@ -767,6 +768,7 @@
           icon-size="28px"
           round
           @click="internals.showUserSettingsDialog()"
+          :disable="page.react.groupReadOnly"
         />
 
         <Gap style="width: 2px" />
@@ -776,6 +778,7 @@
           icon="mdi-account"
           icon-size="30px"
           round
+          :disable="page.react.groupReadOnly"
         >
           <q-menu
             anchor="bottom right"

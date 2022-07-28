@@ -52,6 +52,7 @@
           round
           flat
           style="min-width: 32px; min-height: 32px; width: 32px; height: 32px"
+          :disable="page.react.groupReadOnly"
           @click="createLayer()"
         />
       </q-toolbar>
@@ -74,6 +75,8 @@
               v-if="layer != null"
               :active="layer.id == region.react.activeLayer.id"
               clickable
+              style="padding-right: 12px"
+              :disable="page.react.groupReadOnly"
               @click="region.react.activeLayerId = layer.id"
             >
               <q-item-section avatar>
@@ -99,6 +102,7 @@
                     width: 32px;
                     height: 32px;
                   "
+                  :disable="page.react.groupReadOnly"
                   @click="swapLayers(invertLayerIndex(layerIndex))"
                 />
               </q-item-section>
@@ -118,6 +122,7 @@
                     width: 32px;
                     height: 32px;
                   "
+                  :disable="page.react.groupReadOnly"
                   @click="swapLayers(invertLayerIndex(layerIndex + 1))"
                 />
               </q-item-section>
@@ -136,6 +141,7 @@
                     width: 32px;
                     height: 32px;
                   "
+                  :disable="page.react.groupReadOnly"
                   @click="deleteLayer(invertLayerIndex(layerIndex))"
                 />
               </q-item-section>

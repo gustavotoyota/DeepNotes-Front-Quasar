@@ -25,6 +25,7 @@
           <q-btn
             label="Group settings"
             color="primary"
+            :disable="page.react.groupReadOnly"
             @click="showDialog()"
           />
         </template>

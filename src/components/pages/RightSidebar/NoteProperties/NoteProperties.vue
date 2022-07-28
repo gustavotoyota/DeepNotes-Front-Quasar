@@ -222,6 +222,7 @@
         label="Set as default"
         color="primary"
         @click="setAsDefault()"
+        :disable="page.react.groupReadOnly"
       />
     </div>
 
@@ -242,6 +243,7 @@
             "
             filled
             dense
+            :disable="page.react.groupReadOnly"
           />
         </div>
 
@@ -258,6 +260,7 @@
             "
             filled
             dense
+            :disable="page.react.groupReadOnly"
           />
         </div>
       </div>

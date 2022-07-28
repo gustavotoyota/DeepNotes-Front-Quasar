@@ -475,6 +475,8 @@ onBeforeUnmount(() => {
 
 body {
   overscroll-behavior-y: contain; /* Prevent pull-to-refresh */
+
+  overflow: hidden;
 }
 </style>
 

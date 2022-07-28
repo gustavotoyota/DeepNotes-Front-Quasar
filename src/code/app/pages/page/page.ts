@@ -219,7 +219,8 @@ export class AppPage implements IPageRegion {
       ),
 
       groupReadOnly: computed(
-        () => !rolesMap[this.react.groupRoleId!]?.permissions.editPages ?? true
+        () =>
+          !rolesMap[this.react.groupRoleId ?? '']?.permissions.editPages ?? true
       ),
 
       numEditorsLoading: 0,

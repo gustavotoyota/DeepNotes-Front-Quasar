@@ -1,6 +1,7 @@
 import * as decoding from 'lib0/decoding';
 import * as encoding from 'lib0/encoding';
 import { throttle } from 'lodash';
+import { AppPage } from 'src/code/app/pages/page/page';
 import { ClientSocket } from 'src/code/lib/client-socket';
 import { SymmetricKey } from 'src/code/lib/crypto/symmetric-key';
 import { Resolvable } from 'src/code/lib/resolvable';
@@ -29,6 +30,8 @@ export class WebsocketProvider extends ClientSocket {
   size = 0;
 
   constructor(
+    readonly page: AppPage,
+
     readonly host: string,
     readonly roomname: string,
 
@@ -62,7 +65,7 @@ export class WebsocketProvider extends ClientSocket {
     this.syncPromise = new Resolvable();
 
     this.socket.addEventListener('open', () => {
-      // Broadcast local awareness state
+      // Send local awareness state
 
       if (this.awareness.getLocalState() !== null) {
         const encoderAwareness = encoding.createEncoder();
@@ -75,13 +78,29 @@ export class WebsocketProvider extends ClientSocket {
           ])
         );
 
-        this.socket.send(encoding.toUint8Array(encoderAwareness));
+        this.send(encoding.toUint8Array(encoderAwareness), () => {
+          console.log('Local awareness state sent');
+        });
       }
     });
 
     this.socket.addEventListener('message', (event) => {
       this._handleMessage(new Uint8Array(event.data as any));
     });
+  }
+
+  send(message: Uint8Array, callback?: () => void) {
+    if (this.socket?.readyState !== WebSocket.OPEN) {
+      return;
+    }
+
+    if (this.page.react.groupReadOnly) {
+      return;
+    }
+
+    this.socket.send(message);
+
+    callback?.();
   }
 
   // Document update handling
@@ -104,12 +123,6 @@ export class WebsocketProvider extends ClientSocket {
 
   private _sendSyncSingleUpdateMessage = throttle(
     () => {
-      if (this.socket?.readyState !== WebSocket.OPEN) {
-        return;
-      }
-
-      console.log('Sync single update message sent');
-
       const encoder = encoding.createEncoder();
 
       encoding.writeVarUint(encoder, MESSAGE_SYNC);
@@ -121,7 +134,9 @@ export class WebsocketProvider extends ClientSocket {
 
       encoding.writeVarUint8Array(encoder, encryptedUpdate);
 
-      this.socket.send(encoding.toUint8Array(encoder));
+      this.send(encoding.toUint8Array(encoder), () => {
+        console.log('Sync single update message sent');
+      });
     },
     200,
     { leading: false }
@@ -145,10 +160,6 @@ export class WebsocketProvider extends ClientSocket {
 
   private _sendAwarenessMessage = throttle(
     () => {
-      if (this.socket?.readyState !== WebSocket.OPEN) {
-        return;
-      }
-
       const encoder = encoding.createEncoder();
 
       encoding.writeVarUint(encoder, MESSAGE_AWARENESS);
@@ -160,7 +171,9 @@ export class WebsocketProvider extends ClientSocket {
         )
       );
 
-      this.socket.send(encoding.toUint8Array(encoder));
+      this.send(encoding.toUint8Array(encoder), () => {
+        console.log('Awareness message sent');
+      });
 
       this._changedClients.clear();
     },
@@ -212,18 +225,14 @@ export class WebsocketProvider extends ClientSocket {
   // Sync request message handling
 
   private _sendSyncRequestMessage() {
-    if (this.socket?.readyState !== WebSocket.OPEN) {
-      return;
-    }
-
-    console.log('Sync request message sent');
-
     const encoder = encoding.createEncoder();
 
     encoding.writeVarUint(encoder, MESSAGE_SYNC);
     encoding.writeVarUint(encoder, MESSAGE_SYNC_REQUEST);
 
-    this.socket.send(encoding.toUint8Array(encoder));
+    this.send(encoding.toUint8Array(encoder), () => {
+      console.log('Sync request message sent');
+    });
   }
 
   // Update message handling
@@ -247,12 +256,6 @@ export class WebsocketProvider extends ClientSocket {
   }
 
   private _sendSyncAllUpdatesMergedMessage(updateEndIndex: number) {
-    if (this.socket?.readyState !== WebSocket.OPEN) {
-      return;
-    }
-
-    console.log('Sync all updates merged message sent');
-
     const encoder = encoding.createEncoder();
 
     encoding.writeVarUint(encoder, MESSAGE_SYNC);
@@ -265,7 +268,9 @@ export class WebsocketProvider extends ClientSocket {
     const encryptedUpdate = this.symmetricKey.encrypt(decryptedUpdate);
     encoding.writeVarUint8Array(encoder, encryptedUpdate);
 
-    this.socket.send(encoding.toUint8Array(encoder));
+    this.send(encoding.toUint8Array(encoder), () => {
+      console.log('Sync all updates merged message sent');
+    });
 
     this.size = decryptedUpdate.length;
   }
